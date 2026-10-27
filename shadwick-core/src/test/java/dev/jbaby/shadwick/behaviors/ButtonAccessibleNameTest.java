@@ -6,11 +6,14 @@ import dev.jbaby.shadwick.ShadwickSettings;
 import dev.jbaby.shadwick.components.SwButton;
 import dev.jbaby.shadwick.components.SwSubmitButton;
 import org.apache.wicket.AttributeModifier;
+import org.apache.wicket.Component;
 import org.apache.wicket.RuntimeConfigurationType;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.markup.Markup;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.form.Form;
+import org.apache.wicket.markup.html.list.ListItem;
+import org.apache.wicket.markup.html.list.ListView;
 import org.apache.wicket.mock.MockApplication;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
@@ -19,6 +22,8 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
+
+import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
@@ -75,6 +80,26 @@ class ButtonAccessibleNameTest {
         tester.startComponentInPage(button(null), Markup.of("<a wicket:id=\"button\"></a>"));
 
         tester.assertComponent("button", SwButton.class);
+    }
+
+    @Test
+    void warningOnlyEachButtonIsCheckedOnceAndTheRowsOfAListAsOne() {
+        ShadwickSettings.get(tester.getApplication()).setAccessibilityChecks(AccessibilityChecks.WARN);
+        ListView<String> rows = new ListView<>("rows", List.of("a", "b", "c")) {
+            @Override
+            protected void populateItem(ListItem<String> item) {
+                item.add(button(null));
+            }
+        };
+        WebMarkupContainer list = new WebMarkupContainer("list");
+        list.add(rows);
+
+        tester.startComponentInPage(list, Markup.of("<div wicket:id=\"list\"><div wicket:id=\"rows\"><a wicket:id=\"button\"></a></div></div>"));
+        Component first = tester.getComponentFromLastRenderedPage("list:rows:0:button");
+        String key = ButtonBehavior.checkKey(first);
+        assertThat(key).endsWith("|list:rows:*:button");
+        assertThat(ButtonBehavior.CHECKED).contains(key);
+        assertThat(ButtonBehavior.checkKey(tester.getComponentFromLastRenderedPage("list:rows:2:button"))).isEqualTo(key);
     }
 
     @Test

@@ -15,6 +15,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.Serializable;
+import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.regex.Pattern;
 
 /**
  * Behavior that styles any component as a shadcn button: a {@code <button>}, an {@code <a>}, an
@@ -29,13 +32,20 @@ import java.io.Serializable;
  * A disabled {@code <a>}, which Wicket renders without an {@code href}, gets {@code aria-disabled="true"}.
  * <p>
  * With {@link ShadwickSettings#setAccessibilityChecks accessibility checks} on, a button without an accessible name
- * fails to render ({@code FAIL}, the default in development mode) or is logged ({@code WARN}, the default in
- * deployment): one with no text, no {@code aria-label} and no labelled icon, which a screen reader announces only as
- * "button". An icon-only button ({@link Size#ICON}) needs an {@code aria-label}.
+ * fails to render ({@code FAIL}, the default in development mode, checked on every render) or is logged once
+ * ({@code WARN}, the default in deployment, where each button is checked the first time it renders): one with no
+ * text, no {@code aria-label} and no labelled icon, which a screen reader announces only as "button". An icon-only
+ * button ({@link Size#ICON}) needs an {@code aria-label}.
  */
 public class ButtonBehavior extends Behavior {
 
     private static final Logger LOG = LoggerFactory.getLogger(ButtonBehavior.class);
+
+    /** The buttons checked under {@link AccessibilityChecks#WARN}, by {@link #checkKey}. */
+    static final Set<String> CHECKED = ConcurrentHashMap.newKeySet();
+
+    // A path segment that is a number: the index of a list item, or a repeater's child id
+    private static final Pattern LIST_INDEX = Pattern.compile("(^|:)\\d+(?=:|$)");
 
     /** shadcn's button variants, as {@code data-variant}. */
     public enum Variant implements Serializable {
@@ -126,7 +136,12 @@ public class ButtonBehavior extends Behavior {
     @Override
     public void beforeRender(Component component) {
         super.beforeRender(component);
-        if (!component.getRenderBodyOnly() && checks(component) != AccessibilityChecks.OFF) {
+        if (component.getRenderBodyOnly()) {
+            return;
+        }
+        AccessibilityChecks checks = checks(component);
+        // Warning only, as in deployment: each button is checked once, not on every render
+        if (checks == AccessibilityChecks.FAIL || checks == AccessibilityChecks.WARN && !CHECKED.contains(checkKey(component))) {
             original = component.getRequestCycle().setResponse(new StringResponse());
         }
     }
@@ -137,14 +152,25 @@ public class ButtonBehavior extends Behavior {
             CharSequence html = ((StringResponse) component.getRequestCycle().setResponse(original)).getBuffer();
             original.write(html);
             original = null;
-            if (!AccessibleNames.hasName(html)) {
-                if (checks(component) == AccessibilityChecks.FAIL) {
+            boolean named = AccessibleNames.hasName(html);
+            if (checks(component) == AccessibilityChecks.FAIL) {
+                if (!named) {
                     throw new IllegalStateException(unnamed(component));
                 }
+            } else if (CHECKED.add(checkKey(component)) && !named) {
                 LOG.warn(unnamed(component));
             }
         }
         super.afterRender(component);
+    }
+
+    /**
+     * Which button this is, for checking it once: its application, page class and path on the page, with the indexes
+     * of list items left out, so the rows of a list count as one button and the set stays as small as the pages.
+     */
+    static String checkKey(Component component) {
+        return component.getApplication().getName() + "|" + component.getPage().getClass().getName() + "|"
+                + LIST_INDEX.matcher(component.getPageRelativePath()).replaceAll("$1*");
     }
 
     @Override
