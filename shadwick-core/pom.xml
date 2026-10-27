@@ -46,6 +46,20 @@
 	</properties>
 
 	<build>
+		<resources>
+			<resource>
+				<directory>src/main/resources</directory>
+			</resource>
+			<!-- The license and the attributions of the code Shadwick adapts travel with the jar -->
+			<resource>
+				<directory>${project.basedir}/..</directory>
+				<targetPath>META-INF</targetPath>
+				<includes>
+					<include>LICENSE</include>
+					<include>NOTICE</include>
+				</includes>
+			</resource>
+		</resources>
 		<plugins>
 			<!-- Compiles src/main/tailwind into target/classes/dev/jbaby/shadwick/css (scripts/build-css.mjs).
 			     The jar ships only the finished CSS: package.json, node_modules and the Tailwind sources stay out. -->
