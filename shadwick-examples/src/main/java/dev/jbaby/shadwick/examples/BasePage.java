@@ -19,7 +19,8 @@ import org.apache.wicket.request.resource.CssResourceReference;
 /**
  * The showcase's layout: a header with the pages, a skin switcher and a light/dark switch. Both are page parameters
  * ({@code ?skin=lyra}, {@code ?mode=dark}), kept in the session once picked, so every page can be opened in any
- * skin and mode, e.g. side by side in two browser windows.
+ * skin and mode by its URL. Two windows of one browser share the session: compare skins side by side in two browsers
+ * (or a private window).
  */
 public abstract class BasePage extends WebPage {
 
