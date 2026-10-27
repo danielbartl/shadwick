@@ -40,8 +40,8 @@ import java.util.Objects;
  * <ul>
  * <li>Set its content with {@link #setContent}, using the id {@link #CONTENT_ID}, open it from any Ajax handler with
  * {@link #open}, which re-renders it first, and close it with {@link #close}. {@link #open(Component, AjaxRequestTarget)}
- * sets content that is removed again when the dialog closes. With a trigger label it also renders a button that opens
- * it in the browser, without waiting for the server (an invoker command, {@code commandfor}/{@code command}).</li>
+ * sets content that is removed again when the dialog closes. {@link #setTrigger} adds a button that opens it in the
+ * browser, without waiting for the server (an invoker command, {@code commandfor}/{@code command}).</li>
  * <li>The server knows whether it is open ({@link #isOpen}), so re-rendering it - with {@code target.add(dialog)}, or a
  * container around it - keeps it open.</li>
  * <li>The content sits inside the dialog's own {@link #getForm() form}, so form fields in it are validated when Confirm
@@ -87,6 +87,8 @@ public class SwDialog extends Panel {
     private final Form<Void> form;
     private final Label titleLabel;
     private final Label descriptionLabel;
+    private final WebMarkupContainer trigger;
+    private final Label triggerLabel;
     private final ButtonBehavior triggerButton;
     private final WebMarkupContainer closeButton;
     private final WebMarkupContainer footer;
@@ -106,30 +108,18 @@ public class SwDialog extends Panel {
     private boolean staleContent;
 
     /**
-     * A dialog without a trigger button; open it with {@link #open}.
-     */
-    public SwDialog(String id, IModel<String> title) {
-        this(id, null, title);
-    }
-
-    /**
-     * A dialog without a trigger button; open it with {@link #open}.
+     * A dialog with the given title; open it with {@link #open}, or give it a button that opens it with
+     * {@link #setTrigger}.
      */
     public SwDialog(String id, String title) {
         this(id, Model.of(title));
     }
 
     /**
-     * @param triggerLabel the label of a button that opens the dialog, or {@code null} for none
+     * A dialog with the given title; open it with {@link #open}, or give it a button that opens it with
+     * {@link #setTrigger}.
      */
-    public SwDialog(String id, String triggerLabel, String title) {
-        this(id, triggerLabel != null ? Model.of(triggerLabel) : null, Model.of(title));
-    }
-
-    /**
-     * @param triggerLabel the label of a button that opens the dialog, or {@code null} for none
-     */
-    public SwDialog(String id, IModel<String> triggerLabel, IModel<String> title) {
+    public SwDialog(String id, IModel<String> title) {
         super(id);
         // Its own tag, so target.add(dialog) re-renders it; the stylesheet gives the tag no
         // box of its own, so the trigger lays out as if it stood there by itself
@@ -160,8 +150,9 @@ public class SwDialog extends Panel {
         dialog.add(new ClosedInBrowser());
         add(dialog);
 
-        WebMarkupContainer trigger = new WebMarkupContainer("trigger");
-        trigger.add(new Label("triggerLabel", triggerLabel));
+        trigger = new WebMarkupContainer("trigger");
+        triggerLabel = new Label("triggerLabel");
+        trigger.add(triggerLabel);
         trigger.add(AttributeModifier.replace("commandfor", (IModel<String>) dialog::getMarkupId));
         triggerButton = new ButtonBehavior(ButtonBehavior.Variant.OUTLINE);
         trigger.add(triggerButton);
@@ -175,7 +166,7 @@ public class SwDialog extends Panel {
                 }
             }
         });
-        trigger.setVisible(triggerLabel != null);
+        trigger.setVisible(false);
         add(trigger);
 
         // The dialog's own form, re-rendered after a failed confirm.
@@ -388,6 +379,11 @@ public class SwDialog extends Panel {
     }
 
     /** The dialog's title, which names it for screen readers, e.g. to reuse one dialog for different records. */
+    public SwDialog setTitle(String title) {
+        return setTitle(Model.of(title));
+    }
+
+    /** The dialog's title, which names it for screen readers, e.g. to reuse one dialog for different records. */
     public SwDialog setTitle(IModel<String> title) {
         titleLabel.setDefaultModel(title);
         return this;
@@ -408,9 +404,17 @@ public class SwDialog extends Panel {
         return description != null && !Strings.isEmpty(description.getObject());
     }
 
+    public SwDialog setCancelLabel(String label) {
+        return setCancelLabel(Model.of(label));
+    }
+
     public SwDialog setCancelLabel(IModel<String> label) {
         cancelLabel.setDefaultModel(label);
         return this;
+    }
+
+    public SwDialog setConfirmLabel(String label) {
+        return setConfirmLabel(Model.of(label));
     }
 
     public SwDialog setConfirmLabel(IModel<String> label) {
@@ -421,6 +425,22 @@ public class SwDialog extends Panel {
     /** E.g. {@code DESTRUCTIVE} for a destructive action. */
     public SwDialog setConfirmVariant(ButtonBehavior.Variant variant) {
         confirmButton.setVariant(variant);
+        return this;
+    }
+
+    /**
+     * Adds a button that opens the dialog in the browser, with an invoker command, without waiting for the server:
+     * {@code new SwDialog("about", "About Shadwick").setTrigger("About")}. It renders where the dialog stands in the
+     * markup.
+     */
+    public SwDialog setTrigger(String label) {
+        return setTrigger(Model.of(label));
+    }
+
+    /** Adds a button that opens the dialog in the browser; a {@code null} model removes it. */
+    public SwDialog setTrigger(IModel<String> label) {
+        triggerLabel.setDefaultModel(label);
+        trigger.setVisible(label != null);
         return this;
     }
 

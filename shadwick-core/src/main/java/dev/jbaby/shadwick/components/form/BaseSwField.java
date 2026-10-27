@@ -388,6 +388,10 @@ public abstract class BaseSwField<T, C extends FormComponent<T>, F extends BaseS
         return self();
     }
 
+    public F setLabel(String label) {
+        return setLabel(Model.of(label));
+    }
+
     public F setLabel(IModel<String> label) {
         this.label.setDefaultModel(label);
         getInput().setLabel(label);

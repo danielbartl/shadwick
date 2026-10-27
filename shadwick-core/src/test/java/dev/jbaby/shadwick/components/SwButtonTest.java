@@ -4,6 +4,7 @@ import dev.jbaby.shadwick.Sw;
 import dev.jbaby.shadwick.behaviors.ButtonBehavior;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.markup.Markup;
+import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.markup.html.form.TextField;
 import org.apache.wicket.model.Model;
@@ -129,6 +130,25 @@ class SwButtonTest {
         TagTester save = tester.getTagByWicketId("save");
         assertThat(save.getAttribute("value")).isEqualTo("Save");
         assertThat(save.getAttribute("data-variant")).isEqualTo("secondary");
+    }
+
+    @Test
+    void aSubmitButtonOutsideItsFormSubmitsIt() {
+        Model<String> name = Model.of("");
+        Form<Void> form = new Form<>("form");
+        form.add(new TextField<>("name", name));
+        WebMarkupContainer toolbar = new WebMarkupContainer("toolbar");
+        toolbar.add(SwSubmitButton.onSubmit("save", "Save", form, target -> clicked = true));
+        WebMarkupContainer page = new WebMarkupContainer("page");
+        page.add(form, toolbar);
+        tester.startComponentInPage(page, Markup.of("<div wicket:id='page'><form wicket:id='form'><input wicket:id='name'/></form>"
+                + "<div wicket:id='toolbar'><button wicket:id='save'></button></div></div>"));
+
+        tester.newFormTester("page:form").setValue("name", "Ada");
+        tester.executeAjaxEvent("page:toolbar:save", "click");
+
+        assertThat(clicked).isTrue();
+        assertThat(name.getObject()).isEqualTo("Ada");
     }
 
     @Test

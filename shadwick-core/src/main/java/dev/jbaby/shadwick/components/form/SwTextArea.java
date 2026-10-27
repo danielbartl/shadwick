@@ -25,6 +25,11 @@ public class SwTextArea<T> extends BaseSwField<T, TextArea<T>, SwTextArea<T>> {
         this(id, null, model, null);
     }
 
+    /** Model inherited from a parent {@code CompoundPropertyModel}. */
+    public SwTextArea(String id, String label) {
+        this(id, Model.of(label), null, null);
+    }
+
     public SwTextArea(String id, String label, IModel<T> model) {
         this(id, Model.of(label), model, null);
     }

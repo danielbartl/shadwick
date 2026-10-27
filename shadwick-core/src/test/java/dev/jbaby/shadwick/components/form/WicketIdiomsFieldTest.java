@@ -8,6 +8,7 @@ import org.apache.wicket.behavior.Behavior;
 import org.apache.wicket.markup.Markup;
 import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.markup.html.form.FormComponentUpdatingBehavior;
+import org.apache.wicket.model.CompoundPropertyModel;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.util.tester.FormTester;
 import org.apache.wicket.util.tester.TagTester;
@@ -171,6 +172,18 @@ class WicketIdiomsFieldTest {
         formTester.setValue("age:input", "42");
         formTester.submit();
         assertThat(age.getObject()).isEqualTo(42);
+    }
+
+    @Test
+    void aLabelGoesWithAnInheritedModel() {
+        FieldTestPage.Person person = new FieldTestPage.Person();
+        person.name = "Ada";
+        Form<FieldTestPage.Person> form = new Form<>("form", new CompoundPropertyModel<>(person));
+        form.add(new SwTextField<String>("name", "Your name"));
+        tester.startComponentInPage(form, Markup.of("<form wicket:id='form'><div wicket:id='name'></div></form>"));
+
+        tester.assertLabel("form:name:label", "Your name");
+        assertThat(tester.getTagByWicketId("input").getAttribute("value")).isEqualTo("Ada");
     }
 
     @Test

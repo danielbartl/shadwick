@@ -11,6 +11,7 @@ import org.apache.wicket.markup.html.WebPage;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.markup.html.panel.Fragment;
+import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.util.resource.IResourceStream;
 import org.apache.wicket.util.resource.StringResourceStream;
@@ -301,7 +302,7 @@ class SwDialogTest {
 
     @Test
     void theTriggerTellsTheServerTheDialogIsOpen() {
-        SwDialog dialog = new SwDialog("dialog", "Open", "Title");
+        SwDialog dialog = new SwDialog("dialog", "Title").setTrigger("Open");
         tester.startComponentInPage(dialog);
         assertThat(dialog.isOpen()).isFalse();
 
@@ -480,8 +481,8 @@ class SwDialogTest {
         tester.assertLabel("dialog:dialog:form:confirm:confirmLabel", "Confirm");
 
         dialog = new SwDialog("dialog", "Delete item")
-                .setCancelLabel(Model.of("Keep it"))
-                .setConfirmLabel(Model.of("Delete"))
+                .setCancelLabel("Keep it")
+                .setConfirmLabel("Delete")
                 .setConfirmVariant(ButtonBehavior.Variant.DESTRUCTIVE);
         tester.startComponentInPage(dialog);
         tester.assertLabel("dialog:dialog:form:cancel:cancelLabel", "Keep it");
@@ -546,7 +547,7 @@ class SwDialogTest {
 
     @Test
     void theButtonsAreShadcnButtons() {
-        SwDialog dialog = new SwDialog("dialog", "Open", "Title");
+        SwDialog dialog = new SwDialog("dialog", "Title").setTrigger("Open");
         tester.startComponentInPage(dialog);
 
         TagTester trigger = tester.getTagByWicketId("trigger");
@@ -557,6 +558,17 @@ class SwDialogTest {
         assertThat(tester.getTagByWicketId("cancel").getAttribute("data-variant")).isEqualTo("outline");
         assertThat(tester.getTagByWicketId("confirm").getAttribute("data-variant")).isNull();
         assertThat(tester.getTagByWicketId("confirm").getAttribute("class")).isEqualTo("sw-button");
+    }
+
+    @Test
+    void theTriggerIsSetAndRemovedLikeAnyLabel() {
+        SwDialog dialog = new SwDialog("dialog", "Title").setTrigger("Open");
+        tester.startComponentInPage(dialog);
+        assertThat(tester.getTagByWicketId("trigger").getValue()).contains("Open");
+
+        dialog.setTrigger((IModel<String>) null);
+        tester.startComponentInPage(dialog);
+        assertThat(tester.getTagByWicketId("trigger")).isNull();
     }
 
     @Test

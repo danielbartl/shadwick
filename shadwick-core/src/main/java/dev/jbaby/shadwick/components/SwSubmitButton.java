@@ -40,6 +40,11 @@ public class SwSubmitButton extends AjaxButton {
     }
 
     /** A button submitting the given form, which needn't contain it. */
+    public SwSubmitButton(String id, String label, Form<?> form) {
+        this(id, Model.of(label), form);
+    }
+
+    /** A button submitting the given form, which needn't contain it. */
     public SwSubmitButton(String id, IModel<String> label, Form<?> form) {
         super(id, label, form);
         add(buttonBehavior, new NestedFormButtonBehavior());
@@ -80,6 +85,20 @@ public class SwSubmitButton extends AjaxButton {
     public static SwSubmitButton onSubmit(String id, String label, SerializableConsumer<AjaxRequestTarget> onSubmit,
                                           SerializableConsumer<AjaxRequestTarget> onError) {
         return onSubmit(id, Model.of(label), onSubmit, onError);
+    }
+
+    /**
+     * A button submitting the given form, which needn't contain it, over Ajax, running {@code onSubmit} when the form
+     * is valid: e.g. a toolbar button outside the form.
+     */
+    public static SwSubmitButton onSubmit(String id, String label, Form<?> form, SerializableConsumer<AjaxRequestTarget> onSubmit) {
+        Objects.requireNonNull(onSubmit);
+        return new SwSubmitButton(id, Model.of(label), form) {
+            @Override
+            protected void onSubmit(AjaxRequestTarget target) {
+                onSubmit.accept(target);
+            }
+        };
     }
 
     /**

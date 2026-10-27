@@ -98,14 +98,14 @@ SwDialog dialog = new SwDialog("delete", "Delete the project?") {
     }
 };
 dialog.setDescription("This cannot be undone.");
-dialog.setConfirmLabel(Model.of("Delete")).setConfirmVariant(ButtonBehavior.Variant.DESTRUCTIVE);
+dialog.setConfirmLabel("Delete").setConfirmVariant(ButtonBehavior.Variant.DESTRUCTIVE);
 add(dialog);
 add(SwButton.onClick("openDelete", "Delete project", dialog::open));
 ```
 
 Give it content with `setContent(...)` (id `SwDialog.CONTENT_ID`); its form fields are validated on Confirm, and it
-stays open while one has an error. With a trigger label, `new SwDialog("about", "About", "About Shadwick")`, it also
-renders a button that opens it in the browser, without a request.
+stays open while one has an error. `setTrigger("About")` adds a button that opens it in the browser, without a
+request.
 
 ### Theming
 

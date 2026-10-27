@@ -25,6 +25,11 @@ public class SwTextField<T> extends BaseSwField<T, TextField<T>, SwTextField<T>>
         this(id, null, model, null);
     }
 
+    /** Model inherited from a parent {@code CompoundPropertyModel}. */
+    public SwTextField(String id, String label) {
+        this(id, Model.of(label), null, null);
+    }
+
     public SwTextField(String id, String label, IModel<T> model) {
         this(id, Model.of(label), model, null);
     }

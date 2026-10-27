@@ -266,6 +266,10 @@ release, docs/showcase site.
 - Dialog: title + description (`setTitle`, `setDescription`; Oat has
   `setHeader`), the × close button shown by default and placed last in the
   DOM, so the browser focuses the first field on opening (no JS for that).
+  The trigger button is `setTrigger(label)`, not Oat's
+  `(id, triggerLabel, header)` constructor, whose two Strings were easy to swap.
+  A failed confirm leaves field errors to the fields (in place, focus kept) and
+  re-renders the form only for errors reported elsewhere.
 - Field: description and error are separate elements (`p.sw-field-description`,
   `div.sw-field-error`); Oat swaps the hint for the error. The error element is
   always rendered (`role="status"`, empty while valid, hidden via `:empty`) so
@@ -313,7 +317,20 @@ release, docs/showcase site.
   it in `renderHead`. Nothing is added to Wicket's CSP: no `data:` URLs, inline
   SVG icons in markup.
 - Skins: `setSkin(Skin)` is the app-wide default; an optional `SkinStore`
-  (`load()`/`save()`, shaped like `OatThemeStore`) overrides it per request.
+  (`load()`/`save()`, shaped like `OatThemeStore`) overrides it per user, and
+  `setCurrentSkin(Skin)` switches it (clear error without a store). The skin is
+  worked out once per request; a page keeps the skin of its last full render
+  for its Ajax updates (page metadata), so it never loads two skins.
+- `ShadwickSettings.get` reads application metadata without a lock; only the
+  first creation is synchronized.
+- Accessibility checks under `WARN` run once per button (page class + path,
+  list indexes folded to `*`) and log at most once; `FAIL` checks every render.
+- Every public setter taking an `IModel<String>` also takes a `String`.
+- `BaseSwField.add` routes validators and every form-component behavior
+  (`AjaxFormComponentUpdatingBehavior`, `FormComponentUpdatingBehavior`,
+  `AjaxFormValidatingBehavior`) to the input. The input's type comes from an
+  `IObjectClassAwareModel`, else from the model's value, else `setType(...)`.
+- The jar carries `NOTICE` and `LICENSE` in `META-INF`.
 - `shadwick.js` (`Shadwick.*`): an IIFE guarded by `window.Shadwick`, only
   document-level delegated listeners (so it survives Ajax replacement), reads
   only attributes. Holds `fieldFeedback`, `showDialog`, fallbacks for invoker

@@ -24,7 +24,7 @@ public class DialogPage extends BasePage {
         add(status);
 
         // Opened in the browser by its trigger button, without waiting for the server
-        SwDialog about = new SwDialog("about", "About Shadwick", "About Shadwick");
+        SwDialog about = new SwDialog("about", "About Shadwick").setTrigger("About Shadwick");
         about.setDescription("shadcn/ui-style components for Apache Wicket.");
         about.setContent(new Label(SwDialog.CONTENT_ID, "Shadwick renders shadcn's markup on the server, styled by one "
                 + "stylesheet per skin. Close this with the ×, the Escape key or a click outside."));
@@ -40,7 +40,7 @@ public class DialogPage extends BasePage {
             }
         };
         delete.setDescription("This cannot be undone. Every file in it goes with it.");
-        delete.setConfirmLabel(Model.of("Delete")).setConfirmVariant(ButtonBehavior.Variant.DESTRUCTIVE);
+        delete.setConfirmLabel("Delete").setConfirmVariant(ButtonBehavior.Variant.DESTRUCTIVE);
         add(delete);
         add(SwButton.onClick("openDelete", "Delete project", delete::open).setVariant(ButtonBehavior.Variant.DESTRUCTIVE));
 
@@ -49,7 +49,7 @@ public class DialogPage extends BasePage {
         summary.setOutputMarkupId(true);
         add(summary);
         SwTextField<String> name = new SwTextField<String>("name", "Name", new PropertyModel<>(profile, "name")).setRequired(true);
-        SwDialog edit = new SwDialog("edit", "Edit profile", "Edit profile") {
+        SwDialog edit = new SwDialog("edit", "Edit profile") {
             @Override
             protected void onConfirm(AjaxRequestTarget target) {
                 // An error found here keeps the dialog open too
@@ -61,13 +61,14 @@ public class DialogPage extends BasePage {
                 target.add(status, summary);
             }
         };
+        edit.setTrigger("Edit profile");
         edit.setDescription("Make changes to your profile here. Click save when you're done.");
         Fragment fields = new Fragment(SwDialog.CONTENT_ID, "profileFields", this);
         fields.add(name);
         fields.add(new SwTextField<String>("email", "Email", new PropertyModel<>(profile, "email")).setRequired(true));
         fields.add(new SwTextArea<String>("bio", "Bio", new PropertyModel<>(profile, "bio")));
         edit.setContent(fields);
-        edit.setConfirmLabel(Model.of("Save changes"));
+        edit.setConfirmLabel("Save changes");
         add(edit);
     }
 
