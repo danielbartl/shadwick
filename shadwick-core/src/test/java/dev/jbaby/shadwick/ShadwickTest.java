@@ -124,6 +124,21 @@ class ShadwickTest {
     }
 
     @Test
+    void turnedOffTheStylesheetIsStillAddedWhereAComponentIsUsed() {
+        ShadwickSettings.get(tester.getApplication()).setAddResources(false);
+        tester.startPage(ButtonPage.class);
+
+        assertThat(tester.getLastResponseAsString()).containsOnlyOnce("shadwick-vega");
+    }
+
+    @Test
+    void theStylesheetIsAddedOnceWithComponentsAndInstall() {
+        tester.startPage(ButtonPage.class);
+
+        assertThat(tester.getLastResponseAsString()).containsOnlyOnce("shadwick-vega");
+    }
+
+    @Test
     void accessibilityChecksFailInDevelopmentAndWarnInDeployment() {
         // WicketTester's MockApplication runs in development mode
         assertThat(ShadwickSettings.get(tester.getApplication()).getAccessibilityChecks()).isEqualTo(AccessibilityChecks.FAIL);
