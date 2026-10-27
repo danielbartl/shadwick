@@ -1,0 +1,27 @@
+target/
+.mvn/wrapper/maven-wrapper.jar
+
+### Node (installed by frontend-maven-plugin, or local) ###
+node/
+node_modules/
+
+### IntelliJ IDEA ###
+.idea
+*.iws
+*.iml
+*.ipr
+
+### Eclipse / STS ###
+.apt_generated
+.classpath
+.factorypath
+.project
+.settings
+.springBeans
+.sts4-cache
+
+### VS Code ###
+.vscode/
+
+### OS ###
+.DS_Store
