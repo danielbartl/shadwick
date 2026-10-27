@@ -9,6 +9,11 @@
   closed one.
 */
 @layer components {
+  /* The panel's own tag, which Wicket re-renders: no box of its own, so the trigger lays out as if it stood alone. */
+  .sw-dialog-root {
+    @apply contents;
+  }
+
   .sw-dialog {
     @apply m-auto w-full overflow-y-auto border-0 opacity-0
       transition-[opacity,scale,overlay,display] transition-discrete

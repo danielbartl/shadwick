@@ -127,8 +127,8 @@
     @apply gap-4;
   }
 
-  /* shadcn's close button: ghost, icon-sm. */
-  .sw-dialog-close {
+  /* shadcn's close button: ghost, icon-sm (as specific as the button's size rules, and later, so it wins). */
+  .sw-button.sw-dialog-close {
     @apply top-2 end-2 size-7;
   }
 
