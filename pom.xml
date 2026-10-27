@@ -36,6 +36,7 @@
 
 	<modules>
 		<module>shadwick-core</module>
+		<module>shadwick-examples</module>
 	</modules>
 
 	<properties>

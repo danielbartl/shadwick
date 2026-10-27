@@ -1,0 +1,39 @@
+<wicket:extend xmlns:wicket="http://wicket.apache.org">
+<div>
+    <h1 class="ex-title">Dialog</h1>
+    <p class="ex-lead">A modal on the native <code>&lt;dialog&gt;</code> element, with a title, a description, the
+        content and a footer.</p>
+</div>
+
+<section class="ex-section" aria-labelledby="client-heading">
+    <h2 id="client-heading">Opened in the browser</h2>
+    <p class="ex-muted"><code>new SwDialog("about", "About Shadwick", "About Shadwick")</code>: the trigger label adds a
+        button that opens it with an invoker command.</p>
+    <div class="ex-row"><div wicket:id="about"></div></div>
+</section>
+
+<section class="ex-section" aria-labelledby="ajax-heading">
+    <h2 id="ajax-heading">Opened over Ajax</h2>
+    <p class="ex-muted"><code>SwButton.onClick("openDelete", "Delete project", dialog::open)</code></p>
+    <div class="ex-row"><button wicket:id="openDelete"></button></div>
+    <div wicket:id="delete"></div>
+</section>
+
+<section class="ex-section" aria-labelledby="form-heading">
+    <h2 id="form-heading">With a form</h2>
+    <p class="ex-muted">Its fields are validated on save; it stays open while one has an error. Try an empty name, or
+        "admin".</p>
+    <p class="ex-muted">Profile: <span wicket:id="summary"></span></p>
+    <div class="ex-row"><div wicket:id="edit"></div></div>
+</section>
+
+<p wicket:id="status" class="ex-muted" role="status"></p>
+
+<wicket:fragment wicket:id="profileFields">
+    <div class="ex-form">
+        <div wicket:id="name"></div>
+        <div wicket:id="email"></div>
+        <div wicket:id="bio"></div>
+    </div>
+</wicket:fragment>
+</wicket:extend>

@@ -1,0 +1,94 @@
+/*
+  The showcase's own layout. Plain CSS on Shadwick's tokens: an application can style its pages however it likes,
+  and Shadwick's components stay as they are, as they only use the sw- classes.
+*/
+.ex-header {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem 1.5rem;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.75rem 1.5rem;
+  border-bottom: 1px solid var(--border);
+}
+
+.ex-nav,
+.ex-switches,
+.ex-group,
+.ex-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  align-items: center;
+}
+
+.ex-switches {
+  gap: 1rem;
+}
+
+.ex-group {
+  gap: 0.25rem;
+}
+
+.ex-main {
+  display: grid;
+  gap: 2.5rem;
+  max-width: 56rem;
+  margin: 0 auto;
+  padding: 2rem 1.5rem 4rem;
+}
+
+.ex-title {
+  font-size: 1.875rem;
+  font-weight: 600;
+  letter-spacing: -0.025em;
+}
+
+.ex-lead {
+  margin-top: 0.5rem;
+  color: var(--muted-foreground);
+}
+
+.ex-section {
+  display: grid;
+  gap: 1rem;
+}
+
+.ex-section h2 {
+  font-size: 1.25rem;
+  font-weight: 600;
+}
+
+.ex-muted {
+  color: var(--muted-foreground);
+  font-size: 0.875rem;
+}
+
+.ex-muted code {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  font-size: 0.8125rem;
+}
+
+.ex-form {
+  display: grid;
+  gap: 1.25rem;
+  max-width: 28rem;
+}
+
+.ex-forms {
+  display: grid;
+  gap: 3rem;
+  grid-template-columns: repeat(auto-fit, minmax(18rem, 1fr));
+}
+
+.ex-links {
+  display: grid;
+  gap: 0.5rem;
+  list-style: disc;
+  padding-inline-start: 1.25rem;
+}
+
+.ex-links a {
+  text-decoration: underline;
+  text-underline-offset: 4px;
+}

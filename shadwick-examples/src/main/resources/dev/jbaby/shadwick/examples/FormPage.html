@@ -1,0 +1,31 @@
+<wicket:extend xmlns:wicket="http://wicket.apache.org">
+<div>
+    <h1 class="ex-title">Form</h1>
+    <p class="ex-lead">Fields with a label, a description and an inline error, wired for screen readers. Leave them
+        empty or type an invalid email to see the errors.</p>
+</div>
+
+<div class="ex-forms">
+    <section class="ex-section" aria-labelledby="form-heading">
+        <h2 id="form-heading">Normal submit</h2>
+        <form wicket:id="form" class="ex-form">
+            <div wicket:id="name"></div>
+            <div wicket:id="email"></div>
+            <div wicket:id="bio"></div>
+            <div class="ex-row"><button wicket:id="save" type="submit">Save</button></div>
+            <p wicket:id="saved" class="ex-muted" role="status"></p>
+        </form>
+    </section>
+
+    <section class="ex-section" aria-labelledby="ajax-heading">
+        <h2 id="ajax-heading">Ajax submit</h2>
+        <form wicket:id="ajaxForm" class="ex-form">
+            <div wicket:id="name"></div>
+            <div wicket:id="email"></div>
+            <div wicket:id="bio"></div>
+            <div class="ex-row"><button wicket:id="save"></button></div>
+            <p wicket:id="saved" class="ex-muted" role="status"></p>
+        </form>
+    </section>
+</div>
+</wicket:extend>

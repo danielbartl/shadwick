@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html wicket:id="html" lang="en" xmlns:wicket="http://wicket.apache.org">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title wicket:id="title">Shadwick</title>
+</head>
+<body>
+<header class="ex-header">
+    <nav aria-label="Examples" class="ex-nav">
+        <a wicket:id="navHome">Shadwick</a>
+        <a wicket:id="navButtons">Buttons</a>
+        <a wicket:id="navForm">Form</a>
+        <a wicket:id="navDialog">Dialog</a>
+    </nav>
+    <div class="ex-switches">
+        <div role="group" aria-label="Skin" class="ex-group">
+            <a wicket:id="vega">Vega</a>
+            <a wicket:id="lyra">Lyra</a>
+        </div>
+        <div role="group" aria-label="Mode" class="ex-group">
+            <a wicket:id="light">Light</a>
+            <a wicket:id="dark">Dark</a>
+        </div>
+    </div>
+</header>
+<main class="ex-main">
+    <wicket:child/>
+</main>
+</body>
+</html>
