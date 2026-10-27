@@ -175,6 +175,8 @@ class ShowcaseBrowserTest {
             assertThat(name).hasAttribute("aria-invalid", "true");
             assertThat(name).hasAccessibleDescription("'Name' is required.");
             assertThat(dialog).isVisible();
+            // Shown in place: the field keeps the focus
+            assertThat(name).isFocused();
             assertThat(describe(new AxeBuilder(tab).withTags(WCAG).analyze().getViolations())).as("with an error shown").isEmpty();
 
             name.fill("Grace Hopper");

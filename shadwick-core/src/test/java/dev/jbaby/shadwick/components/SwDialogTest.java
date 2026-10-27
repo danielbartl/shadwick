@@ -49,6 +49,7 @@ class SwDialogTest {
         public int outerSubmitted;
         public String rejectName;
         public boolean reopenOnConfirm;
+        public boolean rejectOnDialog;
         private final boolean nested;
 
         public DialogPage(boolean nested) {
@@ -68,6 +69,10 @@ class SwDialogTest {
             dialog = new SwDialog("dialog", Model.of("Edit")) {
                 @Override
                 protected void onConfirm(AjaxRequestTarget target) {
+                    if (rejectOnDialog) {
+                        error("Something went wrong.");
+                        return;
+                    }
                     if (name.getObject().equals(rejectName)) {
                         nameField.getInput().error("That name is taken.");
                         return;
@@ -343,10 +348,22 @@ class SwDialogTest {
         tester.executeAjaxEvent("dialog:dialog:form:confirm", "click");
 
         assertThat(page.confirmed).isZero();
-        tester.assertComponentOnAjaxResponse("dialog:dialog:form");
         String response = tester.getLastResponseAsString();
         assertThat(response).doesNotContain(".close()");
-        assertThat(response).contains("data-invalid=\"true\"").contains("&#039;Name&#039; is required.");
+        // In place, by the field: the focus stays where it is and the message is announced
+        assertThat(response).contains("Shadwick.fieldFeedback(").contains("'Name' is required.")
+                .doesNotContain("<component id=\"" + page.dialog.getForm().getMarkupId() + "\"");
+    }
+
+    @Test
+    void anErrorReportedOnTheDialogItselfReRendersItsForm() {
+        DialogPage page = tester.startPage(new DialogPage(false));
+        page.rejectOnDialog = true;
+
+        tester.executeAjaxEvent("dialog:dialog:form:confirm", "click");
+
+        tester.assertComponentOnAjaxResponse("dialog:dialog:form");
+        assertThat(tester.getLastResponseAsString()).doesNotContain(".close()");
     }
 
     @Test

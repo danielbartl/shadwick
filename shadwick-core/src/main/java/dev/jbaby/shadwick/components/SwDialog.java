@@ -4,6 +4,7 @@ import com.github.openjson.JSONObject;
 import dev.jbaby.shadwick.Shadwick;
 import dev.jbaby.shadwick.behaviors.ButtonBehavior;
 import dev.jbaby.shadwick.behaviors.NestedFormButtonBehavior;
+import dev.jbaby.shadwick.components.form.BaseSwField;
 import org.apache.wicket.AttributeModifier;
 import org.apache.wicket.Component;
 import org.apache.wicket.ajax.AjaxEventBehavior;
@@ -45,7 +46,8 @@ import java.util.Objects;
  * container around it - keeps it open.</li>
  * <li>The content sits inside the dialog's own {@link #getForm() form}, so form fields in it are validated when Confirm
  * is clicked. On a validation error the dialog stays open and shows the errors; otherwise {@link #onConfirm} runs, and
- * the dialog closes unless an error was reported in it there.</li>
+ * the dialog closes unless an error was reported in it there. Shadwick fields show their errors in place, so the focus
+ * stays where it is; an error reported on anything else re-renders the dialog's form.</li>
  * <li>Cancel, the &times; in the corner, the Escape key and a click on the backdrop close it in the browser, which
  * tells the server. Once the dialog is out of sight, its fields show the models again, without what was changed but
  * not confirmed. {@link #onClose} runs whenever it closes, however that happened.</li>
@@ -229,7 +231,7 @@ public class SwDialog extends Panel {
                 reopened = false;
                 onConfirm(target);
                 if (hasErrorMessages()) {
-                    target.add(form);
+                    showErrors(target);
                 } else if (!reopened) {
                     close(target);
                 }
@@ -238,7 +240,7 @@ public class SwDialog extends Panel {
             @Override
             protected void onError(AjaxRequestTarget target) {
                 open = true;
-                target.add(form);
+                showErrors(target);
             }
         };
         // Inside a page's form, so Enter in a page field can't click this hidden button
@@ -451,6 +453,21 @@ public class SwDialog extends Panel {
 
     private boolean hasErrorMessages() {
         return !new FeedbackCollector(this).collect(FeedbackMessage::isError).isEmpty();
+    }
+
+    /**
+     * Shows the errors of a failed confirm. Shadwick fields show their own in place, keeping the focus where it is and
+     * announcing the message; only an error reported elsewhere, e.g. on the dialog for a feedback panel in the content,
+     * re-renders the form.
+     */
+    private void showErrors(AjaxRequestTarget target) {
+        boolean elsewhere = new FeedbackCollector(this).collect(FeedbackMessage::isError).stream()
+                .map(FeedbackMessage::getReporter)
+                .anyMatch(reporter -> reporter == null || !(reporter instanceof BaseSwField<?, ?, ?>)
+                        && reporter.findParent(BaseSwField.class) == null);
+        if (elsewhere) {
+            target.add(form);
+        }
     }
 
     /**
