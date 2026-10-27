@@ -10,6 +10,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
 
 class ShadwickTest {
 
@@ -102,6 +103,49 @@ class ShadwickTest {
         stored[0] = null;
         tester.startPage(PlainPage.class);
         assertThat(tester.getLastResponseAsString()).contains("shadwick-vega").doesNotContain("shadwick-lyra");
+    }
+
+    /** A skin store holding one skin for every request, as a session would for one user. */
+    private static SkinStore memoryStore() {
+        return new SkinStore() {
+            private Skin skin;
+
+            @Override
+            public Skin load() {
+                return skin;
+            }
+
+            @Override
+            public void save(Skin skin) {
+                this.skin = skin;
+            }
+        };
+    }
+
+    @Test
+    void anAjaxUpdateKeepsTheSkinThePageWasRenderedWith() {
+        ShadwickSettings.get(tester.getApplication()).setSkinStore(memoryStore());
+        SkinSwitchPage page = tester.startPage(SkinSwitchPage.class);
+        assertThat(tester.getLastResponseAsString()).contains("shadwick-vega");
+
+        tester.clickLink("switch");
+
+        // The browser has vega's stylesheet: lyra's on top would mix the two
+        tester.assertComponentOnAjaxResponse("switch");
+        assertThat(tester.getLastResponseAsString()).contains("shadwick-vega").doesNotContain("shadwick-lyra");
+
+        // Rendered as a whole again, the page has the new skin
+        tester.startPage(page);
+        assertThat(tester.getLastResponseAsString()).contains("shadwick-lyra").doesNotContain("shadwick-vega");
+    }
+
+    @Test
+    void switchingTheSkinNeedsASkinStore() {
+        tester.startPage(PlainPage.class);
+
+        assertThatIllegalStateException()
+                .isThrownBy(() -> ShadwickSettings.get(tester.getApplication()).setCurrentSkin(Skin.LYRA))
+                .withMessageContaining("setSkinStore");
     }
 
     @Test

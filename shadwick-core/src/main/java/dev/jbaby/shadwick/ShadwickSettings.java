@@ -28,7 +28,13 @@ public class ShadwickSettings implements Serializable {
         return get(Application.get());
     }
 
-    public static synchronized ShadwickSettings get(Application application) {
+    public static ShadwickSettings get(Application application) {
+        // Read on every render, so without a lock once they exist (Shadwick.install creates them)
+        ShadwickSettings settings = application.getMetaData(KEY);
+        return settings != null ? settings : create(application);
+    }
+
+    private static synchronized ShadwickSettings create(Application application) {
         ShadwickSettings settings = application.getMetaData(KEY);
         if (settings == null) {
             settings = new ShadwickSettings();
@@ -49,10 +55,27 @@ public class ShadwickSettings implements Serializable {
         return this;
     }
 
-    /** The skin of the current request: the {@link #getSkinStore() store}'s, or else the app-wide one. */
+    /** The skin of the current user: the {@link #getSkinStore() store}'s, or else the app-wide one. */
     public Skin getCurrentSkin() {
         Skin stored = skinStore != null ? skinStore.load() : null;
         return stored != null ? stored : skin;
+    }
+
+    /**
+     * Switches the current user to another skin, kept by the {@link #setSkinStore skin store}; {@code null} goes back
+     * to the app-wide one. A page shows it once it renders as a whole again: an Ajax update keeps the skin the page was
+     * rendered with, so a page never mixes two.
+     *
+     * @throws IllegalStateException if there is no skin store
+     */
+    public ShadwickSettings setCurrentSkin(Skin skin) {
+        if (skinStore == null) {
+            throw new IllegalStateException("Switching a user's skin needs a SkinStore to keep it: "
+                    + "Shadwick.install(this).setSkinStore(...), e.g. one that keeps it in the session.");
+        }
+        skinStore.save(skin);
+        Shadwick.skinChanged();
+        return this;
     }
 
     /** The store of a skin other than the app-wide one, or {@code null} if there is none (the default). */

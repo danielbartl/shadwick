@@ -3,8 +3,9 @@ package dev.jbaby.shadwick;
 import java.io.Serializable;
 
 /**
- * Keeps a skin other than the app-wide one, e.g. for a showcase that compares skins. Asked on every request, so it
- * can keep the skin per user, per session or per request.
+ * Keeps a skin other than the app-wide one, e.g. for a showcase that compares skins. Asked once per request, so it
+ * can keep the skin per user, per session or per request. Switch a user's skin with
+ * {@link ShadwickSettings#setCurrentSkin(Skin)}, which saves it here.
  *
  * @see ShadwickSettings#setSkinStore(SkinStore)
  */

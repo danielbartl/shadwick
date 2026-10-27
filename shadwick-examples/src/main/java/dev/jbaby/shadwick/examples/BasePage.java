@@ -55,7 +55,7 @@ public abstract class BasePage extends WebPage {
         String skin = parameters.get("skin").toOptionalString();
         for (Skin candidate : Skin.values()) {
             if (candidate.id().equals(skin)) {
-                ShadwickSettings.get().getSkinStore().save(candidate);
+                ShadwickSettings.get().setCurrentSkin(candidate);
             }
         }
         String mode = parameters.get("mode").toOptionalString();
