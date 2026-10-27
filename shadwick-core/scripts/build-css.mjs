@@ -1,8 +1,9 @@
 /*
   Builds every CSS bundle: one per entry in src/main/tailwind/entries (a skin x bundle variant), each as
   target/classes/dev/jbaby/shadwick/css/<entry>.css and, minified, <entry>.min.css, which Wicket serves in
-  deployment mode. With --watch it rebuilds the unminified bundles on every change, which is what Wicket serves in
-  development mode, so a running application picks the change up on reload.
+  deployment mode. With --watch it rebuilds the unminified bundles, which Wicket serves in development mode, on every
+  change under src/main/tailwind, so a running application picks the change up on reload. Not Tailwind's own --watch:
+  with source(none) it watches only the entry, not the components and skins it imports.
 */
 import {spawn} from 'node:child_process';
 import fs from 'node:fs';
@@ -11,7 +12,8 @@ import {createRequire} from 'node:module';
 import {fileURLToPath} from 'node:url';
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
-const entriesDir = path.join(root, 'src/main/tailwind/entries');
+const sourceDir = path.join(root, 'src/main/tailwind');
+const entriesDir = path.join(sourceDir, 'entries');
 const outDir = path.join(root, 'target/classes/dev/jbaby/shadwick/css');
 const watch = process.argv.includes('--watch');
 
@@ -20,12 +22,6 @@ const require = createRequire(import.meta.url);
 const cliPackage = require.resolve('@tailwindcss/cli/package.json');
 const bin = JSON.parse(fs.readFileSync(cliPackage, 'utf8')).bin;
 const cli = path.join(path.dirname(cliPackage), typeof bin === 'string' ? bin : bin.tailwindcss);
-
-const entries = fs.readdirSync(entriesDir).filter(file => file.endsWith('.css')).sort();
-if (entries.length === 0) {
-  throw new Error(`No entries in ${entriesDir}`);
-}
-fs.mkdirSync(outDir, {recursive: true});
 
 function tailwind(input, output, ...flags) {
   return new Promise((resolve, reject) => {
@@ -37,18 +33,38 @@ function tailwind(input, output, ...flags) {
   });
 }
 
-const builds = entries.flatMap(entry => {
-  const input = path.join(entriesDir, entry);
-  const name = path.basename(entry, '.css');
-  const output = path.join(outDir, `${name}.css`);
-  return watch
-      ? [tailwind(input, output, '--watch')]
-      : [tailwind(input, output), tailwind(input, path.join(outDir, `${name}.min.css`), '--minify')];
-});
+function build(minified) {
+  const entries = fs.readdirSync(entriesDir).filter(file => file.endsWith('.css')).sort();
+  if (entries.length === 0) {
+    throw new Error(`No entries in ${entriesDir}`);
+  }
+  fs.mkdirSync(outDir, {recursive: true});
+  return Promise.all(entries.flatMap(entry => {
+    const input = path.join(entriesDir, entry);
+    const name = path.basename(entry, '.css');
+    const builds = [tailwind(input, path.join(outDir, `${name}.css`))];
+    if (minified) {
+      builds.push(tailwind(input, path.join(outDir, `${name}.min.css`), '--minify'));
+    }
+    return builds;
+  }));
+}
 
-try {
-  await Promise.all(builds);
-} catch (error) {
-  console.error(error.message);
-  process.exit(1);
+if (!watch) {
+  try {
+    await build(true);
+  } catch (error) {
+    console.error(error.message);
+    process.exit(1);
+  }
+} else {
+  // A failed rebuild is reported and the watching goes on
+  const rebuild = () => build(false).catch(error => console.error(error.message));
+  await rebuild();
+  let pending = null;
+  fs.watch(sourceDir, {recursive: true}, () => {
+    clearTimeout(pending);
+    pending = setTimeout(rebuild, 50);
+  });
+  console.log(`Watching ${path.relative(root, sourceDir)} for changes`);
 }
