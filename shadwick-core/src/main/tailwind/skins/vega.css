@@ -1,0 +1,148 @@
+/*
+  Skin: vega, shadcn/ui's classic look and the default skin. The visual identity of every component: radius, border,
+  colour, shadow, weight, sizes, focus ring and motion. Skins consume the tokens from tokens.css and never define
+  colours. Adapted from Shadleaf's skins/vega.css (Apache-2.0, see NOTICE), which follows shadcn's Vega style
+  through Basecoat's.
+*/
+@layer components {
+  /* Button. Icons without an explicit size take the button's icon size. */
+  .sw-button {
+    @apply rounded-md border border-transparent bg-clip-padding text-sm font-medium
+      focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50
+      aria-invalid:border-destructive aria-invalid:ring-[3px] aria-invalid:ring-destructive/20
+      dark:aria-invalid:border-destructive/50 dark:aria-invalid:ring-destructive/40
+      motion-safe:active:not-aria-[haspopup]:translate-y-px
+      [&_svg:not([class*='size-'])]:size-4;
+  }
+
+  .sw-button:not([data-size]) {
+    @apply h-9 gap-1.5 px-2.5;
+  }
+
+  .sw-button[data-size='sm'] {
+    @apply h-8 gap-1 rounded-[min(--theme(--radius-md),10px)] px-2.5;
+  }
+
+  .sw-button[data-size='lg'] {
+    @apply h-10 gap-1.5 px-2.5;
+  }
+
+  .sw-button[data-size='icon'] {
+    @apply size-9;
+  }
+
+  .sw-button:not([data-variant]) {
+    @apply bg-primary text-primary-foreground hover:bg-primary/80;
+  }
+
+  .sw-button[data-variant='secondary'] {
+    @apply bg-secondary text-secondary-foreground hover:bg-[color-mix(in_oklch,var(--secondary),var(--foreground)_5%)];
+  }
+
+  .sw-button[data-variant='outline'] {
+    @apply border-border bg-background shadow-xs hover:bg-muted hover:text-foreground
+      dark:border-input dark:bg-input/30 dark:hover:bg-input/50;
+  }
+
+  .sw-button[data-variant='ghost'] {
+    @apply hover:bg-muted hover:text-foreground dark:hover:bg-muted/50;
+  }
+
+  .sw-button[data-variant='link'] {
+    @apply text-primary underline-offset-4 hover:underline;
+  }
+
+  /* text-destructive-legible (components/base.css): shadcn's text-destructive is under 4.5:1 on the tint. */
+  .sw-button[data-variant='destructive'] {
+    @apply bg-destructive/10 text-destructive-legible hover:bg-destructive/20
+      focus-visible:border-destructive/40 focus-visible:ring-destructive/20
+      dark:bg-destructive/20 dark:hover:bg-destructive/30 dark:focus-visible:ring-destructive/40;
+  }
+
+  /* Label */
+  .sw-label {
+    @apply gap-2 text-sm leading-none font-medium;
+  }
+
+  /*
+    Read-only (input and textarea): the muted background says it cannot be changed, and it drops the shadow of an
+    editable one. The text keeps its full colour; the placeholder gets the legible mix on --muted.
+  */
+
+  /* Input. text-base under md keeps iOS from zooming into a focused input. */
+  .sw-input {
+    @apply h-9 rounded-md border border-input bg-transparent px-2.5 py-1 text-base shadow-xs
+      motion-safe:transition-[color,box-shadow]
+      file:h-7 file:text-sm file:font-medium file:text-foreground placeholder:text-muted-foreground
+      focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50
+      aria-invalid:border-destructive aria-invalid:ring-3 aria-invalid:ring-destructive/20
+      readonly:bg-muted readonly:shadow-none readonly:placeholder:text-muted-legible
+      dark:bg-input/30 dark:aria-invalid:border-destructive/50 dark:aria-invalid:ring-destructive/40
+      md:text-sm;
+  }
+
+  /* Textarea */
+  .sw-textarea {
+    @apply rounded-md border border-input bg-transparent px-2.5 py-2 text-base shadow-xs
+      motion-safe:transition-[color,box-shadow]
+      placeholder:text-muted-foreground
+      focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50
+      aria-invalid:border-destructive aria-invalid:ring-3 aria-invalid:ring-destructive/20
+      readonly:bg-muted readonly:shadow-none readonly:placeholder:text-muted-legible
+      dark:bg-input/30 dark:aria-invalid:border-destructive/50 dark:aria-invalid:ring-destructive/40
+      md:text-sm;
+  }
+
+  /* Field */
+  .sw-field {
+    @apply gap-3;
+  }
+
+  .sw-field-label {
+    @apply leading-snug;
+  }
+
+  .sw-field[data-invalid='true'] > .sw-field-label {
+    @apply text-destructive-legible;
+  }
+
+  .sw-field-description {
+    @apply text-sm leading-normal text-muted-foreground;
+  }
+
+  .sw-field-error {
+    @apply text-sm text-destructive-legible;
+  }
+
+  /* Dialog */
+  .sw-dialog {
+    @apply max-w-[calc(100%-2rem)] rounded-xl bg-popover p-6 text-sm text-popover-foreground ring-1
+      ring-foreground/10 duration-100 sm:max-w-md
+      backdrop:bg-black/10 backdrop:duration-100 supports-backdrop-filter:backdrop:backdrop-blur-xs;
+  }
+
+  .sw-dialog-form {
+    @apply gap-6;
+  }
+
+  /* shadcn's close button: ghost, icon-sm. */
+  .sw-dialog-close {
+    @apply top-4 end-4 size-8 rounded-[min(--theme(--radius-md),10px)];
+  }
+
+  .sw-dialog-header {
+    @apply gap-2;
+  }
+
+  .sw-dialog-title {
+    @apply leading-none font-medium;
+  }
+
+  .sw-dialog-description {
+    @apply text-sm text-muted-foreground [&_a]:underline [&_a]:underline-offset-3 [&_a:hover]:text-foreground;
+  }
+
+  .sw-dialog-footer {
+    @apply gap-2;
+  }
+}

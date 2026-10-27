@@ -1,0 +1,150 @@
+/*
+  Skin: lyra, shadcn/ui's "boxy and sharp" style: square corners, small type, a 1px focus ring and tighter sizes.
+  shadcn suggests pairing it with a monospace font; that is the application's choice, as the skin sets no font
+  family. Same markup, same tokens as vega. Adapted from Shadleaf's skins/lyra.css (Apache-2.0, see NOTICE), which
+  follows shadcn's Lyra style through Basecoat's.
+*/
+@layer components {
+  /* Button. Icons without an explicit size take the button's icon size. */
+  .sw-button {
+    @apply rounded-none border border-transparent bg-clip-padding text-xs font-medium
+      focus-visible:border-ring focus-visible:ring-1 focus-visible:ring-ring/50
+      aria-invalid:border-destructive aria-invalid:ring-1 aria-invalid:ring-destructive/20
+      dark:aria-invalid:border-destructive/50 dark:aria-invalid:ring-destructive/40
+      motion-safe:active:not-aria-[haspopup]:translate-y-px
+      [&_svg:not([class*='size-'])]:size-4;
+  }
+
+  .sw-button:not([data-size]) {
+    @apply h-8 gap-1.5 px-2.5;
+  }
+
+  .sw-button[data-size='sm'] {
+    @apply h-7 gap-1 px-2.5 [&_svg:not([class*='size-'])]:size-3.5;
+  }
+
+  .sw-button[data-size='lg'] {
+    @apply h-9 gap-1.5 px-2.5;
+  }
+
+  .sw-button[data-size='icon'] {
+    @apply size-8;
+  }
+
+  .sw-button:not([data-variant]) {
+    @apply bg-primary text-primary-foreground hover:bg-primary/80;
+  }
+
+  .sw-button[data-variant='secondary'] {
+    @apply bg-secondary text-secondary-foreground hover:bg-[color-mix(in_oklch,var(--secondary),var(--foreground)_5%)];
+  }
+
+  .sw-button[data-variant='outline'] {
+    @apply border-border bg-background hover:bg-muted hover:text-foreground
+      dark:border-input dark:bg-input/30 dark:hover:bg-input/50;
+  }
+
+  .sw-button[data-variant='ghost'] {
+    @apply hover:bg-muted hover:text-foreground dark:hover:bg-muted/50;
+  }
+
+  .sw-button[data-variant='link'] {
+    @apply text-primary underline-offset-4 hover:underline;
+  }
+
+  /* text-destructive-legible (components/base.css): shadcn's text-destructive is under 4.5:1 on the tint. */
+  .sw-button[data-variant='destructive'] {
+    @apply bg-destructive/10 text-destructive-legible hover:bg-destructive/20
+      focus-visible:border-destructive/40 focus-visible:ring-destructive/20
+      dark:bg-destructive/20 dark:hover:bg-destructive/30 dark:focus-visible:ring-destructive/40;
+  }
+
+  /* Label */
+  .sw-label {
+    @apply gap-2 text-xs leading-none;
+  }
+
+  /*
+    Read-only (input and textarea), as in vega: the muted background says it cannot be changed. Disabled: lyra tints
+    input and textarea with --input, as shadcn's lyra does.
+  */
+
+  /* Input */
+  .sw-input {
+    @apply h-8 rounded-none border border-input bg-transparent px-2.5 py-1 text-xs
+      motion-safe:transition-colors
+      file:h-6 file:text-xs file:font-medium file:text-foreground placeholder:text-muted-foreground
+      focus-visible:border-ring focus-visible:ring-1 focus-visible:ring-ring/50
+      aria-invalid:border-destructive aria-invalid:ring-1 aria-invalid:ring-destructive/20
+      disabled:bg-input/50
+      readonly:bg-muted readonly:placeholder:text-muted-legible
+      dark:bg-input/30 dark:disabled:bg-input/80
+      dark:aria-invalid:border-destructive/50 dark:aria-invalid:ring-destructive/40;
+  }
+
+  /* Textarea */
+  .sw-textarea {
+    @apply rounded-none border border-input bg-transparent px-2.5 py-2 text-xs
+      motion-safe:transition-colors
+      placeholder:text-muted-foreground
+      focus-visible:border-ring focus-visible:ring-1 focus-visible:ring-ring/50
+      aria-invalid:border-destructive aria-invalid:ring-1 aria-invalid:ring-destructive/20
+      disabled:bg-input/50
+      readonly:bg-muted readonly:placeholder:text-muted-legible
+      dark:bg-input/30 dark:disabled:bg-input/80
+      dark:aria-invalid:border-destructive/50 dark:aria-invalid:ring-destructive/40;
+  }
+
+  /* Field */
+  .sw-field {
+    @apply gap-2;
+  }
+
+  .sw-field-label {
+    @apply leading-snug;
+  }
+
+  .sw-field[data-invalid='true'] > .sw-field-label {
+    @apply text-destructive-legible;
+  }
+
+  .sw-field-description {
+    @apply text-xs/relaxed text-muted-foreground;
+  }
+
+  .sw-field-error {
+    @apply text-xs text-destructive-legible;
+  }
+
+  /* Dialog */
+  .sw-dialog {
+    @apply max-w-[calc(100%-2rem)] rounded-none bg-popover p-4 text-xs/relaxed text-popover-foreground ring-1
+      ring-foreground/10 duration-100 sm:max-w-sm
+      backdrop:bg-black/10 backdrop:duration-100 supports-backdrop-filter:backdrop:backdrop-blur-xs;
+  }
+
+  .sw-dialog-form {
+    @apply gap-4;
+  }
+
+  /* shadcn's close button: ghost, icon-sm. */
+  .sw-dialog-close {
+    @apply top-2 end-2 size-7;
+  }
+
+  .sw-dialog-header {
+    @apply gap-1 text-start;
+  }
+
+  .sw-dialog-title {
+    @apply text-sm font-medium;
+  }
+
+  .sw-dialog-description {
+    @apply text-xs/relaxed text-muted-foreground [&_a]:underline [&_a]:underline-offset-3 [&_a:hover]:text-foreground;
+  }
+
+  .sw-dialog-footer {
+    @apply gap-2;
+  }
+}

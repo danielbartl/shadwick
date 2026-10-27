@@ -1,0 +1,13 @@
+/*
+  Page-level base styles. Standalone bundles only: an application compiling Tailwind itself (the embedded
+  bundle, a later phase) owns its base layer. Adapted from Shadleaf's page.css (Apache-2.0, see NOTICE).
+*/
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+
+  body {
+    @apply bg-background text-foreground;
+  }
+}

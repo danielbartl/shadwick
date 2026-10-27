@@ -1,0 +1,11 @@
+/*
+  Standalone bundle, skin 'vega': the whole of Tailwind (preflight included) plus the page base styles, for
+  applications that do not compile Tailwind themselves. source(none): no class scanning, so the bundle emits no
+  utility classes; the components use @apply only.
+*/
+@import "tailwindcss" source(none);
+
+@import "../tokens.css";
+@import "../page.css";
+@import "../components.css";
+@import "../skins/vega.css";

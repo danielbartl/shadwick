@@ -1,0 +1,13 @@
+/*
+  Button: structure only. Radius, border, colour, shadow, weight, heights, padding and ring width are identity and
+  live in the skins. Adapted from Shadleaf's components/button.css (Apache-2.0, see NOTICE).
+*/
+@layer components {
+  .sw-button {
+    @apply inline-flex shrink-0 items-center justify-center whitespace-nowrap outline-none select-none
+      motion-safe:transition-all
+      disabled:pointer-events-none disabled:opacity-50
+      aria-disabled:pointer-events-none aria-disabled:opacity-50
+      [&_svg]:pointer-events-none [&_svg]:shrink-0;
+  }
+}

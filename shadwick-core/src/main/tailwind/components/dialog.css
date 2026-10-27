@@ -1,0 +1,48 @@
+/*
+  Dialog and its parts: structure only. Colour, radius, spacing, type and the speed of the transitions are identity and
+  live in the skins. Adapted from Shadleaf's components/dialog.css (Apache-2.0, see NOTICE).
+
+  The <dialog> is the panel itself: showModal() puts it in the top layer, and the user agent's modal styles centre it.
+  Its ::backdrop is the overlay. Opening and closing fade (and, where motion is fine, zoom) through @starting-style,
+  with display and overlay transitioned discretely so the closing transition is seen. The dialog's form holds its
+  parts and lays them out; no display on the dialog itself, which would override the user agent's display: none on a
+  closed one.
+*/
+@layer components {
+  .sw-dialog {
+    @apply m-auto w-full overflow-y-auto border-0 opacity-0
+      transition-[opacity,scale,overlay,display] transition-discrete
+      open:opacity-100 starting:open:opacity-0
+      motion-safe:scale-95 motion-safe:open:scale-100 motion-safe:starting:open:scale-95
+      backdrop:opacity-0 backdrop:transition-[opacity,overlay,display] backdrop:transition-discrete
+      open:backdrop:opacity-100 starting:open:backdrop:opacity-0
+      forced-colors:border forced-colors:border-solid;
+    max-block-size: calc(100% - 2rem);
+  }
+
+  /* An open dialog rendered again by Wicket shows at once, rather than fading in a second time. */
+  .sw-dialog[data-sw-instant] {
+    @apply transition-none backdrop:transition-none;
+  }
+
+  /* The page behind a modal dialog does not scroll, as with shadcn's. */
+  :root:has(.sw-dialog:modal) {
+    @apply overflow-hidden;
+  }
+
+  .sw-dialog-form {
+    @apply grid;
+  }
+
+  .sw-dialog-close {
+    @apply absolute;
+  }
+
+  .sw-dialog-header {
+    @apply flex flex-col;
+  }
+
+  .sw-dialog-footer {
+    @apply flex flex-col-reverse sm:flex-row sm:justify-end;
+  }
+}

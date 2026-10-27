@@ -39,4 +39,56 @@
 			<scope>test</scope>
 		</dependency>
 	</dependencies>
+
+	<properties>
+		<!-- The Node LTS that compiles the CSS; installed into target/node, so no local Node is needed -->
+		<node.version>v24.22.1</node.version>
+	</properties>
+
+	<build>
+		<plugins>
+			<!-- Compiles src/main/tailwind into target/classes/dev/jbaby/shadwick/css (scripts/build-css.mjs).
+			     The jar ships only the finished CSS: package.json, node_modules and the Tailwind sources stay out. -->
+			<plugin>
+				<groupId>com.github.eirslett</groupId>
+				<artifactId>frontend-maven-plugin</artifactId>
+				<configuration>
+					<installDirectory>${project.build.directory}</installDirectory>
+				</configuration>
+				<executions>
+					<execution>
+						<id>install-node-and-npm</id>
+						<goals>
+							<goal>install-node-and-npm</goal>
+						</goals>
+						<phase>generate-resources</phase>
+						<configuration>
+							<nodeVersion>${node.version}</nodeVersion>
+						</configuration>
+					</execution>
+					<execution>
+						<id>npm-ci</id>
+						<goals>
+							<goal>npm</goal>
+						</goals>
+						<phase>generate-resources</phase>
+						<configuration>
+							<!-- No install scripts: the Tailwind CLI's native parts come prebuilt -->
+							<arguments>ci --ignore-scripts --no-audit --no-fund</arguments>
+						</configuration>
+					</execution>
+					<execution>
+						<id>build-css</id>
+						<goals>
+							<goal>npm</goal>
+						</goals>
+						<phase>generate-resources</phase>
+						<configuration>
+							<arguments>run build:css</arguments>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+		</plugins>
+	</build>
 </project>

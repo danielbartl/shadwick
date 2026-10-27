@@ -1,0 +1,37 @@
+/*
+  Field and its parts: structure only. Gaps, type size and colours are identity and live in the skins. The parts know
+  about each other through these selectors, always with >, so a nested field does not leak. Adapted from Shadleaf's
+  components/field.css (Apache-2.0, see NOTICE).
+
+  Vertical: every child but the label takes the full width.
+*/
+@layer components {
+  .sw-field {
+    @apply flex w-full flex-col;
+  }
+
+  .sw-field > :not(.sw-field-label) {
+    @apply w-full;
+  }
+
+  .sw-field-label {
+    @apply w-fit;
+  }
+
+  /* The label fades with a disabled control. The description stays as it is: it often says why. */
+  .sw-field:has(> :disabled) > .sw-field-label {
+    @apply cursor-not-allowed opacity-50 forced-colors:text-[GrayText] forced-colors:opacity-100;
+  }
+
+  .sw-field-description {
+    @apply m-0 font-normal text-start [&>a]:underline [&>a]:underline-offset-4;
+  }
+
+  /*
+    The error is always on the page, so a screen reader announces a message that appears in it after an Ajax request
+    (role="status"); while the field is valid it is empty and takes no room.
+  */
+  .sw-field-error {
+    @apply font-normal empty:hidden;
+  }
+}

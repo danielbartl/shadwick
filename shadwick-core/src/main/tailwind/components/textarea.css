@@ -1,0 +1,12 @@
+/*
+  Textarea: structure only. It grows with its content where the browser supports field-sizing. Radius, border,
+  background, padding, type size and focus ring are identity and live in the skins. Adapted from Shadleaf's
+  components/textarea.css (Apache-2.0, see NOTICE).
+*/
+@layer components {
+  .sw-textarea {
+    @apply flex field-sizing-content min-h-16 w-full outline-none
+      disabled:cursor-not-allowed disabled:opacity-50
+      forced-colors:disabled:border-[GrayText] forced-colors:disabled:text-[GrayText] forced-colors:disabled:opacity-100;
+  }
+}

@@ -1,0 +1,14 @@
+/*
+  Label: structure only. Type size and weight are identity and live in the skins. A label fades with a disabled
+  control it holds; in forced-colors mode it turns GrayText instead. Adapted from Shadleaf's components/label.css
+  (Apache-2.0, see NOTICE).
+*/
+@layer components {
+  .sw-label {
+    @apply flex items-center select-none;
+  }
+
+  .sw-label:has(:disabled) {
+    @apply cursor-not-allowed opacity-50 forced-colors:text-[GrayText] forced-colors:opacity-100;
+  }
+}

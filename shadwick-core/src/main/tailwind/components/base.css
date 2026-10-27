@@ -1,0 +1,23 @@
+/*
+  Shared helpers. The bundles emit no utility classes, so components use these through @apply. Adapted from
+  Shadleaf's components/base.css (Apache-2.0, see NOTICE).
+*/
+
+/*
+  An input or textarea with readonly, unless it is also disabled, which wins. Not Tailwind's read-only:, which is
+  :read-only: that also matches a disabled input and a select, neither of which the read-only style is for.
+*/
+@custom-variant readonly (&[readonly]:not(:disabled));
+
+/*
+  shadcn's text-destructive on a destructive tint (bg-destructive/10) is under WCAG's 4.5:1. Mixing in the foreground
+  token moves the text away from the background in both modes, and it still follows an application's --destructive.
+*/
+@utility text-destructive-legible {
+  color: color-mix(in oklch, var(--destructive), var(--foreground) 20%);
+}
+
+/* shadcn's text-muted-foreground on bg-muted is under WCAG's 4.5:1 for small text; the same mix as above. */
+@utility text-muted-legible {
+  color: color-mix(in oklch, var(--muted-foreground), var(--foreground) 20%);
+}
