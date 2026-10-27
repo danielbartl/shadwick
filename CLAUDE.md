@@ -71,11 +71,10 @@ Where shadcn differs, follow shadcn:
   Per-user **themes** (token sets via `data-theme`, with a theme store and
   switcher like Wicket Oat's) come in a later phase; Phase 1 has light/dark only.
 
-### Open decision (settle in the Phase 1 plan)
+### Class prefix (decided in Phase 1)
 
-- Java class prefix replacing `Oat` (e.g. `Sw` → `SwButton`, `SwDialog`,
-  `SwTextField`). Must avoid clashes with Wicket core names (Button, Label,
-  Link, Form, TextField, …). CSS classes use `sw-`.
+- `Sw` replaces `Oat`: `SwButton`, `SwDialog`, `SwTextField`, facade `Sw`,
+  installer `Shadwick`. CSS classes use `sw-`. See Conventions.
 
 ## Architecture (decided)
 
@@ -94,7 +93,7 @@ Where shadcn differs, follow shadcn:
 
 ```
 shadwick-parent (pom)
-├── shadwick           – the library (published)
+├── shadwick-core/     – the library (published as dev.jbaby:shadwick)
 ├── shadwick-examples  – runnable showcase app (not published)
 └── shadwick/          – agent skill directory (SKILL.md + references/), later phase
 ```
@@ -122,9 +121,8 @@ Mirror Wicket Oat's module layout and examples app setup where it makes sense.
 - Skins: same markup, same tokens, different geometry / spacing / type size /
   shadow. Phase 1: `vega` (default, shadcn classic) and `lyra` (boxy, square
   corners, small type, thin focus ring).
-  Proposed structure: `components/*.css` hold the base (vega) rules,
-  `skins/<skin>.css` hold only the deltas. Check how Shadleaf structures its
-  skins first; adopt the better approach and record it under Conventions.
+  Structure (decided, Shadleaf's): `components/*.css` hold structure only,
+  each `skins/<skin>.css` holds the full look. See Conventions.
 - Bundle variants:
   - `standalone` (default, Phase 1): Tailwind preflight + page base styles
     (background/foreground/border from tokens) + tokens + components.
@@ -132,14 +130,15 @@ Mirror Wicket Oat's module layout and examples app setup where it makes sense.
     theme variables (values compiled inline) — for apps running their own
     Tailwind build. Research the correct Tailwind v4 mechanism when we get there.
 
-Source layout (library module, proposal):
+Source layout (library module):
 
 ```
 src/main/tailwind/
   tokens.css        – :root/.dark tokens + @theme inline mapping (bg-primary → var(--primary) …)
-  base.css          – page base styles (standalone only)
-  components/       – one file per component (base rules)
-  skins/            – per-skin deltas
+  page.css          – page base styles (standalone only)
+  components.css    – imports every component, base and button first
+  components/       – one file per component (structure only)
+  skins/            – one file per skin (the components' full look)
   entries/          – one entry file per skin × bundle variant
 ```
 
@@ -241,5 +240,99 @@ release, docs/showcase site.
 
 ## Conventions
 
-_Claude: fill in as decisions are made — class prefix, naming, file layout,
-CSS structure, skin structure, JS patterns, test patterns._
+### Naming
+
+- Java prefix `Sw` for components (`SwButton`, `SwSubmitButton`, `SwTextField`,
+  `SwTextArea`, `SwDialog`, `BaseSwField`). Behaviors are unprefixed, as in
+  Wicket Oat (`ButtonBehavior`). Entry points: `Sw.Behaviors.*`,
+  `Sw.Components.*`. Install: `Shadwick.install(app)` → `ShadwickSettings`.
+- Packages mirror Wicket Oat: `dev.jbaby.shadwick` (install, settings, `Skin`,
+  `SkinStore`, `AccessibilityChecks`, `Sw`), `.behaviors`, `.components`,
+  `.components.form`, `.util` (`Serializable*` functional interfaces).
+- Variant/size enums are nested in the component's behavior
+  (`ButtonBehavior.Variant`, `ButtonBehavior.Size`). Java constants keep Oat's
+  words (`SMALL`, `LARGE`, `ICON`); their values are shadcn's (`sm`, `lg`,
+  `icon`). `DEFAULT` writes no attribute (CSS matches `:not([data-variant])`).
+- CSS classes: `sw-<component>[-<part>]` (`sw-dialog-header`, `sw-field-error`).
+  `data-sw-*` for Shadwick's own state attributes (`data-sw-instant`,
+  `data-sw-closing`).
+- Resource keys: `<ClassName>.<key>` in `<ClassName>.properties` next to the
+  class (`SwDialog.cancel`).
+- Modules: the library lives in `shadwick-core/` with artifactId `shadwick`.
+  `shadwick/` at the root is reserved for the agent skill.
+
+### Where Shadwick follows shadcn over Wicket Oat
+
+- Dialog: title + description (`setTitle`, `setDescription`; Oat has
+  `setHeader`), the × close button shown by default and placed last in the
+  DOM, so the browser focuses the first field on opening (no JS for that).
+- Field: description and error are separate elements (`p.sw-field-description`,
+  `div.sw-field-error`); Oat swaps the hint for the error. The error element is
+  always rendered (`role="status"`, empty while valid, hidden via `:empty`) so
+  in-place updates are announced; `aria-describedby` lists description + error.
+- Accessibility checks: `AccessibilityChecks.FAIL` (default in DEVELOPMENT),
+  `WARN` (logs; default in DEPLOYMENT) or `OFF`, instead of Oat's boolean.
+
+### CSS structure
+
+- Shadleaf's split, not deltas: `components/<name>.css` hold structure only
+  (layout, display, states, forced-colors); each `skins/<skin>.css` holds the
+  full look of every component (radius, border, colours, sizes, type, ring,
+  motion). Skins never define colours; they consume tokens. Reason: deltas on
+  top of vega would have to undo vega rule by rule; this ports 1:1 from Shadleaf.
+- Every rule is in `@layer components` and written with `@apply`; entries use
+  `@import "tailwindcss" source(none)`, so no utility class is ever emitted
+  (`CssBundleTest` checks this).
+- A skin rule that must beat a size/variant rule of another component uses the
+  same specificity and comes later (e.g. `.sw-button.sw-dialog-close`).
+- Adding a component: `components/<name>.css` + a block per skin + an import in
+  `components.css`. Adding a skin: `skins/<skin>.css` + `entries/shadwick-<skin>.css`
+  + a `Skin` constant.
+- Each CSS file adapted from Shadleaf says so in its header comment (Apache-2.0,
+  see NOTICE).
+
+### Build
+
+- `scripts/build-css.mjs` builds every `entries/*.css` into
+  `target/classes/dev/jbaby/shadwick/css/<entry>.css` and `<entry>.min.css`
+  (Wicket serves `.min` in deployment mode). It runs the CLI with the current
+  Node, without a shell, and pipes the CLI's stderr to stdout (Maven would log it
+  as errors).
+- `npm run watch:css` watches `src/main/tailwind` itself (Tailwind's `--watch`
+  with `source(none)` only sees the entry file) and rebuilds the unminified
+  bundles.
+- `npm ci --ignore-scripts`: the Tailwind CLI's native parts come prebuilt.
+- Versions verified 2026-10-27: Wicket 10.11.0, Tailwind 4.3.3, Node v24.22.1,
+  frontend-maven-plugin 2.0.2, Spring Boot 4.1.2, junit-bom 6.1.3,
+  Playwright 1.64.0, axe-core-playwright 4.14.0.
+
+### Wicket integration
+
+- `Shadwick.install` adds the stylesheet of the current skin to every page
+  (`setAddResources(false)` opts out); every component and behavior also renders
+  it in `renderHead`. Nothing is added to Wicket's CSP: no `data:` URLs, inline
+  SVG icons in markup.
+- Skins: `setSkin(Skin)` is the app-wide default; an optional `SkinStore`
+  (`load()`/`save()`, shaped like `OatThemeStore`) overrides it per request.
+- `shadwick.js` (`Shadwick.*`): an IIFE guarded by `window.Shadwick`, only
+  document-level delegated listeners (so it survives Ajax replacement), reads
+  only attributes. Holds `fieldFeedback`, `showDialog`, fallbacks for invoker
+  commands and `closedby="any"`, and Enter-in-footerless-dialog. Rendered by the
+  components that need it, not on every page.
+- Server → browser calls go through `target.appendJavaScript` /
+  `OnDomReadyHeaderItem` with `JSONObject.quote(...)` arguments, as in Wicket Oat.
+
+### Tests
+
+- Library: WicketTester + JUnit Jupiter + AssertJ, one test class per Wicket Oat
+  test it ports (`SwDialogTest` ≈ `OatDialogTest`, `AjaxFieldErrorsTest`, …).
+  Test pages implement `IMarkupResourceStreamProvider` or have `.html` in
+  `src/test/resources`.
+- After `startComponentInPage`, `getLastResponseAsString()` holds only the
+  component; assert on page-level things (stylesheets, CSP) with a real page.
+- `Markup.of(...)` needs the tester's application: never in a static field.
+- Every component test asserts no `style=` and no `on*=` attributes.
+- Examples: `ExamplesPagesTest` (WicketTester on `ExamplesApplication`) runs in
+  the build; `ShowcaseBrowserTest` (`@Tag("browser")`, `-Pbrowser`) runs
+  Playwright + axe-core (WCAG 2.2 AA) and fails on console errors, for every
+  page × skin × light/dark.
