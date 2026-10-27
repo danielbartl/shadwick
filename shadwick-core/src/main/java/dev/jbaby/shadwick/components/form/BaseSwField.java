@@ -8,6 +8,7 @@ import org.apache.wicket.MarkupContainer;
 import org.apache.wicket.MetaDataKey;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.form.AjaxFormComponentUpdatingBehavior;
+import org.apache.wicket.ajax.form.AjaxFormValidatingBehavior;
 import org.apache.wicket.behavior.Behavior;
 import org.apache.wicket.event.IEvent;
 import org.apache.wicket.feedback.FeedbackMessage;
@@ -18,6 +19,7 @@ import org.apache.wicket.markup.html.TransparentWebMarkupContainer;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.markup.html.form.FormComponent;
+import org.apache.wicket.markup.html.form.FormComponentUpdatingBehavior;
 import org.apache.wicket.markup.html.form.IFormSubmittingComponent;
 import org.apache.wicket.markup.html.panel.GenericPanel;
 import org.apache.wicket.model.IModel;
@@ -333,21 +335,27 @@ public abstract class BaseSwField<T, C extends FormComponent<T>, F extends BaseS
     // Fluent API, typed to the concrete field so calls chain with its own setters
 
     /**
-     * Validators and {@link AjaxFormComponentUpdatingBehavior}s (which include {@code OnChangeAjaxBehavior} and
-     * {@code AjaxFormChoiceComponentUpdatingBehavior}) only work on a form component, so they are added to the
-     * {@link #getInput() input}. Any other behavior applies to this panel's own tag, as with any component; add one to
-     * the input with {@link #addToInput}.
+     * Behaviors that only work on a form component are added to the {@link #getInput() input}: validators,
+     * {@link AjaxFormComponentUpdatingBehavior}s (which include {@code OnChangeAjaxBehavior} and
+     * {@code AjaxFormChoiceComponentUpdatingBehavior}), {@link FormComponentUpdatingBehavior}s and
+     * {@link AjaxFormValidatingBehavior}s. Any other behavior applies to this panel's own tag, as with any component;
+     * add one to the input with {@link #addToInput}.
      */
     @Override
     public F add(Behavior... behaviors) {
         for (Behavior behavior : behaviors) {
-            if (behavior instanceof IValidator<?> || behavior instanceof AjaxFormComponentUpdatingBehavior) {
+            if (isForInput(behavior)) {
                 getInput().add(behavior);
             } else {
                 super.add(behavior);
             }
         }
         return self();
+    }
+
+    private static boolean isForInput(Behavior behavior) {
+        return behavior instanceof IValidator<?> || behavior instanceof AjaxFormComponentUpdatingBehavior
+                || behavior instanceof FormComponentUpdatingBehavior || behavior instanceof AjaxFormValidatingBehavior;
     }
 
     /**
@@ -361,6 +369,17 @@ public abstract class BaseSwField<T, C extends FormComponent<T>, F extends BaseS
 
     public F addValidator(IValidator<? super T> validator) {
         getInput().add(validator);
+        return self();
+    }
+
+    /**
+     * The type the input converts what the user typed to, as {@code TextField}'s {@code type}: e.g.
+     * {@code Integer.class} for a field over an {@code IModel<Integer>}. Not needed with a
+     * {@code CompoundPropertyModel} or {@code PropertyModel}, which know the property's type, nor with a model that
+     * holds a value already; for an empty plain {@code Model}, set it.
+     */
+    public F setType(Class<?> type) {
+        getInput().setType(type);
         return self();
     }
 
@@ -397,8 +416,8 @@ public abstract class BaseSwField<T, C extends FormComponent<T>, F extends BaseS
 
     /**
      * The input's model: reads and writes this panel's model, which may be one inherited from a parent
-     * {@code CompoundPropertyModel}. Passes on that model's object class too, so text fields can resolve their type
-     * for conversion.
+     * {@code CompoundPropertyModel}. Passes on that model's object class too - or else the class of the value it holds
+     * - so text fields can resolve their type for conversion.
      */
     private final class InputModel implements IObjectClassAwareModel<T> {
 
@@ -421,7 +440,11 @@ public abstract class BaseSwField<T, C extends FormComponent<T>, F extends BaseS
         @Override
         @SuppressWarnings("unchecked")
         public Class<T> getObjectClass() {
-            return getModel() instanceof IObjectClassAwareModel<?> aware ? (Class<T>) aware.getObjectClass() : null;
+            if (getModel() instanceof IObjectClassAwareModel<?> aware && aware.getObjectClass() != null) {
+                return (Class<T>) aware.getObjectClass();
+            }
+            T object = getModelObject();
+            return object != null ? (Class<T>) object.getClass() : null;
         }
     }
 }

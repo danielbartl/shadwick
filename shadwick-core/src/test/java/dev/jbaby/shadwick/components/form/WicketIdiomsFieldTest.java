@@ -3,6 +3,11 @@ package dev.jbaby.shadwick.components.form;
 import org.apache.wicket.AttributeModifier;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.form.AjaxFormComponentUpdatingBehavior;
+import org.apache.wicket.ajax.form.AjaxFormValidatingBehavior;
+import org.apache.wicket.behavior.Behavior;
+import org.apache.wicket.markup.Markup;
+import org.apache.wicket.markup.html.form.Form;
+import org.apache.wicket.markup.html.form.FormComponentUpdatingBehavior;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.util.tester.FormTester;
 import org.apache.wicket.util.tester.TagTester;
@@ -11,6 +16,8 @@ import org.apache.wicket.validation.validator.StringValidator;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+
+import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -118,6 +125,52 @@ class WicketIdiomsFieldTest {
 
         tester.startComponentInPage(field);
         assertThat(tester.getTagByWicketId("id").getAttribute("class")).isEqualTo("wide");
+    }
+
+    @Test
+    void everyFormComponentBehaviorIsAddedToTheInnerField() {
+        SwTextField<String> field = new SwTextField<>("id", "Label", Model.of(""));
+        // AjaxFormValidatingBehavior needs the form, as on any form component
+        new Form<Void>("form").add(field);
+        FormComponentUpdatingBehavior onChange = new FormComponentUpdatingBehavior();
+        AjaxFormValidatingBehavior validating = new AjaxFormValidatingBehavior("blur");
+        field.add(onChange, validating);
+
+        assertThat(List.<Behavior>copyOf(field.getInput().getBehaviors())).contains(onChange, validating);
+        assertThat(field.getBehaviors()).isEmpty();
+    }
+
+    @Test
+    void aPlainModelsValueGivesTheTypeToConvertTo() {
+        Model<Integer> age = Model.of(5);
+        Form<Void> form = new Form<>("form");
+        form.add(new SwTextField<>("age", "Age", age));
+        tester.startComponentInPage(form, Markup.of("<form wicket:id='form'><div wicket:id='age'></div></form>"));
+
+        FormTester formTester = tester.newFormTester("form");
+        formTester.setValue("age:input", "42");
+        formTester.submit();
+
+        tester.assertNoErrorMessage();
+        assertThat(age.getObject()).isEqualTo(42);
+    }
+
+    @Test
+    void anEmptyPlainModelTakesItsTypeFromSetType() {
+        Model<Integer> age = new Model<>();
+        Form<Void> form = new Form<>("form");
+        form.add(new SwTextField<>("age", "Age", age).setType(Integer.class));
+        tester.startComponentInPage(form, Markup.of("<form wicket:id='form'><div wicket:id='age'></div></form>"));
+
+        FormTester formTester = tester.newFormTester("form");
+        formTester.setValue("age:input", "x");
+        formTester.submit();
+        tester.assertErrorMessages("The value of 'Age' is not a valid Integer.");
+
+        formTester = tester.newFormTester("form");
+        formTester.setValue("age:input", "42");
+        formTester.submit();
+        assertThat(age.getObject()).isEqualTo(42);
     }
 
     @Test
