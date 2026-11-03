@@ -2,6 +2,17 @@
   The showcase's own layout. Plain CSS on Shadwick's tokens: an application can style its pages however it likes,
   and Shadwick's components stay as they are, as they only use the sw- classes.
 */
+/* Host-owned page colours also make the showcase usable with the embedded bundle. No margin/reset rules. */
+body {
+  background: var(--background);
+  color: var(--foreground);
+}
+
+.ex-header a {
+  color: inherit;
+  text-decoration: none;
+}
+
 .ex-header {
   display: flex;
   flex-wrap: wrap;
@@ -91,4 +102,16 @@
 .ex-links a {
   text-decoration: underline;
   text-underline-offset: 4px;
+}
+
+.ex-display-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(16rem, 1fr));
+  gap: 1.5rem;
+}
+
+.ex-loading {
+  display: grid;
+  max-width: 24rem;
+  gap: 0.75rem;
 }

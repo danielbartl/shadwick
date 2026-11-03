@@ -47,7 +47,7 @@ class ShowcaseBrowserTest {
     // WCAG 2.2 A and AA, as axe-core tags its rules
     private static final List<String> WCAG = List.of("wcag2a", "wcag2aa", "wcag21a", "wcag21aa", "wcag22aa");
 
-    private static final List<String> PAGES = List.of("", "buttons", "form", "dialog");
+    private static final List<String> PAGES = List.of("", "buttons", "form", "dialog", "display", "feedback");
     private static final List<String> SKINS = List.of("vega", "lyra");
     private static final List<String> MODES = List.of("light", "dark");
 
@@ -209,6 +209,86 @@ class ShowcaseBrowserTest {
             assertThat(email).hasAccessibleDescription("We never share it.");
             assertThat(form.getByRole(AriaRole.STATUS).last()).hasText("Saved Grace Hopper <grace@example.com>.");
         });
+    }
+
+    @ParameterizedTest(name = "{0}, {1}")
+    @MethodSource("everySkinAndMode")
+    void avatarFallbacksHandleBrokenPicturesAndCachedAjaxReplacements(String skin, String mode) {
+        check("display", skin, mode, tab -> {
+            Locator avatar = tab.locator(".sw-avatar").first();
+            Locator image = avatar.locator("img");
+            assertThat(image).hasAttribute("data-status", "loaded");
+            assertThat(avatar.locator(".sw-avatar-fallback")).isHidden();
+            // A successful response that isn't an image triggers error without a network/console error.
+            tab.route("**/broken-avatar", route -> route.fulfill(new com.microsoft.playwright.Route.FulfillOptions()
+                    .setStatus(200).setContentType("text/plain").setBody("not an image")));
+            image.evaluate("image => image.src = '/broken-avatar'");
+            assertThat(image).hasAttribute("data-status", "error");
+            assertThat(image).isHidden();
+            assertThat(avatar.locator(".sw-avatar-fallback")).isVisible();
+            tab.getByRole(AriaRole.BUTTON, new Page.GetByRoleOptions().setName("Refresh avatar")).click();
+            assertThat(image).hasAttribute("data-status", "loaded");
+            assertThat(avatar.locator(".sw-avatar-fallback")).isHidden();
+        });
+    }
+
+    @ParameterizedTest(name = "{0}, {1}")
+    @MethodSource("everySkinAndMode")
+    void feedbackPanelsAndToastsShowMessagesOnceAndDismissWithTheKeyboard(String skin, String mode) {
+        check("feedback", skin, mode, tab -> {
+            tab.getByRole(AriaRole.BUTTON, new Page.GetByRoleOptions().setName("Save project")).click();
+            assertThat(tab.locator(".sw-feedback")).containsText("Please fix the errors below.");
+            assertThat(tab.locator(".sw-field-error")).containsText("is required.");
+            assertThat(tab.locator(".sw-toast")).hasCount(0);
+            tab.getByLabel("Project name").fill("Shadwick");
+            tab.getByRole(AriaRole.BUTTON, new Page.GetByRoleOptions().setName("Save project")).click();
+            assertThat(tab.locator(".sw-feedback")).containsText("Project saved.");
+
+            tab.getByRole(AriaRole.BUTTON, new Page.GetByRoleOptions().setName("Show success")).click();
+            assertThat(tab.locator(".sw-toast[data-level='success']")).containsText("Your changes have been saved.");
+            assertThat(tab.locator(".sw-feedback")).isEmpty();
+            tab.getByRole(AriaRole.BUTTON, new Page.GetByRoleOptions().setName("Show error")).click();
+            assertThat(tab.locator(".sw-toast[data-variant='destructive']")).containsText("could not be saved");
+            tab.getByRole(AriaRole.BUTTON, new Page.GetByRoleOptions().setName("Show literal text")).click();
+            assertThat(tab.locator(".sw-toast[data-level='info']")).containsText("<strong>This is plain text.</strong>");
+            assertThat(tab.locator(".sw-toast strong")).hasCount(0);
+            assertThat(describe(new AxeBuilder(tab).withTags(WCAG).analyze().getViolations())).isEmpty();
+
+            Locator dismiss = tab.getByRole(AriaRole.BUTTON, new Page.GetByRoleOptions().setName("Dismiss notification")).first();
+            dismiss.focus();
+            tab.keyboard().press("Enter");
+            assertThat(tab.locator(".sw-toast")).hasCount(2);
+            assertThat(tab.getByRole(AriaRole.BUTTON, new Page.GetByRoleOptions().setName("Dismiss notification")).first()).isFocused();
+            tab.keyboard().press("Enter");
+            assertThat(tab.locator(".sw-toast")).hasCount(1);
+            tab.keyboard().press("Enter");
+            assertThat(tab.locator("#sw-toaster")).hasCount(0);
+            assertThat(tab.getByRole(AriaRole.BUTTON, new Page.GetByRoleOptions().setName("Show literal text"))).isFocused();
+
+            tab.getByRole(AriaRole.LINK, new Page.GetByRoleOptions().setName("Full page feedback")).click();
+            assertThat(tab.locator(".sw-toast")).hasCount(1);
+            assertThat(tab.locator(".sw-toast")).containsText("Welcome back.");
+        });
+    }
+
+    @ParameterizedTest(name = "{0}, {1}")
+    @MethodSource("everySkinAndMode")
+    void embeddedBundlesLeaveTheHostPagesMarginsAlone(String skin, String mode) {
+        dev.jbaby.shadwick.ShadwickSettings settings = dev.jbaby.shadwick.ShadwickSettings.get(wicketApp);
+        settings.setBundle(dev.jbaby.shadwick.Bundle.EMBEDDED);
+        try {
+            check("display", skin, mode, tab -> {
+                assertThat(tab.locator("link[href*='shadwick-" + skin + "-embedded']")).hasCount(1);
+                // The showcase supplies no reset. Embedded CSS must preserve the browser's body margin.
+                org.assertj.core.api.Assertions.assertThat(tab.locator("body").evaluate("element => getComputedStyle(element).margin"))
+                        .isEqualTo("8px");
+                org.assertj.core.api.Assertions.assertThat(tab.locator(".sw-badge").first()
+                        .evaluate("element => getComputedStyle(element).display")).isEqualTo("flex");
+                assertThat(tab.locator(".sw-avatar-image")).hasAttribute("data-status", "loaded");
+            });
+        } finally {
+            settings.setBundle(dev.jbaby.shadwick.Bundle.STANDALONE);
+        }
     }
 
     private static List<String> describe(List<Rule> violations) {

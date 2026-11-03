@@ -11,6 +11,90 @@
     }
     var Shadwick = window.Shadwick = {};
 
+    // ---- Avatar images: delegated load/error handlers also cover Ajax replacements ----
+    // Adapted from Shadleaf's avatar.js (Apache-2.0, see NOTICE).
+    var avatarSelector = 'img.sw-avatar-image';
+    function markFinished(image) {
+        if (!image.complete || !image.getAttribute('src')) {
+            return;
+        }
+        var src = image.currentSrc;
+        image.decode().then(function () {
+            if (image.currentSrc === src) { image.dataset.status = 'loaded'; }
+        }, function () {
+            if (image.currentSrc === src) { image.dataset.status = 'error'; }
+        });
+    }
+    ['load', 'error'].forEach(function (type) {
+        document.addEventListener(type, function (event) {
+            if (event.target instanceof HTMLImageElement && event.target.matches(avatarSelector)) {
+                event.target.dataset.status = type === 'load' ? 'loaded' : 'error';
+            }
+        }, true);
+    });
+    function scanAvatars(root) {
+        if (root instanceof Element && root.matches(avatarSelector)) { markFinished(root); }
+        if (root.querySelectorAll) { root.querySelectorAll(avatarSelector).forEach(markFinished); }
+    }
+    new MutationObserver(function (records) {
+        records.forEach(function (record) {
+            if (record.type === 'attributes' && record.target.matches(avatarSelector)) {
+                delete record.target.dataset.status;
+                markFinished(record.target);
+            }
+            record.addedNodes.forEach(scanAvatars);
+        });
+    }).observe(document.documentElement, {subtree: true, childList: true, attributes: true, attributeFilter: ['src', 'srcset']});
+    scanAvatars(document);
+
+    // ---- Feedback toasts: text-only, persistent and keyboard dismissible ----
+    Shadwick.toast = function (message, level, dismissLabel) {
+        var viewport = document.getElementById('sw-toaster');
+        if (!viewport) {
+            viewport = document.createElement('div');
+            viewport.id = 'sw-toaster';
+            viewport.className = 'sw-toaster';
+            viewport.setAttribute('popover', 'manual');
+            document.body.appendChild(viewport);
+        }
+        var toast = document.createElement('div');
+        var returnFocus = document.activeElement;
+        toast.className = 'sw-toast';
+        toast.dataset.level = level;
+        var severe = level === 'error' || level === 'fatal';
+        if (severe) { toast.dataset.variant = 'destructive'; }
+        var text = document.createElement('div');
+        text.className = 'sw-toast-content';
+        text.setAttribute('role', severe ? 'alert' : 'status');
+        text.setAttribute('aria-atomic', 'true');
+        toast.appendChild(text);
+        var close = document.createElement('button');
+        close.type = 'button';
+        close.className = 'sw-button sw-toast-close';
+        close.dataset.variant = 'ghost';
+        close.dataset.size = 'icon';
+        close.setAttribute('aria-label', dismissLabel);
+        close.textContent = '\u00d7';
+        close.addEventListener('click', function () {
+            var focused = toast.contains(document.activeElement);
+            var next = toast.nextElementSibling || toast.previousElementSibling;
+            toast.remove();
+            if (!viewport.children.length) {
+                if (viewport.hidePopover) { viewport.hidePopover(); }
+                viewport.remove();
+                if (focused && returnFocus && returnFocus.isConnected) { returnFocus.focus(); }
+            } else if (focused && next) {
+                next.querySelector('button').focus();
+            }
+        });
+        toast.appendChild(close);
+        viewport.appendChild(toast);
+        if (viewport.showPopover) { viewport.showPopover(); }
+        else { viewport.dataset.fallback = ''; }
+        // Insert the live region before its text so assistive technology can announce the update.
+        requestAnimationFrame(function () { text.textContent = message; });
+    };
+
     // ---- Form fields: an error that appeared, changed or went away (BaseSwField) ----
 
     // Sets the text of the error rather than replacing it, so screen readers announce the

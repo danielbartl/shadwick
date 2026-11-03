@@ -1,0 +1,17 @@
+/* Adapted from Shadleaf (Apache-2.0, see NOTICE). */
+/*
+  Badge: structure only. Radius, border, colour, height, padding, weight and focus ring are identity and live in the
+  skins.
+*/
+@layer components {
+  .sw-badge {
+    @apply inline-flex w-fit shrink-0 items-center justify-center overflow-hidden whitespace-nowrap outline-none
+      motion-safe:transition-[color,background-color,box-shadow]
+      [&_svg]:pointer-events-none [&_svg]:shrink-0;
+  }
+
+  /* Wraps the icon-start and icon-end slots; data-icon says which side, so the skins can adjust the padding. */
+  .sw-badge-icon {
+    @apply inline-flex shrink-0 items-center justify-center;
+  }
+}

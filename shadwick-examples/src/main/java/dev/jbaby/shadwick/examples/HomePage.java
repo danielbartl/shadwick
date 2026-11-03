@@ -10,6 +10,8 @@ public class HomePage extends BasePage {
         add(new BookmarkablePageLink<>("buttonsLink", ButtonPage.class));
         add(new BookmarkablePageLink<>("formLink", FormPage.class));
         add(new BookmarkablePageLink<>("dialogLink", DialogPage.class));
+        add(new BookmarkablePageLink<>("displayLink", DisplayPage.class));
+        add(new BookmarkablePageLink<>("feedbackLink", FeedbackPage.class));
     }
 
     @Override

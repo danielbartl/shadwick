@@ -23,7 +23,7 @@ import java.util.Map;
  */
 public final class Shadwick {
 
-    private static final Map<Skin, CssResourceReference> CSS = new EnumMap<>(Skin.class);
+    private static final Map<Skin, Map<Bundle, CssResourceReference>> CSS = new EnumMap<>(Skin.class);
 
     /** The skin of the page this request renders, worked out once. */
     private static final MetaDataKey<Skin> REQUEST_SKIN = new MetaDataKey<>() {};
@@ -33,12 +33,17 @@ public final class Shadwick {
 
     static {
         for (Skin skin : Skin.values()) {
-            CSS.put(skin, new CssResourceReference(Shadwick.class, "css/shadwick-" + skin.id() + ".css"));
+            Map<Bundle, CssResourceReference> bundles = new EnumMap<>(Bundle.class);
+            for (Bundle bundle : Bundle.values()) {
+                bundles.put(bundle, new CssResourceReference(Shadwick.class,
+                        "css/shadwick-" + skin.id() + bundle.suffix() + ".css"));
+            }
+            CSS.put(skin, bundles);
         }
     }
 
     /**
-     * Shadwick's script, for the components that need one (form fields, dialogs). They render it themselves; it
+     * Shadwick's script, for the components that need one (form fields, dialogs, avatars and feedback). They render it themselves; it
      * isn't added to every page.
      */
     public static final JavaScriptResourceReference SHADWICK_JS = new JavaScriptResourceReference(Shadwick.class, "js/shadwick.js");
@@ -49,7 +54,8 @@ public final class Shadwick {
     /**
      * Installs Shadwick into the given application: adds the stylesheet of the configured skin to every page. Nothing
      * is added to Wicket's strict, nonce-based Content Security Policy, as Shadwick renders no inline scripts, event
-     * handlers or style attributes, and loads no images, fonts or data: URLs.
+     * handlers or style attributes. Avatar pictures follow the application's image policy; no external sources,
+     * fonts or data: URLs are added to the policy.
      *
      * @param app the application to configure
      * @return the application's {@link ShadwickSettings}, to choose the skin
@@ -69,7 +75,7 @@ public final class Shadwick {
      * component or behavior on the pages it renders on; Wicket adds it once.
      */
     public static void renderResources(IHeaderResponse response) {
-        response.render(CssHeaderItem.forReference(css(pageSkin())));
+        response.render(CssHeaderItem.forReference(css(pageSkin(), ShadwickSettings.get().getBundle())));
     }
 
     /**
@@ -115,6 +121,11 @@ public final class Shadwick {
 
     /** The stylesheet of a skin: Tailwind's preflight, the page's base styles, the tokens and every component. */
     public static CssResourceReference css(Skin skin) {
-        return CSS.get(skin);
+        return css(skin, Bundle.STANDALONE);
+    }
+
+    /** A skin's standalone or embedded stylesheet; both can be replaced through Wicket's resource mechanism. */
+    public static CssResourceReference css(Skin skin, Bundle bundle) {
+        return CSS.get(skin).get(bundle);
     }
 }

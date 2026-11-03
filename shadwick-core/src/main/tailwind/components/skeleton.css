@@ -1,0 +1,11 @@
+/* Adapted from Shadleaf (Apache-2.0, see NOTICE). */
+/* Skeleton: structure only. Colour, radius, default sizes and the pulse are identity and live in the skins. */
+@layer components {
+  .sw-skeleton {
+    @apply block shrink-0;
+  }
+
+  .sw-skeleton[data-shape='circle'] {
+    @apply rounded-full;
+  }
+}

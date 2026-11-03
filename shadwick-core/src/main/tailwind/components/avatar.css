@@ -1,0 +1,46 @@
+/* Adapted from Shadleaf (Apache-2.0, see NOTICE). */
+/*
+  Avatar and its parts: structure only. Size, shape, colour and type are identity and live in the skins.
+
+  Both the image and the fallback are rendered; CSS picks one. The image lies on top of the fallback, at the same size,
+  so switching between them never moves anything.
+  - An image without a src or with an empty one (th:src with a null value renders src="") is hidden.
+  - Shadleaf's script (js/avatar.js) marks an image data-status="loaded" when its picture is there, or "error". Where
+    scripts run, the image shows only once it is marked loaded: until then (loading, or failed: a 404, a URL img-src
+    blocks) the fallback shows, and a broken image never does, also before the script has run. Once the image is
+    loaded the fallback is hidden, so it cannot show through a transparent picture.
+  - Without JavaScript nothing marks the image, so it simply lies on top: a loaded picture covers the fallback, and one
+    that failed shows the fallback through it in Firefox, which draws nothing for a broken image with alt="", but
+    Chromium's broken-image icon over it.
+  A hidden element is also out of the accessibility tree, so only the one that shows is there.
+*/
+@layer components {
+  .sw-avatar {
+    @apply relative inline-flex shrink-0 overflow-hidden align-middle select-none;
+  }
+
+  .sw-avatar-image {
+    @apply absolute inset-0 aspect-square size-full object-cover;
+  }
+
+  .sw-avatar-image:not([src]),
+  .sw-avatar-image[src=''] {
+    @apply hidden;
+  }
+
+  /* Not display: none, which would keep a loading="lazy" image from ever loading. */
+  @media (scripting: enabled) {
+    .sw-avatar-image:not([data-status='loaded']) {
+      @apply invisible;
+    }
+  }
+
+  .sw-avatar-fallback {
+    @apply flex size-full items-center justify-center
+      [&_svg]:pointer-events-none [&_svg]:shrink-0;
+  }
+
+  .sw-avatar:has(> .sw-avatar-image[data-status='loaded']) > .sw-avatar-fallback {
+    @apply hidden;
+  }
+}

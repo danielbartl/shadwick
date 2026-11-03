@@ -1,0 +1,22 @@
+/* Adapted from Shadleaf (Apache-2.0, see NOTICE). */
+/*
+  Empty and its parts: structure only. Radius, border, spacing, type and the icon's square are identity and live in
+  the skins. The empty state centres its content in the space it is given and grows to fill a flex parent.
+*/
+@layer components {
+  .sw-empty {
+    @apply flex w-full min-w-0 flex-1 flex-col items-center justify-center text-center text-balance;
+  }
+
+  .sw-empty-header {
+    @apply flex max-w-sm flex-col items-center;
+  }
+
+  .sw-empty-media {
+    @apply flex shrink-0 items-center justify-center [&_svg]:pointer-events-none [&_svg]:shrink-0;
+  }
+
+  .sw-empty-content {
+    @apply flex w-full max-w-sm min-w-0 flex-col items-center text-balance;
+  }
+}

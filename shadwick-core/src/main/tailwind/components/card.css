@@ -1,0 +1,29 @@
+/* Adapted from Shadleaf (Apache-2.0, see NOTICE). */
+/*
+  Card and its parts: structure only. Colour, radius, border, shadow, spacing and type are identity and live in the
+  skins. The parts only know about each other through these selectors; the templates never do.
+*/
+@layer components {
+  .sw-card {
+    @apply flex flex-col overflow-hidden;
+  }
+
+  /* An image as the first or last child runs to the card's edges. */
+  .sw-card > img {
+    @apply w-full object-cover;
+  }
+
+  /* Title and description stack in the first column; an action takes a second column beside both. */
+  .sw-card-header {
+    @apply @container/card-header grid auto-rows-min items-start
+      has-[>.sw-card-action]:grid-cols-[1fr_auto] has-[>.sw-card-description]:grid-rows-[auto_auto];
+  }
+
+  .sw-card-action {
+    @apply col-start-2 row-span-2 row-start-1 self-start justify-self-end;
+  }
+
+  .sw-card-footer {
+    @apply flex items-center;
+  }
+}

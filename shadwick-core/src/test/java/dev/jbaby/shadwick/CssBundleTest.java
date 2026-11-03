@@ -6,6 +6,7 @@ import org.junit.jupiter.params.provider.EnumSource;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
+import dev.jbaby.shadwick.Bundle;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -42,6 +43,21 @@ class CssBundleTest {
         try (InputStream in = Shadwick.class.getResourceAsStream("css/" + name)) {
             assertThat(in).as(name + " on the classpath").isNotNull();
             return new String(in.readAllBytes(), StandardCharsets.UTF_8);
+        }
+    }
+
+    @ParameterizedTest
+    @EnumSource(Skin.class)
+    void embeddedBundlesHaveComponentsAndTokensWithoutPreflightOrTailwindThemeVariables(Skin skin) throws IOException {
+        for (String suffix : new String[] {".css", ".min.css"}) {
+            String css = read("shadwick-" + skin.id() + Bundle.EMBEDDED.suffix() + suffix);
+            assertThat(css).contains("--primary:").contains(".dark").contains(".sw-card")
+                    .contains(".sw-badge").contains(".sw-alert").contains(".sw-avatar")
+                    .contains(".sw-skeleton").contains(".sw-spinner").contains(".sw-toast");
+            assertThat(css).doesNotContain("box-sizing: border-box", "-webkit-text-size-adjust", "font-synthesis", "@layer theme {");
+            assertThat(css).doesNotContainPattern("--(?:spacing|font-[\\w-]+|color-[\\w-]+|text-[\\w-]+|radius-[\\w-]+):");
+            assertThat(css).doesNotContainPattern("var\\(--(?:spacing|font-|color-|text-|radius-|animate-)");
+            assertThat(css).contains("@keyframes spin", "@keyframes pulse");
         }
     }
 }

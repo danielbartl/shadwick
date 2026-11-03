@@ -40,6 +40,8 @@ public abstract class BasePage extends WebPage {
         add(navLink("navButtons", ButtonPage.class));
         add(navLink("navForm", FormPage.class));
         add(navLink("navDialog", DialogPage.class));
+        add(navLink("navDisplay", DisplayPage.class));
+        add(navLink("navFeedback", FeedbackPage.class));
 
         for (Skin skin : Skin.values()) {
             add(switchLink(skin.id(), "skin", skin.id(), () -> currentSkin() == skin));

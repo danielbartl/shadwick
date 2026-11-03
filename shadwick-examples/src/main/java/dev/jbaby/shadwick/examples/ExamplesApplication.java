@@ -19,6 +19,8 @@ public class ExamplesApplication extends WebApplication {
         mountPage("/buttons", ButtonPage.class);
         mountPage("/form", FormPage.class);
         mountPage("/dialog", DialogPage.class);
+        mountPage("/display", DisplayPage.class);
+        mountPage("/feedback", FeedbackPage.class);
 
         // The markup a deployed application sends, also in development mode: Wicket's own
         // tags would be the children of the pages' grid layouts

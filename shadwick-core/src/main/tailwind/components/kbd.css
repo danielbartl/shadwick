@@ -1,0 +1,12 @@
+/* Adapted from Shadleaf (Apache-2.0, see NOTICE). */
+/* Kbd and kbd-group: structure only. Colour, radius, size and type are identity and live in the skins. */
+@layer components {
+  .sw-kbd {
+    @apply pointer-events-none inline-flex w-fit items-center justify-center select-none
+      [&_svg]:pointer-events-none [&_svg]:shrink-0;
+  }
+
+  .sw-kbd-group {
+    @apply inline-flex items-center;
+  }
+}

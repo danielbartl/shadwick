@@ -9,8 +9,8 @@ markup and CSS. It is not affiliated with or endorsed by Shadleaf or shadcn/ui. 
 [Wicket Oat](https://github.com/danielbartl/wicket-oat): if you know Wicket Oat, moving to Shadwick is mostly
 renaming `Oat` to `Sw`.
 
-> **Status: Phase 1.** Button, text field, text area and dialog, in two skins (vega, lyra), light and dark. Not yet
-> on Maven Central.
+> **Status: Phase 2.** Buttons, text fields, dialogs, display components and feedback, in two skins (vega, lyra),
+> light and dark. Standalone and embedded CSS bundles. Not yet on Maven Central.
 
 ## Getting started
 
@@ -113,6 +113,56 @@ Shadwick uses shadcn/ui's CSS variables (`--background`, `--primary`, `--radius`
 [theme generator](https://ui.shadcn.com/themes) or [tweakcn](https://tweakcn.com), drops in unchanged: redefine the
 variables in your own stylesheet. Dark mode is `class="dark"` on `<html>`.
 
+If your application supplies its own reset and page styles (for example, its own Tailwind build), use the embedded
+bundle. It includes the same tokens and components, with no preflight, page base styles or Tailwind theme variables:
+
+```java
+Shadwick.install(this).setSkin(Skin.LYRA).setBundle(Bundle.EMBEDDED);
+```
+
+Configure the bundle at application startup. The default is `Bundle.STANDALONE`.
+
+### Display components
+
+```java
+add(new SwCard("card").setSize(CardBehavior.Size.SMALL));
+add(new SwBadge("badge", "New", BadgeBehavior.Variant.SECONDARY));
+add(new SwAlert("alert", "The project could not be saved.", AlertBehavior.Variant.DESTRUCTIVE));
+add(new SwAvatar("avatar", "AL").setLabel("Ada Lovelace"));
+add(new SwSeparator("separator"));
+add(new SwKbd("key", "K"));
+add(new SwSkeleton("placeholder", SkeletonBehavior.Shape.CIRCLE));
+add(new SwSpinner("loading").setLabel("Loading projects"));
+add(new SwIcon("icon", "search").setLabel("Search"));
+add(new SwEmptyState("empty", "No projects yet", "Create one to get started.").setIcon("folder"));
+```
+
+Cards keep your markup: use `sw-card-header`, `sw-card-title`, `sw-card-description`, `sw-card-content` and
+`sw-card-footer` for their parts. `Sw.Behaviors.card()`, `.badge()`, `.alert()`, `.separator()`, `.kbd()`,
+`.skeleton()` and `.spinner()` style existing Wicket components. A composed alert uses `sw-alert-title` and
+`sw-alert-description`; `SwAlert` is a plain, escaped message.
+
+Avatars accept a picture URL model, optional initials model and size, as in Wicket Oat. Initials show while the
+picture loads or if it fails, including after Ajax replacement. Icons are bundled Lucide SVGs; `SwIcon.names()` lists
+them, `setLabel(...)` names a standalone icon, and an unnamed icon is decorative. Bind icons and spinners to `<svg>`
+or a wrapper tag, keys to `<kbd>`, and other display components to a container. Skeletons are decorative; put an
+accessible loading status on their surrounding region. Separators are decorative unless `.setDecorative(false)`.
+
+### Feedback
+
+```java
+// A panel for this form's messages; updates and clears itself during Ajax requests.
+form.add(new SwFeedbackPanel("feedback", form));
+
+// On a page: messages outside fenced panels, including session messages after navigation.
+add(Sw.Behaviors.feedbackToasts());
+```
+
+Both skip the first field error already shown inline. Panels render alerts; errors use the destructive variant,
+other levels use the default. Toasts preserve the feedback level, render message text safely and remain until
+dismissed. Panel filters and fences work as with Wicket's `FencedFeedbackPanel`; a fenced panel reserves its
+container's messages even while hidden. Set up the fences when constructing the page.
+
 ## Building
 
 ```sh
@@ -122,7 +172,7 @@ variables in your own stylesheet. Dark mode is `class="dark"` on `<html>`.
 No Node needed: the build installs a pinned Node LTS into `target/` and compiles the CSS with Tailwind CSS v4. The
 jar ships only the finished CSS.
 
-Run the showcase, with a skin and light/dark switch on every page:
+Run the showcase, with Buttons, Form, Dialog, Display and Feedback pages, and a skin and light/dark switch on every page:
 
 ```sh
 ./mvnw install -DskipTests
@@ -137,6 +187,11 @@ The browser checks (Playwright and axe-core, every page in both skins, light and
 ```sh
 ./mvnw verify -pl shadwick-examples -am -Pbrowser
 ```
+
+## Landing page
+
+The static website lives in [`site/`](site/README.md), with an interactive component studio and a GitHub Pages
+deployment workflow. See the site README for local preview and publishing instructions.
 
 ## License
 

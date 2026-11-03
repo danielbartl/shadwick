@@ -23,7 +23,8 @@ It includes markup structure and CSS adapted from third-party projects:
 
 - Lucide (https://lucide.dev), Copyright (c) Lucide Contributors.
   Licensed under the ISC License.
-  The dialog's close icon ("x") is Lucide's.
+  The bundled inline SVG icons (including the dialog close icon and spinner)
+  are Lucide's, adapted through Wicket Oat.
 
 The MIT License (shadcn/ui, Basecoat):
 

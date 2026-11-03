@@ -1,0 +1,16 @@
+/* Adapted from Shadleaf (Apache-2.0, see NOTICE). */
+/* Separator: structure only. Its colour and thickness are identity and live in the skins. */
+@layer components {
+  .sw-separator {
+    @apply shrink-0;
+  }
+
+  .sw-separator:not([data-orientation]),
+  .sw-separator[data-orientation='horizontal'] {
+    @apply w-full;
+  }
+
+  .sw-separator[data-orientation='vertical'] {
+    @apply self-stretch;
+  }
+}

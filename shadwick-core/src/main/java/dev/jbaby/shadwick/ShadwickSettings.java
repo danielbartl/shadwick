@@ -19,6 +19,7 @@ public class ShadwickSettings implements Serializable {
     private static final MetaDataKey<ShadwickSettings> KEY = new MetaDataKey<>() {};
 
     private Skin skin = Skin.VEGA;
+    private Bundle bundle = Bundle.STANDALONE;
     private SkinStore skinStore;
     private boolean addResources = true;
     private AccessibilityChecks accessibilityChecks;
@@ -47,6 +48,16 @@ public class ShadwickSettings implements Serializable {
     /** The app-wide skin; {@code VEGA} by default. */
     public Skin getSkin() {
         return skin;
+    }
+
+    public Bundle getBundle() {
+        return bundle;
+    }
+
+    /** Use EMBEDDED when the application supplies its own reset and page styles. Configure at install time. */
+    public ShadwickSettings setBundle(Bundle bundle) {
+        this.bundle = Objects.requireNonNull(bundle);
+        return this;
     }
 
     /** The skin every page is rendered with, unless the {@link #setSkinStore skin store} has another one. */

@@ -1,0 +1,13 @@
+<wicket:extend xmlns:wicket="http://wicket.apache.org">
+<div><h1 class="ex-title">Feedback</h1><p class="ex-lead">Form messages stay with their form. Page and session messages appear as dismissible toasts.</p></div>
+<section class="ex-section">
+    <h2>Form feedback</h2>
+    <form wicket:id="form" class="ex-form"><div wicket:id="feedback"></div><div wicket:id="name"></div><button wicket:id="save"></button></form>
+    <p class="ex-muted">Submit without a name: the field shows its error once, and the panel shows the form message. Both update automatically over Ajax.</p>
+</section>
+<section class="ex-section">
+    <h2>Feedback toasts</h2>
+    <div class="ex-row"><button wicket:id="success"></button><button wicket:id="warning"></button><button wicket:id="error"></button><button wicket:id="literal"></button><a wicket:id="fullPage">Full page feedback</a></div>
+    <p class="ex-muted">Toasts remain until dismissed. Full page feedback shows a session message after navigation.</p>
+</section>
+</wicket:extend>

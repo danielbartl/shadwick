@@ -1,0 +1,75 @@
+name: Website
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'site/**'
+      - 'shadwick-core/**'
+      - 'pom.xml'
+      - '.mvn/**'
+      - 'mvnw'
+      - 'LICENSE'
+      - 'NOTICE'
+      - '.github/workflows/pages.yml'
+  pull_request:
+    branches: [main]
+    paths:
+      - 'site/**'
+      - 'shadwick-core/**'
+      - 'pom.xml'
+      - '.mvn/**'
+      - 'mvnw'
+      - 'LICENSE'
+      - 'NOTICE'
+      - '.github/workflows/pages.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: pages-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-java@v6
+        with:
+          distribution: temurin
+          java-version: '17'
+          cache: maven
+      - uses: actions/cache@v6
+        with:
+          path: ~/.npm
+          key: npm-${{ runner.os }}-${{ hashFiles('shadwick-core/package-lock.json') }}
+      - name: Build and test the library and its CSS
+        run: ./mvnw -B -pl shadwick-core -am verify
+      - name: Build the static website
+        run: ./shadwick-core/target/node/node site/build.mjs
+      - name: Check site assets and internal links
+        run: ./shadwick-core/target/node/node site/check.mjs
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: site/dist
+          include-hidden-files: true
+
+  deploy:
+    if: github.event_name != 'pull_request'
+    needs: build
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - uses: actions/configure-pages@v5
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4

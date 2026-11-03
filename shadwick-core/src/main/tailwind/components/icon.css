@@ -1,0 +1,4 @@
+/* Inline SVG icons follow the surrounding text; no font, image request or CSP change. */
+@layer components {
+  .sw-icon { @apply inline-block size-[1em] shrink-0 align-middle; }
+}

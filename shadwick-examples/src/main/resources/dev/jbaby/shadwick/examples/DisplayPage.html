@@ -1,0 +1,44 @@
+<wicket:extend xmlns:wicket="http://wicket.apache.org">
+<div><h1 class="ex-title">Display components</h1><p class="ex-lead">Cards, callouts and small building blocks, with the same markup in each skin.</p></div>
+<section class="ex-section">
+    <h2>Cards</h2>
+    <div class="ex-display-grid">
+        <article wicket:id="card">
+            <header class="sw-card-header"><h3 class="sw-card-title">Your workspace</h3><p class="sw-card-description">A place for the work that matters.</p></header>
+            <div class="sw-card-content">A card keeps your content and actions together.</div>
+            <footer class="sw-card-footer">Updated just now</footer>
+        </article>
+        <article wicket:id="smallCard">
+            <header class="sw-card-header"><h3 class="sw-card-title">Compact card</h3><p class="sw-card-description">Less space, the same structure.</p></header>
+            <div class="sw-card-content">Use the small size when space is limited.</div>
+            <footer class="sw-card-footer">Small size</footer>
+        </article>
+    </div>
+</section>
+<section class="ex-section">
+    <h2>Badges</h2>
+    <div class="ex-row"><wicket:container wicket:id="badges"><span wicket:id="badge"></span></wicket:container></div>
+</section>
+<section class="ex-section">
+    <h2>Alerts</h2>
+    <div wicket:id="alert"></div><div wicket:id="destructive"></div>
+    <div wicket:id="composed"><svg wicket:id="icon"></svg><h3 class="sw-alert-title">A composed callout</h3><p class="sw-alert-description">Use a behavior when you own the markup.</p></div>
+</section>
+<section class="ex-section">
+    <h2>Avatars</h2>
+    <div class="ex-row"><div wicket:id="avatar"></div><div wicket:id="initials"></div><div wicket:id="smallAvatar"></div><div wicket:id="largeAvatar"></div><button wicket:id="refreshAvatar"></button></div>
+    <p class="ex-muted">Initials stay visible while a picture loads or if it fails. Refresh replaces the avatar over Ajax.</p>
+</section>
+<section class="ex-section">
+    <h2>Separators and keyboard keys</h2>
+    <div wicket:id="separator"></div>
+    <div class="ex-row">Search <div wicket:id="vertical"></div><span class="sw-kbd-group"><kbd wicket:id="modifier"></kbd><kbd wicket:id="key"></kbd></span></div>
+</section>
+<section class="ex-section">
+    <h2>Loading</h2>
+    <div class="ex-row"><svg wicket:id="spinner"></svg><svg wicket:id="smallSpinner"></svg><svg wicket:id="largeSpinner"></svg></div>
+    <div class="ex-loading"><div wicket:id="circle"></div><div wicket:id="line"></div><div wicket:id="box"></div></div>
+</section>
+<section class="ex-section"><h2>Icons</h2><div class="ex-row"><svg wicket:id="search"></svg><svg wicket:id="calendar"></svg><svg wicket:id="download"></svg></div></section>
+<section class="ex-section"><h2>Empty state</h2><div wicket:id="empty"></div></section>
+</wicket:extend>

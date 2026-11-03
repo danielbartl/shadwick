@@ -1,0 +1,14 @@
+/* Adapted from Shadleaf (Apache-2.0, see NOTICE). */
+/*
+  Spinner: 16 pixels unless sized (the size prop) or sized by the component around it. Slower rather than still under
+  reduced motion, as the button's spinner: a frozen arc reads as a broken icon, and the role and name say it is busy.
+*/
+@layer components {
+  .sw-spinner {
+    @apply animate-spin motion-reduce:[animation-duration:2.5s];
+  }
+
+  .sw-spinner:not([data-icon-size]) {
+    @apply size-4;
+  }
+}

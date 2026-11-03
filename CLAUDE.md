@@ -124,11 +124,11 @@ Mirror Wicket Oat's module layout and examples app setup where it makes sense.
   Structure (decided, Shadleaf's): `components/*.css` hold structure only,
   each `skins/<skin>.css` holds the full look. See Conventions.
 - Bundle variants:
-  - `standalone` (default, Phase 1): Tailwind preflight + page base styles
+  - `standalone` (default): Tailwind preflight + page base styles
     (background/foreground/border from tokens) + tokens + components.
-  - `embedded` (later): tokens + components only — no preflight, no Tailwind
-    theme variables (values compiled inline) — for apps running their own
-    Tailwind build. Research the correct Tailwind v4 mechanism when we get there.
+  - `embedded`: tokens + components only — no preflight, no Tailwind
+    theme variables (values compiled inline) — for apps supplying their own reset
+    and page styles, such as those running their own Tailwind build.
 
 Source layout (library module):
 
@@ -169,7 +169,7 @@ Output: `target/classes/dev/jbaby/shadwick/css/shadwick-<skin>.css`
 - The library's own texts (dialog buttons, validation hints, …) live in
   `.properties` files, following Wicket Oat's translation set in later phases.
 
-## Phase 1 — vertical slice (CURRENT)
+## Phase 1 — vertical slice (COMPLETE)
 
 Goal: prove the whole pipeline — build, CSS, skins, Wicket Oat-style API — with
 three components before porting more.
@@ -210,10 +210,15 @@ Also in Phase 1:
 Other components, embedded bundle, per-user themes, translations beyond
 English, docs site, agent skill, Maven Central publishing.
 
+## Phase 2 — display and feedback (CURRENT)
+
+Implemented: embedded bundle; card, badge, alert, avatar, separator, kbd,
+skeleton, spinner, empty state and inline SVG icons; feedback panel and feedback
+toasts. The Display and Feedback showcase pages exercise them in both skins and
+modes. The next component group is Phase 3 forms.
+
 ## Later phases (rough order)
 
-2. Embedded bundle; display components: card, badge, alert, avatar, separator,
-   kbd, skeleton, spinner, empty state, icon; feedback panel + feedback toasts.
 3. Forms: the remaining field types (follow Wicket Oat's list), checkbox,
    radio group, switch, toggle, toggle group, input group, file upload.
 4. Overlays: confirm/alert dialog, sheet (≈ `OatDrawer`), popover,
@@ -353,3 +358,64 @@ release, docs/showcase site.
   the build; `ShowcaseBrowserTest` (`@Tag("browser")`, `-Pbrowser`) runs
   Playwright + axe-core (WCAG 2.2 AA) and fails on console errors, for every
   page × skin × light/dark.
+
+### Phase 2 display and feedback
+
+- `Bundle.STANDALONE` remains the default; `setBundle(Bundle.EMBEDDED)` is an
+  install-time setting independent of the skin. Embedded entry files import
+  `tailwindcss/theme.css` with `theme(inline)` and `utilities.css` with
+  `source(none)`, then tokens, component rules and the skin. No preflight or page
+  base import. Tailwind's `--tw-*` runtime properties remain where needed for
+  effects; its theme variables are compiled inline. See Tailwind's official
+  preflight documentation: https://tailwindcss.com/docs/preflight#disabling-preflight.
+- `Shadwick.css(skin)` preserves the standalone resource reference;
+  `Shadwick.css(skin, bundle)` selects either. Embedded filenames add `-embedded`.
+- Display components follow Wicket Oat's container/Label APIs; existing components
+  can use the matching `Sw.Behaviors.*` factories. `StyledBehavior` contributes a
+  component class and Shadwick's stylesheet. Cards retain caller-owned markup,
+  using `sw-card-*` parts. Badge variants are DEFAULT, SECONDARY, OUTLINE, GHOST,
+  DESTRUCTIVE and LINK; alert variants are DEFAULT and DESTRUCTIVE. No shared enum.
+- `SwAlert` is an escaped Label, with a block layout for plain text. Composed
+  callouts use `AlertBehavior` and `sw-alert-title` / `sw-alert-description`.
+- Avatars read their URL and initials once per request. Their image and fallback
+  share Shadleaf's layered anatomy; delegated load/error listeners plus a DOM
+  observer handle source changes and cached images inserted over Ajax. `setLabel`
+  names whichever representation is currently visible. Pictures without a label
+  or initials are decorative. Only same-origin pictures work under the default CSP.
+- `SwIcon` ports Wicket Oat's Lucide registry and inline SVG API, with the bundled
+  loader-circle added for `SwSpinner`. Names are checked, custom trusted shapes
+  can be registered, labels are escaped, and decorative SVGs are aria-hidden.
+  Skeletons are decorative; spinners are named statuses. Skeleton shapes add
+  CIRCLE to Oat's LINE/BOX. Separator and kbd have no Oat equivalent; their anatomy
+  and semantics follow Shadleaf.
+- `SwEmptyState` owns its title, reactive optional description and optional icon;
+  `setContent` accepts a component with `CONTENT_ID` for application actions.
+- `SwFeedbackPanel` ports Oat's fenced panel and automatic Ajax refresh/clear.
+  `NotShownInlineFilter` skips the first error of a `BaseSwField` input; extra
+  errors still reach feedback. Toasts respect Shadwick's fence metadata and mark
+  consumed messages rendered, including session messages after navigation.
+- Feedback uses the alert's shadcn variants (error/fatal → DESTRUCTIVE; all
+  others → DEFAULT), with `data-level` preserving severity. Toasts are a plain
+  column in a manual popover, remain until dismissed, and use textContent plus
+  quoted script arguments. No inline styles, timed expiry, stack geometry or
+  client framework. General-purpose toast APIs belong to the overlay group.
+- No dependencies were added. Reference checkouts used for Phase 2 live outside
+  the repository, under `/tmp/wicket-oat` and `/tmp/shadleaf`.
+
+
+### Landing page
+
+- `site/` is a static GitHub Pages landing page, independent of the Wicket showcase.
+  HTML/CSS/vanilla JS, with locally hosted Geist (OFL license in the font directory)
+  and an SVG icon sprite. No site runtime dependencies or third-party asset requests.
+- Build core first, then run `node site/build.mjs` and `node site/check.mjs`. The
+  build copies the actual minified embedded Vega/Lyra bundles into ignored `site/dist/`.
+  The studio changes their stylesheet reference and scopes dark mode to the preview.
+- Demo interactions are browser-only, explicitly identified as such. Inputs aren't
+  submitted or persisted. Preserve the accurate snapshot/Maven Central status.
+- Preview at a project subpath with `node site/serve.mjs`; verify narrow mobile
+  layouts, both skins/modes, keyboard modal operation and code copying after edits.
+  Honor reduced motion and keep secondary text at AA contrast.
+- `.github/workflows/pages.yml` builds/checks PRs and deploys main to GitHub Pages
+  through the official Pages artifact workflow. The repository must use GitHub
+  Actions as its Pages publishing source. See `site/README.md`.

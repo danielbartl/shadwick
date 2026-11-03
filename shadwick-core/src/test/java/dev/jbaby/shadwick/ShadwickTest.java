@@ -82,6 +82,22 @@ class ShadwickTest {
     }
 
     @Test
+    void anApplicationCanChooseTheEmbeddedBundleIndependentlyOfItsSkin() {
+        ShadwickSettings.get(tester.getApplication()).setSkin(Skin.LYRA).setBundle(Bundle.EMBEDDED);
+        tester.startPage(ButtonPage.class);
+        assertThat(tester.getLastResponseAsString()).containsOnlyOnce("shadwick-lyra-embedded").doesNotContain("shadwick-vega");
+    }
+
+    @Test
+    void embeddedResourceReferencesCanBeReplacedThroughWicket() {
+        ShadwickSettings.get(tester.getApplication()).setBundle(Bundle.EMBEDDED);
+        tester.getApplication().addResourceReplacement(Shadwick.css(Skin.VEGA, Bundle.EMBEDDED),
+                new UrlResourceReference(Url.parse("https://cdn.example.com/embedded.css")));
+        tester.startPage(PlainPage.class);
+        assertThat(tester.getLastResponseAsString()).contains("https://cdn.example.com/embedded.css");
+    }
+
+    @Test
     void theSkinStoreChoosesTheSkinPerRequest() {
         Skin[] stored = {Skin.LYRA};
         ShadwickSettings.get(tester.getApplication()).setSkinStore(new SkinStore() {
