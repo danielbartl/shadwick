@@ -367,3 +367,56 @@
   .sw-toast[data-variant='destructive'] { @apply text-destructive-legible; }
   .sw-button.sw-toast-close { @apply -my-1 -me-1 size-6; }
 }
+
+/* Choice fields. Adapted from Shadleaf (Apache-2.0, see NOTICE). */
+@layer components {
+  .sw-checkbox {
+    @apply size-4 rounded-none border border-input bg-transparent
+      motion-safe:transition-colors
+      checked:border-primary checked:bg-primary indeterminate:border-primary indeterminate:bg-primary
+      focus-visible:border-ring focus-visible:ring-1 focus-visible:ring-ring/50
+      aria-invalid:border-destructive aria-invalid:ring-1 aria-invalid:ring-destructive/20
+      aria-invalid:checked:border-primary aria-invalid:indeterminate:border-primary
+      dark:bg-input/30 dark:checked:bg-primary dark:indeterminate:bg-primary
+      dark:aria-invalid:border-destructive/50 dark:aria-invalid:ring-destructive/40;
+  }
+
+  .sw-checkbox-indicator,
+  .sw-checkbox-indeterminate-indicator {
+    @apply size-3.5 text-primary-foreground;
+  }
+
+  .sw-radio-group {
+    @apply gap-2;
+  }
+
+  .sw-radio-group-item {
+    @apply size-4 border border-input bg-transparent
+      checked:border-primary checked:bg-primary bg-size-[0.5rem]
+      checked:bg-[radial-gradient(circle_closest-side,var(--primary-foreground)_calc(100%-1px),transparent_100%)]
+      focus-visible:border-ring focus-visible:ring-1 focus-visible:ring-ring/50
+      aria-invalid:border-destructive aria-invalid:ring-1 aria-invalid:ring-destructive/20
+      aria-invalid:checked:border-primary
+      dark:bg-input/30 dark:checked:bg-primary
+      dark:aria-invalid:border-destructive/50 dark:aria-invalid:ring-destructive/40;
+  }
+
+  .sw-switch {
+    @apply border border-transparent bg-input [--sw-switch-thumb:var(--background)]
+      checked:bg-primary
+      focus-visible:border-ring focus-visible:ring-1 focus-visible:ring-ring/50
+      aria-invalid:border-destructive aria-invalid:ring-1 aria-invalid:ring-destructive/20
+      dark:bg-input/80 dark:[--sw-switch-thumb:var(--foreground)]
+      dark:checked:bg-primary dark:checked:[--sw-switch-thumb:var(--primary-foreground)]
+      dark:aria-invalid:border-destructive/50 dark:aria-invalid:ring-destructive/40;
+  }
+
+  .sw-switch:not([data-size]),
+  .sw-switch[data-size='default'] {
+    @apply h-[18.4px] w-8 bg-size-[1rem];
+  }
+
+  .sw-switch[data-size='sm'] {
+    @apply h-3.5 w-6 bg-size-[0.75rem];
+  }
+}

@@ -1900,3 +1900,13 @@ h2 {
   stroke:currentColor;
   stroke-width:1.8
 }
+
+/* Native choice controls share the library's skin and theme with the rest of the studio. */
+.choice-demo { gap: 13px; color: var(--foreground); }
+.choice-demo-row { display: flex; align-items: center; gap: 9px; }
+.choice-demo-row label { font-size: 11px; cursor: pointer; }
+.choice-demo-frequency { min-width: 0; }
+.choice-demo-frequency legend { margin-bottom: 9px; font-size: 10px; color: var(--muted-foreground); }
+.choice-demo-frequency .sw-label { gap: 7px; font-size: 10px; font-weight: 400; }
+#demo-preferences-status { border-top: 1px solid var(--border); padding-top: 11px; font-size: 9px; line-height: 1.7; color: var(--muted-foreground); }
+@media (min-width: 1001px) { .empty-card .sw-empty { gap: 12px; } }

@@ -210,17 +210,25 @@ Also in Phase 1:
 Other components, embedded bundle, per-user themes, translations beyond
 English, docs site, agent skill, Maven Central publishing.
 
-## Phase 2 — display and feedback (CURRENT)
+## Phase 2 — display and feedback (COMPLETE)
 
 Implemented: embedded bundle; card, badge, alert, avatar, separator, kbd,
 skeleton, spinner, empty state and inline SVG icons; feedback panel and feedback
 toasts. The Display and Feedback showcase pages exercise them in both skins and
-modes. The next component group is Phase 3 forms.
+modes. The landing page is deployed on GitHub Pages.
+
+## Phase 3 — forms (CURRENT)
+
+The first group implements `SwCheckBox`, `SwRadioChoice<T>` and `SwSwitch` on
+the existing field base, with both skins and bundles. The Choices showcase page
+demonstrates normal submit, Ajax submit, inline errors, immediate change callbacks,
+disabled controls and the small switch size.
+
+Still planned in this phase: remaining field types from Wicket Oat, toggle,
+toggle group, input group and file upload.
 
 ## Later phases (rough order)
 
-3. Forms: the remaining field types (follow Wicket Oat's list), checkbox,
-   radio group, switch, toggle, toggle group, input group, file upload.
 4. Overlays: confirm/alert dialog, sheet (≈ `OatDrawer`), popover,
    dropdown menu, tooltip, toast.
 5. App shell: sidebar, site header, user menu, breadcrumb, skip link,
@@ -419,3 +427,35 @@ release, docs/showcase site.
 - `.github/workflows/pages.yml` builds/checks PRs and deploys main to GitHub Pages
   through the official Pages artifact workflow. The repository must use GitHub
   Actions as its Pages publishing source. See `site/README.md`.
+
+### Phase 3 choice fields
+
+- `SwCheckBox`, `SwSwitch` and `SwRadioChoice<T>` retain Wicket Oat's constructor
+  shapes, plus explicit String-label conveniences consistent with our text fields.
+  They use `BaseSwField`'s model binding and in-place Ajax feedback; no new dependency
+  or client-side state manager is needed.
+- Checkbox and switch wrappers use `sw-field[data-orientation=horizontal]`, with
+  the input in column one and its real `<label>`, description and error in column
+  two. The checkbox's inline Lucide check/minus indicators share the native input's
+  grid cell; CSS follows `:checked` / `:indeterminate`. No image URLs or CSP changes.
+- `SwSwitch` is a native Wicket `CheckBox` with `SwitchBehavior`; the browser owns
+  checked state. There is no separate aria-checked attribute to keep synchronized.
+  Size DEFAULT/SMALL maps to shadcn's default/sm. `Sw.Behaviors.swSwitch()` mirrors
+  Oat's `oatSwitch()` (switch itself is a Java keyword). Switch thumb gradients follow
+  RTL and use the internal `--sw-switch-thumb` variable. Forced colors restore the
+  browser's checkbox/radio rendering and hide decorative check indicators.
+- Native Wicket checkbox semantics are preserved: setRequired does not require a
+  true value. Use a Boolean validator for consent; the showcase demonstrates it.
+- RadioChoice generates its native options, escaping renderer labels and IDs.
+  WRAP_AFTER labels receive `sw-label sw-radio-label`; each radio receives
+  `sw-radio-group-item`, aria-describedby and aria-invalid through Wicket's
+  additional-attribute hooks. The fieldset legend also names the inner radiogroup
+  through aria-labelledby. No extra break separators. setInline(true) emits
+  data-orientation=horizontal, otherwise the group stacks.
+- Radio choice updating behaviors route through BaseSwField.add to the input just
+  as single-control updating behaviors do. Error-only Ajax responses change ARIA
+  attributes on the group and all its options without replacing them or their focus.
+- Reference APIs/tests: Wicket Oat's CheckBox, Switch, RadioChoice, ChoiceFieldsTest
+  and CoreFormTest. CSS/anatomy: Shadleaf checkbox, radio-group and switch components,
+  with full visual identity blocks in both skins. General-purpose checkbox groups,
+  custom choice widgets and other field types remain separate work.

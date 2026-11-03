@@ -55,6 +55,15 @@
     });
   });
 
+  const preferences = document.querySelector('.choice-demo');
+  preferences.addEventListener('change', () => {
+    const updates = document.querySelector('#demo-updates').checked ? 'on' : 'off';
+    const quiet = document.querySelector('#demo-quiet').checked ? 'on' : 'off';
+    const digest = preferences.querySelector('input[name="digest"]:checked').value;
+    document.querySelector('#demo-preferences-status').textContent =
+      `Email updates ${updates} · Quiet hours ${quiet} · ${digest} digest.`;
+  });
+
   const profileForm = document.querySelector('#profile-form');
   function validate(input, errorId, message) {
     const valid = input.validity.valid && input.value.trim().length > 0;

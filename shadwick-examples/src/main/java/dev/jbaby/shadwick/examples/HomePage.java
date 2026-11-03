@@ -9,6 +9,7 @@ public class HomePage extends BasePage {
         super(parameters);
         add(new BookmarkablePageLink<>("buttonsLink", ButtonPage.class));
         add(new BookmarkablePageLink<>("formLink", FormPage.class));
+        add(new BookmarkablePageLink<>("choicesLink", ChoicePage.class));
         add(new BookmarkablePageLink<>("dialogLink", DialogPage.class));
         add(new BookmarkablePageLink<>("displayLink", DisplayPage.class));
         add(new BookmarkablePageLink<>("feedbackLink", FeedbackPage.class));

@@ -42,7 +42,7 @@ class ExamplesPagesTest {
     }
 
     @ParameterizedTest
-    @ValueSource(strings = {"HomePage", "ButtonPage", "FormPage", "DialogPage", "DisplayPage", "FeedbackPage"})
+    @ValueSource(strings = {"HomePage", "ButtonPage", "FormPage", "ChoicePage", "DialogPage", "DisplayPage", "FeedbackPage"})
     void everyPageRendersInTheDefaultSkinWithoutInlineStylesOrHandlers(String name) throws ClassNotFoundException {
         tester.startPage(page(name));
 

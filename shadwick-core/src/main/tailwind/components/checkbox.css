@@ -1,0 +1,38 @@
+/* Adapted from Shadleaf (Apache-2.0, see NOTICE). */
+/*
+  Checkbox: structure only. Size, radius, border, colours and focus ring are identity and live in the skins.
+
+  The input, the check icon and the minus icon share one grid cell; the check shows while the input is checked, the
+  minus while it is indeterminate (the DOM property, which wins over checked, as in the browser's own checkbox). th:field puts a hidden
+  marker input between them, hence ~. In forced-colors mode the browser draws its own checkbox, as it drops the
+  backgrounds the skins use.
+
+  Disabled fades the wrapper, not the input, so the check mark fades with the box. In forced-colors mode the browser's
+  own disabled checkbox shows instead, unfaded.
+*/
+@layer components {
+  .sw-checkbox-wrapper {
+    @apply relative inline-grid shrink-0 place-items-center align-middle
+      has-[>.sw-checkbox:disabled]:opacity-50 forced-colors:has-[>.sw-checkbox:disabled]:opacity-100;
+  }
+
+  .sw-checkbox-wrapper > * {
+    grid-area: 1 / 1;
+  }
+
+  .sw-checkbox {
+    @apply m-0 shrink-0 appearance-none outline-none
+      disabled:cursor-not-allowed
+      forced-colors:appearance-auto;
+  }
+
+  .sw-checkbox-indicator,
+  .sw-checkbox-indeterminate-indicator {
+    @apply pointer-events-none invisible forced-colors:hidden;
+  }
+
+  .sw-checkbox:checked:not(:indeterminate) ~ .sw-checkbox-indicator,
+  .sw-checkbox:indeterminate ~ .sw-checkbox-indeterminate-indicator {
+    @apply visible;
+  }
+}

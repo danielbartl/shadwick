@@ -17,3 +17,6 @@
 @import "./components/empty.css";
 @import "./components/icon.css";
 @import "./components/feedback.css";
+@import "./components/checkbox.css";
+@import "./components/radio-group.css";
+@import "./components/switch.css";

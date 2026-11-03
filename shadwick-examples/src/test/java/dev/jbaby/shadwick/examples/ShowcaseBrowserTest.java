@@ -10,6 +10,7 @@ import com.microsoft.playwright.Locator;
 import com.microsoft.playwright.Page;
 import com.microsoft.playwright.Playwright;
 import com.microsoft.playwright.options.AriaRole;
+import com.microsoft.playwright.options.ForcedColors;
 import org.apache.wicket.protocol.http.WebApplication;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.AfterEach;
@@ -47,7 +48,7 @@ class ShowcaseBrowserTest {
     // WCAG 2.2 A and AA, as axe-core tags its rules
     private static final List<String> WCAG = List.of("wcag2a", "wcag2aa", "wcag21a", "wcag21aa", "wcag22aa");
 
-    private static final List<String> PAGES = List.of("", "buttons", "form", "dialog", "display", "feedback");
+    private static final List<String> PAGES = List.of("", "buttons", "form", "choices", "dialog", "display", "feedback");
     private static final List<String> SKINS = List.of("vega", "lyra");
     private static final List<String> MODES = List.of("light", "dark");
 
@@ -289,6 +290,83 @@ class ShowcaseBrowserTest {
         } finally {
             settings.setBundle(dev.jbaby.shadwick.Bundle.STANDALONE);
         }
+    }
+
+    @ParameterizedTest(name = "{0}, {1}")
+    @MethodSource("everySkinAndMode")
+    void choicesValidateAndSaveWithNormalAndAjaxSubmission(String skin, String mode) {
+        check("choices", skin, mode, tab -> {
+            Locator normal = tab.getByRole(AriaRole.FORM, new Page.GetByRoleOptions().setName("Normal preferences"));
+            normal.getByRole(AriaRole.BUTTON, new Locator.GetByRoleOptions().setName("Save preferences")).click();
+            assertThat(normal).containsText("Accept the terms to continue.");
+            assertThat(normal.getByRole(AriaRole.RADIOGROUP)).hasAccessibleName("Contact preference");
+            assertThat(normal.getByRole(AriaRole.RADIOGROUP)).hasAccessibleDescription("Choose one way to hear from us. 'Contact preference' is required.");
+            normal.getByRole(AriaRole.CHECKBOX, new Locator.GetByRoleOptions().setName("Accept the terms")).check();
+            normal.getByRole(AriaRole.SWITCH).check();
+            normal.getByRole(AriaRole.RADIO, new Locator.GetByRoleOptions().setName("Email").setExact(true)).check();
+            normal.getByRole(AriaRole.BUTTON).click();
+            assertThat(normal.getByRole(AriaRole.STATUS).last()).hasText("Saved: terms accepted; notifications on; contact Email.");
+
+            Locator ajax = tab.getByRole(AriaRole.FORM, new Page.GetByRoleOptions().setName("Ajax preferences"));
+            Locator radio = ajax.getByRole(AriaRole.RADIO, new Locator.GetByRoleOptions().setName("Email").setExact(true));
+            radio.focus();
+            // Programmatic activation preserves the radio's focus while exercising the real submit handler.
+            ajax.getByRole(AriaRole.BUTTON).evaluate("button => button.click()");
+            assertThat(ajax).containsText("Accept the terms to continue.");
+            assertThat(radio).hasAttribute("aria-invalid", "true");
+            assertThat(radio).hasAccessibleDescription("Choose one way to hear from us. 'Contact preference' is required.");
+            assertThat(radio).isFocused();
+            assertThat(describe(new AxeBuilder(tab).withTags(WCAG).analyze().getViolations())).isEmpty();
+
+            ajax.getByRole(AriaRole.CHECKBOX).check();
+            radio.check();
+            ajax.getByRole(AriaRole.BUTTON).evaluate("button => button.click()");
+            assertThat(ajax.getByRole(AriaRole.STATUS).last()).hasText("Saved: terms accepted; notifications off; contact Email.");
+            assertThat(radio).hasAttribute("aria-invalid", "false");
+            assertThat(radio).isFocused();
+            assertThat(ajax.locator(".sw-field-error")).hasText(new String[] {"", "", ""});
+        });
+    }
+
+    @ParameterizedTest(name = "{0}, {1}")
+    @MethodSource("everySkinAndMode")
+    void switchesAndRadioChoicesUpdateOverAjaxUsingTheKeyboard(String skin, String mode) {
+        check("choices", skin, mode, tab -> {
+            Locator form = tab.getByRole(AriaRole.FORM, new Page.GetByRoleOptions().setName("Live preferences"));
+            Locator toggle = form.getByRole(AriaRole.SWITCH);
+            toggle.focus();
+            tab.keyboard().press("Space");
+            assertThat(toggle).isChecked();
+            assertThat(form.getByRole(AriaRole.STATUS).last()).hasText("Notifications on; frequency Weekly.");
+            assertThat(toggle).isFocused();
+            form.getByRole(AriaRole.RADIO, new Locator.GetByRoleOptions().setName("Weekly")).focus();
+            tab.keyboard().press("ArrowRight");
+            assertThat(form.getByRole(AriaRole.RADIO, new Locator.GetByRoleOptions().setName("Monthly"))).isChecked();
+            assertThat(form.getByRole(AriaRole.STATUS).last()).hasText("Notifications on; frequency Monthly.");
+        });
+    }
+
+    @ParameterizedTest(name = "{0}, {1}")
+    @MethodSource("everySkinAndMode")
+    void choicesKeepNativeDisabledSemanticsAndSupportRtlAndForcedColors(String skin, String mode) {
+        check("choices", skin, mode, tab -> {
+            Locator disabled = tab.getByRole(AriaRole.CHECKBOX, new Page.GetByRoleOptions().setName("Managed by your workspace"));
+            assertThat(disabled).isDisabled();
+            assertThat(disabled).isChecked();
+            assertThat(tab.getByRole(AriaRole.SWITCH, new Page.GetByRoleOptions().setName("Administrator setting"))).isDisabled();
+            Locator small = tab.getByRole(AriaRole.SWITCH, new Page.GetByRoleOptions().setName("Compact switch"));
+            assertThat(small).isChecked();
+            assertThat(small).hasAttribute("data-size", "sm");
+            tab.locator("html").evaluate("html => html.dir = 'rtl'");
+            // Wait for the switch's native CSS transition after changing direction.
+            assertThat(small).hasCSS("background-position-x", "0%");
+            tab.emulateMedia(new Page.EmulateMediaOptions().setForcedColors(ForcedColors.ACTIVE));
+            org.assertj.core.api.Assertions.assertThat(disabled.evaluate("input => getComputedStyle(input).appearance")).isEqualTo("auto");
+            assertThat(tab.locator(".sw-checkbox-indicator").first()).isHidden();
+            // The shared axe pass audits authored colours. Check the native forced-colour fallback above,
+            // then restore the authored palette rather than mixing it with the browser's system canvas.
+            tab.emulateMedia(new Page.EmulateMediaOptions().setForcedColors(ForcedColors.NONE));
+        });
     }
 
     private static List<String> describe(List<Rule> violations) {

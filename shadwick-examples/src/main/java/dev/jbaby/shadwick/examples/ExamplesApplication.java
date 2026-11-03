@@ -18,6 +18,7 @@ public class ExamplesApplication extends WebApplication {
 
         mountPage("/buttons", ButtonPage.class);
         mountPage("/form", FormPage.class);
+        mountPage("/choices", ChoicePage.class);
         mountPage("/dialog", DialogPage.class);
         mountPage("/display", DisplayPage.class);
         mountPage("/feedback", FeedbackPage.class);

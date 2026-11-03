@@ -9,6 +9,7 @@ import dev.jbaby.shadwick.behaviors.SeparatorBehavior;
 import dev.jbaby.shadwick.behaviors.SkeletonBehavior;
 import dev.jbaby.shadwick.behaviors.SpinnerBehavior;
 import dev.jbaby.shadwick.behaviors.StyledBehavior;
+import dev.jbaby.shadwick.behaviors.SwitchBehavior;
 import dev.jbaby.shadwick.components.SwButton;
 import dev.jbaby.shadwick.components.SwSubmitButton;
 import dev.jbaby.shadwick.util.SerializableConsumer;
@@ -53,6 +54,7 @@ public final class Sw {
         public static SkeletonBehavior skeleton(SkeletonBehavior.Shape shape) { return new SkeletonBehavior(shape); }
         public static SpinnerBehavior spinner() { return new SpinnerBehavior(); }
         public static SpinnerBehavior spinner(SpinnerBehavior.Size size) { return new SpinnerBehavior(size); }
+        public static SwitchBehavior swSwitch() { return new SwitchBehavior(); }
         public static FeedbackToastsBehavior feedbackToasts() { return new FeedbackToastsBehavior(); }
         public static FeedbackToastsBehavior feedbackToasts(org.apache.wicket.feedback.IFeedbackMessageFilter filter) {
             return new FeedbackToastsBehavior(filter);

@@ -39,6 +39,7 @@ public abstract class BasePage extends WebPage {
         add(navLink("navHome", HomePage.class));
         add(navLink("navButtons", ButtonPage.class));
         add(navLink("navForm", FormPage.class));
+        add(navLink("navChoices", ChoicePage.class));
         add(navLink("navDialog", DialogPage.class));
         add(navLink("navDisplay", DisplayPage.class));
         add(navLink("navFeedback", FeedbackPage.class));

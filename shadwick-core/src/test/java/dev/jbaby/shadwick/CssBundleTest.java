@@ -60,4 +60,15 @@ class CssBundleTest {
             assertThat(css).contains("@keyframes spin", "@keyframes pulse");
         }
     }
+
+    @ParameterizedTest
+    @EnumSource(Skin.class)
+    void choiceControlsAreAvailableInBothBundlesWithoutImageRequests(Skin skin) throws IOException {
+        for (Bundle bundle : Bundle.values()) {
+            String css = read("shadwick-" + skin.id() + bundle.suffix() + ".css");
+            assertThat(css).contains(".sw-checkbox-wrapper", ".sw-checkbox-indicator", ".sw-radio-group-item", ".sw-switch")
+                    .contains("radial-gradient(", "forced-colors: active", ":dir(rtl)")
+                    .doesNotContain("url(", "data:image");
+        }
+    }
 }

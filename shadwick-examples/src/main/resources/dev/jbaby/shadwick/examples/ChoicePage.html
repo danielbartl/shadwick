@@ -1,0 +1,45 @@
+<wicket:extend xmlns:wicket="http://wicket.apache.org">
+<div>
+    <h1 class="ex-title">Choice fields</h1>
+    <p class="ex-lead">Native checkboxes, switches and radio groups, with field labels, help text and inline errors.</p>
+</div>
+<div class="ex-forms">
+    <section class="ex-section" aria-labelledby="normal-choice-heading">
+        <h2 id="normal-choice-heading">Normal submit</h2>
+        <form wicket:id="form" class="ex-form" aria-label="Normal preferences">
+            <div wicket:id="accepted"></div>
+            <div wicket:id="notifications"></div>
+            <div wicket:id="contact"></div>
+            <div class="ex-row"><button wicket:id="save" type="submit">Save preferences</button></div>
+            <p wicket:id="saved" class="ex-muted" role="status"></p>
+        </form>
+    </section>
+    <section class="ex-section" aria-labelledby="ajax-choice-heading">
+        <h2 id="ajax-choice-heading">Ajax submit</h2>
+        <form wicket:id="ajaxForm" class="ex-form" aria-label="Ajax preferences">
+            <div wicket:id="accepted"></div>
+            <div wicket:id="notifications"></div>
+            <div wicket:id="contact"></div>
+            <div class="ex-row"><button wicket:id="save"></button></div>
+            <p wicket:id="saved" class="ex-muted" role="status"></p>
+        </form>
+    </section>
+</div>
+<section class="ex-section">
+    <h2>Immediate updates</h2>
+    <form wicket:id="liveForm" class="ex-form" aria-label="Live preferences">
+        <div wicket:id="notifications"></div>
+        <div wicket:id="frequency"></div>
+        <p wicket:id="current" class="ex-muted" role="status"></p>
+    </form>
+</section>
+<section class="ex-section">
+    <h2>Sizes and disabled controls</h2>
+    <div class="ex-form">
+        <div wicket:id="disabledCheckbox"></div>
+        <div wicket:id="smallSwitch"></div>
+        <div wicket:id="disabledSwitch"></div>
+        <div wicket:id="disabledRadio"></div>
+    </div>
+</section>
+</wicket:extend>
