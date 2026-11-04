@@ -224,7 +224,7 @@ the existing field base, with both skins and bundles. The Choices showcase page
 demonstrates normal submit, Ajax submit, inline errors, immediate change callbacks,
 disabled controls and the small switch size.
 
-The agreed form groups are implemented; overlays are next.
+The agreed form groups are implemented.
 
 ### Everyday inputs (implemented)
 
@@ -259,15 +259,35 @@ request-scoped upload models, file count/size validation, a progressive selectio
 list, drag/drop and removal. The Uploads showcase covers plain and Ajax submission
 and request limits. The landing dialog includes an optional local reference file.
 
-Next: Phase 4 overlays, starting with confirm/alert dialog and sheet.
+Phase 4 is complete: confirmations, sheets, popovers, tooltips, dropdown menus and
+the general-purpose toast API are implemented. App shell is next.
 
 For each group, include showcase examples, validation and Ajax tests, both skins
-and modes, and appropriate landing-page updates. Move to overlays after forms.
+and modes, and appropriate landing-page updates.
+
+## Phase 4 — overlays (COMPLETE)
+
+Implemented SwConfirmDialog (reusable ask callbacks, native alertdialog semantics,
+safe initial focus, duplicate-click guard) and SwSheet (four logical edges, native
+modality, independent body scrolling and the existing dialog form/Ajax lifecycle).
+Also implemented SwPopover (arbitrary content, native non-modal dismissal/focus and
+CSS anchor positioning) and TooltipBehavior (plain-text hover/focus hints, descriptions,
+reactive models and Ajax cleanup). The Overlays and Popovers & tooltips showcases,
+plus landing-page demos, cover these groups.
+
+Also implemented SwDropdown action menus and caller-owned menu/item behaviors, including
+server-backed checkbox/radio choices, links and grouped content. The Menus showcase
+and landing Project actions demo cover them.
+
+General-purpose ToastBehavior / Sw.toast helpers are now implemented, including
+titles, variants, timing, full-render scripts, keyboard access and native modal context.
+Feedback messages retain their existing persistent behavior.
+
+Next phase: app shell. Start with site header, breadcrumb and skip link, then sidebar,
+user menu, layouts and per-user themes.
 
 ## Later phases (rough order)
 
-4. Overlays: confirm/alert dialog, sheet (≈ `OatDrawer`), popover,
-   dropdown menu, tooltip, toast.
 5. App shell: sidebar, site header, user menu, breadcrumb, skip link,
    theme toggle, app layouts; per-user themes with theme store + switcher.
 6. Data: data table (columns, sorting, paging, CRUD — follow Wicket Oat's
@@ -641,4 +661,181 @@ release, docs/showcase site.
   are covered, including failed submits, unrelated requests and explicit reset on success.
 - The landing project dialog has an optional native reference-file input. Only its
   filename is shown locally; nothing is submitted or persisted. The public status
-  now says forms complete, overlays next, while preserving the unreleased snapshot.
+  now says forms complete, while preserving the unreleased snapshot.
+
+### Phase 4 confirmations and sheets
+
+- SwConfirmDialog adapts OatConfirmDialog's ask(target, title, description, callback)
+  API. A pending callback is consumed before invocation and discarded on close;
+  another ask replaces it and can be called from the callback to keep the dialog open.
+  Subclasses overriding onClose must call super. Confirm requests use a per-component
+  ACTIVE Ajax channel to discard clicks while the previous answer is in flight.
+- Confirmation markup and both skin blocks follow Shadleaf's alert-dialog. The
+  native dialog has role=alertdialog and closedby=closerequest: Escape cancels,
+  outside clicks do not. Cancel has native autofocus; the corner close button is
+  absent by default. The description supplies aria-describedby; the optional content
+  placeholder is hidden unless application content is provided.
+- SwSheet adapts OatDrawer's SwDialog subclass pattern and Shadleaf's sheet anatomy.
+  Side.START/END follow text direction; TOP/BOTTOM span the viewport. It retains
+  SwDialog's title/description, trigger, content, validation and lifecycle API with
+  covariant fluent methods. The body scrolls separately from the header/footer.
+- New dialog markup uses sw-alert-dialog/sw-sheet instead of also inheriting the
+  centered sw-dialog class. The common form/footer classes preserve the delegated
+  footerless-Enter behavior. Scroll locking and instant Ajax rendering cover all
+  three modal types; sheet client-close cleanup waits 250 ms for its 200 ms exit.
+- Native sheet opening can focus Chromium's implicitly focusable scroll container.
+  A delegated toggle handler prefers the first visible, enabled form field only
+  when that container received focus; explicit autofocus and informational-body
+  focus remain native. The server-open and invoker fallbacks use the same helper.
+- OverlayPage (/overlays) covers reusable and chained questions, non-destructive
+  confirmation, sheet validation/application errors, nested confirmation, refresh
+  while open, scrolling and all four edges. Browser checks include RTL positioning,
+  safe initial focus, focus return, duplicate clicks and WCAG checks in both skins/modes.
+- The landing page's Delete sample opens a browser-only confirmation; Preview a
+  sheet opens a themed details panel. It uses the real compiled component styles
+  and keeps the existing project-dialog demo. Phase 4 remains in progress; the
+  next component group was popover and tooltip. No dependency or CSP change was made.
+
+### Phase 4 popovers and tooltips
+
+- SwPopover adapts OatPopover's constructor/content factory, CONTENT_ID, getTrigger,
+  getContent and close(IPartialPageRequestHandler) API. It adds optional reactive
+  title/description, Side.TOP/BOTTOM/START/END, Align.START/CENTER/END and trigger variant.
+  Its own root tag supports Ajax replacement; content-only updates retain the native
+  open panel, while replacing the full component resets it to closed. Open state is
+  browser-owned, with no server toggle round trip or modal form machinery.
+- Native popover=auto supplies the top layer and light dismissal. Delegated handlers
+  synchronize aria-expanded, focus the first visible control (respecting autofocus),
+  close when focus leaves and return focus after Escape/explicit Ajax close. Nested
+  popovers preserve their parent's open state. The panel has role=dialog and is named
+  by the title, or the trigger label when there is no title.
+- TooltipBehavior retains Oat's String/IModel and Placement API. Native title is the
+  no-script fallback; initialization replaces it with escaped plain-text content in
+  a manual popover. Mode.DESCRIPTION appends its aria-describedby reference without
+  replacing field help/errors; Mode.LABEL repeats an existing name visually only.
+  Null/blank text adds nothing. Models detach through Wicket's behavior lifecycle.
+- Pointer hover waits 300 ms by default (configurable Duration); keyboard focus is
+  immediate. Pointer transfer has a short grace period, hover over the tooltip keeps
+  it open, and Escape dismisses only the tooltip. Touch focus suppresses hover hints.
+  Only one tooltip opens at a time. Hiding is immediate to avoid stale top-layer
+  hints during popup closure; opening retains the skin's fade/zoom motion.
+- Tooltip nodes are created beside their controls to inherit theme tokens and modal
+  ancestry, outside wrapping labels so hints do not rename checkbox/toggle controls.
+  WeakMap state and the existing DOM observer clean up removed/replaced
+  hosts, cancel timers and repair descriptions after Ajax feedback changes. Text uses
+  textContent; no HTML payloads, interactive tooltip content or inline styles.
+- Shared popup structure and both skin identity blocks follow Shadleaf. CSS anchor
+  positioning uses the native implicit source, logical sides, alignment and flipping;
+  JS measures only the tooltip arrow's actual side. Older Popover API browsers without
+  anchor positioning use a viewport panel. No positioning dependency or CSP change.
+- PopupPage (/popups) covers Ajax forms, inline validation, content refresh, nested
+  popovers, reactive/removed hints, label mode, disabled controls and sheet nesting.
+  Browser tests cover touch, RTL, mobile boundaries, keyboard/hover persistence and
+  cleanup. Hover-transfer tests move the pointer directly: Playwright's Locator.hover
+  may scroll an anchored top-layer element after measuring it. Accessibility audits
+  wait for finite CSS transitions to avoid measuring a partly faded closing popup.
+- The landing Java badge opens a popover and preview controls have tooltip hints.
+  site/build.mjs copies the actual library script alongside its CSS; the site's
+  duplicate input-group focus handler was removed. Existing modal demos remain.
+  Dropdown menus were implemented next (see below); a general-purpose toast API remains.
+
+
+### Phase 4 dropdown menus
+
+- SwDropdown<T> matches OatDropdown's String/IModel constructors, populateItem, four
+  of factories, getTrigger and close(IPartialPageRequestHandler). Each repeated
+  native button gets DropdownMenuItemBehavior and needs a "label" child. Empty/null
+  list models disable the trigger. getMenu, setSide/setAlign and setTriggerVariant
+  expose native menu composition/appearance. Whole-component Ajax replacement closes it.
+- DropdownMenuBehavior connects caller-owned menu markup to a native button trigger,
+  sets native popover/role/label/controls/expanded attributes and renders core JS.
+  Use one behavior per menu; unbinding removes only its own trigger attributes.
+  DropdownMenuItemBehavior styles native buttons or links, disables unavailable
+  items/strips disabled link hrefs, supports destructive/inset rows, and reads/detaches
+  server-owned checkbox/radio models. Callbacks own checked-state changes/exclusivity.
+- Sw.Behaviors provides menu/item/checked item/label/separator/group/shortcut helpers.
+  Shortcut hints are presentation only. Link/form semantics stay with Wicket;
+  SwDropdownChoice remains the form select, and the app-shell user menu remains later.
+- Core delegated JS extends shared popup state/cleanup for menus. Keyboard opening
+  focuses first/last enabled row; pointer opening focuses root. Arrows/Home/End/
+  PageUp/PageDown, 500 ms label typeahead and repeated-character cycling skip
+  disabled rows and shortcut hints. Space activates links. Escape/actions return
+  focus; Tab closes and continues page navigation. Pointer movement focuses rows.
+- Capture-phase activation guards disabled/closed/repeated actions, restores the
+  trigger before synchronous dialog actions and defers hiding until after native
+  defaults. This handles Wicket callbacks that stop bubbling and keeps native
+  navigation/submit actions intact. Ajax callbacks render checked state; no
+  optimistic client changes. Opening resets transient state; mutation cleanup
+  covers replaced/removed menus and newly added items.
+- Geometry/markup/interaction adapt Shadleaf dropdown-menu and reuse popup.css native
+  CSS anchors, logical directions, viewport fallback, reduced motion and forced
+  colors. Both skins and embedded bundles contain all styles, with no inline styles.
+- MenuPage (/menus) covers factories, disabled/destructive actions, empty lists,
+  Ajax replacement, checked groups, navigation, confirmation focus and sheet nesting.
+  Landing Project actions uses real core script/CSS and local demo-only callbacks.
+  Next: general-purpose toast API; feedback toasts are already implemented.
+- Verification for this group: 392 core tests and 23 example-page tests passed;
+  all 228 Chromium browser cases passed under strict CSP with WCAG axe checks.
+  Landing checks passed at 1440/390 px in both skins/modes, including open menus,
+  confirmation focus return and axe; native submit defaults/submitter values and
+  long labels at 320 px also passed. Generated site build/check and source
+  whitespace checks passed. Changes remain local, uncommitted and unpublished.
+
+
+### Phase 4 general-purpose toasts
+
+- ToastBehavior ports OatToastBehavior's static toast(handler,message[,variant[,title]])
+  and script(message,variant,title) helpers. Sw.toast is the facade. Variant is local
+  to ToastBehavior: DEFAULT/SUCCESS/INFO/WARNING/ERROR, following Shadleaf; no shared
+  variant enum. Optional Duration overloads use five seconds by default, zero for
+  persistent notifications. Validate browser timer bounds and sub-millisecond values.
+- Add Sw.Behaviors.toasts() to the page/base page to render CSS/core JS before calls.
+  Wicket's PartialHeaderResponse ignores resource items outside renderHead; direct
+  imperative header-response rendering in Ajax callbacks does not load resources.
+  Do not claim on-demand loading. Pure script builders use English labels; component
+  overloads/Ajax helpers resolve ToastBehavior.close and ToastBehavior.label through
+  Wicket resources. All payloads quote JSON and escape < plus U+2028/U+2029.
+- Shared Shadwick.toast accepts message plus options (variant,title,duration,
+  dismissLabel,regionLabel). Retain its existing feedback (message,level,closeLabel)
+  signature with persistent timing and severity attributes/destructive error styling.
+  Feedback collectors, fences, filtering and mark-rendered semantics remain unchanged.
+- Toasts adapt Shadleaf's title/description/icon/close anatomy, live roles and modal
+  context; both skins keep a scrollable CSS column at logical bottom/end. No inline
+  stack measurements/styles, client framework or new dependencies. All text uses
+  textContent, all Lucide SVG shapes are fixed. ERROR uses alert; others use status.
+- Timers pause on hover, keyboard focus and document.hidden, leaving at least a
+  second on resume. Persistent feedback/general messages never expire. Showing a
+  notification does not focus it. Alt+T focuses the newest close button; Escape
+  on a toast closes only it and does not close a surrounding dialog. Dismissal moves
+  to a neighbor, then back to the original control. Pagehide and DOM cleanup cancel
+  timers; a disconnected viewport is dropped rather than resurrected.
+- Move the viewport into the active native modal so it is not inert, and back to
+  body on close. Observe modal toggles and Ajax DOM changes. ToastPage (/toasts)
+  exercises variants, timers, literals, full-page scripts, replacement and modals.
+- Landing notifications now use real core JS/CSS; remove the duplicate site-toast
+  markup/styles/timer. Mirror studio theme tokens/mode onto the notifications viewport.
+  Forms/overlays remain browser-only demos. Phase 4 is complete; next is app shell,
+  beginning with site header, breadcrumb and skip link.
+- Verification: 402 core tests and 24 example-page tests passed. The full 256-case
+  Chromium run passed 252 cases and exposed a forced-color focus issue after touch;
+  the outline must use :focus rather than :focus-visible, since Alt+T can retain
+  the same button that a touch dismissal focused. After that CSS fix, all 12 affected
+  forced-color/touch/keyboard/feedback browser cases passed, plus the 35 focused JVM
+  tests (CSS bundles, toast helpers and feedback). Other browser cases were unchanged.
+  Desktop/mobile (1440/390 px), both skins/modes: landing and packaged showcase
+  screenshots, modal focus and WCAG axe checks passed. Site build/check and source
+  whitespace checks passed. No commit, push or deployment was requested for this group.
+
+
+### Clover identity and overlay publication
+
+- The project logo is an original four-leaf clover: four heart-shaped leaves, a short
+  curved stem, forest green and pale lime. It expresses a lucky discovery and a good
+  developer experience, with a botanical connection to Shadleaf. Keep it distinct
+  from Shadleaf's own mark. Master SVG: site/assets/logo.svg; matching favicon,
+  sprite clover, README, header/footer, hero accent and social preview use it.
+- Landing copy now marks forms and overlays complete, with app shell next. The
+  live studio includes dialogs, confirmation, sheet, popover, tooltip, menu and
+  library-backed toast demos alongside the completed form controls.
+- User authorized committing and pushing all accumulated overlay work, updating
+  the landing page and publishing through the existing GitHub Pages workflow.

@@ -25,6 +25,10 @@ public class ExamplesApplication extends WebApplication {
         mountPage("/uploads", UploadPage.class);
         mountPage("/choices", ChoicePage.class);
         mountPage("/dialog", DialogPage.class);
+        mountPage("/overlays", OverlayPage.class);
+        mountPage("/popups", PopupPage.class);
+        mountPage("/menus", MenuPage.class);
+        mountPage("/toasts", ToastPage.class);
         mountPage("/display", DisplayPage.class);
         mountPage("/feedback", FeedbackPage.class);
 

@@ -1,0 +1,33 @@
+<wicket:extend xmlns:wicket="http://wicket.apache.org">
+<div>
+    <h1 class="ex-title">Confirmations &amp; sheets</h1>
+    <p class="ex-lead">Native modal overlays with server-side callbacks, keyboard dismissal and focus return.</p>
+</div>
+<section class="ex-section" aria-labelledby="confirm-heading">
+    <h2 id="confirm-heading">Ask before acting</h2>
+    <p class="ex-muted">One reusable alert dialog. Cancel is focused first; Escape cancels, while clicking the backdrop leaves the question open.</p>
+    <div class="ex-row"><button wicket:id="delete"></button><button wicket:id="archive"></button><button wicket:id="chain"></button></div>
+    <div wicket:id="confirm"></div>
+</section>
+<section class="ex-section" aria-labelledby="sheet-heading">
+    <h2 id="sheet-heading">A form at the edge</h2>
+    <p class="ex-muted">Required fields and application errors stay in place. Try an empty project name or “admin”. The long body scrolls independently of the header and footer.</p>
+    <div class="ex-row"><div wicket:id="edit"></div></div>
+</section>
+<section class="ex-section" aria-labelledby="edges-heading">
+    <h2 id="edges-heading">Choose an edge</h2>
+    <p class="ex-muted">End is the default. Start/end follow text direction; top and bottom use the full viewport width.</p>
+    <div class="ex-row"><div wicket:id="start"></div><div wicket:id="top"></div><div wicket:id="bottom"></div></div>
+</section>
+<section class="ex-section" aria-label="Results">
+    <p wicket:id="status" class="ex-muted" role="status"></p>
+    <p wicket:id="count" class="ex-muted" role="status"></p>
+</section>
+<wicket:fragment wicket:id="settings">
+    <div class="ex-form">
+        <div wicket:id="name"></div><div wicket:id="notes"></div>
+        <div class="ex-row"><button wicket:id="reset"></button><button wicket:id="refresh"></button></div>
+        <p wicket:id="details" class="ex-muted"><span wicket:id="detail"></span></p>
+    </div>
+</wicket:fragment>
+</wicket:extend>

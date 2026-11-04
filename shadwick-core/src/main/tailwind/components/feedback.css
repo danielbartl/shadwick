@@ -3,12 +3,18 @@
   .sw-feedback-list { @apply m-0 grid list-none gap-2 p-0; }
   .sw-toaster {
     @apply fixed m-0 flex max-h-[calc(100dvh-2rem)] w-89 max-w-[calc(100%-2rem)] flex-col gap-2 overflow-y-auto border-0 bg-transparent p-0 text-foreground;
-    inset: auto 1rem 1rem auto;
+    inset: auto;
+    inset-block-end: 1rem;
+    inset-inline-end: 1rem;
   }
   .sw-toaster:not(:popover-open):not([data-fallback]) { @apply hidden; }
   .sw-toaster[data-fallback] { z-index: 1000; }
-  .sw-toast { @apply relative flex items-start; }
-  .sw-toast-content { @apply min-w-0 flex-1 wrap-anywhere; }
-  .sw-toast-close { @apply shrink-0; }
+  .sw-toast { @apply relative flex items-start box-border shrink-0 wrap-anywhere forced-colors:border forced-colors:border-solid; }
+  .sw-toast > svg { @apply size-4 shrink-0; }
+  .sw-toast-content { @apply flex min-w-0 flex-1 flex-col wrap-anywhere; }
+  .sw-toast-close { @apply shrink-0 forced-colors:focus:outline-2 forced-colors:focus:outline-solid; }
+  @media (width < 40rem) {
+    .sw-toaster { @apply w-auto max-w-none; inset-inline: 1rem; }
+  }
   @media print { .sw-toaster { display: none !important; } }
 }

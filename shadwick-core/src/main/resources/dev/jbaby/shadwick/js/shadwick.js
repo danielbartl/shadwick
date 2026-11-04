@@ -1,6 +1,6 @@
 /*
- * Shadwick's script, for the few components that need one: form fields showing an error after an Ajax request
- * (BaseSwField) and dialogs (SwDialog). It only reads data- attributes and listens on the document, so it works for
+ * Shadwick's small progressive enhancements: form feedback, uploads, avatars, toasts and native dialogs/sheets.
+ * It reads data- attributes and listens on the document, so it works for
  * markup Wicket adds or replaces over Ajax, and pages keep Wicket's strict, nonce-based CSP: no inline scripts or
  * event handlers.
  */
@@ -195,6 +195,360 @@
     });
     scanUploads(document);
 
+
+    // Popovers and tooltips, adapted from Shadleaf's popup/tooltip behavior (Apache-2.0, see NOTICE).
+    // Native top-layer and CSS anchor positioning: no style attributes or client framework.
+    var popupStates = new WeakMap();
+    var popupSelector = '.sw-popover-content,.sw-dropdown-menu-content';
+    var menuSelector = '.sw-dropdown-menu-content';
+    var menuItemSelector = '[role="menuitem"],[role="menuitemcheckbox"],[role="menuitemradio"]';
+    var tooltipStates = new WeakMap();
+    var tooltipOwners = new WeakMap();
+    var activeTooltip = null;
+    var tooltipCounter = 0;
+    var lastTooltipHidden = 0;
+    var touchInteraction = false;
+    var tabbable = 'a[href],button:enabled,input:enabled:not([type=hidden]),select:enabled,textarea:enabled,[tabindex]:not([tabindex="-1"]),[contenteditable="true"]';
+
+    function popupTriggers(popup) {
+        return Array.from(document.querySelectorAll('[popovertarget]')).filter(function (trigger) {
+            return trigger.getAttribute('popovertarget') === popup.id;
+        });
+    }
+    function popupState(popup) {
+        if (!popupStates.has(popup)) popupStates.set(popup, {source: popupTriggers(popup)[0], focusTimer: 0});
+        return popupStates.get(popup);
+    }
+    function hidePopup(popup) {
+        if (popup && popup.matches(':popover-open')) popup.hidePopover();
+    }
+    function showPopup(popup, source) {
+        if (popup.matches(':popover-open')) return;
+        try { popup.showPopover({source: source}); }
+        catch (error) { if (error instanceof TypeError) popup.showPopover(); else throw error; }
+    }
+    function menuItemEnabled(item) { return !item.matches(':disabled,[aria-disabled="true"]'); }
+    function menuItems(menu) {
+        return Array.from(menu.querySelectorAll(menuItemSelector)).filter(function (item) {
+            return item.closest(menuSelector) === menu && menuItemEnabled(item) && visibleControl(item);
+        });
+    }
+    function prepareMenu(menu) {
+        menu.querySelectorAll(menuItemSelector).forEach(function (item) { item.setAttribute('tabindex', '-1'); });
+    }
+    function menuItemText(item) {
+        if (item.hasAttribute('aria-label')) return item.getAttribute('aria-label').toLocaleLowerCase();
+        var walker = document.createTreeWalker(item, NodeFilter.SHOW_TEXT), text = '', node;
+        while ((node = walker.nextNode())) {
+            if (!node.parentElement.closest('.sw-dropdown-menu-shortcut,[aria-hidden="true"]')) text += node.textContent;
+        }
+        return text.trim().toLocaleLowerCase();
+    }
+    function menuKeys(event) {
+        if (!(event.target instanceof Element) || event.isComposing) return;
+        var trigger = event.target.closest('[popovertarget]');
+        var menu = trigger && document.getElementById(trigger.getAttribute('popovertarget'));
+        if (menu && menu.matches(menuSelector) && !trigger.matches(':disabled,[aria-disabled="true"]')) {
+            var openingState = popupState(menu);
+            if (event.key === 'Enter' || event.key === ' ') openingState.keyboard = true;
+            if (event.key === 'ArrowDown' || event.key === 'ArrowUp') {
+                event.preventDefault(); openingState.keyboard = true;
+                openingState.last = event.key === 'ArrowUp'; openingState.source = trigger;
+                if (menu.matches(':popover-open')) {
+                    var entries = menuItems(menu);
+                    (entries[openingState.last ? entries.length - 1 : 0] || menu).focus();
+                } else showPopup(menu, trigger);
+                return;
+            }
+        }
+        menu = event.target.closest(menuSelector);
+        if (!menu || !menu.matches(':popover-open')) return;
+        if (event.key === 'Tab') { Shadwick.closePopover(menu.id); return; }
+        var items = menuItems(menu), index = items.indexOf(document.activeElement), next;
+        switch (event.key) {
+            case 'ArrowDown': next = items[index < 0 ? 0 : Math.min(index + 1, items.length - 1)]; break;
+            case 'ArrowUp': next = items[index < 0 ? items.length - 1 : Math.max(index - 1, 0)]; break;
+            case 'Home': case 'PageUp': next = items[0]; break;
+            case 'End': case 'PageDown': next = items[items.length - 1]; break;
+            case ' ':
+                if (event.target instanceof HTMLAnchorElement && menuItemEnabled(event.target)) {
+                    event.preventDefault(); event.target.click();
+                }
+                return;
+            default:
+                if (event.key.length === 1 && !event.ctrlKey && !event.metaKey && !event.altKey) {
+                    var state = popupState(menu), now = Date.now();
+                    state.typed = now - (state.typedAt || 0) > 500 ? event.key : (state.typed || '') + event.key;
+                    state.typedAt = now;
+                    var text = state.typed.toLocaleLowerCase();
+                    var repeated = text.length > 1 && Array.from(text).every(function (letter) { return letter === text[0]; });
+                    var start = repeated || text.length === 1 ? index + 1 : Math.max(index, 0);
+                    var search = repeated ? text[0] : text;
+                    next = items.slice(start).concat(items.slice(0, start)).find(function (item) {
+                        return menuItemText(item).startsWith(search);
+                    });
+                }
+        }
+        if (next) { event.preventDefault(); next.focus(); }
+    }
+    function visibleControl(node) {
+        return node.getClientRects().length && getComputedStyle(node).visibility !== 'hidden' && !node.closest('[inert]');
+    }
+    Shadwick.closePopover = function (id) {
+        var popup = document.getElementById(id);
+        if (!popup || !popup.matches(':popover-open')) return;
+        var source = popupState(popup).source;
+        if (!source || !source.isConnected) source = popupTriggers(popup)[0];
+        var returnFocus = popup.contains(document.activeElement);
+        hidePopup(popup);
+        if (returnFocus && source && source.isConnected) source.focus();
+    };
+    document.addEventListener('beforetoggle', function (event) {
+        var popup = event.target;
+        if (popup instanceof Element && event.newState === 'closed' && activeTooltip
+            && popup.matches(popupSelector + ',dialog') && popup.contains(activeTooltip.source)) {
+            activeTooltip.focused = false; activeTooltip.dismissed = true; hideTooltip(activeTooltip);
+        }
+        if (!(popup instanceof Element) || !popup.matches(popupSelector)) return;
+        var state = popupState(popup);
+        var opening = event.newState === 'open';
+        if (opening && popup.matches(menuSelector)) state.choosing = false;
+        if (opening) state.source = event.source || popupTriggers(popup)[0];
+        popupTriggers(popup).forEach(function (trigger) { trigger.setAttribute('aria-expanded', String(opening)); });
+        clearTimeout(state.focusTimer);
+        if (opening) state.focusTimer = setTimeout(function () {
+            if (popup.matches(menuSelector) && popup.isConnected && popup.matches(':popover-open')) {
+                var entries = menuItems(popup);
+                (state.keyboard ? entries[state.last ? entries.length - 1 : 0] || popup : popup).focus();
+                state.keyboard = false; state.last = false; state.typed = ''; state.typedAt = 0;
+                return;
+            }
+            if (popup.isConnected && popup.matches(':popover-open') && !popup.contains(document.activeElement)) {
+                (Array.from(popup.querySelectorAll(tabbable)).find(visibleControl) || popup).focus();
+            }
+        }, 0);
+    }, true);
+    document.addEventListener('focusout', function (event) {
+        if (!(event.target instanceof Element)) return;
+        var popup = event.target.closest(popupSelector);
+        if (!popup || !popup.matches(':popover-open')) return;
+        var to = event.relatedTarget;
+        if (to instanceof Node && !popup.contains(to) && !popupTriggers(popup).some(function (trigger) {
+            return trigger === to || trigger.contains(to);
+        })) hidePopup(popup);
+    });
+
+    function tooltipDescription(state, add) {
+        if (state.mode === 'label') return;
+        var source = state.source;
+        var tokens = (source.getAttribute('aria-describedby') || '').split(/\s+/).filter(Boolean);
+        var next = tokens.filter(function (id) { return id !== state.tip.id; });
+        if (add) next.push(state.tip.id);
+        var value = next.join(' ');
+        if (value !== (source.getAttribute('aria-describedby') || '')) {
+            if (value) source.setAttribute('aria-describedby', value); else source.removeAttribute('aria-describedby');
+        }
+    }
+    function hideTooltip(state) {
+        clearTimeout(state.showTimer); clearTimeout(state.hideTimer);
+        if (state.tip.matches(':popover-open')) {
+            state.tip.setAttribute('data-sw-instant', '');
+            state.tip.hidePopover(); lastTooltipHidden = Date.now();
+        }
+        if (activeTooltip === state) activeTooltip = null;
+    }
+    function removeTooltip(source) {
+        var state = tooltipStates.get(source);
+        if (!state) return;
+        hideTooltip(state);
+        tooltipDescription(state, false);
+        state.tip.remove();
+        tooltipOwners.delete(state.tip);
+        tooltipStates.delete(source);
+    }
+    function placedSide(popup, source) {
+        var a = source.getBoundingClientRect(), p = popup.getBoundingClientRect();
+        var x = p.left + p.width / 2, y = p.top + p.height / 2;
+        return y < a.top ? 'top' : y > a.bottom ? 'bottom' : x < a.left ? 'left' : 'right';
+    }
+    function showTooltip(state) {
+        clearTimeout(state.showTimer); clearTimeout(state.hideTimer);
+        var parentPopup = state.source.closest(popupSelector);
+        var parentDialog = state.source.closest('dialog');
+        if (!state.source.isConnected || !visibleControl(state.source) || state.dismissed
+            || state.source.matches(':disabled,[aria-disabled="true"]')
+            || parentPopup && !parentPopup.matches(':popover-open') || parentDialog && !parentDialog.open) return;
+        if (activeTooltip && activeTooltip !== state) hideTooltip(activeTooltip);
+        activeTooltip = state;
+        state.tip.removeAttribute('data-sw-instant');
+        showPopup(state.tip, state.source);
+        state.tip.dataset.placed = placedSide(state.tip, state.source);
+    }
+    function hideTooltipSoon(state) {
+        clearTimeout(state.showTimer); clearTimeout(state.hideTimer);
+        if (!state.focused) state.hideTimer = setTimeout(function () {
+            if (!state.hovered && !state.tipHovered && !state.focused) hideTooltip(state);
+        }, 100);
+    }
+    function setupTooltip(source) {
+        if (!source.isConnected || !source.parentElement) return;
+        var text = source.getAttribute('data-sw-tooltip');
+        var previous = tooltipStates.get(source);
+        var placement = source.getAttribute('data-tooltip-placement') || 'top';
+        var mode = source.getAttribute('data-tooltip-mode') || 'description';
+        var delay = Math.max(0, Number(source.getAttribute('data-tooltip-delay') || 300));
+        if (previous && previous.text === text && previous.placement === placement && previous.mode === mode && previous.delay === delay) {
+            source.removeAttribute('title');
+            tooltipDescription(previous, true);
+            return;
+        }
+        removeTooltip(source);
+        if (!text || !text.trim() || typeof source.showPopover !== 'function') return;
+        var tip = document.createElement('span');
+        do { tip.id = 'sw-tooltip-' + (++tooltipCounter); } while (document.getElementById(tip.id));
+        tip.className = 'sw-tooltip-content';
+        tip.setAttribute('popover', 'manual'); tip.setAttribute('role', 'tooltip');
+        tip.setAttribute('data-side', placement); tip.setAttribute('data-align', 'center');
+        if (mode === 'label') tip.setAttribute('aria-hidden', 'true');
+        var label = document.createElement('span'); label.className = 'sw-tooltip-text'; label.textContent = text;
+        var arrow = document.createElement('span'); arrow.className = 'sw-tooltip-arrow'; arrow.setAttribute('aria-hidden', 'true');
+        tip.append(label, arrow);
+        // Preserve the theme/modal context, outside any label so its text cannot rename the control.
+        var wrappingLabel = source.closest('label');
+        (wrappingLabel ? wrappingLabel.parentNode : source.parentNode).appendChild(tip);
+        var state = {source: source, tip: tip, text: text, placement: placement, mode: mode, delay: delay,
+            showTimer: 0, hideTimer: 0, hovered: false, tipHovered: false, focused: false, dismissed: false};
+        tooltipStates.set(source, state); tooltipOwners.set(tip, state);
+        source.removeAttribute('title'); tooltipDescription(state, true);
+        if (!touchInteraction && document.activeElement === source && source.matches(':focus-visible')) {
+            state.focused = true; showTooltip(state);
+        }
+    }
+    function scanPopups(node) {
+        if (!(node instanceof Element || node instanceof Document)) return;
+        if (node instanceof Element && !node.isConnected) return;
+        var nodes = node instanceof Element ? [node] : [];
+        nodes = nodes.concat(Array.from(node.querySelectorAll('[data-sw-tooltip],' + popupSelector)));
+        nodes.forEach(function (element) {
+            if (element.hasAttribute('data-sw-tooltip')) setupTooltip(element);
+            if (element.matches(popupSelector)) {
+                if (element.matches(menuSelector)) prepareMenu(element);
+                popupState(element);
+                popupTriggers(element).forEach(function (trigger) {
+                    trigger.setAttribute('aria-expanded', String(element.matches(':popover-open')));
+                });
+            }
+        });
+        if (node instanceof Element && node.closest(menuSelector)) prepareMenu(node.closest(menuSelector));
+    }
+    function cleanupPopups(node) {
+        if (!(node instanceof Element) || node.isConnected) return;
+        [node].concat(Array.from(node.querySelectorAll('[data-sw-tooltip],' + popupSelector))).forEach(function (element) {
+            removeTooltip(element);
+            if (popupStates.has(element)) {
+                var state = popupStates.get(element); clearTimeout(state.focusTimer);
+                popupTriggers(element).forEach(function (trigger) { trigger.setAttribute('aria-expanded', 'false'); });
+                popupStates.delete(element);
+            }
+        });
+    }
+    ['pointerover', 'pointerout'].forEach(function (type) {
+        document.addEventListener(type, function (event) {
+            if (!(event.target instanceof Element) || event.pointerType === 'touch') return;
+            var tip = event.target.closest('.sw-tooltip-content');
+            var source = event.target.closest('[data-sw-tooltip]');
+            var state = tip ? tooltipOwners.get(tip) : source && tooltipStates.get(source);
+            if (!state) return;
+            var current = tip || source;
+            if (event.relatedTarget instanceof Node && current.contains(event.relatedTarget)) return;
+            var entering = type === 'pointerover';
+            if (tip) state.tipHovered = entering; else state.hovered = entering;
+            if (entering) {
+                clearTimeout(state.hideTimer);
+                if (!tip && !state.dismissed && !state.tip.matches(':popover-open')) {
+                    clearTimeout(state.showTimer);
+                    state.showTimer = setTimeout(function () { showTooltip(state); },
+                        activeTooltip || Date.now() - lastTooltipHidden < 300 ? 0 : state.delay);
+                }
+            } else {
+                if (!tip && !state.focused) state.dismissed = false;
+                hideTooltipSoon(state);
+            }
+        });
+    });
+    document.addEventListener('pointerdown', function (event) {
+        touchInteraction = event.pointerType === 'touch';
+        if (!(event.target instanceof Element)) return;
+        var trigger = event.target.closest('[popovertarget]');
+        var menu = trigger && document.getElementById(trigger.getAttribute('popovertarget'));
+        if (menu && menu.matches(menuSelector)) { popupState(menu).keyboard = false; popupState(menu).source = trigger; }
+        var state = tooltipStates.get(event.target.closest('[data-sw-tooltip]'));
+        if (state) { state.dismissed = true; hideTooltip(state); }
+    });
+    document.addEventListener('focusin', function (event) {
+        var state = tooltipStates.get(event.target);
+        if (state && !touchInteraction && event.target.matches(':focus-visible')) {
+            state.focused = true; state.dismissed = false;
+            state.showTimer = setTimeout(function () {
+                if (document.activeElement === state.source) showTooltip(state);
+            }, 0);
+        }
+    });
+    document.addEventListener('focusout', function (event) {
+        var state = tooltipStates.get(event.target);
+        if (state) { state.focused = false; if (!state.hovered) state.dismissed = false; hideTooltipSoon(state); }
+    });
+    document.addEventListener('keydown', function (event) {
+        touchInteraction = false;
+        if (event.key !== 'Escape') { menuKeys(event); return; }
+        if (activeTooltip && activeTooltip.tip.matches(':popover-open')) {
+            event.preventDefault(); event.stopImmediatePropagation();
+            activeTooltip.dismissed = true; hideTooltip(activeTooltip);
+            return;
+        }
+        var popup = event.target instanceof Element ? event.target.closest(popupSelector) : null;
+        if (popup && popup.matches(':popover-open')) {
+            event.preventDefault(); event.stopPropagation(); Shadwick.closePopover(popup.id);
+        }
+    }, true);
+    document.addEventListener('pointermove', function (event) {
+        if (!(event.target instanceof Element) || event.pointerType !== 'mouse') return;
+        var menu = event.target.closest(menuSelector);
+        if (!menu || !menu.matches(':popover-open')) return;
+        var item = event.target.closest(menuItemSelector);
+        var target = item && menuItemEnabled(item) ? item : menu;
+        if (document.activeElement !== target) target.focus({preventScroll: true});
+    });
+    document.addEventListener('pointerout', function (event) {
+        if (!(event.target instanceof Element) || event.pointerType !== 'mouse') return;
+        var menu = event.target.closest(menuSelector);
+        if (menu && menu.matches(':popover-open') && !menu.contains(event.relatedTarget) && menu.contains(document.activeElement)) {
+            menu.focus({preventScroll: true});
+        }
+    });
+    document.addEventListener('click', function (event) {
+        if (!(event.target instanceof Element)) return;
+        var item = event.target.closest(menuItemSelector), menu = item && item.closest(menuSelector);
+        if (menu && (!menu.matches(':popover-open') || !menuItemEnabled(item) || popupState(menu).choosing)) {
+            event.preventDefault(); event.stopImmediatePropagation();
+            return;
+        }
+        if (!menu || !menu.matches(':popover-open') || !menuItemEnabled(item)) return;
+        // Capture also covers Wicket callbacks that stop bubbling. Keep the item rendered through its default action.
+        popupState(menu).choosing = true;
+        var source = popupState(menu).source;
+        if (!source || !source.isConnected) source = popupTriggers(menu)[0];
+        if (source) source.focus({preventScroll: true});
+        setTimeout(function () { hidePopup(menu); }, 0);
+    }, true);
+    window.addEventListener('resize', function () {
+        if (activeTooltip) activeTooltip.tip.dataset.placed = placedSide(activeTooltip.tip, activeTooltip.source);
+    });
+    document.addEventListener('scroll', function () {
+        if (activeTooltip) activeTooltip.tip.dataset.placed = placedSide(activeTooltip.tip, activeTooltip.source);
+    }, true);
+    scanPopups(document);
+
     // ---- Avatar images: delegated load/error handlers also cover Ajax replacements ----
     // Adapted from Shadleaf's avatar.js (Apache-2.0, see NOTICE).
     var avatarSelector = 'img.sw-avatar-image';
@@ -228,57 +582,175 @@
             }
             record.addedNodes.forEach(scanAvatars);
             record.addedNodes.forEach(scanUploads);
-        });
-    }).observe(document.documentElement, {subtree: true, childList: true, attributes: true, attributeFilter: ['src', 'srcset']});
-    scanAvatars(document);
-
-    // ---- Feedback toasts: text-only, persistent and keyboard dismissible ----
-    Shadwick.toast = function (message, level, dismissLabel) {
-        var viewport = document.getElementById('sw-toaster');
-        if (!viewport) {
-            viewport = document.createElement('div');
-            viewport.id = 'sw-toaster';
-            viewport.className = 'sw-toaster';
-            viewport.setAttribute('popover', 'manual');
-            document.body.appendChild(viewport);
-        }
-        var toast = document.createElement('div');
-        var returnFocus = document.activeElement;
-        toast.className = 'sw-toast';
-        toast.dataset.level = level;
-        var severe = level === 'error' || level === 'fatal';
-        if (severe) { toast.dataset.variant = 'destructive'; }
-        var text = document.createElement('div');
-        text.className = 'sw-toast-content';
-        text.setAttribute('role', severe ? 'alert' : 'status');
-        text.setAttribute('aria-atomic', 'true');
-        toast.appendChild(text);
-        var close = document.createElement('button');
-        close.type = 'button';
-        close.className = 'sw-button sw-toast-close';
-        close.dataset.variant = 'ghost';
-        close.dataset.size = 'icon';
-        close.setAttribute('aria-label', dismissLabel);
-        close.textContent = '\u00d7';
-        close.addEventListener('click', function () {
-            var focused = toast.contains(document.activeElement);
-            var next = toast.nextElementSibling || toast.previousElementSibling;
-            toast.remove();
-            if (!viewport.children.length) {
-                if (viewport.hidePopover) { viewport.hidePopover(); }
-                viewport.remove();
-                if (focused && returnFocus && returnFocus.isConnected) { returnFocus.focus(); }
-            } else if (focused && next) {
-                next.querySelector('button').focus();
+            record.addedNodes.forEach(scanPopups);
+            record.removedNodes.forEach(cleanupPopups);
+            if (record.type === 'attributes' && record.target instanceof Element) {
+                if (record.target.hasAttribute('data-sw-tooltip')) setupTooltip(record.target);
+                else if (tooltipStates.has(record.target)) removeTooltip(record.target);
             }
         });
-        toast.appendChild(close);
-        viewport.appendChild(toast);
-        if (viewport.showPopover) { viewport.showPopover(); }
-        else { viewport.dataset.fallback = ''; }
-        // Insert the live region before its text so assistive technology can announce the update.
-        requestAnimationFrame(function () { text.textContent = message; });
+    }).observe(document.documentElement, {subtree: true, childList: true, attributes: true,
+        attributeFilter: ['src', 'srcset', 'data-sw-tooltip', 'data-tooltip-placement', 'data-tooltip-mode', 'data-tooltip-delay', 'aria-describedby']});
+    scanAvatars(document);
+
+    // ---- Toasts: Shadleaf anatomy/interactions, with a CSS column instead of inline stack geometry ----
+    var toaster = null, toastStates = new Map(), toastReturnFocus = null, toastHover = false;
+    var toastCounter = 0;
+    function topToastModal() {
+        return document.activeElement.closest && document.activeElement.closest('dialog:modal')
+            || Array.from(document.querySelectorAll('dialog:modal')).pop() || null;
+    }
+    function placeToaster() {
+        if (!toaster || !toastStates.size) return;
+        var parent = topToastModal() || document.body;
+        var focused = toaster.contains(document.activeElement) ? document.activeElement : null;
+        if (toaster.parentElement !== parent) parent.appendChild(toaster);
+        if (toaster.showPopover) {
+            if (!toaster.matches(':popover-open')) toaster.showPopover();
+        } else toaster.dataset.fallback = '';
+        if (focused && document.activeElement !== focused && visibleControl(focused)) focused.focus({preventScroll: true});
+    }
+    function toastPaused() {
+        return toastHover || document.hidden || toaster && toaster.contains(document.activeElement);
+    }
+    function updateToastTimers() {
+        toastStates.forEach(function (state, toast) {
+            if (!toast.isConnected) { clearTimeout(state.timer); toastStates.delete(toast); return; }
+            if (toastPaused()) {
+                if (state.timer) {
+                    clearTimeout(state.timer); state.timer = 0;
+                    state.remaining = Math.max(1000, state.remaining - (Date.now() - state.started));
+                }
+            } else if (!state.timer && state.remaining > 0) {
+                state.started = Date.now();
+                state.timer = setTimeout(function () { dismissToast(toast); }, state.remaining);
+            }
+        });
+    }
+    function dismissToast(toast) {
+        var state = toastStates.get(toast);
+        if (!state) return;
+        clearTimeout(state.timer); toastStates.delete(toast);
+        var focused = toast.contains(document.activeElement);
+        var next = toast.nextElementSibling || toast.previousElementSibling;
+        toast.remove();
+        if (!toastStates.size) {
+            if (toaster && toaster.matches(':popover-open')) toaster.hidePopover();
+            if (toaster) toaster.remove();
+            toaster = null; toastHover = false;
+        }
+        if (focused) {
+            var target = next && next.querySelector('.sw-toast-close') || toastReturnFocus;
+            if (target && target.isConnected && visibleControl(target)) target.focus({preventScroll: true});
+        }
+        if (!toaster) toastReturnFocus = null;
+        updateToastTimers();
+    }
+    function toastIcon(variant) {
+        // Fixed Lucide shapes (ISC, see NOTICE). All notification text is assigned through textContent.
+        var paths = {
+            success: ['M9 12l2 2 4-4', 'M22 12a10 10 0 1 1-20 0 10 10 0 0 1 20 0'],
+            info: ['M12 16v-4', 'M12 8h.01', 'M22 12a10 10 0 1 1-20 0 10 10 0 0 1 20 0'],
+            warning: ['M10.3 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.7 3.86a2 2 0 0 0-3.4 0', 'M12 9v4', 'M12 17h.01'],
+            error: ['M7.86 2h8.28L22 7.86v8.28L16.14 22H7.86L2 16.14V7.86Z', 'm15 9-6 6', 'm9 9 6 6']
+        };
+        if (!paths[variant]) return null;
+        var svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+        svg.setAttribute('viewBox', '0 0 24 24'); svg.setAttribute('fill', 'none');
+        svg.setAttribute('stroke', 'currentColor'); svg.setAttribute('stroke-width', '2');
+        svg.setAttribute('stroke-linecap', 'round'); svg.setAttribute('stroke-linejoin', 'round');
+        svg.setAttribute('aria-hidden', 'true');
+        paths[variant].forEach(function (d) { var path = document.createElementNS(svg.namespaceURI, 'path'); path.setAttribute('d', d); svg.appendChild(path); });
+        return svg;
+    }
+    Shadwick.toast = function (message, options, dismissLabel) {
+        var legacy = typeof options === 'string', level = legacy ? options : null;
+        options = legacy ? {variant: level === 'fatal' ? 'error' : level === 'warn' ? 'warning' : level,
+            dismissLabel: dismissLabel, duration: 0} : options || {};
+        var variant = ['default', 'success', 'info', 'warning', 'error'].includes(options.variant) ? options.variant : 'default';
+        var duration = options.duration == null ? 5000 : Number(options.duration);
+        if (!Number.isFinite(duration) || duration < 0 || duration > 2147483647) duration = 5000;
+        var source = document.activeElement;
+        if (toaster && !toaster.isConnected) {
+            toastStates.forEach(function (state) { clearTimeout(state.timer); });
+            toastStates.clear(); toaster = null; toastHover = false;
+        }
+        if (!toaster) {
+            toaster = document.createElement('div'); toaster.id = 'sw-toaster'; toaster.className = 'sw-toaster';
+            toaster.setAttribute('popover', 'manual'); toaster.setAttribute('role', 'region');
+            toastReturnFocus = source;
+            document.body.appendChild(toaster);
+        }
+        toaster.setAttribute('aria-label', options.regionLabel || 'Notifications (Alt+T)');
+        var toast = document.createElement('div'); toast.className = 'sw-toast'; toast.id = 'sw-toast-' + (++toastCounter);
+        toast.dataset.level = level || variant;
+        if (variant !== 'default') toast.dataset.variant = legacy && variant === 'error' ? 'destructive' : variant;
+        var icon = toastIcon(variant); if (icon) toast.appendChild(icon);
+        var content = document.createElement('div'); content.className = 'sw-toast-content'; content.id = toast.id + '-content';
+        content.setAttribute('role', variant === 'error' ? 'alert' : 'status'); content.setAttribute('aria-atomic', 'true');
+        var title = options.title == null || String(options.title).trim() === '' ? null : document.createElement('div');
+        if (title) { title.className = 'sw-toast-title'; content.appendChild(title); }
+        var description = document.createElement('div');
+        description.className = title ? 'sw-toast-description' : 'sw-toast-message'; content.appendChild(description);
+        toast.appendChild(content);
+        var close = document.createElement('button'); close.type = 'button'; close.className = 'sw-button sw-toast-close';
+        close.dataset.variant = 'ghost'; close.dataset.size = 'icon';
+        close.setAttribute('aria-label', options.dismissLabel || 'Dismiss notification'); close.textContent = '\u00d7';
+        close.setAttribute('aria-describedby', content.id);
+        close.addEventListener('click', function () { dismissToast(toast); }); toast.appendChild(close);
+        toastStates.set(toast, {remaining: duration, timer: 0, started: 0});
+        toaster.appendChild(toast); placeToaster(); updateToastTimers();
+        // Register the live region first, then set plain text, without moving keyboard focus.
+        requestAnimationFrame(function () {
+            if (!toast.isConnected) return;
+            if (title) title.textContent = String(options.title);
+            description.textContent = String(message == null ? '' : message);
+        });
+        return toast.id;
     };
+    document.addEventListener('pointerover', function (event) {
+        if (toaster && toaster.contains(event.target) && !toaster.contains(event.relatedTarget) && event.pointerType !== 'touch') {
+            toastHover = true; updateToastTimers();
+        }
+    });
+    document.addEventListener('pointerout', function (event) {
+        if (toaster && toaster.contains(event.target) && !toaster.contains(event.relatedTarget)) {
+            toastHover = false; updateToastTimers();
+        }
+    });
+    document.addEventListener('focusin', function (event) {
+        if (!toaster) return;
+        if (toaster.contains(event.target) && !toaster.contains(event.relatedTarget) && event.relatedTarget) toastReturnFocus = event.relatedTarget;
+        updateToastTimers();
+    });
+    document.addEventListener('focusout', function () { queueMicrotask(updateToastTimers); });
+    document.addEventListener('visibilitychange', updateToastTimers);
+    document.addEventListener('keydown', function (event) {
+        if (!toaster || !(event.target instanceof Element)) return;
+        if (event.key === 'Escape' && toaster.contains(event.target)) {
+            event.preventDefault(); event.stopImmediatePropagation(); dismissToast(event.target.closest('.sw-toast'));
+        } else if (event.altKey && !event.ctrlKey && !event.metaKey && !event.shiftKey && event.code === 'KeyT') {
+            event.preventDefault();
+            if (!toaster.contains(document.activeElement)) toastReturnFocus = document.activeElement;
+            var newest = toaster.lastElementChild;
+            if (newest) newest.querySelector('.sw-toast-close').focus();
+        }
+    }, true);
+    document.addEventListener('toggle', function (event) {
+        if (event.target instanceof HTMLDialogElement) { placeToaster(); updateToastTimers(); }
+    }, true);
+    new MutationObserver(function () {
+        if (!toaster) return;
+        updateToastTimers();
+        if (!toaster.isConnected || !toastStates.size) {
+            if (toaster.isConnected) toaster.remove();
+            toaster = null; toastHover = false; toastReturnFocus = null;
+        } else placeToaster();
+    }).observe(document.documentElement, {childList: true, subtree: true});
+    window.addEventListener('pagehide', function () {
+        toastStates.forEach(function (state) { clearTimeout(state.timer); }); toastStates.clear();
+        if (toaster) toaster.remove(); toaster = null; toastReturnFocus = null; toastHover = false;
+    });
 
     // ---- Form fields: an error that appeared, changed or went away (BaseSwField) ----
 
@@ -309,6 +781,21 @@
 
     // Shows a dialog rendered while open. One that was open already (data-sw-instant) shows
     // at once, without fading in again; after that, closing it animates.
+    // Chromium can choose the implicitly focusable scrolling body when a sheet opens.
+    // Prefer its first form field in that case; preserve explicit autofocus and focus on informational bodies.
+    function focusSheetField(dialog) {
+        if (!dialog.matches('.sw-sheet[open]') || !dialog.contains(document.activeElement)
+            || !document.activeElement.matches('.sw-sheet-body-content')) return;
+        var fields = dialog.querySelectorAll('input:enabled:not([type=hidden]), select:enabled, textarea:enabled');
+        var field = Array.from(fields).find(function (candidate) {
+            return candidate.getClientRects().length && getComputedStyle(candidate).visibility !== 'hidden';
+        });
+        if (field) field.focus();
+    }
+    document.addEventListener('toggle', function (event) {
+        if (event.target instanceof HTMLDialogElement && event.target.open) focusSheetField(event.target);
+    }, true);
+
     Shadwick.showDialog = function (id) {
         var dialog = document.getElementById(id);
         if (!dialog) {
@@ -316,6 +803,7 @@
         }
         if (!dialog.open) {
             dialog.showModal();
+            focusSheetField(dialog);
         }
         requestAnimationFrame(function () {
             requestAnimationFrame(function () {
@@ -339,6 +827,7 @@
             var command = button.getAttribute('command');
             if (command === 'show-modal' && !dialog.open) {
                 dialog.showModal();
+                focusSheetField(dialog);
             } else if ((command === 'close' || command === 'request-close') && dialog.open) {
                 dialog.close(button.value);
             }

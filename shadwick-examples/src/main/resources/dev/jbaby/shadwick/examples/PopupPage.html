@@ -1,0 +1,29 @@
+<wicket:extend xmlns:wicket="http://wicket.apache.org">
+<div><h1 class="ex-title">Popovers &amp; tooltips</h1><p class="ex-lead">Small anchored panels and helpful text, built on the native Popover API.</p></div>
+<section class="ex-section" aria-labelledby="editor-heading">
+    <h2 id="editor-heading">An interactive popover</h2>
+    <p class="ex-muted">Try an empty display name. Errors stay in place. Refresh only the content to keep the popover open, or replace the entire component to reset it.</p>
+    <div class="ex-row"><div wicket:id="editor"></div><button wicket:id="replace"></button><button wicket:id="after"></button></div>
+</section>
+<section class="ex-section" aria-labelledby="placement-heading">
+    <h2 id="placement-heading">Placement and flipping</h2>
+    <p class="ex-muted">Native CSS anchors follow the trigger and flip when space is tight. Start and end follow text direction.</p>
+    <div class="ex-row"><div wicket:id="sides"><div wicket:id="example"></div></div></div>
+</section>
+<section class="ex-section" aria-labelledby="tooltip-heading">
+    <h2 id="tooltip-heading">Helpful text on hover or keyboard focus</h2>
+    <p class="ex-muted">Hover Export, or Tab to it. Escape dismisses the hint; the pointer can move onto it to keep reading. The icon button already has its own accessible name.</p>
+    <div class="ex-row"><button wicket:id="export"></button><button wicket:id="copy" aria-label="Copy link"><svg class="sw-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg></button><button wicket:id="disabled"></button></div>
+    <div class="ex-row"><button wicket:id="changeHint"></button><button wicket:id="clearHint"></button></div>
+</section>
+<section class="ex-section" aria-labelledby="nested-heading"><h2 id="nested-heading">Inside another overlay</h2><div class="ex-row"><div wicket:id="sheet"></div></div></section>
+<p wicket:id="status" class="ex-muted" role="status"></p>
+<wicket:fragment wicket:id="editorContent">
+    <form wicket:id="form" class="ex-form" novalidate>
+        <div wicket:id="name"></div>
+        <div wicket:id="nested"></div>
+        <div class="ex-row"><button wicket:id="save" type="submit"></button><button wicket:id="refresh" type="button"></button></div>
+        <p wicket:id="revision" class="ex-muted"></p>
+    </form>
+</wicket:fragment>
+</wicket:extend>

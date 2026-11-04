@@ -26,7 +26,7 @@ class CssBundleTest {
         String css = read("shadwick-" + skin.id() + ".css");
 
         assertThat(css).contains(":root {").contains(".dark {").contains("--primary:").contains("--radius:");
-        assertThat(css).contains(".sw-button").contains(".sw-field").contains(".sw-input").contains(".sw-dialog");
+        assertThat(css).contains(".sw-button", ".sw-field", ".sw-input", ".sw-dialog", ".sw-alert-dialog", ".sw-sheet");
     }
 
     @ParameterizedTest
@@ -53,8 +53,14 @@ class CssBundleTest {
             String css = read("shadwick-" + skin.id() + Bundle.EMBEDDED.suffix() + suffix);
             assertThat(css).contains("--primary:").contains(".dark").contains(".sw-card")
                     .contains(".sw-badge").contains(".sw-alert").contains(".sw-avatar")
-                    .contains(".sw-skeleton").contains(".sw-spinner").contains(".sw-toast");
-            assertThat(css).doesNotContain("box-sizing: border-box", "-webkit-text-size-adjust", "font-synthesis", "@layer theme {");
+                    .contains(".sw-skeleton").contains(".sw-spinner").contains(".sw-toast")
+                    .contains(".sw-alert-dialog", ".sw-sheet-body-content", "--sw-sheet-slide")
+                    .contains(".sw-popover-content", ".sw-popover-header", ".sw-tooltip-content", "position-area:");
+            assertThat(css).contains(".sw-dropdown-menu-content", ".sw-dropdown-menu-item", ".sw-dropdown-menu-checkbox-item",
+                    ".sw-dropdown-menu-radio-item", ".sw-dropdown-menu-separator", ".sw-dropdown-menu-shortcut");
+            assertThat(css).contains(".sw-toaster", ".sw-toast-title", ".sw-toast-description", ".sw-toast-close");
+            assertThat(css).doesNotContain("-webkit-text-size-adjust", "font-synthesis", "@layer theme {")
+                    .doesNotContainPattern("(?s)(?:^|[{}])\\s*\\*[^{}]*\\{[^{}]*box-sizing\\s*:");
             assertThat(css).doesNotContainPattern("--(?:spacing|font-[\\w-]+|color-[\\w-]+|text-[\\w-]+|radius-[\\w-]+):");
             assertThat(css).doesNotContainPattern("var\\(--(?:spacing|font-|color-|text-|radius-|animate-)");
             assertThat(css).contains("@keyframes spin", "@keyframes pulse");

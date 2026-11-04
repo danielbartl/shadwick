@@ -1,0 +1,17 @@
+<wicket:panel xmlns:wicket="http://wicket.apache.org">
+    <button wicket:id="trigger" type="button" command="show-modal"><span wicket:id="triggerLabel"></span></button>
+    <dialog wicket:id="dialog" class="sw-alert-dialog">
+        <form wicket:id="form" class="sw-dialog-form sw-alert-dialog-form">
+            <div class="sw-alert-dialog-header">
+                <div wicket:id="title" class="sw-alert-dialog-title" role="heading" aria-level="2"></div>
+                <p wicket:id="description" class="sw-alert-dialog-description"></p>
+            </div>
+            <div wicket:id="content"></div>
+            <div wicket:id="footer" class="sw-dialog-footer sw-alert-dialog-footer">
+                <button wicket:id="cancel" type="button" command="close"><span wicket:id="cancelLabel"></span></button>
+                <button wicket:id="confirm" type="submit"><span wicket:id="confirmLabel"></span></button>
+            </div>
+            <button wicket:id="close" type="button" command="close" class="sw-dialog-close"><span aria-hidden="true">×</span></button>
+        </form>
+    </dialog>
+</wicket:panel>

@@ -26,12 +26,12 @@
   }
 
   /* An open dialog rendered again by Wicket shows at once, rather than fading in a second time. */
-  .sw-dialog[data-sw-instant] {
+  :is(.sw-dialog, .sw-alert-dialog, .sw-sheet)[data-sw-instant] {
     @apply transition-none backdrop:transition-none;
   }
 
   /* The page behind a modal dialog does not scroll, as with shadcn's. */
-  :root:has(.sw-dialog:modal) {
+  :root:has(:is(.sw-dialog, .sw-alert-dialog, .sw-sheet):modal) {
     @apply overflow-hidden;
   }
 

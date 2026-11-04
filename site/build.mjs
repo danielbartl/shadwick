@@ -24,6 +24,7 @@ await cp(path.join(root, 'assets'), path.join(output, 'assets'), {recursive: tru
 for (const skin of ['vega', 'lyra']) {
   await cp(path.join(css, `shadwick-${skin}-embedded.min.css`), path.join(output, 'assets', `shadwick-${skin}.css`));
 }
+await cp(path.resolve(css, '../js/shadwick.js'), path.join(output, 'assets/shadwick.js'));
 await cp(path.resolve(root, '../NOTICE'), path.join(output, 'NOTICE.txt'));
 await cp(path.resolve(root, '../LICENSE'), path.join(output, 'LICENSE.txt'));
 await writeFile(path.join(output, 'index.html'), html);

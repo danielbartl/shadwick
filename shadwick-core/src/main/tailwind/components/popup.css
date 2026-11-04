@@ -1,0 +1,94 @@
+/*
+  Native popups, adapted from Shadleaf's popup.css (Apache-2.0, see NOTICE).
+  Implicit anchors come from popovertarget or showPopover({source}); geometry remains in CSS.
+*/
+@layer components {
+  .sw-popover, .sw-dropdown { @apply contents; }
+
+  .sw-popover-content, .sw-tooltip-content, .sw-dropdown-menu-content {
+    @apply fixed box-border max-w-[calc(100dvw-2rem)] text-start font-normal whitespace-normal opacity-0
+      transition-[opacity,scale,translate,overlay,display] transition-discrete
+      open:opacity-100 starting:open:opacity-0
+      motion-safe:scale-95 motion-safe:open:scale-none motion-safe:starting:open:scale-95;
+    inset: auto;
+    margin-block: var(--sw-popup-margin-block);
+    margin-inline: var(--sw-popup-margin-inline);
+    position-area: var(--sw-popup-side) var(--sw-popup-align);
+    position-try-fallbacks: flip-block, flip-inline, flip-block flip-inline;
+  }
+
+  :is(.sw-popover-content, .sw-tooltip-content, .sw-dropdown-menu-content)[data-side='bottom'] {
+    --sw-popup-side: block-end;
+    --sw-popup-align: var(--sw-popup-align-inline);
+    --sw-popup-margin-block: var(--sw-popup-offset) 0;
+    --sw-popup-margin-inline: 0;
+    --sw-popup-from: 0 calc(-1 * var(--sw-popup-slide));
+    transform-origin: top;
+  }
+  :is(.sw-popover-content, .sw-tooltip-content, .sw-dropdown-menu-content)[data-side='top'] {
+    --sw-popup-side: block-start;
+    --sw-popup-align: var(--sw-popup-align-inline);
+    --sw-popup-margin-block: 0 var(--sw-popup-offset);
+    --sw-popup-margin-inline: 0;
+    --sw-popup-from: 0 var(--sw-popup-slide);
+    transform-origin: bottom;
+  }
+  :is(.sw-popover-content, .sw-tooltip-content, .sw-dropdown-menu-content)[data-side='right'] {
+    --sw-popup-side: inline-end;
+    --sw-popup-align: var(--sw-popup-align-block);
+    --sw-popup-margin-block: 0;
+    --sw-popup-margin-inline: var(--sw-popup-offset) 0;
+    --sw-popup-from: calc(-1 * var(--sw-popup-slide)) 0;
+    transform-origin: left;
+  }
+  :is(.sw-popover-content, .sw-tooltip-content, .sw-dropdown-menu-content)[data-side='left'] {
+    --sw-popup-side: inline-start;
+    --sw-popup-align: var(--sw-popup-align-block);
+    --sw-popup-margin-block: 0;
+    --sw-popup-margin-inline: 0 var(--sw-popup-offset);
+    --sw-popup-from: var(--sw-popup-slide) 0;
+    transform-origin: right;
+  }
+  :is(.sw-popover-content, .sw-tooltip-content, .sw-dropdown-menu-content)[data-side='right']:dir(rtl) {
+    --sw-popup-from: var(--sw-popup-slide) 0; transform-origin: right;
+  }
+  :is(.sw-popover-content, .sw-tooltip-content, .sw-dropdown-menu-content)[data-side='left']:dir(rtl) {
+    --sw-popup-from: calc(-1 * var(--sw-popup-slide)) 0; transform-origin: left;
+  }
+  :is(.sw-popover-content, .sw-tooltip-content, .sw-dropdown-menu-content)[data-align='start'] {
+    --sw-popup-align-inline: span-inline-end; --sw-popup-align-block: span-block-end;
+  }
+  :is(.sw-popover-content, .sw-tooltip-content, .sw-dropdown-menu-content)[data-align='center'] {
+    --sw-popup-align-inline: span-all; --sw-popup-align-block: span-all;
+  }
+  :is(.sw-popover-content, .sw-tooltip-content, .sw-dropdown-menu-content)[data-align='end'] {
+    --sw-popup-align-inline: span-inline-start; --sw-popup-align-block: span-block-start;
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    .sw-popover-content, .sw-tooltip-content, .sw-dropdown-menu-content { translate: var(--sw-popup-from); }
+    :is(.sw-popover-content, .sw-tooltip-content, .sw-dropdown-menu-content):popover-open { translate: none; }
+    @starting-style {
+      :is(.sw-popover-content, .sw-tooltip-content, .sw-dropdown-menu-content):popover-open { translate: var(--sw-popup-from); }
+    }
+  }
+
+  /* A readable viewport panel in older Popover API browsers, without inline positioning styles. */
+  @supports not (position-area: block-end) {
+    .sw-popover-content, .sw-tooltip-content, .sw-dropdown-menu-content { inset: auto 1rem 1rem; margin: 0 auto; }
+  }
+
+  .sw-popover-content {
+    @apply flex-col overflow-y-auto border-0 outline-none open:flex forced-colors:border forced-colors:border-solid;
+    max-block-size: calc(100dvh - 2rem);
+  }
+  .sw-popover-header { @apply flex flex-col; }
+  .sw-tooltip-content { @apply w-fit max-h-none overflow-visible border-0 open:inline-flex items-center forced-colors:border forced-colors:border-solid; }
+  .sw-tooltip-text { @apply min-w-0 break-words; }
+  .sw-tooltip-content[data-sw-instant] { @apply transition-none; }
+  .sw-tooltip-arrow { @apply pointer-events-none absolute rotate-45; }
+  .sw-tooltip-content[data-placed='top'] > .sw-tooltip-arrow { @apply left-1/2 top-full; translate: -50% calc(-50% - 2px); }
+  .sw-tooltip-content[data-placed='bottom'] > .sw-tooltip-arrow { @apply left-1/2 bottom-full; translate: -50% calc(50% + 2px); }
+  .sw-tooltip-content[data-placed='left'] > .sw-tooltip-arrow { @apply top-1/2 left-full; translate: calc(-50% - 2px) -50%; }
+  .sw-tooltip-content[data-placed='right'] > .sw-tooltip-arrow { @apply top-1/2 right-full; translate: calc(50% + 2px) -50%; }
+}

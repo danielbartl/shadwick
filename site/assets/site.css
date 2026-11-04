@@ -220,14 +220,14 @@ body {
   color:#73876a
 }
 
-.hero-spark {
+.hero-clover {
   position:absolute;
   top:2px;
   right:-50px;
   width:38px;
   height:38px;
-  stroke:#819867;
-  stroke-width:1.4;
+  color:#668650;
+  stroke:none;
   transform:rotate(8deg)
 }
 
@@ -1292,7 +1292,9 @@ h2 {
   color:#667b59
 }
 
-.project-dialog {
+.project-dialog,
+.studio-overlay,
+.studio-notifications {
   --primary:#2c5741;
   --primary-foreground:#fff;
   --background:#fff;
@@ -1302,12 +1304,15 @@ h2 {
   --input:#dce2d5;
   --ring:#82a06e;
   --border:#dfe5d9;
-  margin:auto;
   color:var(--foreground);
   font-family:Geist,system-ui,sans-serif
 }
 
-.project-dialog.dark {
+.project-dialog { margin:auto; }
+
+.project-dialog.dark,
+.studio-overlay.dark,
+.studio-notifications.dark {
   --primary:#cee7ac;
   --primary-foreground:#213320;
   --background:#18291f;
@@ -1337,31 +1342,6 @@ h2 {
 
 .project-dialog .sw-dialog-header {
   padding-right:22px
-}
-
-.site-toast {
-  position:fixed;
-  bottom:24px;
-  left:50%;
-  transform:translate(-50%,15px);
-  border:1px solid #cedbc2;
-  padding:12px 22px;
-  border-radius:9px;
-  background:#fff;
-  color:#335039;
-  font-size:12px;
-  box-shadow:0 8px 25px #17321c15;
-  opacity:0;
-  pointer-events:none;
-  z-index:1000;
-  transition:opacity .2s,transform .2s;
-  max-width:calc(100vw - 32px);
-  text-align:center
-}
-
-.site-toast.is-visible {
-  opacity:1;
-  transform:translate(-50%,0)
 }
 
 @media(min-width:1500px) {
@@ -1482,7 +1462,7 @@ h2 {
     letter-spacing:-2.6px;
     margin-top:23px
   }
-  .hero-spark {
+  .hero-clover {
     right:-27px;
     top:1px;
     width:23px;
@@ -1703,7 +1683,7 @@ h2 {
   .site-footer p {
     font-size:9px
   }
-  .hero-spark {
+  .hero-clover {
     display:none
   }
 }
@@ -1922,3 +1902,13 @@ h2 {
 /* The studio scales the real input-group and toggle styles to match its compact examples. */
 .demo-form .sw-input-group-text { font-size:11px; }
 .choice-demo-frequency .sw-toggle { font-size:10px; }
+
+.studio-overlay .sw-field { display:grid; gap:12px; }
+.studio-overlay .sw-sheet-body-content { padding-block:12px; }
+.sheet-demo-note { margin-block:24px; color:var(--muted-foreground); line-height:1.8; }
+.sheet-demo-details { display:grid; gap:20px; }
+.sheet-demo-details div { display:grid; gap:6px; }
+.sheet-demo-details dt { color:var(--muted-foreground); font-size:12px; }
+.sheet-demo-details dd { margin:0; font-weight:500; }
+
+.badge-samples button.sw-badge { min-height:24px; cursor:pointer; }

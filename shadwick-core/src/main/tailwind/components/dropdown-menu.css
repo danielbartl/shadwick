@@ -1,0 +1,27 @@
+/*
+  Dropdown menu structure, adapted from Shadleaf (Apache-2.0, see NOTICE).
+  Placement/motion live in popup.css; checked indicators follow server-rendered ARIA state.
+*/
+@layer components {
+  .sw-dropdown-menu-content {
+    @apply min-w-32 overflow-x-hidden overflow-y-auto border-0 outline-none open:block
+      forced-colors:border forced-colors:border-solid;
+    min-inline-size: min(calc(100dvw - 2rem), max(8rem, anchor-size(self-inline, 0px)));
+    max-block-size: calc(100dvh - 2rem);
+  }
+  .sw-dropdown-menu-content:focus-visible { @apply outline-none; }
+  .sw-dropdown-menu-item, .sw-dropdown-menu-checkbox-item, .sw-dropdown-menu-radio-item {
+    @apply relative flex w-full min-w-0 cursor-default items-center border-0 bg-transparent text-start text-inherit
+      no-underline outline-none select-none font-normal
+      disabled:cursor-not-allowed disabled:opacity-50 aria-disabled:cursor-not-allowed aria-disabled:opacity-50
+      [&_svg]:pointer-events-none [&_svg]:shrink-0
+      forced-colors:focus:outline-2 forced-colors:focus:-outline-offset-2 forced-colors:focus:outline-solid;
+    overflow-wrap: anywhere;
+  }
+  .sw-dropdown-menu-text { @apply min-w-0 break-words; }
+  :is(.sw-dropdown-menu-checkbox-item, .sw-dropdown-menu-radio-item)[aria-checked='true']::after {
+    @apply pointer-events-none absolute top-1/2 content-[''];
+  }
+  .sw-dropdown-menu-shortcut { @apply ms-auto shrink-0; }
+  .sw-dropdown-menu-separator { @apply h-px; }
+}

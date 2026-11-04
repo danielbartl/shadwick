@@ -199,7 +199,7 @@ public class SwDialog extends Panel {
         };
         descriptionLabel.setOutputMarkupId(true);
         form.add(descriptionLabel);
-        // The dialog is named by its title, described by its description, described by its description
+        // The dialog is named by its title and described by its description
         dialog.add(AttributeModifier.replace("aria-labelledby", (IModel<String>) () -> titleLabel.getMarkupId()));
         dialog.add(AttributeModifier.replace("aria-describedby", (IModel<String>) () -> hasDescription() ? descriptionLabel.getMarkupId() : null));
         form.add(new WebMarkupContainer(CONTENT_ID));
@@ -216,6 +216,12 @@ public class SwDialog extends Panel {
         form.add(cancel);
 
         confirm = new AjaxButton("confirm") {
+            @Override
+            protected void updateAjaxAttributes(AjaxRequestAttributes attributes) {
+                super.updateAjaxAttributes(attributes);
+                updateConfirmAjaxAttributes(attributes);
+            }
+
             @Override
             protected void onSubmit(AjaxRequestTarget target) {
                 open = true; // it is, since its button was clicked
@@ -259,6 +265,15 @@ public class SwDialog extends Panel {
      * keeps it open, or unless it was opened again here, e.g. with the next record's content.
      */
     protected void onConfirm(AjaxRequestTarget target) {
+    }
+
+    /** Subclass hook for the confirm button's Ajax options. */
+    protected void updateConfirmAjaxAttributes(AjaxRequestAttributes attributes) {
+    }
+
+    /** Delay before a client close updates the hidden form, allowing the skin's exit transition to finish. */
+    protected Duration getCloseTransition() {
+        return CLOSE_TRANSITION;
     }
 
     /**
@@ -505,7 +520,7 @@ public class SwDialog extends Panel {
         @Override
         protected void updateAjaxAttributes(AjaxRequestAttributes attributes) {
             super.updateAjaxAttributes(attributes);
-            attributes.setThrottlingSettings(new ThrottlingSettings(CLOSE_TRANSITION));
+            attributes.setThrottlingSettings(new ThrottlingSettings(getCloseTransition()));
             // The element the event fired on: looked up by id, it would be the new one
             attributes.getAjaxCallListeners().add(new AjaxCallListener().onPrecondition(
                     "var d=attrs.event&&attrs.event.target;if(!d||!d.isConnected){return false;}"

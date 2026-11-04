@@ -1,0 +1,24 @@
+<wicket:extend xmlns:wicket="http://wicket.apache.org">
+<div><h1 class="ex-title">Dropdown menus</h1><p class="ex-lead">Actions and navigation in a native popover, with arrow-key navigation, typeahead and focus return.</p></div>
+<section class="ex-section" aria-labelledby="actions-heading">
+    <h2 id="actions-heading">Project actions</h2>
+    <p class="ex-muted">Open with Enter, Space or the arrow keys. Home/End reach the edges; typing “e” cycles through Edit and Export. Disabled actions are skipped.</p>
+    <div class="ex-row"><div wicket:id="project"></div><button wicket:id="refresh"></button><button wicket:id="after"></button></div>
+    <div wicket:id="confirm"></div>
+</section>
+<section class="ex-section" aria-labelledby="factory-heading"><h2 id="factory-heading">An action factory</h2><div class="ex-row"><div wicket:id="format"></div><div wicket:id="empty"></div></div></section>
+<section class="ex-section" aria-labelledby="checked-heading">
+    <h2 id="checked-heading">Checked choices</h2>
+    <p class="ex-muted">The server updates each choice and renders its checked state. Reopen the menu to see the current selection.</p>
+    <div class="ex-row"><button wicket:id="viewTrigger" type="button">View options</button></div>
+    <div wicket:id="view"><div wicket:id="heading"></div><a wicket:id="compact"></a><div wicket:id="separator"></div><div wicket:id="sorting" aria-label="Sort order"><a wicket:id="name"></a><a wicket:id="updated"></a></div></div>
+</section>
+<section class="ex-section" aria-labelledby="navigation-heading">
+    <h2 id="navigation-heading">Navigation links</h2>
+    <p class="ex-muted">Menu items can be ordinary Wicket links. The shortcut is a visual hint; this demo does not register a global shortcut.</p>
+    <div class="ex-row"><button wicket:id="navigationTrigger" type="button">Navigate examples</button></div>
+    <div wicket:id="navigation"><a wicket:id="home">Home</a><a wicket:id="popups">Popovers &amp; tooltips<span wicket:id="shortcut"></span></a><a wicket:id="unavailable">Unavailable destination</a></div>
+</section>
+<section class="ex-section" aria-labelledby="nested-heading"><h2 id="nested-heading">Inside another overlay</h2><div class="ex-row"><div wicket:id="sheet"></div></div></section>
+<section class="ex-section" aria-label="Results"><p wicket:id="status" class="ex-muted" role="status"></p><p wicket:id="count" class="ex-muted" role="status"></p></section>
+</wicket:extend>

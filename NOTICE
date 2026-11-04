@@ -3,12 +3,13 @@ Copyright 2026 Daniel Bartl
 
 This product is licensed under the Apache License, Version 2.0 (see LICENSE).
 
-It includes markup structure and CSS adapted from third-party projects:
+It includes markup structure, CSS and JavaScript adapted from third-party projects:
 
 - Shadleaf (https://github.com/wimdeblauwe/shadleaf), shadcn/ui for Thymeleaf.
   Licensed under the Apache License, Version 2.0.
   Shadwick's tokens, component structure CSS and skins (vega, lyra) are adapted
-  from Shadleaf's. Shadwick is inspired by Shadleaf; it is not affiliated with
+  from Shadleaf's, as are the native popup, menu and toast interactions.
+  Shadwick is inspired by Shadleaf; it is not affiliated with
   or endorsed by it.
 
 - shadcn/ui (https://ui.shadcn.com), Copyright (c) 2023 shadcn.

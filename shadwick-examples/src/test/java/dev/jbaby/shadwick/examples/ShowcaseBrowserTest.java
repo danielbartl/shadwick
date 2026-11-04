@@ -49,7 +49,7 @@ class ShowcaseBrowserTest {
     // WCAG 2.2 A and AA, as axe-core tags its rules
     private static final List<String> WCAG = List.of("wcag2a", "wcag2aa", "wcag21a", "wcag21aa", "wcag22aa");
 
-    private static final List<String> PAGES = List.of("", "buttons", "form", "inputs", "choices", "selections", "dates", "groups", "uploads", "dialog", "display", "feedback");
+    private static final List<String> PAGES = List.of("", "buttons", "form", "inputs", "choices", "selections", "dates", "groups", "uploads", "dialog", "overlays", "popups", "menus", "toasts", "display", "feedback");
     private static final List<String> SKINS = List.of("vega", "lyra");
     private static final List<String> MODES = List.of("light", "dark");
 
@@ -103,7 +103,11 @@ class ShowcaseBrowserTest {
 
     /** Opens the page in a fresh browser session, runs the steps, and checks it with axe-core and for console errors. */
     private void check(String page, String skin, String mode, Consumer<Page> steps) {
-        try (BrowserContext context = browser.newContext(); Page tab = context.newPage()) {
+        check(page, skin, mode, new Browser.NewContextOptions(), steps);
+    }
+
+    private void check(String page, String skin, String mode, Browser.NewContextOptions options, Consumer<Page> steps) {
+        try (BrowserContext context = browser.newContext(options); Page tab = context.newPage()) {
             List<String> errors = new ArrayList<>();
             tab.onConsoleMessage(message -> {
                 if ("error".equals(message.type())) {
@@ -116,6 +120,9 @@ class ShowcaseBrowserTest {
             assertThat(tab.locator("link[href*='shadwick-" + skin + "']")).hasCount(1);
 
             steps.accept(tab);
+
+            tab.evaluate("() => Promise.all(document.getAnimations().filter(a => a.effect && a.effect.getTiming().iterations !== Infinity)"
+                    + ".map(a => a.finished.catch(() => {})))");
 
             String where = "/" + page + " in " + skin + ", " + mode;
             assertThat(describe(new AxeBuilder(tab).withTags(WCAG).analyze().getViolations()))
@@ -812,6 +819,705 @@ class ShowcaseBrowserTest {
         root.evaluate("(root, file) => { const transfer = new DataTransfer(); transfer.items.add(new File([new Uint8Array(file.size)], file.name, {type:file.type}));"
                 + "root.dispatchEvent(new DragEvent('drop', {bubbles:true,cancelable:true,dataTransfer:transfer})); }",
                 java.util.Map.of("name", name, "type", type, "size", size));
+    }
+
+    @ParameterizedTest(name = "{0}, {1}")
+    @MethodSource("everySkinAndMode")
+    void confirmOverlaysFocusCancelIgnoreTheBackdropAndForgetCancelledActions(String skin, String mode) {
+        check("overlays", skin, mode, tab -> {
+            Locator opener = tab.locator("section[aria-labelledby='confirm-heading'] > .ex-row")
+                    .getByRole(AriaRole.BUTTON, new Locator.GetByRoleOptions().setName("Delete draft").setExact(true));
+            opener.click();
+            Locator dialog = tab.getByRole(AriaRole.ALERTDIALOG);
+            assertThat(dialog).hasAccessibleName("Delete this draft?");
+            assertThat(dialog.getByRole(AriaRole.BUTTON, new Locator.GetByRoleOptions().setName("Cancel"))).isFocused();
+            tab.keyboard().press("Tab");
+            assertThat(dialog.getByRole(AriaRole.BUTTON, new Locator.GetByRoleOptions().setName("Delete draft"))).isFocused();
+            tab.keyboard().press("Shift+Tab");
+            assertThat(dialog.getByRole(AriaRole.BUTTON, new Locator.GetByRoleOptions().setName("Cancel"))).isFocused();
+            opener.evaluate("button => button.focus()");
+            assertThat(dialog.getByRole(AriaRole.BUTTON, new Locator.GetByRoleOptions().setName("Cancel"))).isFocused();
+            tab.mouse().click(2, 2);
+            assertThat(dialog).isVisible();
+            dialog.evaluate("d => Promise.all(d.getAnimations({subtree:true}).map(a => a.finished))");
+            assertThat(describe(new AxeBuilder(tab).withTags(WCAG).analyze().getViolations())).isEmpty();
+            tab.keyboard().press("Escape");
+            assertThat(dialog).isHidden();
+            assertThat(opener).isFocused();
+            assertThat(tab.getByRole(AriaRole.STATUS).filter(new Locator.FilterOptions().setHasText("Confirmed actions:"))).hasText("Confirmed actions: 0");
+            tab.getByRole(AriaRole.BUTTON, new Page.GetByRoleOptions().setName("Archive draft")).click();
+            assertThat(dialog).hasAccessibleName("Archive this draft?");
+            dialog.getByRole(AriaRole.BUTTON, new Locator.GetByRoleOptions().setName("Archive").setExact(true)).click();
+            assertThat(dialog).isHidden();
+            assertThat(tab.getByRole(AriaRole.STATUS).filter(new Locator.FilterOptions().setHasText("Confirmed actions:"))).hasText("Confirmed actions: 1");
+        });
+    }
+
+    @ParameterizedTest(name = "{0}, {1}")
+    @MethodSource("everySkinAndMode")
+    void confirmOverlaysDoNotAnswerAChainedQuestionOnADoubleClick(String skin, String mode) {
+        check("overlays", skin, mode, tab -> {
+            tab.getByRole(AriaRole.BUTTON, new Page.GetByRoleOptions().setName("Two-step confirmation")).click();
+            Locator dialog = tab.getByRole(AriaRole.ALERTDIALOG);
+            dialog.getByRole(AriaRole.BUTTON, new Locator.GetByRoleOptions().setName("Continue").setExact(true))
+                    .evaluate("button => { button.click(); button.click(); }");
+            assertThat(dialog).hasAccessibleName("Confirm the final action?");
+            assertThat(dialog.getByRole(AriaRole.BUTTON, new Locator.GetByRoleOptions().setName("Cancel"))).isFocused();
+            assertThat(tab.getByRole(AriaRole.STATUS).filter(new Locator.FilterOptions().setHasText("Confirmed actions:"))).hasText("Confirmed actions: 0");
+            dialog.getByRole(AriaRole.BUTTON, new Locator.GetByRoleOptions().setName("Confirm final action"))
+                    .evaluate("button => { button.click(); button.click(); }");
+            assertThat(dialog).isHidden();
+            assertThat(tab.getByRole(AriaRole.STATUS).filter(new Locator.FilterOptions().setHasText("Confirmed actions:"))).hasText("Confirmed actions: 1");
+        });
+    }
+
+    @ParameterizedTest(name = "{0}, {1}")
+    @MethodSource("everySkinAndMode")
+    void sheetsValidateInPlaceKeepActionsVisibleAndRestoreNestedFocus(String skin, String mode) {
+        check("overlays", skin, mode, tab -> {
+            tab.setViewportSize(390, 700);
+            Locator opener = tab.getByRole(AriaRole.BUTTON, new Page.GetByRoleOptions().setName("Edit project").setExact(true));
+            opener.click();
+            Locator sheet = tab.getByRole(AriaRole.DIALOG, new Page.GetByRoleOptions().setName("Project settings"));
+            Locator name = sheet.getByLabel("Project name", new Locator.GetByLabelOptions().setExact(true));
+            assertThat(name).isFocused();
+            assertThat(tab.locator("html")).hasCSS("overflow", "hidden");
+            name.fill("");
+            name.press("Enter");
+            assertThat(name).hasAttribute("aria-invalid", "true");
+            assertThat(name).isFocused();
+            name.fill("admin");
+            name.press("Enter");
+            assertThat(name).hasAccessibleDescription("That project name is reserved.");
+            assertThat(name).isFocused();
+            assertThat(sheet.getByRole(AriaRole.BUTTON, new Locator.GetByRoleOptions().setName("Save project"))).isInViewport();
+            sheet.locator(".sw-sheet-body-content").evaluate("n => n.scrollTop = n.scrollHeight");
+            assertThat(sheet.locator(".sw-sheet-title")).isInViewport();
+            assertThat(sheet.getByRole(AriaRole.BUTTON, new Locator.GetByRoleOptions().setName("Save project"))).isInViewport();
+            assertThat((Boolean) sheet.locator(".sw-sheet-body-content").evaluate("n => n.scrollHeight > n.clientHeight && n.scrollTop > 0")).isTrue();
+            Locator nestedTrigger = sheet.getByRole(AriaRole.BUTTON, new Locator.GetByRoleOptions().setName("Review reset"));
+            nestedTrigger.click();
+            Locator confirm = tab.getByRole(AriaRole.ALERTDIALOG);
+            assertThat(confirm.getByRole(AriaRole.BUTTON, new Locator.GetByRoleOptions().setName("Cancel"))).isFocused();
+            tab.keyboard().press("Escape");
+            assertThat(confirm).isHidden();
+            assertThat(nestedTrigger).isFocused();
+            assertThat(sheet).isVisible();
+            name.fill("New project");
+            sheet.getByRole(AriaRole.BUTTON, new Locator.GetByRoleOptions().setName("Save project")).click();
+            assertThat(sheet).isHidden();
+            assertThat(opener).isFocused();
+            assertThat(tab.getByRole(AriaRole.STATUS).filter(new Locator.FilterOptions().setHasText("Saved project:"))).hasText("Saved project: New project.");
+        });
+    }
+
+    @ParameterizedTest(name = "{0}, {1}")
+    @MethodSource("everySkinAndMode")
+    void sheetsFollowEveryEdgeAndTextDirectionAndSurviveAjaxRefresh(String skin, String mode) {
+        check("overlays", skin, mode, tab -> {
+            for (String direction : List.of("ltr", "rtl")) {
+                tab.locator("html").evaluate("(n, dir) => n.dir = dir", direction);
+                for (String edge : List.of("Start", "Top", "Bottom")) {
+                    Locator opener = tab.getByRole(AriaRole.BUTTON, new Page.GetByRoleOptions().setName(edge + " sheet"));
+                    opener.click();
+                    Locator sheet = tab.locator(".sw-sheet[open]");
+                    sheet.evaluate("d => Promise.all(d.getAnimations({subtree:true}).map(a => a.finished))");
+                    var rect = sheet.boundingBox();
+                    if ("Top".equals(edge)) assertThat(rect.y).isCloseTo(0, org.assertj.core.data.Offset.offset(1.0));
+                    else if ("Bottom".equals(edge)) assertThat(rect.y + rect.height).isCloseTo((double) tab.viewportSize().height, org.assertj.core.data.Offset.offset(1.0));
+                    else if ("ltr".equals(direction)) assertThat(rect.x).isCloseTo(0, org.assertj.core.data.Offset.offset(1.0));
+                    else assertThat(rect.x + rect.width).isCloseTo((double) tab.viewportSize().width, org.assertj.core.data.Offset.offset(1.0));
+                    assertThat(describe(new AxeBuilder(tab).withTags(WCAG).analyze().getViolations())).isEmpty();
+                    tab.keyboard().press("Escape");
+                    assertThat(sheet).hasCount(0);
+                    assertThat(opener).isFocused();
+                }
+            }
+            tab.getByRole(AriaRole.BUTTON, new Page.GetByRoleOptions().setName("Edit project").setExact(true)).click();
+            Locator sheet = tab.getByRole(AriaRole.DIALOG, new Page.GetByRoleOptions().setName("Project settings"));
+            var beforeRefresh = sheet.elementHandle();
+            sheet.getByRole(AriaRole.BUTTON, new Locator.GetByRoleOptions().setName("Refresh open sheet")).click();
+            tab.waitForFunction("old => !old.isConnected", beforeRefresh);
+            assertThat(sheet).isVisible();
+            assertThat(sheet).hasJSProperty("open", true);
+            assertThat((Boolean) sheet.evaluate("d => d.matches(':modal')")).isTrue();
+            assertThat(sheet).hasAttribute("data-side", "end");
+            sheet.getByRole(AriaRole.BUTTON, new Locator.GetByRoleOptions().setName("Close").setExact(true)).click();
+            assertThat(sheet).isHidden();
+        });
+    }
+
+    @ParameterizedTest(name = "{0}, {1}")
+    @MethodSource("everySkinAndMode")
+    void popoversValidateInPlaceRefreshContentAndCloseAfterAnAjaxSave(String skin, String mode) {
+        check("popups", skin, mode, tab -> {
+            Locator trigger = tab.getByRole(AriaRole.BUTTON, new Page.GetByRoleOptions().setName("Quick edit").setExact(true));
+            trigger.click();
+            Locator popup = tab.getByRole(AriaRole.DIALOG, new Page.GetByRoleOptions().setName("Quick project edit"));
+            Locator name = popup.getByLabel("Display name", new Locator.GetByLabelOptions().setExact(true));
+            assertThat(name).isFocused();
+            assertThat(trigger).hasAttribute("aria-expanded", "true");
+            name.fill(""); name.press("Enter");
+            assertThat(name).hasAttribute("aria-invalid", "true");
+            assertThat(name).isFocused();
+            assertThat(name).hasAccessibleDescription(java.util.regex.Pattern.compile(".*Visible to your team.*is required.*public project name.*"));
+            popup.getByRole(AriaRole.BUTTON, new Locator.GetByRoleOptions().setName("Refresh content")).click();
+            assertThat(popup.getByText("Content refreshes: 1")).isVisible();
+            assertThat(popup).isVisible();
+            assertThat(trigger).hasAttribute("aria-expanded", "true");
+            name.fill("New display name");
+            popup.getByRole(AriaRole.BUTTON, new Locator.GetByRoleOptions().setName("Apply changes")).click();
+            assertThat(popup).isHidden();
+            assertThat(trigger).isFocused();
+            assertThat(trigger).hasAttribute("aria-expanded", "false");
+            assertThat(tab.getByRole(AriaRole.STATUS).filter(new Locator.FilterOptions().setHasText("Saved display name:")))
+                    .hasText("Saved display name: New display name.");
+        });
+    }
+
+    @ParameterizedTest(name = "{0}, {1}")
+    @MethodSource("everySkinAndMode")
+    void popoversDismissWithoutMakingThePageInertAndNestedEscapeKeepsTheParentOpen(String skin, String mode) {
+        check("popups", skin, mode, tab -> {
+            Locator trigger = tab.getByRole(AriaRole.BUTTON, new Page.GetByRoleOptions().setName("Quick edit").setExact(true));
+            Locator popup = tab.getByRole(AriaRole.DIALOG, new Page.GetByRoleOptions().setName("Quick project edit"));
+            trigger.click();
+            Locator nestedTrigger = popup.getByRole(AriaRole.BUTTON, new Locator.GetByRoleOptions().setName("Visibility details"));
+            nestedTrigger.click();
+            Locator nested = tab.getByRole(AriaRole.DIALOG, new Page.GetByRoleOptions().setName("Workspace visibility"));
+            assertThat(nested).isFocused();
+            assertThat(tab.getByRole(AriaRole.TOOLTIP)).hasCount(0);
+            tab.keyboard().press("Escape");
+            assertThat(nested).isHidden();
+            assertThat(nestedTrigger).isFocused();
+            assertThat(popup).isVisible();
+            popup.getByRole(AriaRole.BUTTON, new Locator.GetByRoleOptions().setName("Refresh content")).focus();
+            tab.keyboard().press("Tab");
+            assertThat(popup).isHidden();
+            assertThat(tab.getByRole(AriaRole.BUTTON, new Page.GetByRoleOptions().setName("Replace popover"))).isFocused();
+            trigger.click();
+            tab.getByRole(AriaRole.BUTTON, new Page.GetByRoleOptions().setName("Continue on page")).click();
+            assertThat(popup).isHidden();
+            assertThat(tab.getByRole(AriaRole.STATUS)).hasText("The page stayed interactive.");
+        });
+    }
+
+    @ParameterizedTest(name = "{0}, {1}")
+    @MethodSource("everySkinAndMode")
+    void tooltipsShowOnKeyboardFocusAndEscapeLeavesTheirContainingPopoverOpen(String skin, String mode) {
+        check("popups", skin, mode, tab -> {
+            tab.keyboard().press("Tab");
+            Locator export = tab.getByRole(AriaRole.BUTTON, new Page.GetByRoleOptions().setName("Export").setExact(true));
+            export.focus();
+            Locator tooltip = tab.getByRole(AriaRole.TOOLTIP);
+            assertThat(tooltip).hasText("Download a CSV copy.");
+            assertThat(export).isFocused();
+            assertThat(export).hasAccessibleDescription("Download a CSV copy.");
+            tab.keyboard().press("Escape");
+            assertThat(tooltip).hasCount(0);
+            assertThat(export).isFocused();
+            tab.getByRole(AriaRole.BUTTON, new Page.GetByRoleOptions().setName("Quick edit").setExact(true)).click();
+            Locator name = tab.getByLabel("Display name", new Page.GetByLabelOptions().setExact(true));
+            name.focus();
+            assertThat(tooltip).hasText("Use the public project name.");
+            tab.keyboard().press("Escape");
+            assertThat(tooltip).hasCount(0);
+            assertThat(tab.getByRole(AriaRole.DIALOG, new Page.GetByRoleOptions().setName("Quick project edit"))).isVisible();
+            tab.keyboard().press("Escape");
+            assertThat(tab.getByRole(AriaRole.DIALOG)).hasCount(0);
+        });
+    }
+
+    @ParameterizedTest(name = "{0}, {1}")
+    @MethodSource("everySkinAndMode")
+    void tooltipsRemainHoverableAndLabelModeDoesNotRepeatAnAccessibleName(String skin, String mode) {
+        check("popups", skin, mode, tab -> {
+            Locator export = tab.getByRole(AriaRole.BUTTON, new Page.GetByRoleOptions().setName("Export").setExact(true));
+            export.hover();
+            Locator tooltip = tab.getByRole(AriaRole.TOOLTIP);
+            assertThat(tooltip).hasText("Download a CSV copy.");
+            tooltip.evaluate("n => Promise.all(n.getAnimations().map(a => a.finished))");
+            var tipBox = tooltip.boundingBox();
+            // Move the pointer directly: Locator.hover() can scroll the anchor after measuring this top-layer node.
+            tab.mouse().move(tipBox.x + tipBox.width / 2, tipBox.y + tipBox.height / 2);
+            tab.waitForTimeout(180);
+            assertThat(tooltip).isVisible();
+            tab.keyboard().press("Escape");
+            assertThat(tooltip).hasCount(0);
+            tab.mouse().move(0, 0);
+            Locator copy = tab.getByRole(AriaRole.BUTTON, new Page.GetByRoleOptions().setName("Copy link").setExact(true));
+            copy.hover();
+            Locator labelTip = tab.locator(".sw-tooltip-content[aria-hidden='true']:popover-open");
+            assertThat(labelTip).hasText("Copy link");
+            assertThat(copy).hasAccessibleName("Copy link");
+            assertThat(copy).hasAccessibleDescription("");
+            assertThat(tab.locator("[style]")).hasCount(0);
+            tab.emulateMedia(new Page.EmulateMediaOptions().setForcedColors(ForcedColors.ACTIVE));
+            assertThat(labelTip).hasCSS("border-top-width", "1px");
+            tab.mouse().move(0, 0);
+            assertThat(labelTip).hasCount(0);
+            tab.emulateMedia(new Page.EmulateMediaOptions().setForcedColors(ForcedColors.NONE));
+            tab.evaluate("() => {const label=document.createElement('label'); label.id='wrapped-label'; label.textContent='Wrapped control';"
+                    + "const input=document.createElement('input'); input.type='checkbox'; input.id='wrapped-control';"
+                    + "input.setAttribute('data-sw-tooltip','Additional explanation'); label.append(input); document.querySelector('main').append(label);}");
+            tab.keyboard().press("Tab");
+            Locator wrapped = tab.getByRole(AriaRole.CHECKBOX, new Page.GetByRoleOptions().setName("Wrapped control").setExact(true));
+            wrapped.focus();
+            assertThat(tooltip).hasText("Additional explanation");
+            assertThat(wrapped).hasAccessibleName("Wrapped control");
+            assertThat(wrapped).hasAccessibleDescription("Additional explanation");
+            tab.locator("#wrapped-label").evaluate("n => n.remove()");
+            assertThat(tooltip).hasCount(0);
+        });
+    }
+
+    @ParameterizedTest(name = "{0}, {1}")
+    @MethodSource("everySkinAndMode")
+    void tooltipModelsSurviveAjaxReplacementAndRemovedHintsLeaveNoOrphan(String skin, String mode) {
+        check("popups", skin, mode, tab -> {
+            Locator export = tab.getByRole(AriaRole.BUTTON, new Page.GetByRoleOptions().setName("Export").setExact(true));
+            export.hover();
+            Locator tooltip = tab.getByRole(AriaRole.TOOLTIP);
+            assertThat(tooltip).isVisible();
+            String old = tooltip.getAttribute("id");
+            long total = tab.locator(".sw-tooltip-content").count();
+            tab.getByRole(AriaRole.BUTTON, new Page.GetByRoleOptions().setName("Update export hint")).click();
+            tab.waitForFunction("id => !document.getElementById(id)", old);
+            export.hover();
+            assertThat(tooltip).hasText("Updated <CSV> export hint.");
+            assertThat(tooltip.locator("csv")).hasCount(0);
+            assertThat(tab.locator(".sw-tooltip-content")).hasCount((int) total);
+            tab.setViewportSize(320, 700);
+            String longHint = "LongFilename".repeat(25);
+            export.evaluate("(n, text) => n.setAttribute('data-sw-tooltip', text)", longHint);
+            tab.mouse().move(0, 0); export.hover();
+            assertThat(tooltip).hasText(longHint);
+            assertThat((Boolean) tooltip.evaluate("n => n.scrollWidth <= n.clientWidth + 1")).isTrue();
+            tab.getByRole(AriaRole.BUTTON, new Page.GetByRoleOptions().setName("Remove export hint")).click();
+            assertThat(export).not().hasAttribute("data-sw-tooltip", java.util.regex.Pattern.compile(".+"));
+            assertThat(export).hasAccessibleDescription("");
+            assertThat(tab.locator(".sw-tooltip-content")).hasCount((int) total - 1);
+        });
+    }
+
+    @ParameterizedTest(name = "{0}, {1}")
+    @MethodSource("everySkinAndMode")
+    void popupAnchorsFlipAndStayInsideSmallViewportsInBothTextDirections(String skin, String mode) {
+        check("popups", skin, mode, tab -> {
+            tab.setViewportSize(390, 700);
+            for (String direction : List.of("ltr", "rtl")) {
+                tab.locator("html").evaluate("(n, dir) => n.dir = dir", direction);
+                for (String side : List.of("Top", "Bottom", "Start", "End")) {
+                    Locator trigger = tab.getByRole(AriaRole.BUTTON, new Page.GetByRoleOptions().setName(side + " placement"));
+                    trigger.click();
+                    Locator popup = tab.getByRole(AriaRole.DIALOG, new Page.GetByRoleOptions().setName(side + " example"));
+                    popup.evaluate("n => Promise.all(n.getAnimations().map(a => a.finished))");
+                    var rect = popup.boundingBox();
+                    assertThat(rect.x).isGreaterThanOrEqualTo(0);
+                    assertThat(rect.x + rect.width).isLessThanOrEqualTo(391);
+                    assertThat(rect.y).isGreaterThanOrEqualTo(0);
+                    assertThat(rect.y + rect.height).isLessThanOrEqualTo(701);
+                    tab.keyboard().press("Escape");
+                    assertThat(popup).isHidden();
+                }
+            }
+            tab.setViewportSize(390, 360);
+            Locator top = tab.getByRole(AriaRole.BUTTON, new Page.GetByRoleOptions().setName("Top placement"));
+            top.evaluate("n => window.scrollTo(0, scrollY + n.getBoundingClientRect().top - 4)");
+            top.click();
+            Locator popup = tab.getByRole(AriaRole.DIALOG, new Page.GetByRoleOptions().setName("Top example"));
+            popup.evaluate("n => Promise.all(n.getAnimations().map(a => a.finished))");
+            assertThat(popup.boundingBox().y).isGreaterThanOrEqualTo(top.boundingBox().y + top.boundingBox().height);
+            tab.emulateMedia(new Page.EmulateMediaOptions().setForcedColors(ForcedColors.ACTIVE));
+            assertThat(popup).hasCSS("border-top-width", "1px");
+            tab.keyboard().press("Escape");
+            tab.emulateMedia(new Page.EmulateMediaOptions().setForcedColors(ForcedColors.NONE));
+        });
+    }
+
+    @ParameterizedTest(name = "{0}, {1}")
+    @MethodSource("everySkinAndMode")
+    void touchPopoversWorkWithoutShowingHoverTooltips(String skin, String mode) {
+        check("popups", skin, mode, new Browser.NewContextOptions().setHasTouch(true).setViewportSize(390, 700), tab -> {
+            tab.getByRole(AriaRole.BUTTON, new Page.GetByRoleOptions().setName("Export").setExact(true)).tap();
+            assertThat(tab.getByRole(AriaRole.STATUS)).hasText("Export preview requested.");
+            assertThat(tab.locator(".sw-tooltip-content:popover-open")).hasCount(0);
+            tab.getByRole(AriaRole.BUTTON, new Page.GetByRoleOptions().setName("Quick edit").setExact(true)).tap();
+            assertThat(tab.getByLabel("Display name", new Page.GetByLabelOptions().setExact(true))).isFocused();
+            assertThat(tab.locator(".sw-tooltip-content:popover-open")).hasCount(0);
+            tab.getByRole(AriaRole.BUTTON, new Page.GetByRoleOptions().setName("Apply changes")).tap();
+            assertThat(tab.getByRole(AriaRole.DIALOG)).hasCount(0);
+            tab.keyboard().press("Tab");
+            tab.getByRole(AriaRole.BUTTON, new Page.GetByRoleOptions().setName("Export").setExact(true)).focus();
+            assertThat(tab.getByRole(AriaRole.TOOLTIP)).hasText("Download a CSV copy.");
+        });
+    }
+
+    @ParameterizedTest(name = "{0}, {1}")
+    @MethodSource("everySkinAndMode")
+    void dropdownKeyboardNavigationTypeaheadAndActivation(String skin, String mode) {
+        check("menus", skin, mode, tab -> {
+            Locator trigger = tab.getByRole(AriaRole.BUTTON, new Page.GetByRoleOptions().setName("Project actions").setExact(true));
+            Locator menu = tab.getByRole(AriaRole.MENU, new Page.GetByRoleOptions().setName("Project actions").setExact(true));
+            trigger.focus(); trigger.press("ArrowDown");
+            assertThat(menu.getByRole(AriaRole.MENUITEM, new Locator.GetByRoleOptions().setName("Edit project"))).isFocused();
+            assertThat(trigger).hasAttribute("aria-expanded", "true");
+            tab.keyboard().press("End");
+            assertThat(menu.getByRole(AriaRole.MENUITEM, new Locator.GetByRoleOptions().setName("Delete project…"))).isFocused();
+            menu.evaluate("n => Promise.all(n.getAnimations().map(a=>a.finished))");
+            assertThat(describe(new AxeBuilder(tab).withTags(WCAG).analyze().getViolations())).isEmpty();
+            tab.keyboard().press("ArrowUp");
+            assertThat(menu.getByRole(AriaRole.MENUITEM, new Locator.GetByRoleOptions().setName("Export PDF"))).isFocused();
+            tab.keyboard().press("Home");
+            tab.keyboard().press("e");
+            assertThat(menu.getByRole(AriaRole.MENUITEM, new Locator.GetByRoleOptions().setName("Export CSV"))).isFocused();
+            tab.keyboard().press("e");
+            assertThat(menu.getByRole(AriaRole.MENUITEM, new Locator.GetByRoleOptions().setName("Export PDF"))).isFocused();
+            tab.keyboard().press("e");
+            assertThat(menu.getByRole(AriaRole.MENUITEM, new Locator.GetByRoleOptions().setName("Edit project"))).isFocused();
+            tab.keyboard().press("Escape");
+            assertThat(menu).isHidden(); assertThat(trigger).isFocused();
+            assertThat(trigger).hasAttribute("aria-expanded", "false");
+            trigger.press("ArrowUp");
+            assertThat(menu.getByRole(AriaRole.MENUITEM, new Locator.GetByRoleOptions().setName("Delete project…"))).isFocused();
+            tab.keyboard().press("Escape");
+            trigger.press("Space");
+            assertThat(menu.getByRole(AriaRole.MENUITEM, new Locator.GetByRoleOptions().setName("Edit project"))).isFocused();
+            tab.keyboard().press("e"); tab.keyboard().press("x");
+            assertThat(menu.getByRole(AriaRole.MENUITEM, new Locator.GetByRoleOptions().setName("Export CSV"))).isFocused();
+            tab.keyboard().press("Enter");
+            assertThat(menu).isHidden(); assertThat(trigger).isFocused();
+            assertThat(tab.getByRole(AriaRole.STATUS).filter(new Locator.FilterOptions().setHasText("Chosen:"))).hasText("Chosen: Export CSV.");
+        });
+    }
+
+    @ParameterizedTest(name = "{0}, {1}")
+    @MethodSource("everySkinAndMode")
+    void dropdownPointerDisabledActionsAndRepeatedClicks(String skin, String mode) {
+        check("menus", skin, mode, tab -> {
+            Locator trigger = tab.getByRole(AriaRole.BUTTON, new Page.GetByRoleOptions().setName("Project actions").setExact(true));
+            trigger.click();
+            Locator menu = tab.getByRole(AriaRole.MENU, new Page.GetByRoleOptions().setName("Project actions").setExact(true));
+            assertThat(menu).isFocused();
+            Locator disabled = menu.getByRole(AriaRole.MENUITEM, new Locator.GetByRoleOptions().setName("Archive (unavailable)"));
+            assertThat(disabled).isDisabled();
+            disabled.evaluate("n => n.dispatchEvent(new MouseEvent('click',{bubbles:true,cancelable:true}))");
+            assertThat(tab.getByRole(AriaRole.STATUS).filter(new Locator.FilterOptions().setHasText("Actions:"))).hasText("Actions: 0");
+            menu.evaluate("n => Promise.all(n.getAnimations().map(a=>a.finished))");
+            Locator export = menu.getByRole(AriaRole.MENUITEM, new Locator.GetByRoleOptions().setName("Export CSV"));
+            var box = export.boundingBox(); tab.mouse().move(box.x + box.width / 2, box.y + box.height / 2);
+            assertThat(export).isFocused();
+            box = disabled.boundingBox(); tab.mouse().move(box.x + box.width / 2, box.y + box.height / 2);
+            assertThat(menu).isFocused();
+            export.evaluate("n => {n.click(); n.click();}");
+            assertThat(menu).isHidden(); assertThat(trigger).isFocused();
+            assertThat(tab.getByRole(AriaRole.STATUS).filter(new Locator.FilterOptions().setHasText("Chosen:"))).hasText("Chosen: Export CSV.");
+            assertThat(tab.getByRole(AriaRole.STATUS).filter(new Locator.FilterOptions().setHasText("Actions:"))).hasText("Actions: 1");
+        });
+    }
+
+    @ParameterizedTest(name = "{0}, {1}")
+    @MethodSource("everySkinAndMode")
+    void dropdownCheckedItemsUseServerStateAndSpaceActivatesLinks(String skin, String mode) {
+        check("menus", skin, mode, tab -> {
+            Locator trigger = tab.getByRole(AriaRole.BUTTON, new Page.GetByRoleOptions().setName("View options"));
+            Locator menu = tab.getByRole(AriaRole.MENU, new Page.GetByRoleOptions().setName("View options"));
+            trigger.click();
+            Locator compact = menu.getByRole(AriaRole.MENUITEMCHECKBOX, new Locator.GetByRoleOptions().setName("Compact rows"));
+            assertThat(compact).hasAttribute("aria-checked", "false");
+            compact.click();
+            assertThat(tab.getByRole(AriaRole.STATUS).filter(new Locator.FilterOptions().setHasText("Compact rows:"))).hasText("Compact rows: true.");
+            assertThat(menu).isHidden();
+            trigger.press("ArrowDown");
+            assertThat(compact).hasAttribute("aria-checked", "true");
+            Locator name = menu.getByRole(AriaRole.MENUITEMRADIO, new Locator.GetByRoleOptions().setName("Sort by name"));
+            Locator updated = menu.getByRole(AriaRole.MENUITEMRADIO, new Locator.GetByRoleOptions().setName("Sort by updated"));
+            assertThat(name).hasAttribute("aria-checked", "true");
+            updated.focus(); updated.press("Space");
+            assertThat(tab.getByRole(AriaRole.STATUS).filter(new Locator.FilterOptions().setHasText("Sort order:"))).hasText("Sort order: Updated.");
+            assertThat(menu).isHidden();
+            trigger.press("Enter");
+            assertThat(updated).hasAttribute("aria-checked", "true");
+            assertThat(name).hasAttribute("aria-checked", "false");
+            menu.evaluate("n => Promise.all(n.getAnimations().map(a=>a.finished))");
+            assertThat(describe(new AxeBuilder(tab).withTags(WCAG).analyze().getViolations())).isEmpty();
+            tab.keyboard().press("Escape");
+        });
+    }
+
+    @ParameterizedTest(name = "{0}, {1}")
+    @MethodSource("everySkinAndMode")
+    void dropdownNavigationAndTabDismissal(String skin, String mode) {
+        check("menus", skin, mode, tab -> {
+            Locator project = tab.getByRole(AriaRole.BUTTON, new Page.GetByRoleOptions().setName("Project actions").setExact(true));
+            project.press("ArrowDown");
+            assertThat(tab.getByRole(AriaRole.MENUITEM, new Page.GetByRoleOptions().setName("Edit project"))).isFocused();
+            tab.keyboard().press("Tab");
+            assertThat(tab.getByRole(AriaRole.MENU)).hasCount(0);
+            assertThat(tab.getByRole(AriaRole.BUTTON, new Page.GetByRoleOptions().setName("Replace project actions"))).isFocused();
+            project.press("ArrowDown");
+            assertThat(tab.getByRole(AriaRole.MENUITEM, new Page.GetByRoleOptions().setName("Edit project"))).isFocused();
+            tab.keyboard().press("Shift+Tab");
+            assertThat(tab.getByRole(AriaRole.MENU)).hasCount(0);
+            Locator navigation = tab.getByRole(AriaRole.BUTTON, new Page.GetByRoleOptions().setName("Navigate examples"));
+            navigation.press("ArrowDown");
+            Locator menu = tab.getByRole(AriaRole.MENU, new Page.GetByRoleOptions().setName("Navigate examples"));
+            assertThat(menu.getByRole(AriaRole.MENUITEM, new Locator.GetByRoleOptions().setName("Home").setExact(true))).isFocused();
+            assertThat(menu.getByRole(AriaRole.MENUITEM, new Locator.GetByRoleOptions().setName("Unavailable destination")))
+                    .not().hasAttribute("href", java.util.regex.Pattern.compile(".+"));
+            tab.keyboard().press("End");
+            Locator link = menu.getByRole(AriaRole.MENUITEM, new Locator.GetByRoleOptions().setName(java.util.regex.Pattern.compile("Popovers.*")));
+            assertThat(link).isFocused();
+            link.press("Space");
+            tab.waitForURL("**/popups*");
+            assertThat(tab.locator("h1")).hasText("Popovers & tooltips");
+        });
+    }
+
+    @ParameterizedTest(name = "{0}, {1}")
+    @MethodSource("everySkinAndMode")
+    void dropdownAjaxReplacementAndEmptyModels(String skin, String mode) {
+        check("menus", skin, mode, tab -> {
+            assertThat(tab.getByRole(AriaRole.BUTTON, new Page.GetByRoleOptions().setName("No available actions"))).isDisabled();
+            Locator trigger = tab.getByRole(AriaRole.BUTTON, new Page.GetByRoleOptions().setName("Project actions").setExact(true));
+            Locator menu = tab.getByRole(AriaRole.MENU, new Page.GetByRoleOptions().setName("Project actions").setExact(true));
+            trigger.press("ArrowDown");
+            tab.getByRole(AriaRole.BUTTON, new Page.GetByRoleOptions().setName("Replace project actions")).evaluate("n => n.click()");
+            assertThat(trigger).hasAttribute("aria-expanded", "false");
+            assertThat(menu).isHidden();
+            trigger.press("ArrowDown");
+            Locator rename = menu.getByRole(AriaRole.MENUITEM, new Locator.GetByRoleOptions().setName("Rename project"));
+            assertThat(rename).isFocused();
+            assertThat(menu.getByRole(AriaRole.MENUITEM)).hasCount(3);
+            rename.press("Enter");
+            assertThat(tab.getByRole(AriaRole.STATUS).filter(new Locator.FilterOptions().setHasText("Chosen:"))).hasText("Chosen: Rename project.");
+            assertThat(menu).isHidden();
+        });
+    }
+
+    @ParameterizedTest(name = "{0}, {1}")
+    @MethodSource("everySkinAndMode")
+    void dropdownActionsOpenConfirmationsAndMenusStayInsideTheirSheet(String skin, String mode) {
+        check("menus", skin, mode, tab -> {
+            Locator project = tab.getByRole(AriaRole.BUTTON, new Page.GetByRoleOptions().setName("Project actions").setExact(true));
+            project.press("ArrowUp");
+            assertThat(tab.getByRole(AriaRole.MENUITEM, new Page.GetByRoleOptions().setName("Delete project…"))).isFocused();
+            tab.keyboard().press("Enter");
+            Locator confirm = tab.getByRole(AriaRole.ALERTDIALOG);
+            assertThat(confirm).hasAccessibleName("Delete this preview project?");
+            assertThat(confirm.getByRole(AriaRole.BUTTON, new Locator.GetByRoleOptions().setName("Cancel"))).isFocused();
+            confirm.getByRole(AriaRole.BUTTON, new Locator.GetByRoleOptions().setName("Cancel")).click();
+            assertThat(confirm).isHidden(); assertThat(project).isFocused();
+            tab.getByRole(AriaRole.BUTTON, new Page.GetByRoleOptions().setName("Open menu sheet")).click();
+            Locator sheet = tab.getByRole(AriaRole.DIALOG, new Page.GetByRoleOptions().setName("Menu in a sheet"));
+            Locator trigger = sheet.getByRole(AriaRole.BUTTON, new Locator.GetByRoleOptions().setName("Sheet actions"));
+            trigger.press("ArrowDown");
+            Locator menu = sheet.getByRole(AriaRole.MENU, new Locator.GetByRoleOptions().setName("Sheet actions"));
+            assertThat(menu.getByRole(AriaRole.MENUITEM, new Locator.GetByRoleOptions().setName("Copy reference"))).isFocused();
+            tab.keyboard().press("Escape");
+            assertThat(menu).isHidden(); assertThat(sheet).isVisible(); assertThat(trigger).isFocused();
+            trigger.press("ArrowUp");
+            assertThat(menu.getByRole(AriaRole.MENUITEM, new Locator.GetByRoleOptions().setName("Check status"))).isFocused();
+            tab.keyboard().press("Enter");
+            assertThat(menu).isHidden(); assertThat(sheet).isVisible(); assertThat(trigger).isFocused();
+            sheet.getByRole(AriaRole.BUTTON, new Locator.GetByRoleOptions().setName("Close").setExact(true)).click();
+            assertThat(sheet).isHidden();
+            assertThat(tab.getByRole(AriaRole.STATUS).filter(new Locator.FilterOptions().setHasText("Sheet:"))).hasText("Sheet: Check status.");
+        });
+    }
+
+    @ParameterizedTest(name = "{0}, {1}")
+    @MethodSource("everySkinAndMode")
+    void dropdownTouchPositioningAndForcedColors(String skin, String mode) {
+        check("menus", skin, mode, new Browser.NewContextOptions().setHasTouch(true).setViewportSize(390, 700), tab -> {
+            for (String direction : List.of("ltr", "rtl")) {
+                tab.locator("html").evaluate("(n, dir) => n.dir = dir", direction);
+                Locator trigger = tab.getByRole(AriaRole.BUTTON, new Page.GetByRoleOptions().setName("Export as").setExact(true));
+                trigger.tap();
+                Locator menu = tab.getByRole(AriaRole.MENU, new Page.GetByRoleOptions().setName("Export as").setExact(true));
+                menu.evaluate("n => Promise.all(n.getAnimations().map(a=>a.finished))");
+                var rect = menu.boundingBox();
+                assertThat(rect.x).isGreaterThanOrEqualTo(0); assertThat(rect.x + rect.width).isLessThanOrEqualTo(391);
+                assertThat(rect.y).isGreaterThanOrEqualTo(0); assertThat(rect.y + rect.height).isLessThanOrEqualTo(701);
+                menu.getByRole(AriaRole.MENUITEM, new Locator.GetByRoleOptions().setName("JSON").setExact(true)).tap();
+                assertThat(menu).isHidden(); assertThat(trigger).isFocused();
+                assertThat(tab.getByRole(AriaRole.STATUS).filter(new Locator.FilterOptions().setHasText("Export format:"))).hasText("Export format: JSON.");
+            }
+            Locator trigger = tab.getByRole(AriaRole.BUTTON, new Page.GetByRoleOptions().setName("Project actions").setExact(true));
+            trigger.press("ArrowDown");
+            Locator menu = tab.getByRole(AriaRole.MENU, new Page.GetByRoleOptions().setName("Project actions").setExact(true));
+            tab.emulateMedia(new Page.EmulateMediaOptions().setForcedColors(ForcedColors.ACTIVE));
+            assertThat(menu).hasCSS("border-top-width", "1px");
+            assertThat(menu.getByRole(AriaRole.MENUITEM, new Locator.GetByRoleOptions().setName("Edit project"))).hasCSS("outline-style", "solid");
+            tab.keyboard().press("Escape");
+            tab.emulateMedia(new Page.EmulateMediaOptions().setForcedColors(ForcedColors.NONE));
+        });
+    }
+
+    @ParameterizedTest(name = "{0}, {1}")
+    @MethodSource("everySkinAndMode")
+    void toastVariantsAreTextOnlyAndDoNotTakeFocus(String skin, String mode) {
+        check("toasts", skin, mode, tab -> {
+            for (String variant : List.of("default", "success", "info", "warning", "error")) {
+                Locator trigger = tab.getByRole(AriaRole.BUTTON, new Page.GetByRoleOptions().setName("Show " + variant + " toast").setExact(true));
+                trigger.click();
+                Locator toast = tab.locator(".sw-toast[data-level='" + variant + "']");
+                assertThat(toast).containsText("Your workspace is ready for the next step.");
+                assertThat(trigger).isFocused();
+                assertThat(toast.locator(".sw-toast-content")).hasAttribute("role", variant.equals("error") ? "alert" : "status");
+                assertThat(toast.locator("svg")).hasCount(variant.equals("default") ? 0 : 1);
+            }
+            tab.getByRole(AriaRole.BUTTON, new Page.GetByRoleOptions().setName("Show literal toast")).click();
+            assertThat(tab.locator(".sw-toast").last().locator(".sw-toast-title")).hasText("<b>Plain title</b>");
+            assertThat(tab.locator(".sw-toast").last().locator(".sw-toast-description")).hasText("<strong>Zoë & 李</strong> stays plain text.");
+            assertThat(tab.locator(".sw-toast b,.sw-toast strong")).hasCount(0);
+            assertThat(tab.getByRole(AriaRole.REGION, new Page.GetByRoleOptions().setName("Notifications (Alt+T)"))).isVisible();
+            tab.keyboard().press("Alt+KeyT");
+            assertThat(tab.locator(".sw-toast").last().getByRole(AriaRole.BUTTON)).isFocused();
+        });
+    }
+
+    @ParameterizedTest(name = "{0}, {1}")
+    @MethodSource("everySkinAndMode")
+    void toastKeyboardDismissalReturnsFocusAndOutsideEscapeLeavesThemAlone(String skin, String mode) {
+        check("toasts", skin, mode, tab -> {
+            Locator trigger = tab.getByRole(AriaRole.BUTTON, new Page.GetByRoleOptions().setName("Show three toasts"));
+            trigger.click();
+            assertThat(tab.locator(".sw-toast")).hasCount(3);
+            tab.keyboard().press("Escape");
+            assertThat(tab.locator(".sw-toast")).hasCount(3);
+            tab.keyboard().press("Alt+KeyT");
+            assertThat(tab.locator(".sw-toast").last().getByRole(AriaRole.BUTTON)).isFocused();
+            assertThat((Boolean) tab.locator(".sw-toast").last().getByRole(AriaRole.BUTTON).evaluate(
+                    "n=>n.matches(':focus-visible') && (getComputedStyle(n).boxShadow!=='none' || getComputedStyle(n).outlineStyle!=='none')")).isTrue();
+            for (int remaining = 2; remaining >= 0; remaining--) {
+                tab.keyboard().press("Escape");
+                assertThat(tab.locator(".sw-toast")).hasCount(remaining);
+                if (remaining > 0) assertThat(tab.locator(".sw-toast").last().getByRole(AriaRole.BUTTON)).isFocused();
+            }
+            assertThat(tab.locator("#sw-toaster")).hasCount(0);
+            assertThat(trigger).isFocused();
+            trigger.click();
+            Locator first = tab.getByRole(AriaRole.BUTTON, new Page.GetByRoleOptions().setName("Dismiss notification")).first();
+            first.focus(); tab.keyboard().press("Enter");
+            assertThat(tab.locator(".sw-toast")).hasCount(2);
+            assertThat(tab.getByRole(AriaRole.BUTTON, new Page.GetByRoleOptions().setName("Dismiss notification")).first()).isFocused();
+        });
+    }
+
+    @ParameterizedTest(name = "{0}, {1}")
+    @MethodSource("everySkinAndMode")
+    void toastTimersPauseOnHoverFocusAndHiddenPages(String skin, String mode) {
+        check("toasts", skin, mode, tab -> {
+            tab.clock().install(new com.microsoft.playwright.Clock.InstallOptions().setTime(1000000));
+            tab.clock().pauseAt(1000000);
+            tab.evaluate("Shadwick.toast('Temporary',{duration:2000,title:'Timed'}); Shadwick.toast('Persistent',{duration:0})");
+            tab.clock().runFor(40);
+            Locator timed = tab.locator(".sw-toast").filter(new Locator.FilterOptions().setHasText("Temporary"));
+            assertThat(timed).isVisible();
+            tab.clock().runFor(1000);
+            var box = timed.boundingBox(); tab.mouse().move(box.x + 10, box.y + 10);
+            tab.clock().runFor(5000);
+            assertThat(timed).isVisible();
+            tab.mouse().move(0, 0);
+            tab.clock().runFor(500);
+            timed.getByRole(AriaRole.BUTTON).focus();
+            tab.clock().runFor(5000);
+            assertThat(timed).isVisible();
+            tab.getByRole(AriaRole.BUTTON, new Page.GetByRoleOptions().setName("Keep until dismissed")).focus();
+            tab.evaluate("Object.defineProperty(document,'hidden',{configurable:true,get:()=>true}); document.dispatchEvent(new Event('visibilitychange'))");
+            tab.clock().runFor(5000);
+            assertThat(timed).isVisible();
+            tab.evaluate("delete document.hidden; document.dispatchEvent(new Event('visibilitychange'))");
+            tab.clock().runFor(900);
+            assertThat(timed).isVisible();
+            tab.clock().runFor(200);
+            assertThat(timed).hasCount(0);
+            assertThat(tab.locator(".sw-toast")).hasCount(1);
+            tab.clock().runFor(60000);
+            assertThat(tab.locator(".sw-toast")).containsText("Persistent");
+            tab.clock().resume();
+        });
+    }
+
+    @ParameterizedTest(name = "{0}, {1}")
+    @MethodSource("everySkinAndMode")
+    void toastModalContextStaysInteractiveAndEscapeDismissesOnlyTheToast(String skin, String mode) {
+        check("toasts", skin, mode, tab -> {
+            tab.getByRole(AriaRole.BUTTON, new Page.GetByRoleOptions().setName("Keep until dismissed")).click();
+            tab.getByRole(AriaRole.BUTTON, new Page.GetByRoleOptions().setName("Open toast dialog")).click();
+            Locator dialog = tab.getByRole(AriaRole.DIALOG, new Page.GetByRoleOptions().setName("Notifications in a dialog"));
+            assertThat(dialog.locator("#sw-toaster")).isVisible();
+            dialog.getByRole(AriaRole.BUTTON, new Locator.GetByRoleOptions().setName("Notify inside dialog")).click();
+            assertThat(dialog.locator(".sw-toast")).hasCount(2);
+            assertThat(dialog.getByRole(AriaRole.BUTTON, new Locator.GetByRoleOptions().setName("Notify inside dialog"))).isFocused();
+            tab.keyboard().press("Alt+KeyT"); tab.keyboard().press("Escape");
+            assertThat(dialog).isVisible(); assertThat(dialog.locator(".sw-toast")).hasCount(1);
+            tab.keyboard().press("Escape");
+            assertThat(dialog).isVisible();
+            assertThat(dialog.getByRole(AriaRole.BUTTON, new Locator.GetByRoleOptions().setName("Notify inside dialog"))).isFocused();
+            dialog.getByRole(AriaRole.BUTTON, new Locator.GetByRoleOptions().setName("Notify and close")).click();
+            assertThat(dialog).isHidden();
+            assertThat(tab.locator("body > #sw-toaster")).containsText("The dialog has closed and this toast stays usable.");
+            tab.keyboard().press("Alt+KeyT"); tab.keyboard().press("Escape");
+            assertThat(tab.locator("#sw-toaster")).hasCount(0);
+            tab.getByRole(AriaRole.BUTTON, new Page.GetByRoleOptions().setName("Open toast sheet")).click();
+            Locator sheet = tab.getByRole(AriaRole.DIALOG, new Page.GetByRoleOptions().setName("Notifications in a sheet"));
+            sheet.getByRole(AriaRole.BUTTON, new Locator.GetByRoleOptions().setName("Notify inside sheet")).click();
+            assertThat(sheet.locator(".sw-toast")).hasCount(1);
+            tab.keyboard().press("Alt+KeyT");
+            sheet.evaluate("n => Promise.all(n.getAnimations().map(a=>a.finished))");
+            assertThat(describe(new AxeBuilder(tab).withTags(WCAG).analyze().getViolations())).isEmpty();
+            tab.keyboard().press("Escape"); assertThat(sheet).isVisible();
+            sheet.getByRole(AriaRole.BUTTON, new Locator.GetByRoleOptions().setName("Close").setExact(true)).click();
+            assertThat(sheet).isHidden();
+        });
+    }
+
+    @ParameterizedTest(name = "{0}, {1}")
+    @MethodSource("everySkinAndMode")
+    void toastFullRenderAjaxReplacementAndRemovedViewportLeaveNoStaleMessages(String skin, String mode) {
+        check("toasts", skin, mode, tab -> {
+            tab.getByRole(AriaRole.LINK, new Page.GetByRoleOptions().setName("Full page toast")).click();
+            assertThat(tab.locator(".sw-toast")).containsText("A notification from a full page render.");
+            tab.keyboard().press("Alt+KeyT"); tab.keyboard().press("Escape");
+            Locator replace = tab.getByRole(AriaRole.BUTTON, new Page.GetByRoleOptions().setName("Replace this button"));
+            String oldId = replace.getAttribute("id");
+            var oldElement = replace.elementHandle();
+            replace.click();
+            tab.waitForFunction("n => !n.isConnected", oldElement);
+            assertThat(tab.locator(".sw-toast")).containsText("The Ajax update keeps this notification visible.");
+            assertThat(replace).hasAttribute("id", oldId);
+            tab.locator("#sw-toaster").evaluate("n=>n.remove()");
+            tab.getByRole(AriaRole.BUTTON, new Page.GetByRoleOptions().setName("Keep until dismissed")).click();
+            assertThat(tab.locator("#sw-toaster")).hasCount(1);
+            assertThat(tab.locator(".sw-toast")).hasCount(1);
+            assertThat(tab.locator(".sw-toast")).containsText("This message waits for you to dismiss it.");
+            tab.keyboard().press("Alt+KeyT"); tab.keyboard().press("Escape");
+            assertThat(tab.locator("#sw-toaster")).hasCount(0);
+        });
+    }
+
+    @ParameterizedTest(name = "{0}, {1}")
+    @MethodSource("everySkinAndMode")
+    void toastMobileOverflowRtlAndForcedColors(String skin, String mode) {
+        check("toasts", skin, mode, new Browser.NewContextOptions().setHasTouch(true).setViewportSize(320, 500), tab -> {
+            tab.locator("html").evaluate("n=>n.dir='rtl'");
+            tab.evaluate("for(let i=0;i<10;i++) Shadwick.toast('LongFilename'.repeat(30),{title:'Message '+i,variant:'warning',duration:0})");
+            assertThat(tab.locator(".sw-toast")).hasCount(10);
+            assertThat((Boolean) tab.locator("#sw-toaster").evaluate("n=>n.scrollHeight>n.clientHeight && n.scrollWidth<=n.clientWidth+1")).isTrue();
+            var box = tab.locator("#sw-toaster").boundingBox();
+            assertThat(box.x).isGreaterThanOrEqualTo(0); assertThat(box.x + box.width).isLessThanOrEqualTo(321);
+            assertThat(box.y).isGreaterThanOrEqualTo(0); assertThat(box.y + box.height).isLessThanOrEqualTo(501);
+            tab.locator(".sw-toast").last().getByRole(AriaRole.BUTTON).tap();
+            assertThat(tab.locator(".sw-toast")).hasCount(9);
+            tab.emulateMedia(new Page.EmulateMediaOptions().setForcedColors(ForcedColors.ACTIVE));
+            assertThat(tab.locator(".sw-toast").last()).hasCSS("border-top-width", "1px");
+            tab.keyboard().press("Alt+KeyT");
+            assertThat(tab.locator(".sw-toast").last().getByRole(AriaRole.BUTTON)).isFocused();
+            assertThat(tab.locator(".sw-toast").last().getByRole(AriaRole.BUTTON)).hasCSS("outline-style", "solid");
+            tab.emulateMedia(new Page.EmulateMediaOptions().setForcedColors(ForcedColors.NONE));
+        });
     }
 
     private static List<String> describe(List<Rule> violations) {

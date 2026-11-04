@@ -4,21 +4,29 @@
   const skinSelect = document.querySelector('#skin');
   const stylesheet = document.querySelector('#component-styles');
   const dialog = document.querySelector('#project-dialog');
-  const toast = document.querySelector('#site-toast');
-  let toastTimer;
+  const confirmation = document.querySelector('#confirm-dialog');
+  const sheet = document.querySelector('#details-sheet');
   let skinRequest = 0;
 
+  function syncToastTheme() {
+    const viewport = document.querySelector('#sw-toaster');
+    if (viewport) {
+      viewport.classList.add('studio-notifications');
+      viewport.classList.toggle('dark', preview.classList.contains('dark'));
+    }
+  }
   function notify(message) {
-    clearTimeout(toastTimer);
-    toast.textContent = message;
-    toast.classList.add('is-visible');
-    toastTimer = setTimeout(() => toast.classList.remove('is-visible'), 6000);
+    Shadwick.toast(message, {variant: 'success', title: 'A little progress', duration: 6000});
+    syncToastTheme();
   }
   function updateDescription() {
     document.querySelector('#preview-description').textContent = `${skinSelect.value === 'lyra' ? 'Lyra' : 'Vega'} · ${preview.classList.contains('dark') ? 'Dark' : 'Light'}`;
   }
   document.querySelector('.demo-submit').disabled = false;
   document.querySelector('#open-project').disabled = false;
+  document.querySelector('#open-confirm').disabled = false;
+  document.querySelector('#project-actions').disabled = false;
+  document.querySelector('#open-sheet').disabled = false;
   skinSelect.disabled = false;
   skinSelect.addEventListener('change', async () => {
     const requested = skinSelect.value;
@@ -50,19 +58,15 @@
       const dark = button.dataset.mode === 'dark';
       preview.classList.toggle('dark', dark);
       dialog.classList.toggle('dark', dark);
+      confirmation.classList.toggle('dark', dark);
+      sheet.classList.toggle('dark', dark);
+      syncToastTheme();
       document.querySelectorAll('[data-mode]').forEach(control => control.setAttribute('aria-pressed', String(control === button)));
       updateDescription();
     });
   });
 
-  document.addEventListener('click', event => {
-    if (!(event.target instanceof Element)) return;
-    const addon = event.target.closest('.sw-input-group-addon');
-    const interactive = event.target.closest('a[href], button, input, select, textarea, label, summary, [tabindex], [contenteditable]');
-    if (!addon || (interactive && addon.contains(interactive))) return;
-    const control = addon.parentElement.querySelector(':scope > :is(.sw-input-group-input, .sw-input-group-textarea)');
-    if (control && !control.disabled) control.focus();
-  });
+  document.querySelector('#close-java').addEventListener('click', () => Shadwick.closePopover('java-popover'));
 
   const preferences = document.querySelector('.choice-demo');
   preferences.addEventListener('change', () => {
@@ -122,13 +126,32 @@
     notify(`“${projectName.value.trim()}” is a great start.${launch}${attachment} Demo only — nothing was saved.`);
   });
   dialog.addEventListener('close', () => document.querySelector('#open-project').focus());
-  let backdropPointer = false;
-  function outside(event) {
-    const rect = dialog.getBoundingClientRect();
-    return event.clientX < rect.left || event.clientX > rect.right || event.clientY < rect.top || event.clientY > rect.bottom;
+  document.querySelector('#open-confirm').addEventListener('click', () => confirmation.showModal());
+  document.querySelector('#menu-delete').addEventListener('click', () => confirmation.showModal());
+  document.querySelectorAll('[data-menu-action]').forEach(item => {
+    item.addEventListener('click', () => notify(`${item.dataset.menuAction} selected. Demo only — nothing was saved.`));
+  });
+  document.querySelector('#confirm-delete').addEventListener('click', () => {
+    confirmation.close();
+    notify('Deletion confirmed. Demo only — nothing was deleted.');
+  });
+  document.querySelector('#open-sheet').addEventListener('click', () => sheet.showModal());
+  document.querySelectorAll('[data-close-overlay]').forEach(button => {
+    button.addEventListener('click', () => button.closest('dialog').close());
+  });
+  // Native closedby handles this in current browsers; keep the same behavior in older ones.
+  for (const overlay of [dialog, sheet]) {
+    let backdropPointer = false;
+    const outside = event => {
+      const rect = overlay.getBoundingClientRect();
+      return event.clientX < rect.left || event.clientX > rect.right || event.clientY < rect.top || event.clientY > rect.bottom;
+    };
+    overlay.addEventListener('pointerdown', event => { backdropPointer = event.target === overlay && outside(event); });
+    overlay.addEventListener('click', event => {
+      if (backdropPointer && event.target === overlay && outside(event)) overlay.close();
+      backdropPointer = false;
+    });
   }
-  dialog.addEventListener('pointerdown', event => { backdropPointer = event.target === dialog && outside(event); });
-  dialog.addEventListener('click', event => { if (backdropPointer && event.target === dialog && outside(event)) dialog.close(); backdropPointer = false; });
 
   async function copy(text) {
     if (navigator.clipboard && window.isSecureContext) { await navigator.clipboard.writeText(text); return; }

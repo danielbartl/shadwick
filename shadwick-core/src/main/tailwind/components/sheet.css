@@ -1,0 +1,50 @@
+/*
+  Sheet structure adapted from Shadleaf (Apache-2.0, see NOTICE).
+  Native modality, logical screen edges, and an independently scrolling body.
+*/
+@layer components {
+  .sw-sheet {
+    @apply fixed m-0 max-h-dvh max-w-none open:flex flex-col overflow-hidden border-0 p-0 opacity-0
+      transition-[opacity,translate,overlay,display] transition-discrete
+      open:opacity-100 starting:open:opacity-0
+      backdrop:opacity-0 backdrop:transition-[opacity,overlay,display] backdrop:transition-discrete
+      open:backdrop:opacity-100 starting:open:backdrop:opacity-0
+      forced-colors:border forced-colors:border-solid;
+  }
+
+  .sw-sheet[data-side='end'] {
+    @apply inset-y-0 start-auto end-0 h-dvh border-s;
+    --sw-sheet-from: var(--sw-sheet-slide) 0;
+  }
+
+  .sw-sheet[data-side='start'] {
+    @apply inset-y-0 start-0 end-auto h-dvh border-e;
+    --sw-sheet-from: calc(-1 * var(--sw-sheet-slide)) 0;
+  }
+
+  .sw-sheet[data-side='end']:dir(rtl) { --sw-sheet-from: calc(-1 * var(--sw-sheet-slide)) 0; }
+  .sw-sheet[data-side='start']:dir(rtl) { --sw-sheet-from: var(--sw-sheet-slide) 0; }
+
+  .sw-sheet[data-side='top'] {
+    @apply inset-x-0 top-0 bottom-auto h-auto max-h-[90dvh] w-full border-b;
+    --sw-sheet-from: 0 calc(-1 * var(--sw-sheet-slide));
+  }
+
+  .sw-sheet[data-side='bottom'] {
+    @apply inset-x-0 top-auto bottom-0 h-auto max-h-[90dvh] w-full border-t;
+    --sw-sheet-from: 0 var(--sw-sheet-slide);
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    .sw-sheet { translate: var(--sw-sheet-from); }
+    .sw-sheet[open] { translate: none; }
+    @starting-style { .sw-sheet[open] { translate: var(--sw-sheet-from); } }
+  }
+
+  .sw-sheet-form { @apply flex min-h-0 min-w-0 flex-1 flex-col; }
+  .sw-sheet-close { @apply absolute; }
+  .sw-sheet-header { @apply flex shrink-0 flex-col; }
+  .sw-sheet-footer { @apply mt-auto shrink-0 flex-col; }
+  .sw-sheet-body { @apply flex min-h-0 min-w-0 flex-1 flex-col; }
+  .sw-sheet-body-content { @apply min-h-0 min-w-0 flex-1 overflow-y-auto -my-1 py-1; }
+}

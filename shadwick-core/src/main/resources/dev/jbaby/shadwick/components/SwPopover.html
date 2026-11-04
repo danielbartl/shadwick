@@ -1,0 +1,10 @@
+<wicket:panel xmlns:wicket="http://wicket.apache.org">
+    <button wicket:id="trigger" type="button" class="sw-popover-trigger" aria-haspopup="dialog" aria-expanded="false"><span wicket:id="triggerLabel"></span></button>
+    <div wicket:id="popover" class="sw-popover-content" role="dialog" popover="auto" tabindex="-1">
+        <div wicket:id="header" class="sw-popover-header">
+            <div wicket:id="title" class="sw-popover-title" role="heading" aria-level="2"></div>
+            <p wicket:id="description" class="sw-popover-description"></p>
+        </div>
+        <div wicket:id="content"></div>
+    </div>
+</wicket:panel>

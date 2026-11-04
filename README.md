@@ -1,3 +1,5 @@
+<img src="site/assets/logo.svg" alt="Shadwick four-leaf clover" width="56" height="56">
+
 # Shadwick
 
 shadcn/ui-style UI components for [Apache Wicket](https://wicket.apache.org): shadcn's look, tokens and component
@@ -9,8 +11,8 @@ markup and CSS. It is not affiliated with or endorsed by Shadleaf or shadcn/ui. 
 [Wicket Oat](https://github.com/danielbartl/wicket-oat): if you know Wicket Oat, moving to Shadwick is mostly
 renaming `Oat` to `Sw`.
 
-> **Status: Forms complete; overlays next.** Buttons, native input fields, choices, toggles, input groups, dialogs,
-> display components and feedback, in two skins (vega, lyra), light and dark. Standalone and embedded CSS bundles.
+> **Status: Forms and overlays complete; app shell next.** Buttons, native input fields, choices, toggles, input groups, dialogs,
+> sheets, popovers, tooltips, dropdown menus, toasts, display components and feedback, in two skins (vega, lyra), light and dark. Standalone and embedded CSS bundles.
 > Not yet on Maven Central.
 
 ## Getting started
@@ -382,6 +384,224 @@ Give it content with `setContent(...)` (id `SwDialog.CONTENT_ID`); its form fiel
 stays open while one has an error. `setTrigger("About")` adds a button that opens it in the browser, without a
 request.
 
+### Confirmation dialog
+
+`SwConfirmDialog` follows Wicket Oat's reusable `ask(...)` API. Add one to the page, then ask it from any Ajax callback:
+
+```java
+SwConfirmDialog confirm = new SwConfirmDialog("confirm").setConfirmLabel("Delete");
+add(confirm);
+add(SwButton.onClick("delete", "Delete invoice", target ->
+        confirm.ask(target, "Delete invoice?", "This cannot be undone.", t -> {
+            invoices.delete(invoice);
+            t.add(table);
+        })));
+```
+
+Render it on `<div wicket:id="confirm"></div>`. The native dialog has `role="alertdialog"`, takes its accessible name
+and description from the question, and focuses Cancel initially. Escape and Cancel dismiss it; clicking the backdrop
+leaves it open. There is no corner close button by default. The confirm button defaults to `DESTRUCTIVE`; use
+`setConfirmVariant(...)` and `setConfirmLabel(...)` for other actions.
+
+The callback stays on the server, is consumed before it runs, and is forgotten when the dialog closes. Asking another
+question replaces the pending callback. The callback may call `ask(...)` again to show a follow-up question without
+closing. An ACTIVE Ajax channel ignores repeated confirm clicks while a request is in flight. Titles and descriptions
+also accept `IModel<String>`. Subclasses overriding `onClose` must call `super.onClose(target)` to forget the callback.
+
+### Sheet
+
+`SwSheet` is a native modal panel with `SwDialog`'s content, validation and open/close API, following OatDrawer's role:
+
+```java
+SwSheet settings = new SwSheet("settings", "Project settings") {
+    @Override
+    protected void onConfirm(AjaxRequestTarget target) {
+        service.save(project); // content fields have validated and updated their models
+    }
+};
+settings.setDescription("Edit the project, then save your changes.")
+        .setContent(new SettingsPanel(SwSheet.CONTENT_ID, project))
+        .setConfirmLabel("Save")
+        .setTrigger("Edit project")
+        .setSide(SwSheet.Side.END);
+add(settings);
+```
+
+Render it on `<div wicket:id="settings"></div>`. `Side.END` is the default; `START` and `END` follow text direction,
+while `TOP` and `BOTTOM` span the viewport width. The header and footer stay visible while the body scrolls. The
+corner close button, Cancel, Escape and backdrop dismiss it. `setFooterVisible(false)` supports informational sheets.
+
+Open it from any Ajax handler with `open(target)`, or use `open(content, target)` for temporary content removed on
+close. Re-rendering an open sheet keeps it modal. Invalid fields update in place and keep focus; unconfirmed browser
+input is cleared when it closes. Native modality handles the inert background and focus return. The **Overlays**
+showcase (`/overlays`) covers confirmations, follow-up questions, nested overlays and all four sheet edges. The landing
+page previews a confirmation and an end sheet as browser-only demos.
+
+### Popover
+
+`SwPopover` follows OatPopover's content-factory API and renders a native, non-modal popover:
+
+```java
+SwPopover filters = new SwPopover("filters", "Filters", id -> new FilterPanel(id, filter))
+        .setTitle("Filter projects")
+        .setDescription("Choose which projects to show.")
+        .setSide(SwPopover.Side.BOTTOM)
+        .setAlign(SwPopover.Align.START);
+add(filters); // <div wicket:id="filters"></div>
+```
+
+The factory receives `SwPopover.CONTENT_ID`. `getTrigger()` exposes the native button for attributes or behaviors;
+`setTriggerVariant(...)` changes its default `OUTLINE` appearance. `setContent(...)` can replace the content later.
+The optional title names the panel; without it, the trigger label supplies its accessible name. Titles, descriptions
+and trigger labels accept models.
+
+The button opens it without a request. Focus moves to its first control (or the panel for informational content),
+and Escape, outside clicks or tabbing out dismiss it. The page stays interactive. A nested popover's Escape closes
+that panel and returns focus to its trigger. `Side.START`/`END` follow text direction; `TOP`/`BOTTOM` and
+`Align.START`/`CENTER`/`END` control placement. CSS anchors position and flip the panel without inline styles. Older
+Popover API browsers without CSS anchor positioning show a viewport panel instead.
+
+Re-render `getContent()` to update an open popover; replacing the entire `SwPopover` resets it to closed. A content
+panel may own a Wicket `Form` and `SwSubmitButton`, including normal inline field feedback. After applying changes,
+call `filters.close(target)` to dismiss it and return focus when focus was inside it. Open state stays in the browser.
+
+### Tooltip
+
+Add `TooltipBehavior` to an existing control, or use the facade:
+
+```java
+button.add(Sw.Behaviors.tooltip("Download a CSV copy."));
+field.addToInput(new TooltipBehavior(Model.of("Use the public project name."))
+        .setPlacement(TooltipBehavior.Placement.BOTTOM)
+        .setDelay(Duration.ofMillis(300)));
+```
+
+The API retains Oat's `Placement.TOP`/`BOTTOM`/`LEFT`/`RIGHT`; left/right follow the inline start/end in RTL.
+Tooltips contain escaped plain text and supplement an existing accessible name. Attach them to the actual focusable
+component, such as a field's input. `Mode.DESCRIPTION` preserves existing `aria-describedby` help/error references;
+`Mode.LABEL` visually repeats an existing name without adding a duplicate description, for example on an icon button
+with its own `aria-label`. Null or blank labels produce no tooltip.
+
+Keyboard focus shows a tooltip immediately; pointer hover uses a 300 ms default delay. It stays while the pointer is
+over the trigger or tooltip, has no interactive content, and Escape dismisses it without closing a surrounding
+popover or dialog. Touch does not show hover hints. Model changes and Ajax replacement refresh the text and remove
+stale tooltip elements. Without JavaScript, the native `title` remains available as a fallback. Keep essential help
+in visible text or an interactive popover.
+
+The **Popovers & tooltips** showcase (`/popups`) covers forms, nested panels, reactive hints, label mode, touch and
+positioning. The landing page uses the same library script for its Java badge popover and preview-control hints.
+
+### Dropdown menus
+
+`SwDropdown<T>` follows OatDropdown's action-menu API. It uses native buttons in a non-modal popover:
+
+```java
+add(SwDropdown.of("actions", "Export as", Model.ofList(List.of("CSV", "JSON", "XML")),
+        format -> format,
+        (target, format) -> export(format)));
+```
+
+Bind it to `<div wicket:id="actions"></div>`. The action factory invokes the Ajax callback and closes the menu;
+`getTrigger()` and `getMenu()` expose its parts. An empty or null list disables the trigger. Replacing the whole
+component over Ajax resets it to closed. `setSide(DropdownMenuBehavior.Side.END)` and
+`setAlign(DropdownMenuBehavior.Align.END)` change placement; start/end follow the text direction.
+
+For custom rows, subclass and implement `populateItem(ListItem<T>)`, or use the four-argument `of` factory.
+Supply a `Label("label", ...)` child for each repeated button. Use `item.setEnabled(false)` for unavailable actions,
+and configure its existing `DropdownMenuItemBehavior` for destructive styling or inset text. Add the action behavior
+you need; the client dismisses the menu after activation, and `close(target)` is available to server callbacks.
+
+For navigation, groups or checked choices, compose behaviors on your own markup:
+
+```java
+WebMarkupContainer trigger = new WebMarkupContainer("trigger");
+trigger.add(Sw.Behaviors.button(ButtonBehavior.Variant.OUTLINE));
+WebMarkupContainer menu = new WebMarkupContainer("menu");
+menu.add(Sw.Behaviors.dropdownMenu(trigger));
+menu.add(new BookmarkablePageLink<>("settings", SettingsPage.class)
+        .add(Sw.Behaviors.dropdownMenuItem()));
+add(trigger, menu);
+```
+
+```html
+<button wicket:id="trigger" type="button">Account</button>
+<div wicket:id="menu"><a wicket:id="settings">Settings</a></div>
+```
+
+Use one menu behavior per menu, with a native `type="button"` trigger. Other helpers are `dropdownMenuLabel()`,
+`dropdownMenuSeparator()`, `dropdownMenuGroup()` and `dropdownMenuShortcut()`. Give groups an accessible name.
+Shortcut text is a visual hint; it does not register a key binding. Use buttons or Wicket links for actionable rows,
+and native form controls for ordinary form fields (`SwDropdownChoice<T>` is the native select field).
+
+`dropdownMenuCheckboxItem(IModel<Boolean>)` and `dropdownMenuRadioItem(IModel<Boolean>)` render server-owned
+`aria-checked` states and detach their models. Your callback updates the value, enforces radio exclusivity and adds
+the item or menu to the Ajax target. The browser does not change checked state optimistically. Disabled items have
+ARIA/native disabled state; disabled links lose their destination, and Wicket enforces server-side enabled state.
+
+Enter/Space or Arrow Down opens with the first enabled item focused; Arrow Up opens at the last. Arrow keys,
+Home/End and Page Up/Down navigate, and typing searches labels (repeated letters cycle matches). Disabled items
+are skipped. Pointer opening focuses the menu; pointer movement focuses rows. Actions and Escape return focus
+to the trigger, Tab/Shift+Tab close and continue through the page, and outside interaction dismisses the menu.
+Placement, viewport limits, reduced motion and forced colors use the shared popup CSS in both skins.
+
+The **Menus** showcase (`/menus`) covers Ajax actions/replacement, empty lists, checked choices, links,
+confirmations and menus inside a sheet. The landing page's **Project actions** menu uses the same library script.
+
+### Toasts
+
+Use `Sw.toast(...)` for a direct notification from an Ajax callback, without creating a Wicket feedback message.
+Its overloads follow Oat's message, variant and optional title API. Add the resource behavior once to your page or
+base page before using the helpers:
+
+```java
+add(Sw.Behaviors.toasts());
+add(SwButton.onClick("save", "Save", target -> {
+    service.save();
+    Sw.toast(target, "Your workspace is ready.", ToastBehavior.Variant.SUCCESS, "Changes saved");
+}));
+```
+
+Variants are `ToastBehavior.Variant.DEFAULT`, `SUCCESS`, `INFO`, `WARNING` and `ERROR`. The message is the body;
+an optional title appears above it. Both are plain text, including any HTML-looking characters. Error notifications
+use an alert live region; other variants use a polite status. Showing a toast leaves keyboard focus in place.
+
+General toasts close after five seconds. Set a duration on a particular toast, or use zero to keep it until dismissed:
+
+```java
+Sw.toast(target, "Review your settings before continuing.", ToastBehavior.Variant.WARNING,
+        "Take your time", Duration.ZERO);
+Sw.toast(target, "The link is ready.", ToastBehavior.Variant.SUCCESS, "Copied", Duration.ofSeconds(8));
+```
+
+Durations are zero or 1–2147483647 milliseconds. Timers pause while the pointer is over the notifications, while a
+toast has keyboard focus and while the page is hidden. Resuming leaves at least one second. Keep essential results
+visible on the page; choose persistent messages for information that needs more reading time.
+
+Alt+T focuses the newest toast's close button. The close button or Escape dismisses the focused toast; focus moves
+to a neighboring toast, then back to the control it came from after the last one. Escape elsewhere leaves toasts
+alone. A named Notifications region holds a scrollable column at the logical bottom/end of the viewport, with
+mobile gutters. While a native modal is open, the notifications move into it so they stay usable; they return to the
+page when it closes. Removing the viewport clears its timers; navigating away clears old messages, including in
+browser history snapshots. Toasts have no interactive action content besides dismissal.
+
+For a full render, keep the same resource behavior and use the script helper from `renderHead`:
+
+```java
+response.render(OnDomReadyHeaderItem.forScript(ToastBehavior.script(this,
+        "You can continue where you left off.", ToastBehavior.Variant.INFO, "Welcome back", Duration.ZERO)));
+```
+
+The component overload and Ajax helpers resolve `ToastBehavior.close` and `ToastBehavior.label` from Wicket
+resources (defaults: “Dismiss notification” and “Notifications (Alt+T)”). The pure
+`ToastBehavior.script(message, variant, title[, duration])` overloads use English control labels. For local browser
+interactions the same runtime is available as
+`Shadwick.toast(message, {variant: 'success', title: 'Copied', duration: 5000})`; options also accept `dismissLabel`
+and `regionLabel`. `duration: 0` keeps the message. No inline styles or client framework are required.
+
+The **Toasts** showcase (`/toasts`) covers all variants, timing, plain text, Ajax replacement, full-page scripts and
+modal context. The landing page uses the library's toast runtime for its demo notifications. Existing
+`FeedbackToastsBehavior` continues to handle Wicket messages and fences, with persistent, manually dismissed toasts.
+
 ### Theming
 
 Shadwick uses shadcn/ui's CSS variables (`--background`, `--primary`, `--radius`, …), so any shadcn theme, from the
@@ -447,7 +667,7 @@ container's messages even while hidden. Set up the fences when constructing the 
 No Node needed: the build installs a pinned Node LTS into `target/` and compiles the CSS with Tailwind CSS v4. The
 jar ships only the finished CSS.
 
-Run the showcase, with Buttons, Form, Choices, Dialog, Display and Feedback pages, and a skin and light/dark switch on every page:
+Run the showcase to explore the components, including Menus and Toasts, with a skin and light/dark switch on every page:
 
 ```sh
 ./mvnw install -DskipTests

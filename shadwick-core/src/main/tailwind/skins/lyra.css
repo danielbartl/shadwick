@@ -365,6 +365,10 @@
 @layer components {
   .sw-toast { @apply gap-2 border border-border bg-popover p-4 text-[13px] text-popover-foreground shadow-lg rounded-none; }
   .sw-toast[data-variant='destructive'] { @apply text-destructive-legible; }
+  .sw-toast[data-variant='error'] > svg { @apply text-destructive-legible; }
+  .sw-toast-content { @apply gap-0.5; }
+  .sw-toast-title { @apply font-medium leading-normal; }
+  .sw-toast-description { @apply leading-snug text-muted-legible; }
   .sw-button.sw-toast-close { @apply -my-1 -me-1 size-6; }
 }
 
@@ -688,5 +692,89 @@
   .sw-file-upload-size { @apply text-xs text-muted-legible; }
   .sw-file-upload-item[data-rejected] { @apply border-destructive; }
   .sw-file-upload-item[data-rejected] .sw-file-upload-size { @apply text-destructive-legible; }
-  .sw-file-upload-item > .sw-button { @apply size-7 shrink-0; }
+}
+
+/* Alert dialogs and sheets. Adapted from Shadleaf (Apache-2.0, see NOTICE). */
+@layer components {
+  .sw-alert-dialog {
+    @apply max-w-[calc(100%-2rem)] rounded-none p-4 text-xs/relaxed sm:max-w-sm
+      bg-popover text-popover-foreground ring-1 ring-foreground/10 duration-100
+      backdrop:bg-black/10 backdrop:duration-100 supports-backdrop-filter:backdrop:backdrop-blur-xs;
+  }
+  .sw-alert-dialog-form { @apply gap-4; }
+  .sw-alert-dialog-header { @apply gap-1.5; }
+  .sw-alert-dialog-title { @apply text-sm font-medium; }
+  .sw-alert-dialog-description {
+    @apply text-xs/relaxed text-balance text-muted-foreground md:text-pretty
+      [&_a]:underline [&_a]:underline-offset-3 [&_a:hover]:text-foreground;
+  }
+  .sw-alert-dialog-footer { @apply gap-2; }
+
+  .sw-sheet {
+    @apply rounded-none border-border bg-popover bg-clip-padding text-xs/relaxed
+      text-popover-foreground shadow-lg duration-200 ease-in-out
+      backdrop:bg-black/10 backdrop:duration-200 supports-backdrop-filter:backdrop:backdrop-blur-xs;
+    --sw-sheet-slide: --spacing(10);
+  }
+  .sw-sheet:is([data-side='start'], [data-side='end']) { @apply w-3/4 sm:max-w-sm; }
+  .sw-sheet-form { @apply gap-0; }
+  .sw-sheet-body-content { @apply px-4; }
+  .sw-button.sw-sheet-close { @apply top-3 end-3 size-7; }
+  .sw-sheet-header { @apply gap-0.5 p-4 pe-14; }
+  .sw-sheet-footer { @apply gap-2 p-4; }
+  .sw-sheet-title { @apply text-sm font-medium text-foreground; }
+  .sw-sheet-description {
+    @apply text-xs/relaxed text-muted-foreground
+      [&_a]:underline [&_a]:underline-offset-3 [&_a:hover]:text-foreground;
+  }
+}
+
+/* Popover and tooltip identity, adapted from Shadleaf (Apache-2.0, see NOTICE). */
+@layer components {
+  .sw-popover-content {
+    @apply w-72 gap-2.5 rounded-none p-2.5 text-xs bg-popover text-popover-foreground
+      shadow-md ring-1 ring-foreground/10 duration-100;
+    --sw-popup-offset: --spacing(1);
+    --sw-popup-slide: --spacing(2);
+  }
+  .sw-popover-content:focus-visible { @apply ring-1 ring-ring; }
+  .sw-popover-header { @apply gap-1 text-xs; }
+  .sw-popover-title { @apply text-sm font-medium; }
+  .sw-popover-description { @apply text-xs/relaxed text-muted-foreground; }
+  .sw-tooltip-content {
+    @apply max-w-[min(20rem,calc(100dvw-2rem))] gap-1.5 rounded-none bg-foreground px-3 py-1.5 text-xs text-background duration-100;
+    --sw-popup-offset: --spacing(1.5);
+    --sw-popup-slide: --spacing(2);
+  }
+  .sw-tooltip-arrow { @apply size-2.5 rounded-none bg-foreground; }
+}
+
+/* Dropdown menu identity, adapted from Shadleaf (Apache-2.0, see NOTICE). */
+@layer components {
+  .sw-dropdown-menu-content {
+    @apply rounded-none bg-popover text-popover-foreground shadow-md ring-1 ring-foreground/10 duration-100;
+    --sw-popup-offset: --spacing(1);
+    --sw-popup-slide: --spacing(2);
+  }
+  .sw-dropdown-menu-item, .sw-dropdown-menu-checkbox-item, .sw-dropdown-menu-radio-item {
+    @apply gap-2 rounded-none py-2 text-xs focus:bg-accent focus:text-accent-foreground
+      [&_svg:not([class*='size-'],[data-icon-size])]:size-4;
+  }
+  .sw-dropdown-menu-item:focus-visible, .sw-dropdown-menu-checkbox-item:focus-visible, .sw-dropdown-menu-radio-item:focus-visible {
+    @apply ring-1 ring-ring ring-inset;
+  }
+  .sw-dropdown-menu-item { @apply px-2 data-inset:ps-7; }
+  .sw-dropdown-menu-checkbox-item, .sw-dropdown-menu-radio-item { @apply ps-2 pe-8 data-inset:ps-7; }
+  .sw-dropdown-menu-item[data-variant='destructive'] {
+    @apply text-destructive-legible focus:bg-destructive/10 dark:focus:bg-destructive/20;
+  }
+  :is(.sw-dropdown-menu-checkbox-item, .sw-dropdown-menu-radio-item)[aria-checked='true']::after {
+    @apply end-3 h-3 w-1.5 -translate-y-2/3 rotate-45 border-r-2 border-b-2 border-current;
+  }
+  .sw-dropdown-menu-label { @apply px-2 py-2 text-xs text-muted-foreground data-inset:ps-7; }
+  .sw-dropdown-menu-separator { @apply bg-border; }
+  .sw-dropdown-menu-shortcut { @apply text-xs tracking-widest text-muted-foreground; }
+  :is(.sw-dropdown-menu-item, .sw-dropdown-menu-checkbox-item, .sw-dropdown-menu-radio-item):focus > .sw-dropdown-menu-shortcut {
+    @apply text-accent-foreground;
+  }
 }
