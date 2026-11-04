@@ -66,7 +66,10 @@ class CssBundleTest {
     void choiceControlsAreAvailableInBothBundlesWithoutImageRequests(Skin skin) throws IOException {
         for (Bundle bundle : Bundle.values()) {
             String css = read("shadwick-" + skin.id() + bundle.suffix() + ".css");
-            assertThat(css).contains(".sw-checkbox-wrapper", ".sw-checkbox-indicator", ".sw-radio-group-item", ".sw-switch")
+            assertThat(css).contains(".sw-checkbox-wrapper", ".sw-checkbox-indicator", ".sw-radio-group-item", ".sw-switch",
+                            ".sw-native-select-wrapper", ".sw-native-select-icon", ".sw-checkbox-group", ".sw-checkbox-option",
+                            ".sw-toggle-input", ".sw-toggle-group", ".sw-input-group", ".sw-input-group-addon",
+                            ".sw-file-upload", ".sw-file-upload-input", ".sw-file-upload-browse")
                     .contains("radial-gradient(", "forced-colors: active", ":dir(rtl)")
                     .doesNotContain("url(", "data:image");
         }

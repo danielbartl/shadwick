@@ -10,7 +10,7 @@ import org.apache.wicket.model.Model;
  *
  * @param <T> the model object type
  */
-public class SwTextField<T> extends BaseSwField<T, TextField<T>, SwTextField<T>> {
+public class SwTextField<T> extends BaseSwInputField<T, TextField<T>, SwTextField<T>> {
 
     /**
      * Label looked up by {@code id} in the {@code .properties} files, model inherited from a parent

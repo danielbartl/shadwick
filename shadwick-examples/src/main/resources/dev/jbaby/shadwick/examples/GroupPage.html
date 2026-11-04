@@ -1,0 +1,65 @@
+<wicket:extend xmlns:wicket="http://wicket.apache.org">
+<div>
+    <h1 class="ex-title">Toggles and input groups</h1>
+    <p class="ex-lead">Native checkbox and radio behavior, drawn as toggles. Add text, units or actions to inputs while keeping familiar Wicket models and validation.</p>
+</div>
+<div class="ex-forms">
+    <section class="ex-section">
+        <h2>Normal composition</h2>
+        <form wicket:id="form" class="ex-form" aria-label="Normal composition" novalidate>
+            <div wicket:id="highlight"></div>
+            <div wicket:id="alignment"></div>
+            <div wicket:id="formats"></div>
+            <div wicket:id="workspace"></div>
+            <div wicket:id="weight"></div>
+            <div wicket:id="project"></div>
+            <div wicket:id="notes"></div>
+            <div class="ex-row"><button wicket:id="save" type="submit">Save composition</button></div>
+            <p wicket:id="saved" role="status" class="ex-muted"></p>
+        </form>
+    </section>
+    <section class="ex-section">
+        <h2>Ajax composition</h2>
+        <form wicket:id="ajaxForm" class="ex-form" aria-label="Ajax composition" novalidate>
+            <div wicket:id="highlight"></div>
+            <div wicket:id="alignment"></div>
+            <div wicket:id="formats"></div>
+            <div wicket:id="workspace"></div>
+            <div wicket:id="weight"></div>
+            <div wicket:id="project"></div>
+            <div wicket:id="notes"></div>
+            <div class="ex-row"><button wicket:id="save" type="submit">Save composition</button></div>
+            <p wicket:id="saved" role="status" class="ex-muted"></p>
+        </form>
+    </section>
+</div>
+<section class="ex-section">
+    <h2>Immediate formatting</h2>
+    <form wicket:id="liveForm" class="ex-form" aria-label="Immediate formatting">
+        <div wicket:id="highlight"></div>
+        <div wicket:id="alignment"></div>
+        <div wicket:id="formats"></div>
+        <p wicket:id="current" role="status" class="ex-muted"></p>
+    </form>
+</section>
+<section class="ex-section">
+    <h2>Composing your own group</h2>
+    <p class="ex-muted">Click the search icon to focus the input. The Clear button keeps its own action. Refresh replaces the group over Ajax.</p>
+    <div class="ex-form">
+        <label wicket:id="searchLabel" class="sw-label"></label>
+        <div wicket:id="searchGroup">
+            <input wicket:id="query" type="search" />
+            <div wicket:id="searchPrefix"><svg wicket:id="searchIcon"></svg></div>
+            <div wicket:id="searchActions"><button wicket:id="clearSearch" type="button">Clear</button></div>
+        </div>
+        <div class="ex-row"><button wicket:id="refreshSearch" type="button"></button></div>
+    </div>
+</section>
+<section class="ex-section">
+    <h2>Managed controls</h2>
+    <div class="ex-form">
+        <div wicket:id="managedToggle"></div>
+        <div wicket:id="managedWeight"></div>
+    </div>
+</section>
+</wicket:extend>

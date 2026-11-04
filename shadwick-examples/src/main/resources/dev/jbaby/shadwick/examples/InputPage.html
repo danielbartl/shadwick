@@ -1,0 +1,36 @@
+<wicket:extend xmlns:wicket="http://wicket.apache.org">
+<div>
+    <h1 class="ex-title">Everyday inputs</h1>
+    <p class="ex-lead">Native input types, familiar Wicket validation. Try invalid email, URL or seat values to see inline server feedback.</p>
+</div>
+<div class="ex-forms">
+    <section class="ex-section">
+        <h2>Normal settings</h2>
+        <form wicket:id="form" class="ex-form" aria-label="Normal settings" novalidate>
+            <div wicket:id="email"></div>
+            <div wicket:id="password"></div>
+            <div wicket:id="search"></div>
+            <div wicket:id="telephone"></div>
+            <div wicket:id="website"></div>
+            <div wicket:id="seats"></div>
+            <div wicket:id="budget"></div>
+            <div class="ex-row"><button wicket:id="save" type="submit">Save settings</button></div>
+            <p wicket:id="saved" role="status" class="ex-muted"></p>
+        </form>
+    </section>
+    <section class="ex-section">
+        <h2>Ajax settings</h2>
+        <form wicket:id="ajaxForm" class="ex-form" aria-label="Ajax settings" novalidate>
+            <div wicket:id="email"></div>
+            <div wicket:id="password"></div>
+            <div wicket:id="search"></div>
+            <div wicket:id="telephone"></div>
+            <div wicket:id="website"></div>
+            <div wicket:id="seats"></div>
+            <div wicket:id="budget"></div>
+            <div class="ex-row"><button wicket:id="save" type="submit">Save settings</button></div>
+            <p wicket:id="saved" role="status" class="ex-muted"></p>
+        </form>
+    </section>
+</div>
+</wicket:extend>

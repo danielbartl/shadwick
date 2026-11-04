@@ -11,6 +11,190 @@
     }
     var Shadwick = window.Shadwick = {};
 
+    // Input-group addon focus, adapted from Shadleaf (Apache-2.0, see NOTICE).
+    // Delegation also covers groups inserted or replaced over Ajax.
+    document.addEventListener('click', function (event) {
+        if (!(event.target instanceof Element)) return;
+        var addon = event.target.closest('.sw-input-group-addon');
+        var interactive = event.target.closest('a[href], button, input, select, textarea, label, summary, [tabindex], [contenteditable]');
+        if (!addon || (interactive && addon.contains(interactive))) return;
+        var control = addon.parentElement.querySelector(':scope > :is(.sw-input-group-input, .sw-input-group-textarea)');
+        if (control && !control.disabled) control.focus();
+    });
+
+    // Native file upload enhancement. Adapted from Shadleaf (Apache-2.0, see NOTICE).
+    // The input's FileList is submitted by Wicket; files are never encoded into page state.
+    var uploadStates = new WeakMap();
+    function uploadMessage(root, key, values) {
+        return (root.getAttribute('data-message-' + key) || '').replace(/\{(\d+)\}/g, function (_, index) {
+            return values[Number(index)] == null ? '' : String(values[Number(index)]);
+        });
+    }
+    function uploadState(root) {
+        if (!uploadStates.has(root)) {
+            var input = root.querySelector('.sw-file-upload-input');
+            if (!input) return null;
+            uploadStates.set(root, {files: Array.from(input.files || []), rejected: []});
+            renderUpload(root);
+        }
+        return uploadStates.get(root);
+    }
+    function announceUpload(root, text) {
+        var status = root.querySelector('.sw-file-upload-status');
+        status.textContent = '';
+        requestAnimationFrame(function () { if (root.isConnected) status.textContent = text; });
+    }
+    function renderUpload(root) {
+        var state = uploadStates.get(root);
+        var input = root.querySelector('.sw-file-upload-input');
+        var list = root.querySelector('.sw-file-upload-list');
+        var template = root.querySelector('.sw-file-upload-template');
+        if (!state || !input || !list || !template) return;
+        list.replaceChildren();
+        function item(file, index, rejected, reason) {
+            var row = template.content.firstElementChild.cloneNode(true);
+            row.querySelector('.sw-file-upload-name').textContent = file.name;
+            row.querySelector('.sw-file-upload-size').textContent = reason || new Intl.NumberFormat(
+                root.closest('[lang]') ? root.closest('[lang]').lang : undefined
+            ).format(file.size) + ' B';
+            if (rejected) row.setAttribute('data-rejected', '');
+            var remove = row.querySelector('[data-sw-remove-file]');
+            remove.dataset.swRemoveFile = String(index);
+            remove.dataset.swRejectedFile = String(rejected);
+            remove.disabled = input.disabled || typeof DataTransfer === 'undefined';
+            remove.setAttribute('aria-label', uploadMessage(root, rejected ? 'dismiss' : 'remove', [file.name]));
+            list.appendChild(row);
+        }
+        state.files.forEach(function (file, index) { item(file, index, false); });
+        state.rejected.forEach(function (entry, index) { item(entry.file, index, true, entry.reason); });
+        list.hidden = list.children.length === 0;
+    }
+    function setUploadFiles(root, files) {
+        var input = root.querySelector('.sw-file-upload-input');
+        var transfer = new DataTransfer();
+        files.forEach(function (file) { transfer.items.add(file); });
+        input.files = transfer.files;
+        uploadStates.get(root).files = Array.from(input.files);
+    }
+    function acceptsUpload(file, accept) {
+        var tokens = (accept || '').toLowerCase().split(',').map(function (token) { return token.trim(); }).filter(Boolean);
+        return tokens.length === 0 || tokens.some(function (token) {
+            if (token.startsWith('.')) return file.name.toLowerCase().endsWith(token);
+            if (token.endsWith('/*')) return (file.type || '').toLowerCase().startsWith(token.slice(0, -1));
+            return (file.type || '').toLowerCase() === token;
+        });
+    }
+    function addUploadFiles(root, incoming) {
+        var input = root.querySelector('.sw-file-upload-input');
+        var state = uploadState(root);
+        if (!state || input.disabled || typeof DataTransfer === 'undefined') return;
+        var files = input.multiple ? state.files.slice() : [];
+        var maximum = input.multiple ? Number(root.dataset.maxFiles || 2147483647) : 1;
+        var maxSize = Number(root.dataset.maxSize || Infinity);
+        state.rejected = [];
+        incoming.forEach(function (file) {
+            var reason = !acceptsUpload(file, input.accept) ? uploadMessage(root, 'type', [])
+                : file.size > maxSize ? uploadMessage(root, 'size', [maxSize]) : null;
+            var duplicate = files.some(function (other) {
+                return other.name === file.name && other.size === file.size && other.lastModified === file.lastModified;
+            });
+            if (!reason && duplicate) return;
+            if (!reason && files.length >= maximum) reason = uploadMessage(root, 'count', [maximum]);
+            if (reason) state.rejected.push({file: file, reason: reason});
+            else files.push(file);
+        });
+        setUploadFiles(root, files);
+        renderUpload(root);
+        announceUpload(root, uploadMessage(root, 'selected', [files.length]) + ' '
+            + state.rejected.map(function (entry) { return entry.file.name + ': ' + entry.reason; }).join(' '));
+    }
+    function scanUploads(node) {
+        if (!(node instanceof Element || node instanceof Document)) return;
+        if (node instanceof Element && node.matches('.sw-file-upload')) uploadState(node);
+        node.querySelectorAll('.sw-file-upload').forEach(uploadState);
+    }
+    document.addEventListener('change', function (event) {
+        if (!(event.target instanceof Element) || !event.target.matches('.sw-file-upload-input')) return;
+        if (event.detail && event.detail.swUpload) return;
+        var root = event.target.closest('.sw-file-upload');
+        // The cached selection is read before the new picker result is merged into it.
+        if (!uploadStates.has(root)) uploadStates.set(root, {files: [], rejected: []});
+        var incoming = Array.from(event.target.files || []);
+        if (incoming.length === 0 || typeof DataTransfer === 'undefined') {
+            uploadStates.set(root, {files: incoming, rejected: []});
+            renderUpload(root);
+        } else addUploadFiles(root, incoming);
+    }, true);
+    document.addEventListener('click', function (event) {
+        if (!(event.target instanceof Element)) return;
+        var button = event.target.closest('[data-sw-remove-file]');
+        if (!button) return;
+        var root = button.closest('.sw-file-upload');
+        var input = root.querySelector('.sw-file-upload-input');
+        if (input.disabled || typeof DataTransfer === 'undefined') return;
+        var state = uploadState(root);
+        var index = Number(button.dataset.swRemoveFile);
+        var rejected = button.dataset.swRejectedFile === 'true';
+        var file = rejected ? state.rejected[index].file : state.files[index];
+        if (rejected) state.rejected.splice(index, 1);
+        else { var files = state.files.slice(); files.splice(index, 1); setUploadFiles(root, files); }
+        renderUpload(root);
+        var actions = root.querySelectorAll('[data-sw-remove-file]');
+        (actions.length ? actions[Math.min(index, actions.length - 1)] : input).focus();
+        announceUpload(root, uploadMessage(root, 'removed', [file.name]));
+        // Emit native changes after the FileList is updated, without re-merging removed files.
+        input.dispatchEvent(new Event('input', {bubbles: true}));
+        input.dispatchEvent(new CustomEvent('change', {bubbles: true, detail: {swUpload: true}}));
+    });
+    ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(function (type) {
+        document.addEventListener(type, function (event) {
+            if (!(event.target instanceof Element)) return;
+            var root = event.target.closest('.sw-file-upload');
+            if (!root || !event.dataTransfer || !Array.from(event.dataTransfer.types).includes('Files')) return;
+            var input = root.querySelector('.sw-file-upload-input');
+            event.preventDefault();
+            if (input.disabled || typeof DataTransfer === 'undefined') {
+                event.dataTransfer.dropEffect = 'none';
+                root.removeAttribute('data-dragging');
+                return;
+            }
+            if (type === 'dragleave') {
+                if (!root.contains(event.relatedTarget)) root.removeAttribute('data-dragging');
+            } else if (type === 'drop') {
+                root.removeAttribute('data-dragging');
+                if (!event.dataTransfer.files.length) return;
+                addUploadFiles(root, Array.from(event.dataTransfer.files));
+                input.dispatchEvent(new Event('input', {bubbles: true}));
+                input.dispatchEvent(new CustomEvent('change', {bubbles: true, detail: {swUpload: true}}));
+            } else root.setAttribute('data-dragging', '');
+        });
+    });
+    document.addEventListener('reset', function (event) {
+        var form = event.target;
+        queueMicrotask(function () {
+            if (!event.defaultPrevented) form.querySelectorAll('.sw-file-upload').forEach(function (root) {
+                uploadStates.set(root, {files: [], rejected: []}); renderUpload(root);
+            });
+        });
+    });
+    Shadwick.clearFileSelection = function (inputId) {
+        var input = document.getElementById(inputId);
+        if (!input) return;
+        input.value = '';
+        var root = input.closest('.sw-file-upload');
+        if (root) {
+            uploadStates.set(root, {files: [], rejected: []}); renderUpload(root);
+            announceUpload(root, uploadMessage(root, 'cleared', []));
+        }
+    };
+    window.addEventListener('pageshow', function () {
+        document.querySelectorAll('.sw-file-upload').forEach(function (root) {
+            var input = root.querySelector('.sw-file-upload-input');
+            uploadStates.set(root, {files: Array.from(input.files || []), rejected: []}); renderUpload(root);
+        });
+    });
+    scanUploads(document);
+
     // ---- Avatar images: delegated load/error handlers also cover Ajax replacements ----
     // Adapted from Shadleaf's avatar.js (Apache-2.0, see NOTICE).
     var avatarSelector = 'img.sw-avatar-image';
@@ -43,6 +227,7 @@
                 markFinished(record.target);
             }
             record.addedNodes.forEach(scanAvatars);
+            record.addedNodes.forEach(scanUploads);
         });
     }).observe(document.documentElement, {subtree: true, childList: true, attributes: true, attributeFilter: ['src', 'srcset']});
     scanAvatars(document);

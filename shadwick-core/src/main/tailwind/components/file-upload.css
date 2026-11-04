@@ -1,0 +1,45 @@
+/* Adapted from Shadleaf's file-upload.css (Apache-2.0, see NOTICE). */
+@layer components {
+  .sw-file-upload {
+    @apply relative flex w-full min-w-0 flex-col;
+  }
+
+  /* The native input remains the tab stop and picker even without JavaScript. */
+  .sw-file-upload-input,
+  .sw-file-upload-status {
+    @apply sr-only;
+  }
+
+  .sw-file-upload-list {
+    @apply m-0 min-w-0 list-none p-0;
+  }
+
+  .sw-file-upload-list:not([hidden]) {
+    @apply flex flex-col;
+  }
+
+  .sw-file-upload-item {
+    @apply flex min-w-0 items-center;
+  }
+
+  .sw-file-upload-details {
+    @apply flex min-w-0 flex-1 flex-col;
+  }
+
+  .sw-file-upload-name {
+    @apply break-all;
+  }
+
+  .sw-file-upload:has(> .sw-file-upload-input:disabled) > .sw-file-upload-dropzone > .sw-empty-content > .sw-file-upload-browse {
+    @apply pointer-events-none opacity-50
+      forced-colors:border-[GrayText] forced-colors:text-[GrayText] forced-colors:opacity-100;
+  }
+
+  .sw-file-upload:has(> .sw-file-upload-input:focus-visible) > .sw-file-upload-dropzone > .sw-empty-content > .sw-file-upload-browse {
+    @apply forced-colors:outline-2 forced-colors:outline-offset-2 forced-colors:outline-solid;
+  }
+
+  .sw-file-upload:has(> .sw-file-upload-input:disabled) [data-sw-remove-file] {
+    @apply pointer-events-none;
+  }
+}

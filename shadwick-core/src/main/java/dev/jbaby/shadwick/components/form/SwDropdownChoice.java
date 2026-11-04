@@ -1,0 +1,76 @@
+package dev.jbaby.shadwick.components.form;
+
+import org.apache.wicket.markup.html.form.DropDownChoice;
+import org.apache.wicket.markup.html.form.IChoiceRenderer;
+import org.apache.wicket.model.IModel;
+import org.apache.wicket.model.Model;
+
+import java.util.Collections;
+import java.util.List;
+
+/**
+ * A shadcn-styled form field wrapping a native {@code <select>} ({@link DropDownChoice}).
+ *
+ * @param <T> the type of the selectable choices
+ */
+public class SwDropdownChoice<T> extends BaseSwField<T, DropDownChoice<T>, SwDropdownChoice<T>> {
+
+    private final IModel<? extends List<? extends T>> choices;
+    private final IChoiceRenderer<? super T> renderer;
+
+    /**
+     * Label looked up by {@code id} in the {@code .properties} files, model inherited
+     * from a parent {@code CompoundPropertyModel}.
+     */
+    public SwDropdownChoice(String id, IModel<? extends List<? extends T>> choices) {
+        this(id, null, null, choices, null, null);
+    }
+
+    /**
+     * Label looked up by {@code id} in the {@code .properties} files, model inherited
+     * from a parent {@code CompoundPropertyModel}.
+     */
+    public SwDropdownChoice(String id, IModel<? extends List<? extends T>> choices, IChoiceRenderer<? super T> renderer) {
+        this(id, null, null, choices, renderer, null);
+    }
+
+    /** Label looked up by {@code id} in the {@code .properties} files. */
+    public SwDropdownChoice(String id, IModel<T> model, IModel<? extends List<? extends T>> choices) {
+        this(id, null, model, choices, null, null);
+    }
+
+    /** Label looked up by {@code id} in the {@code .properties} files. */
+    public SwDropdownChoice(String id, IModel<T> model, IModel<? extends List<? extends T>> choices, IChoiceRenderer<? super T> renderer) {
+        this(id, null, model, choices, renderer, null);
+    }
+
+    public SwDropdownChoice(String id, String label, IModel<T> model, IModel<? extends List<? extends T>> choices) {
+        this(id, Model.of(label), model, choices, null, null);
+    }
+
+    public SwDropdownChoice(String id, String label, IModel<T> model, IModel<? extends List<? extends T>> choices, IChoiceRenderer<? super T> renderer) {
+        this(id, Model.of(label), model, choices, renderer, null);
+    }
+
+    public SwDropdownChoice(String id, IModel<String> label, IModel<T> model, IModel<? extends List<? extends T>> choices) {
+        this(id, label, model, choices, null, null);
+    }
+
+    public SwDropdownChoice(String id, IModel<String> label, IModel<T> model, IModel<? extends List<? extends T>> choices, IChoiceRenderer<? super T> renderer) {
+        this(id, label, model, choices, renderer, null);
+    }
+
+    public SwDropdownChoice(String id, IModel<String> label, IModel<T> model, IModel<? extends List<? extends T>> choices, IChoiceRenderer<? super T> renderer, IModel<String> description) {
+        super(id, label, model, description);
+        this.choices = choices;
+        this.renderer = renderer;
+    }
+
+    @Override
+    protected DropDownChoice<T> newInput(String id, IModel<T> model) {
+        if (choices == null) {
+            return new DropDownChoice<>(id, model, Collections.emptyList());
+        }
+        return new DropDownChoice<>(id, model, choices, renderer);
+    }
+}

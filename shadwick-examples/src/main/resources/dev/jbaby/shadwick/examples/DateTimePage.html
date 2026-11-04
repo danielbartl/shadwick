@@ -1,0 +1,46 @@
+<wicket:extend xmlns:wicket="http://wicket.apache.org">
+<div>
+    <h1 class="ex-title">Native dates and times</h1>
+    <p class="ex-lead">Use the browser's pickers with Wicket models and server validation. Display follows your browser's locale; submitted values use HTML's fixed formats.</p>
+</div>
+<div class="ex-forms">
+    <section class="ex-section">
+        <h2>Normal schedule</h2>
+        <form wicket:id="form" class="ex-form" aria-label="Normal schedule" novalidate>
+            <div wicket:id="date"></div>
+            <div wicket:id="time"></div>
+            <div wicket:id="local"></div>
+            <div wicket:id="month"></div>
+            <div wicket:id="week"></div>
+            <div class="ex-row"><button wicket:id="save" type="submit">Save schedule</button></div>
+            <p wicket:id="saved" role="status" class="ex-muted"></p>
+        </form>
+    </section>
+    <section class="ex-section">
+        <h2>Ajax schedule</h2>
+        <form wicket:id="ajaxForm" class="ex-form" aria-label="Ajax schedule" novalidate>
+            <div wicket:id="date"></div>
+            <div wicket:id="time"></div>
+            <div wicket:id="local"></div>
+            <div wicket:id="month"></div>
+            <div wicket:id="week"></div>
+            <div class="ex-row"><button wicket:id="save" type="submit">Save schedule</button></div>
+            <p wicket:id="saved" role="status" class="ex-muted"></p>
+        </form>
+    </section>
+</div>
+<section class="ex-section">
+    <h2>Immediate date validation</h2>
+    <form wicket:id="liveForm" class="ex-form" aria-label="Immediate date validation">
+        <div wicket:id="liveDate"></div>
+        <p wicket:id="current" role="status" class="ex-muted"></p>
+    </form>
+</section>
+<section class="ex-section">
+    <h2>More native states</h2>
+    <div class="ex-form">
+        <div wicket:id="disabledDate"></div>
+        <div wicket:id="preciseTime"></div>
+    </div>
+</section>
+</wicket:extend>

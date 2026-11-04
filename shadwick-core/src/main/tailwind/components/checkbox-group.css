@@ -1,0 +1,27 @@
+/* Wicket checkbox groups, using Shadleaf's checkbox and label anatomy (Apache-2.0, see NOTICE). */
+@layer components {
+  .sw-checkbox-group:not([data-orientation]),
+  .sw-checkbox-group[data-orientation='vertical'] {
+    @apply grid;
+  }
+
+  .sw-checkbox-group[data-orientation='horizontal'] {
+    @apply flex flex-wrap items-center;
+  }
+
+  .sw-checkbox-option {
+    @apply relative;
+  }
+
+  .sw-checkbox-option > .sw-checkbox-indicator {
+    @apply absolute top-1/2 start-px -translate-y-1/2;
+  }
+
+  .sw-checkbox-option:has(input:checked) > .sw-checkbox-indicator {
+    @apply visible;
+  }
+
+  .sw-checkbox-option:has(input:disabled) > .sw-checkbox-indicator {
+    @apply opacity-50;
+  }
+}

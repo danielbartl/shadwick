@@ -1,0 +1,90 @@
+/* Adapted from Shadleaf (Apache-2.0, see NOTICE). */
+/*
+  Input group: structure only. Height, radius, border, background, padding, type size, the focus ring and the error
+  are identity and live in the skins.
+
+  The group is the box an input draws: its control (.sw-input-group-input or .sw-input-group-textarea) has no border or
+  background, and the group takes the control's focus ring, error and read-only look through :has(). The addons are
+  written after the control, so it comes first in the tab order; order puts them where align says. An addon above or
+  below the control (block-start, block-end) turns the group into a column of full-width rows, and a textarea lets it
+  grow. In such a row, a .sw-input-group-text takes the free space, so the buttons after it sit at the end.
+
+  A disabled control fades; its addon text keeps its contrast, since units and other
+  static descriptions remain useful. In forced-colors mode it turns GrayText instead.
+*/
+@layer components {
+  .sw-input-group {
+    @apply relative flex w-full min-w-0 items-center outline-none;
+  }
+
+  .sw-input-group > :is(.sw-input-group-input:disabled, .sw-input-group-textarea:disabled) {
+    @apply opacity-50 forced-colors:opacity-100;
+  }
+
+  .sw-input-group:has(> .sw-input-group-textarea),
+  .sw-input-group:has(> .sw-input-group-addon:is([data-align='block-start'], [data-align='block-end'])) {
+    @apply h-auto;
+  }
+
+  .sw-input-group:has(> .sw-input-group-addon:is([data-align='block-start'], [data-align='block-end'])) {
+    @apply flex-col;
+  }
+
+  .sw-input-group:has(> :is(.sw-input-group-input, .sw-input-group-textarea):disabled),
+  .sw-input-group:has(> :is(.sw-input-group-input, .sw-input-group-textarea):disabled) :is(.sw-input-group-addon, .sw-input-group-input,
+  .sw-input-group-textarea) {
+    @apply forced-colors:border-[GrayText] forced-colors:text-[GrayText];
+  }
+
+  .sw-input-group-input,
+  .sw-input-group-textarea {
+    @apply w-full min-w-0 flex-1 rounded-none border-0 bg-transparent shadow-none outline-none
+      disabled:cursor-not-allowed;
+    color: inherit;
+  }
+
+  .sw-input-group-input {
+    @apply self-stretch;
+  }
+
+  .sw-input-group-textarea {
+    @apply field-sizing-content min-h-16 resize-none;
+  }
+
+  .sw-input-group-addon {
+    @apply flex h-auto cursor-text items-center justify-center select-none
+      [&_svg]:pointer-events-none [&_svg]:shrink-0;
+  }
+
+  .sw-input-group-addon:not([data-align]),
+  .sw-input-group-addon[data-align='inline-start'],
+  .sw-input-group-addon[data-align='block-start'] {
+    @apply order-first;
+  }
+
+  .sw-input-group-addon[data-align='inline-end'],
+  .sw-input-group-addon[data-align='block-end'] {
+    @apply order-last;
+  }
+
+  .sw-input-group-addon:is([data-align='block-start'], [data-align='block-end']) {
+    @apply w-full justify-start;
+  }
+
+  /* Where shadcn's examples write ml-auto: the text takes the free space, so what follows it sits at the end. */
+  .sw-input-group-addon:is([data-align='block-start'], [data-align='block-end']) > .sw-input-group-text {
+    @apply flex-1;
+  }
+
+  .sw-input-group-addon[data-border='bottom'] {
+    @apply border-b;
+  }
+
+  .sw-input-group-addon[data-border='top'] {
+    @apply border-t;
+  }
+
+  .sw-input-group-text {
+    @apply flex items-center [&_svg]:pointer-events-none [&_svg]:shrink-0;
+  }
+}

@@ -217,15 +217,52 @@ skeleton, spinner, empty state and inline SVG icons; feedback panel and feedback
 toasts. The Display and Feedback showcase pages exercise them in both skins and
 modes. The landing page is deployed on GitHub Pages.
 
-## Phase 3 — forms (CURRENT)
+## Phase 3 — forms (COMPLETE)
 
 The first group implements `SwCheckBox`, `SwRadioChoice<T>` and `SwSwitch` on
 the existing field base, with both skins and bundles. The Choices showcase page
 demonstrates normal submit, Ajax submit, inline errors, immediate change callbacks,
 disabled controls and the small switch size.
 
-Still planned in this phase: remaining field types from Wicket Oat, toggle,
-toggle group, input group and file upload.
+The agreed form groups are implemented; overlays are next.
+
+### Everyday inputs (implemented)
+
+Implemented email, password, search, telephone, URL and number inputs, including
+number conversion, min/max and step support. The Inputs showcase covers normal and
+Ajax submit. The landing-page form now demonstrates bounded seat counts.
+
+### Native selections (implemented)
+
+Implemented SwDropdownChoice, SwListMultipleChoice and SwCheckBoxMultipleChoice.
+The Selections showcase covers normal and Ajax submit, immediate changes, stable
+renderer IDs and disabled states. The landing page includes a native plan selector.
+
+### Native dates and times (implemented)
+
+Implemented SwDateField, SwTimeField, SwDateTimeLocalField, SwMonthField and
+SwWeekField. The Dates & time showcase covers ISO conversion, required fields,
+server-validated date bounds, normal/Ajax submit, immediate changes and precision.
+The landing-page project dialog has an optional native launch date.
+
+### Toggles and input groups (implemented)
+
+Implemented SwToggle, SwToggleChoice and SwToggleMultipleChoice, plus text addons,
+native suggestions and composable input-group behaviors. The Groups showcase covers
+normal/Ajax submit, immediate formatting, keyboard interaction and addon actions.
+The landing page previews joined digest toggles and a decorated email input.
+
+### File upload (implemented)
+
+Implemented SwFileUpload and SwFileDropzone with native multipart handling,
+request-scoped upload models, file count/size validation, a progressive selection
+list, drag/drop and removal. The Uploads showcase covers plain and Ajax submission
+and request limits. The landing dialog includes an optional local reference file.
+
+Next: Phase 4 overlays, starting with confirm/alert dialog and sheet.
+
+For each group, include showcase examples, validation and Ajax tests, both skins
+and modes, and appropriate landing-page updates. Move to overlays after forms.
 
 ## Later phases (rough order)
 
@@ -459,3 +496,149 @@ release, docs/showcase site.
   and CoreFormTest. CSS/anatomy: Shadleaf checkbox, radio-group and switch components,
   with full visual identity blocks in both skins. General-purpose checkbox groups,
   custom choice widgets and other field types remain separate work.
+
+
+### Phase 3 everyday inputs
+
+- SwEmailField, SwPasswordField, SwSearchField, SwTelField, SwUrlField and
+  SwNumberField<N> follow the corresponding Oat constructor shapes (plus String
+  labels with inherited models). BaseSwInputField now adds prefix/suffix and datalist
+  support; BaseSwField retains common model binding, labels and inline feedback.
+- EmailTextField, UrlTextField, PasswordTextField and NumberTextField retain native
+  Wicket validation/conversion. Html5TextField supports search/tel without forcing
+  text back to type=text. Every input reuses sw-input and the existing Shadleaf
+  geometry in both skins; no new dependency, CSS fork or custom client state.
+- Password defaults remain Wicket's: required, reset on detach and never echoed.
+  The showcase never prints a password in its summary. Ajax feedback keeps the
+  existing browser input while full renders clear it.
+- SwNumberField offers setMin/setMax/setStep for values or models. Wicket enforces
+  min/max and uses HTML numeric formatting; step is a native browser hint only,
+  including the zero/any convention. Applications enforce step alignment explicitly
+  when needed. Empty numeric models need setType or an object-class-aware model.
+- Constraint models passed through SwNumberField are detached by the wrapper:
+  Wicket 10.11 NumberTextField does not detach those models itself.
+- InputPage (/inputs) uses novalidate forms to expose server validation, and covers
+  email, URL, password, search, telephone, integer seats and decimal budgets.
+  Browser checks assert invalid feedback and Ajax password/focus preservation;
+  JVM tests also cover malicious text number submissions and German-locale decimals.
+
+### Phase 3 native selections
+
+- This group adds SwDropdownChoice<T>, SwListMultipleChoice<T> and
+  SwCheckBoxMultipleChoice<T>, following Oat's constructor/model/renderer shapes.
+  Custom searchable select and combobox widgets remain in the advanced phase.
+- Selects keep Wicket's native DropDownChoice and ListMultipleChoice semantics,
+  including null selection, collection updates, option escaping and choice-model
+  detachment. SwListMultipleChoice.setMaxRows controls visible list-box rows.
+- Native-select structure and both complete skin blocks come from Shadleaf. A
+  static inline Lucide chevron overlays only the single select. The browser draws
+  the options in Canvas/CanvasText colours. No script or CSP change is required.
+- Checkbox groups retain Wicket's generated wrapped labels and escaped option IDs.
+  Static prefix/suffix markup adds each indicator as a sibling overlay; CSS follows
+  the native checked/disabled state. The fieldset legend also names the inner group,
+  and each checkbox references the help/error. aria-required is omitted on role=group
+  because that role does not support it; required still enforces at least one choice
+  on the server. Native required on every checkbox would incorrectly require all.
+- Required multi-selections also check the converted collection. Wicket 10.11's raw
+  required check alone accepts forged non-empty IDs that resolve to no options.
+- SelectPage (/selections) exercises normal/Ajax submit and each control's immediate
+  change behavior, plus custom stable IDs, disabled controls and both group layouts.
+  Browser coverage includes selection/focus preservation, keyboard multi-selection,
+  forced-colour fallback and axe in both skins/modes. The landing form has a native
+  plan selector using the same embedded bundles.
+- Multiple-select selected rows use Highlight/HighlightText system colours, including
+  while blurred: the otherwise necessary Canvas option background hides Chromium's
+  inactive selection fill. Checkbox groups have explicit spacing below the legend.
+
+### Phase 3 native date/time fields
+
+- SwDateField, SwTimeField and SwDateTimeLocalField use LocalDate, LocalTime and
+  LocalDateTime models. SwMonthField and SwWeekField keep Oat's String model API.
+  Constructor shapes match Oat, plus inherited-model String labels like other fields.
+  They reuse BaseSwInputField for optional text addons; custom calendar pickers are later.
+- Html5TextField accepts an optional per-field converter. Existing search/tel inputs
+  still use their application's converters. Html5Converters fixes the date/time wire
+  format without changing the application-wide converter locator or session locale.
+- Server conversion checks HTML syntax and calendar validity, including month/week
+  strings, positive years, leap days and whether an ISO week-year has week 53.
+  Local date/time has no offset or timezone; time precision renders at milliseconds,
+  omitting zero seconds. Format rules follow the HTML Standard's date/time microsyntaxes.
+- Min/max/step HTML attributes remain browser hints on these TextFields. Applications
+  must add Wicket validators for bounds or scheduling rules; these fields do not
+  promise server enforcement of arbitrary input attributes.
+- Native controls reuse Shadleaf's sw-input markup and both skins. The browser owns
+  the picker and localized presentation; no date-picker dependency or custom JS.
+- DateTimePage (/dates) demonstrates all five types with normal and Ajax submit,
+  Wicket RangeValidator date bounds mirrored to HTML min/max, an optional live date,
+  a disabled date and millisecond time input. Picker availability is browser/OS-owned.
+- Temporal sw-input controls set their own light/dark color-scheme for legible native
+  calendar/clock affordances and pickers, without changing the embedded host's scheme.
+- The landing project dialog includes an optional launch date; the static preview
+  validates browser input and announces the chosen date without persisting it.
+
+### Phase 3 toggles and input groups
+
+- Oat has no dedicated toggle equivalent. SwToggle follows its native CheckBox
+  field API; SwToggleChoice<T> and SwToggleMultipleChoice<T> follow RadioChoice and
+  CheckBoxMultipleChoice constructor/model/renderer shapes. BaseSwToggleGroup shares
+  styling and accessible option attributes. Shadleaf owns toggle markup and CSS.
+- Toggles retain checkbox/radio semantics, including Space/arrow keys, native checked
+  state and Wicket's Boolean required behavior. Single groups use radios, multiple
+  groups use checkboxes; there is no synthetic aria-pressed state. Multiple groups
+  omit unsupported aria-required on role=group and validate resolved required choices.
+- ToggleBehavior has DEFAULT/OUTLINE variants and DEFAULT/SMALL/LARGE sizes.
+  ToggleGroupBehavior controls horizontal/vertical orientation and spacing 0–4;
+  zero joins the items. SwToggle supports decorative icons with a visually hidden
+  text caption for icon-only controls. Choice renderer labels remain escaped text.
+- BaseSwInputField follows Oat's prefix/suffix/suggestions APIs and now backs all
+  text-like fields, including textarea. Plain fields omit the input-group wrapper;
+  grouped fields keep the same field:input path and use Shadleaf's control/addon
+  classes. Textarea prefix/suffix appear above/below the control; native datalists
+  apply only to single-line inputs and are suggestions, not a validation allowlist.
+- Prefixes/suffixes use explicit models, escape text, detach normally and describe
+  the input through aria-describedby. They do not become additional accessible names.
+  BaseSwField provides an additional-description hook for this while retaining the
+  same error IDs and in-place feedback updates.
+- Sw.Behaviors exposes inputGroup, inputGroupAddon, inputGroupInput,
+  inputGroupTextArea, inputGroupText and inputGroupButton for custom markup. Addons
+  follow the control in DOM order; CSS places them. The small/ICON group button uses
+  ButtonBehavior's variants and accessible-name checks. A delegated listener adapted
+  from Shadleaf focuses controls when noninteractive addon space is clicked, including
+  after Ajax replacement; buttons, links and disabled controls keep their behavior.
+- Automatic input groups retain the input's single label and do not repeat its name
+  on the wrapper. Custom multi-control groups may have a separate group name.
+- Disabled groups fade the native control, while static addon text keeps full contrast:
+  unlike the disabled input, units and other explanatory text are still read by users.
+- GroupPage (/groups) covers normal/Ajax submit, immediate checkbox/radio keyboard
+  callbacks, input validation, datalists and grouped textareas, joined/vertical and
+  disabled states, and custom addon/button actions surviving Ajax replacement.
+  Landing-page digest radios use joined toggle styling; the email input has an addon.
+
+### Phase 3 file upload
+
+- SwFileUpload and SwFileDropzone follow Oat's List<FileUpload> model/constructor
+  shapes, plus inherited-model String labels. BaseSwFileUpload shares native Wicket
+  FileUploadField behavior, accept, multiple, maximum count and per-file size settings.
+- Both default to multiple selection. setMultiple(false) or setMaxFiles(1) renders a
+  single picker and enforces one file server-side. Count and per-file size validators
+  run on the submitted files; form request/file limits still protect multipart parsing.
+  accept is a picker/drop hint, not server-side content validation.
+- Uploads remain request-scoped: Wicket closes their streams and clears their model
+  on detach. Applications process/persist them inside the submit callback. The
+  showcase retains only escaped names and byte counts, never FileUpload instances.
+- Dropzone anatomy/styles follow Shadleaf's file-upload and empty components. The
+  native, visually hidden input is the keyboard tab stop and source of the submitted
+  FileList; its Browse label works without JavaScript. A delegated enhancement merges
+  picks/drops, deduplicates, checks hints, lists/removes files and announces changes.
+- The dropzone enhances native selection only. It does not implement transport
+  progress, image/blob previews or automatic submission. clearSelection(target)
+  clears successful Ajax selections without another change event or replacing focus.
+  Invalid Ajax submits keep browser selections; an unrelated Ajax request does not
+  clear inline errors merely because Wicket detached an upload model.
+- UploadPage (/uploads) uses explicit multipart forms and parser request/file/count
+  limits, plus field-level count/size and example extension validation. It reads bytes
+  during callbacks and retains only names/counts. Native, Ajax and single-file flows
+  are covered, including failed submits, unrelated requests and explicit reset on success.
+- The landing project dialog has an optional native reference-file input. Only its
+  filename is shown locally; nothing is submitted or persisted. The public status
+  now says forms complete, overlays next, while preserving the unreleased snapshot.

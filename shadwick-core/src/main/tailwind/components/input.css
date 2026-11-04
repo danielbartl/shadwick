@@ -11,4 +11,10 @@
       disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50
       forced-colors:disabled:border-[GrayText] forced-colors:disabled:text-[GrayText] forced-colors:disabled:opacity-100;
   }
+
+  /* Let the browser draw its calendar/clock controls in the surrounding theme.
+     Scope this to temporal inputs so embedded bundles do not change the host page. */
+  :is(.sw-input, .sw-input-group-input):is([type='date'], [type='time'], [type='datetime-local'], [type='month'], [type='week']) {
+    @apply [color-scheme:light] dark:[color-scheme:dark];
+  }
 }

@@ -1,0 +1,51 @@
+/* Adapted from Shadleaf (Apache-2.0, see NOTICE). */
+/*
+  Toggle: structure only. Height, padding, radius, border, colours, type, the pressed look and the focus ring are
+  identity and live in the skins.
+
+  The label is the button; the checkbox (or a toggle group item's radio button) covers it, drawing nothing
+  (appearance: none, no border or background, not opacity: forced colors check that a control is not faded), so a
+  click anywhere hits it. The label draws the input's state through :has(): pressed (:checked), the focus ring and the
+  error.
+
+  In forced-colors mode, where backgrounds and box-shadows are gone, a pressed toggle takes the system's highlight
+  colours (forced-color-adjust: none, or the browser would replace even those with Canvas) and a focused one an
+  outline. Disabled fades the toggle; in forced-colors mode it turns GrayText instead, and a pressed one is outlined.
+*/
+@layer components {
+  .sw-toggle {
+    @apply relative inline-flex shrink-0 cursor-pointer items-center justify-center whitespace-nowrap select-none
+      [&_svg]:pointer-events-none [&_svg]:shrink-0;
+  }
+
+  .sw-toggle-input {
+    @apply absolute inset-0 m-0 size-full cursor-pointer appearance-none rounded-[inherit] border-0 bg-transparent
+      outline-none;
+  }
+
+  /* Important: the skins' pressed and hover backgrounds come later, with the same specificity. */
+  .sw-toggle:has(> .sw-toggle-input:checked:enabled) {
+    @apply forced-colors:border-[Highlight]! forced-colors:bg-[Highlight]! forced-colors:text-[HighlightText]!
+      forced-colors:forced-color-adjust-none;
+  }
+
+  .sw-toggle:has(> .sw-toggle-input:checked:disabled) {
+    @apply forced-colors:outline-2 forced-colors:-outline-offset-2 forced-colors:outline-solid;
+  }
+
+  .sw-toggle:has(> .sw-toggle-input:focus-visible) {
+    @apply forced-colors:outline-2 forced-colors:outline-offset-2 forced-colors:outline-solid;
+  }
+
+  .sw-toggle:has(> .sw-toggle-input:disabled) {
+    @apply pointer-events-none opacity-50
+      forced-colors:text-[GrayText] forced-colors:opacity-100;
+  }
+}
+
+@layer components {
+  .sw-toggle-caption-hidden { @apply sr-only; }
+  .sw-field:not([data-orientation='horizontal']) > :is(.sw-toggle, .sw-toggle-group) {
+    @apply w-fit max-w-full;
+  }
+}

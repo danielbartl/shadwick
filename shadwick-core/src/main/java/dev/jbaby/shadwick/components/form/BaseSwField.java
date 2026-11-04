@@ -185,8 +185,13 @@ public abstract class BaseSwField<T, C extends FormComponent<T>, F extends BaseS
     }
 
     private String getDescribedBy() {
-        return hasDescription() ? descriptionLabel.getMarkupId() + " " + error.getMarkupId() : error.getMarkupId();
+        String describedBy = hasDescription() ? descriptionLabel.getMarkupId() + " " + error.getMarkupId() : error.getMarkupId();
+        String additional = getAdditionalDescribedByMarkupIds();
+        return Strings.isEmpty(additional) ? describedBy : describedBy + " " + additional;
     }
+
+    /** Extra description elements owned by a specialized field, such as input-group units. */
+    protected String getAdditionalDescribedByMarkupIds() { return null; }
 
     private String getDescriptionText() {
         return description != null ? Objects.toString(description.getObject(), "") : "";

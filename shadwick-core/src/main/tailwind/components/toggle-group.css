@@ -1,0 +1,58 @@
+/* Adapted from Shadleaf (Apache-2.0, see NOTICE). */
+/*
+  Toggle group: structure only. Its items are toggles (components/toggle.css); the skins round the ends of a joined
+  group and draw its shadow.
+
+  spacing sets the gap between the items, in Tailwind's spacing steps; 0 joins them, and an outline item then drops the
+  border it shares with the item before it. A focused item is raised, so its ring is drawn over its neighbours. An item
+  may sit in a sl:tooltip, whose wrapper has no box (display: contents): every rule here and in the skins names that
+  case too, with the wrapper as the group's child.
+*/
+@layer components {
+  .sw-toggle-group {
+    @apply flex w-fit;
+  }
+
+  .sw-toggle-group:not([data-orientation]) {
+    @apply flex-row items-center;
+  }
+
+  .sw-toggle-group[data-orientation='vertical'] {
+    @apply flex-col items-stretch;
+  }
+
+  .sw-toggle-group[data-spacing='0'] {
+    @apply gap-0;
+  }
+
+  .sw-toggle-group[data-spacing='1'] {
+    @apply gap-1;
+  }
+
+  .sw-toggle-group:not([data-spacing]) {
+    @apply gap-2;
+  }
+
+  .sw-toggle-group[data-spacing='3'] {
+    @apply gap-3;
+  }
+
+  .sw-toggle-group[data-spacing='4'] {
+    @apply gap-4;
+  }
+
+  .sw-toggle-group > .sw-toggle-group-item:has(> .sw-toggle-input:focus-visible),
+  .sw-toggle-group > .sw-tooltip > .sw-toggle-group-item:has(> .sw-toggle-input:focus-visible) {
+    @apply z-10;
+  }
+
+  .sw-toggle-group[data-spacing='0']:not([data-orientation]) > .sw-toggle-group-item[data-variant='outline']:not(:first-child),
+  .sw-toggle-group[data-spacing='0']:not([data-orientation]) > .sw-tooltip:not(:first-child) > .sw-toggle-group-item[data-variant='outline'] {
+    @apply border-s-0;
+  }
+
+  .sw-toggle-group[data-spacing='0'][data-orientation='vertical'] > .sw-toggle-group-item[data-variant='outline']:not(:first-child),
+  .sw-toggle-group[data-spacing='0'][data-orientation='vertical'] > .sw-tooltip:not(:first-child) > .sw-toggle-group-item[data-variant='outline'] {
+    @apply border-t-0;
+  }
+}

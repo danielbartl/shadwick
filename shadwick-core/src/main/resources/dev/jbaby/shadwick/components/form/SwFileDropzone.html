@@ -1,0 +1,29 @@
+<wicket:panel xmlns:wicket="http://wicket.apache.org">
+    <div wicket:id="container" class="sw-field">
+        <label wicket:id="label" class="sw-label sw-field-label"></label>
+        <div wicket:id="upload" class="sw-file-upload">
+            <input wicket:id="input" type="file" class="sw-file-upload-input" />
+            <div class="sw-empty sw-file-upload-dropzone" data-border="dashed">
+                <div class="sw-empty-header">
+                    <div class="sw-empty-media" data-variant="icon">
+                        <!-- Lucide upload (ISC, see NOTICE). -->
+                        <svg class="sw-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M12 16V4m0 0 4 4m-4-4-4 4M20 16v4H4v-4"/></svg>
+                    </div>
+                    <div wicket:id="title" class="sw-empty-title"></div>
+                    <p wicket:id="description" class="sw-empty-description sw-field-description"></p>
+                </div>
+                <div class="sw-empty-content">
+                    <label wicket:id="browse" class="sw-button sw-file-upload-browse" data-variant="outline"></label>
+                </div>
+            </div>
+            <ul class="sw-file-upload-list" hidden="hidden"></ul>
+            <div class="sw-file-upload-status" role="status" aria-live="polite"></div>
+            <template class="sw-file-upload-template"><li class="sw-file-upload-item">
+                <svg class="sw-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8Z"/><path d="M14 2v6h6"/></svg>
+                <div class="sw-file-upload-details"><span class="sw-file-upload-name"></span><span class="sw-file-upload-size"></span></div>
+                <button type="button" class="sw-button" data-variant="ghost" data-size="icon" data-sw-remove-file="">×</button>
+            </li></template>
+        </div>
+        <div wicket:id="error" class="sw-field-error" role="status"></div>
+    </div>
+</wicket:panel>

@@ -10,7 +10,7 @@ import org.apache.wicket.model.Model;
  *
  * @param <T> the model object type
  */
-public class SwTextArea<T> extends BaseSwField<T, TextArea<T>, SwTextArea<T>> {
+public class SwTextArea<T> extends BaseSwInputField<T, TextArea<T>, SwTextArea<T>> {
 
     /**
      * Label looked up by {@code id} in the {@code .properties} files, model inherited from a parent
@@ -41,6 +41,9 @@ public class SwTextArea<T> extends BaseSwField<T, TextArea<T>, SwTextArea<T>> {
     public SwTextArea(String id, IModel<String> label, IModel<T> model, IModel<String> description) {
         super(id, label, model, description);
     }
+
+    @Override
+    protected boolean isMultiline() { return true; }
 
     @Override
     protected TextArea<T> newInput(String id, IModel<T> model) {

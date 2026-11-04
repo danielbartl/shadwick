@@ -1,0 +1,45 @@
+/* Adapted from Shadleaf (Apache-2.0, see NOTICE). */
+/*
+  Native select: structure only. The wrapper holds the chevron over the end of the select, which leaves room for it
+  in its end padding (a skin concern). Height, radius, border, background, type size and focus ring are identity and
+  live in the skins.
+
+  A multiple select is a list box: no chevron, and its height follows its options.
+
+  Disabled fades the wrapper, so the chevron fades with the select. In forced-colors mode both turn GrayText instead.
+*/
+@layer components {
+  .sw-native-select-wrapper {
+    @apply relative w-fit has-[>select:disabled]:opacity-50 forced-colors:has-[>select:disabled]:opacity-100;
+  }
+
+  .sw-native-select-wrapper:has(> select:disabled) > .sw-native-select-icon {
+    @apply forced-colors:text-[GrayText];
+  }
+
+  .sw-native-select {
+    @apply w-full min-w-0 appearance-none outline-none select-none
+      disabled:pointer-events-none disabled:cursor-not-allowed
+      forced-colors:disabled:border-[GrayText] forced-colors:disabled:text-[GrayText];
+  }
+
+  /* The options are drawn by the browser, in its own colours: without these, dark mode can give dark text on a dark
+     list. */
+  .sw-native-select :is(option, optgroup) {
+    @apply bg-[Canvas] text-[CanvasText];
+  }
+
+  /* Keep selected rows visible after the list loses focus. Canvas on every option
+     otherwise hides Chromium's inactive selection fill. Use the system palette. */
+  .sw-native-select[multiple] option:checked {
+    @apply bg-[Highlight] text-[HighlightText];
+  }
+
+  .sw-native-select-icon {
+    @apply pointer-events-none absolute top-1/2 end-2.5 size-4 -translate-y-1/2 select-none;
+  }
+
+  .sw-native-select-wrapper:has(> select[multiple]) > .sw-native-select-icon {
+    @apply hidden;
+  }
+}

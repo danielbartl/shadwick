@@ -423,3 +423,270 @@
     @apply h-3.5 w-6 bg-size-[0.75rem];
   }
 }
+
+/* Native selects. Adapted from Shadleaf (Apache-2.0, see NOTICE). */
+@layer components {
+  /* Native select. The end padding leaves room for the chevron. */
+  .sw-native-select {
+    @apply rounded-md border border-input bg-transparent py-1 ps-2.5 pe-8 text-sm shadow-xs
+      motion-safe:transition-[color,box-shadow]
+      focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50
+      aria-invalid:border-destructive aria-invalid:ring-3 aria-invalid:ring-destructive/20
+      dark:bg-input/30 dark:hover:bg-input/50
+      dark:aria-invalid:border-destructive/50 dark:aria-invalid:ring-destructive/40
+      [&[multiple]]:pe-2.5;
+  }
+
+  .sw-native-select-wrapper:not([data-size]) > .sw-native-select:not([multiple]),
+  .sw-native-select-wrapper[data-size='default'] > .sw-native-select:not([multiple]) {
+    @apply h-9;
+  }
+
+  .sw-native-select-wrapper[data-size='sm'] > .sw-native-select:not([multiple]) {
+    @apply h-8;
+  }
+
+  .sw-native-select-icon {
+    @apply text-muted-foreground;
+  }
+
+  .sw-checkbox-group { @apply gap-3; }
+  .sw-field > .sw-checkbox-group { @apply mt-2; }
+}
+
+/* Toggles and input groups. Adapted from Shadleaf (Apache-2.0, see NOTICE). */
+@layer components {
+  .sw-input-group {
+    @apply h-9 rounded-md border border-input bg-transparent shadow-xs motion-safe:transition-[color,box-shadow] dark:bg-input/30;
+  }
+
+  .sw-input-group:has(> .sw-input-group-input[aria-invalid='true']),
+  .sw-input-group:has(> .sw-input-group-textarea[aria-invalid='true']) {
+    @apply border-destructive ring-3 ring-destructive/20 dark:border-destructive/50 dark:ring-destructive/40;
+  }
+
+  .sw-input-group:has(> .sw-input-group-input:focus-visible),
+  .sw-input-group:has(> .sw-input-group-textarea:focus-visible) {
+    @apply border-ring ring-3 ring-ring/50;
+  }
+
+  .sw-input-group:has(> .sw-input-group-input[readonly]),
+  .sw-input-group:has(> .sw-input-group-textarea[readonly]) {
+    @apply bg-muted shadow-none;
+  }
+
+  .sw-input-group:has(> .sw-input-group-input[readonly]) :is(.sw-input-group-addon, .sw-input-group-text),
+  .sw-input-group:has(> .sw-input-group-textarea[readonly]) :is(.sw-input-group-addon, .sw-input-group-text) {
+    @apply text-muted-legible;
+  }
+
+  .sw-input-group:has(> :is(.sw-input-group-input, .sw-input-group-textarea):disabled) :is(.sw-input-group-addon, .sw-input-group-text) {
+    @apply text-muted-legible;
+  }
+
+  .sw-input-group-input[readonly],
+  .sw-input-group-textarea[readonly] {
+    @apply placeholder:text-muted-legible;
+  }
+
+  .sw-input-group-input {
+    @apply px-2.5 py-1 text-base placeholder:text-muted-foreground md:text-sm;
+  }
+
+  .sw-input-group-textarea {
+    @apply px-2.5 py-2 text-base placeholder:text-muted-foreground md:text-sm;
+  }
+
+  .sw-input-group:has(> .sw-input-group-addon:is(:not([data-align]), [data-align='inline-start'])) > .sw-input-group-input {
+    @apply ps-1.5;
+  }
+
+  .sw-input-group:has(> .sw-input-group-addon[data-align='inline-end']) > .sw-input-group-input {
+    @apply pe-1.5;
+  }
+
+  .sw-input-group:has(> .sw-input-group-addon[data-align='block-start']) > .sw-input-group-input {
+    @apply pb-3;
+  }
+
+  .sw-input-group:has(> .sw-input-group-addon[data-align='block-end']) > .sw-input-group-input {
+    @apply pt-3;
+  }
+
+  .sw-input-group-addon {
+    @apply gap-2 py-1.5 text-sm font-medium text-muted-foreground;
+  }
+
+  .sw-input-group-addon > svg:not([class*='size-'], [data-icon-size]) {
+    @apply size-4;
+  }
+
+  .sw-input-group-addon > .sw-kbd {
+    @apply rounded-[calc(var(--radius)-5px)];
+  }
+
+  .sw-input-group-addon:is(:not([data-align]), [data-align='inline-start']) {
+    @apply ps-2 has-[>.sw-button]:-ms-1 has-[>.sw-kbd]:-ms-[0.15rem];
+  }
+
+  .sw-input-group-addon[data-align='inline-end'] {
+    @apply pe-2 has-[>.sw-button]:-me-1 has-[>.sw-kbd]:-me-[0.15rem];
+  }
+
+  .sw-input-group-addon[data-align='block-start'] {
+    @apply px-2.5 pt-2;
+  }
+
+  .sw-input-group-addon[data-align='block-end'] {
+    @apply px-2.5 pb-2;
+  }
+
+  .sw-input-group-addon[data-border='bottom'] {
+    @apply pb-2;
+  }
+
+  .sw-input-group-addon[data-border='top'] {
+    @apply pt-2;
+  }
+
+  .sw-input-group-text {
+    @apply gap-2 text-sm text-muted-foreground;
+  }
+
+  .sw-input-group-text svg:not([class*='size-'], [data-icon-size]) {
+    @apply size-4;
+  }
+
+  .sw-button.sw-input-group-button {
+    @apply gap-2 text-sm shadow-none;
+  }
+
+  .sw-button.sw-input-group-button[data-size='xs'] {
+    @apply h-6 gap-1 rounded-[calc(var(--radius)-5px)] px-1.5;
+  }
+
+  .sw-button.sw-input-group-button[data-size='xs'] svg:not([class*='size-'], [data-icon-size]) {
+    @apply size-3.5;
+  }
+
+  .sw-button.sw-input-group-button[data-size='icon-xs'] {
+    @apply size-6 rounded-[calc(var(--radius)-5px)] p-0;
+  }
+
+  .sw-button.sw-input-group-button[data-size='icon'] {
+    @apply size-8 p-0;
+  }
+
+  .sw-toggle {
+    @apply gap-1 rounded-md border border-transparent text-sm font-medium hover:text-foreground
+      motion-safe:transition-[color,box-shadow]
+      [&_svg:not([class*='size-'],[data-icon-size])]:size-4;
+  }
+
+  .sw-toggle:not([data-variant]) {
+    @apply bg-transparent hover:bg-muted;
+  }
+
+  .sw-toggle[data-variant='outline'] {
+    @apply border-input bg-transparent shadow-xs hover:bg-muted;
+  }
+
+  .sw-toggle:not([data-size]),
+  .sw-toggle[data-size='default'] {
+    @apply h-9 min-w-9 px-2.5
+      has-[[data-icon='inline-end']]:pe-2 has-[[data-icon='inline-start']]:ps-2;
+  }
+
+  .sw-toggle[data-size='sm'] {
+    @apply h-8 min-w-8 px-2.5
+      has-[[data-icon='inline-end']]:pe-1.5 has-[[data-icon='inline-start']]:ps-1.5;
+  }
+
+  .sw-toggle[data-size='lg'] {
+    @apply h-10 min-w-10 px-2.5
+      has-[[data-icon='inline-end']]:pe-2 has-[[data-icon='inline-start']]:ps-2;
+  }
+
+  .sw-toggle:has(> .sw-toggle-input:checked) {
+    @apply bg-muted;
+  }
+
+  .sw-toggle:has(> .sw-toggle-input:indeterminate:not([type='radio'])) {
+    @apply bg-muted/50;
+  }
+
+  .sw-toggle:has(> .sw-toggle-input:focus-visible) {
+    @apply border-ring ring-[3px] ring-ring/50;
+  }
+
+  .sw-toggle:has(> .sw-toggle-input[aria-invalid='true']) {
+    @apply border-destructive ring-destructive/20 dark:ring-destructive/40;
+  }
+
+  /* Toggle group: spacing="0" joins the items, rounding only the ends. An item may sit in a sl:tooltip. */
+  .sw-toggle-group[data-spacing='0'] > .sw-toggle-group-item,
+  .sw-toggle-group[data-spacing='0'] > .sw-tooltip > .sw-toggle-group-item {
+    @apply rounded-none px-2 shadow-none
+      has-[[data-icon='inline-end']]:pe-1.5 has-[[data-icon='inline-start']]:ps-1.5;
+  }
+
+  .sw-toggle-group[data-spacing='0']:not([data-orientation]) > .sw-toggle-group-item:first-child,
+  .sw-toggle-group[data-spacing='0']:not([data-orientation]) > .sw-tooltip:first-child > .sw-toggle-group-item {
+    @apply rounded-s-md;
+  }
+
+  .sw-toggle-group[data-spacing='0']:not([data-orientation]) > .sw-toggle-group-item:last-child,
+  .sw-toggle-group[data-spacing='0']:not([data-orientation]) > .sw-tooltip:last-child > .sw-toggle-group-item {
+    @apply rounded-e-md;
+  }
+
+  .sw-toggle-group[data-spacing='0'][data-orientation='vertical'] > .sw-toggle-group-item:first-child,
+  .sw-toggle-group[data-spacing='0'][data-orientation='vertical'] > .sw-tooltip:first-child > .sw-toggle-group-item {
+    @apply rounded-t-md;
+  }
+
+  .sw-toggle-group[data-spacing='0'][data-orientation='vertical'] > .sw-toggle-group-item:last-child,
+  .sw-toggle-group[data-spacing='0'][data-orientation='vertical'] > .sw-tooltip:last-child > .sw-toggle-group-item {
+    @apply rounded-b-md;
+  }
+
+  .sw-toggle-group[data-spacing='0']:has(
+      > .sw-toggle-group-item[data-variant='outline'],
+      > .sw-tooltip > .sw-toggle-group-item[data-variant='outline']
+    ) {
+    @apply rounded-md shadow-xs;
+  }
+
+
+  .sw-field > .sw-toggle-group { @apply mt-2; }
+}
+
+/* File upload. Adapted from Shadleaf (Apache-2.0, see NOTICE). */
+@layer components {
+  .sw-file-upload {
+    @apply gap-3;
+  }
+
+  .sw-file-upload:not([data-layout]) > .sw-file-upload-list {
+    @apply gap-2;
+  }
+
+  .sw-file-upload:has(> .sw-file-upload-input:focus-visible) > .sw-file-upload-dropzone > .sw-empty-content > .sw-file-upload-browse {
+    @apply border-ring ring-[3px] ring-ring/50;
+  }
+
+  .sw-file-upload:has(> .sw-file-upload-input[aria-invalid='true']) > .sw-file-upload-dropzone {
+    @apply border-destructive dark:border-destructive/50;
+  }
+
+  .sw-file-upload[data-dragging] > .sw-file-upload-dropzone {
+    @apply border-ring bg-muted/50;
+  }
+
+  .sw-file-upload-item { @apply gap-3 rounded-md border border-border bg-background p-2; }
+  .sw-file-upload-name { @apply text-sm font-medium; }
+  .sw-file-upload-size { @apply text-xs text-muted-legible; }
+  .sw-file-upload-item[data-rejected] { @apply border-destructive; }
+  .sw-file-upload-item[data-rejected] .sw-file-upload-size { @apply text-destructive-legible; }
+  .sw-file-upload-item > .sw-button { @apply size-7 shrink-0; }
+}

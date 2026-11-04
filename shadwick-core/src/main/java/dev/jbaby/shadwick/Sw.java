@@ -10,6 +10,11 @@ import dev.jbaby.shadwick.behaviors.SkeletonBehavior;
 import dev.jbaby.shadwick.behaviors.SpinnerBehavior;
 import dev.jbaby.shadwick.behaviors.StyledBehavior;
 import dev.jbaby.shadwick.behaviors.SwitchBehavior;
+import dev.jbaby.shadwick.behaviors.ToggleBehavior;
+import dev.jbaby.shadwick.behaviors.ToggleGroupBehavior;
+import dev.jbaby.shadwick.behaviors.InputGroupBehavior;
+import dev.jbaby.shadwick.behaviors.InputGroupAddonBehavior;
+import dev.jbaby.shadwick.behaviors.InputGroupButtonBehavior;
 import dev.jbaby.shadwick.components.SwButton;
 import dev.jbaby.shadwick.components.SwSubmitButton;
 import dev.jbaby.shadwick.util.SerializableConsumer;
@@ -54,6 +59,14 @@ public final class Sw {
         public static SkeletonBehavior skeleton(SkeletonBehavior.Shape shape) { return new SkeletonBehavior(shape); }
         public static SpinnerBehavior spinner() { return new SpinnerBehavior(); }
         public static SpinnerBehavior spinner(SpinnerBehavior.Size size) { return new SpinnerBehavior(size); }
+        public static ToggleBehavior toggle() { return new ToggleBehavior(); }
+        public static ToggleGroupBehavior toggleGroup() { return new ToggleGroupBehavior(); }
+        public static InputGroupBehavior inputGroup() { return new InputGroupBehavior(); }
+        public static InputGroupAddonBehavior inputGroupAddon() { return new InputGroupAddonBehavior(); }
+        public static InputGroupButtonBehavior inputGroupButton() { return new InputGroupButtonBehavior(); }
+        public static StyledBehavior inputGroupInput() { return new StyledBehavior("sw-input-group-input"); }
+        public static StyledBehavior inputGroupTextArea() { return new StyledBehavior("sw-input-group-textarea"); }
+        public static StyledBehavior inputGroupText() { return new StyledBehavior("sw-input-group-text"); }
         public static SwitchBehavior swSwitch() { return new SwitchBehavior(); }
         public static FeedbackToastsBehavior feedbackToasts() { return new FeedbackToastsBehavior(); }
         public static FeedbackToastsBehavior feedbackToasts(org.apache.wicket.feedback.IFeedbackMessageFilter filter) {

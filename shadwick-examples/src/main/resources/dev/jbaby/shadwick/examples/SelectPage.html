@@ -1,0 +1,46 @@
+<wicket:extend xmlns:wicket="http://wicket.apache.org">
+<div>
+    <h1 class="ex-title">Native selections</h1>
+    <p class="ex-lead">Browser-owned selects and checkbox groups, with Wicket's model binding and inline errors.</p>
+</div>
+<div class="ex-forms">
+    <section class="ex-section">
+        <h2>Normal selections</h2>
+        <form wicket:id="form" class="ex-form" aria-label="Normal selections" novalidate>
+            <div wicket:id="team"></div>
+            <div wicket:id="topics"></div>
+            <div wicket:id="channels"></div>
+            <div class="ex-row"><button wicket:id="save" type="submit">Save selections</button></div>
+            <p wicket:id="saved" role="status" class="ex-muted"></p>
+        </form>
+    </section>
+    <section class="ex-section">
+        <h2>Ajax selections</h2>
+        <form wicket:id="ajaxForm" class="ex-form" aria-label="Ajax selections" novalidate>
+            <div wicket:id="team"></div>
+            <div wicket:id="topics"></div>
+            <div wicket:id="channels"></div>
+            <div class="ex-row"><button wicket:id="save" type="submit">Save selections</button></div>
+            <p wicket:id="saved" role="status" class="ex-muted"></p>
+        </form>
+    </section>
+</div>
+<section class="ex-section">
+    <h2>Immediate updates</h2>
+    <p class="ex-muted">Changes update the server and summary over Ajax. These selections are optional.</p>
+    <form wicket:id="liveForm" class="ex-form" aria-label="Immediate selections">
+        <div wicket:id="team"></div>
+        <div wicket:id="topics"></div>
+        <div wicket:id="channels"></div>
+        <p wicket:id="current" role="status" class="ex-muted"></p>
+    </form>
+</section>
+<section class="ex-section">
+    <h2>Managed selections</h2>
+    <div class="ex-form">
+        <div wicket:id="managedTeam"></div>
+        <div wicket:id="managedTopics"></div>
+        <div wicket:id="managedChannels"></div>
+    </div>
+</section>
+</wicket:extend>

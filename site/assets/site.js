@@ -55,6 +55,15 @@
     });
   });
 
+  document.addEventListener('click', event => {
+    if (!(event.target instanceof Element)) return;
+    const addon = event.target.closest('.sw-input-group-addon');
+    const interactive = event.target.closest('a[href], button, input, select, textarea, label, summary, [tabindex], [contenteditable]');
+    if (!addon || (interactive && addon.contains(interactive))) return;
+    const control = addon.parentElement.querySelector(':scope > :is(.sw-input-group-input, .sw-input-group-textarea)');
+    if (control && !control.disabled) control.focus();
+  });
+
   const preferences = document.querySelector('.choice-demo');
   preferences.addEventListener('change', () => {
     const updates = document.querySelector('#demo-updates').checked ? 'on' : 'off';
@@ -77,18 +86,24 @@
     const email = document.querySelector('#demo-email');
     const nameValid = validate(name, 'demo-name-error', 'Please enter your name.');
     const emailValid = validate(email, 'demo-email-error', 'Please enter a valid email address.');
-    if (!nameValid || !emailValid) { (nameValid ? email : name).focus(); return; }
-    notify(`Looking good, ${name.value.trim().split(/\s+/)[0]}. This demo stays in your browser.`);
+    const seats = document.querySelector('#demo-seats');
+    const seatsValid = validate(seats, 'demo-seats-error', 'Choose between 1 and 10 seats.');
+    if (!nameValid || !emailValid || !seatsValid) { (!nameValid ? name : !emailValid ? email : seats).focus(); return; }
+    const plan = document.querySelector('#demo-plan');
+    notify(`Looking good, ${name.value.trim().split(/\s+/)[0]}. ${plan.selectedOptions[0].text} plan selected. This demo stays in your browser.`);
   });
   document.querySelectorAll('[data-demo-variant]').forEach(button => {
     button.addEventListener('click', () => notify(`${button.dataset.demoVariant} button. Same Wicket API, a different expression.`));
   });
 
   const projectName = document.querySelector('#project-name');
+  const projectDate = document.querySelector('#project-date');
   document.querySelector('#open-project').addEventListener('click', () => {
     document.querySelector('#project-form').reset();
     document.querySelector('#project-error').textContent = '';
     projectName.removeAttribute('aria-invalid');
+    projectDate.removeAttribute('aria-invalid');
+    document.querySelector('#project-date-error').textContent = '';
     dialog.showModal();
     projectName.focus();
   });
@@ -96,8 +111,15 @@
   document.querySelector('#project-form').addEventListener('submit', event => {
     event.preventDefault();
     if (!validate(projectName, 'project-error', 'Give your idea a name.')) { projectName.focus(); return; }
+    const dateValid = projectDate.validity.valid;
+    projectDate.setAttribute('aria-invalid', String(!dateValid));
+    document.querySelector('#project-date-error').textContent = dateValid ? '' : 'Choose a valid launch date.';
+    if (!dateValid) { projectDate.focus(); return; }
     dialog.close();
-    notify(`“${projectName.value.trim()}” is a great start. Demo only — nothing was saved.`);
+    const launch = projectDate.value ? ` Launch date: ${projectDate.value}.` : '';
+    const file = document.querySelector('#project-file').files[0];
+    const attachment = file ? ` Reference: ${file.name}.` : '';
+    notify(`“${projectName.value.trim()}” is a great start.${launch}${attachment} Demo only — nothing was saved.`);
   });
   dialog.addEventListener('close', () => document.querySelector('#open-project').focus());
   let backdropPointer = false;

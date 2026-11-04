@@ -522,8 +522,14 @@ body {
   font-size:11px
 }
 
-.demo-form .sw-input {
+.demo-form .sw-input,
+.demo-form .sw-input-group-input,
+.demo-form .sw-native-select {
   font-size:11px
+}
+
+.demo-form .sw-native-select-wrapper {
+  width:100%
 }
 
 .demo-error {
@@ -1297,7 +1303,7 @@ h2 {
   --ring:#82a06e;
   --border:#dfe5d9;
   margin:auto;
-  color:#263e2e;
+  color:var(--foreground);
   font-family:Geist,system-ui,sans-serif
 }
 
@@ -1749,7 +1755,9 @@ h2 {
   .studio-alert .sw-alert-description {
     font-size:11px
   }
-  .demo-form .sw-input {
+  .demo-form .sw-input,
+  .demo-form .sw-input-group-input,
+  .demo-form .sw-native-select {
     font-size:16px
   }
   .hero h1 {
@@ -1910,3 +1918,7 @@ h2 {
 .choice-demo-frequency .sw-label { gap: 7px; font-size: 10px; font-weight: 400; }
 #demo-preferences-status { border-top: 1px solid var(--border); padding-top: 11px; font-size: 9px; line-height: 1.7; color: var(--muted-foreground); }
 @media (min-width: 1001px) { .empty-card .sw-empty { gap: 12px; } }
+
+/* The studio scales the real input-group and toggle styles to match its compact examples. */
+.demo-form .sw-input-group-text { font-size:11px; }
+.choice-demo-frequency .sw-toggle { font-size:10px; }

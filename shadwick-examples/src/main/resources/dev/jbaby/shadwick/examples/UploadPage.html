@@ -1,0 +1,46 @@
+<wicket:extend xmlns:wicket="http://wicket.apache.org">
+<div>
+    <h1 class="ex-title">File upload</h1>
+    <p class="ex-lead">Native file selection and multipart submission, with an optional dropzone. Files are processed during the request; this demo keeps only their names and byte counts.</p>
+</div>
+<div class="ex-forms">
+    <section class="ex-section">
+        <h2>Native upload</h2>
+        <form wicket:id="form" class="ex-form" aria-label="Native upload" novalidate>
+            <div wicket:id="title"></div>
+            <div wicket:id="files"></div>
+            <div class="ex-row"><button wicket:id="save" type="submit">Upload documents</button></div>
+            <div wicket:id="feedback"></div>
+            <p wicket:id="saved" role="status" class="ex-muted"></p>
+        </form>
+    </section>
+    <section class="ex-section">
+        <h2>Ajax dropzone</h2>
+        <form wicket:id="ajaxForm" class="ex-form" aria-label="Ajax dropzone" novalidate>
+            <div wicket:id="title"></div>
+            <div wicket:id="files"></div>
+            <div class="ex-row"><button wicket:id="save" type="submit">Upload documents</button></div>
+            <div wicket:id="feedback"></div>
+            <p wicket:id="saved" role="status" class="ex-muted"></p>
+        </form>
+    </section>
+</div>
+<section class="ex-section">
+    <h2>Single-file Ajax upload</h2>
+    <form wicket:id="singleForm" class="ex-form" aria-label="Single-file Ajax upload" novalidate>
+        <div wicket:id="document"></div>
+        <div class="ex-row"><button wicket:id="save" type="submit">Upload one file</button></div>
+        <div wicket:id="feedback"></div>
+        <p wicket:id="saved" role="status" class="ex-muted"></p>
+    </form>
+</section>
+<section class="ex-section">
+    <h2>Independent requests</h2>
+    <p class="ex-muted">Check the server after a validation error. The selected files and inline error stay in place.</p>
+    <div class="ex-row"><button wicket:id="unrelated" type="button"></button><span wicket:id="heartbeat" role="status" class="ex-muted"></span></div>
+</section>
+<section class="ex-section">
+    <h2>Managed upload</h2>
+    <div class="ex-form"><div wicket:id="managed"></div></div>
+</section>
+</wicket:extend>
