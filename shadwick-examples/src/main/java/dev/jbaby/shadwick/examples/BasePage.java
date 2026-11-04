@@ -34,6 +34,10 @@ public abstract class BasePage extends WebPage {
         TransparentWebMarkupContainer html = new TransparentWebMarkupContainer("html");
         html.add(AttributeModifier.replace("class", (IModel<String>) () -> Appearance.isDark() ? "dark" : null));
         add(html);
+        TransparentWebMarkupContainer main = new TransparentWebMarkupContainer("main");
+        main.setMarkupId("main"); add(main);
+        add(new dev.jbaby.shadwick.components.SwSkipLink("skip", main));
+        add(new TransparentWebMarkupContainer("siteHeader").add(Sw.Behaviors.siteHeader()));
         add(new Label("title", (IModel<String>) () -> getTitle() + " · Shadwick"));
 
         add(navLink("navHome", HomePage.class));
@@ -50,6 +54,8 @@ public abstract class BasePage extends WebPage {
         add(navLink("navPopups", PopupPage.class));
         add(navLink("navMenus", MenuPage.class));
         add(navLink("navToasts", ToastPage.class));
+        add(navLink("navShell", ShellPage.class));
+        add(navLink("navSidebar", SidebarPage.class));
         add(navLink("navDisplay", DisplayPage.class));
         add(navLink("navFeedback", FeedbackPage.class));
 

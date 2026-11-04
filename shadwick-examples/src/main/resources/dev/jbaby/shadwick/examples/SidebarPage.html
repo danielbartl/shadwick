@@ -1,0 +1,15 @@
+<wicket:extend xmlns:wicket="http://wicket.apache.org">
+<div wicket:id="provider" class="ex-sidebar-demo">
+  <nav wicket:id="sidebar"></nav>
+  <div wicket:id="inset">
+    <header wicket:id="header"><button wicket:id="trigger"></button><nav wicket:id="trail"></nav><span class="ex-sidebar-live">All systems ready</span></header>
+    <div class="ex-sidebar-body">
+      <div class="ex-sidebar-intro"><div><p class="ex-sidebar-eyebrow">YOUR WORKSPACE, IN VIEW</p><h1 wicket:id="heading" class="ex-title"></h1><p class="ex-lead">A little structure. A lot of room to build.</p></div><span class="ex-sidebar-date">Workspace / 01</span></div>
+      <div class="ex-sidebar-stats"><article><p>Active projects</p><strong>12</strong><span>Four ready for review</span></article><article><p>Team members</p><strong>08</strong><span>Making good things together</span></article><article><p>Next milestone</p><strong>Friday</strong><span>Design system handoff</span></article></div>
+      <section class="ex-sidebar-panel" aria-labelledby="sidebar-about"><h2 id="sidebar-about">Navigation that gets out of your way</h2><p>Collapse to an icon rail on a wide screen. On a phone, open a focused panel with the same links. Group headings are native disclosures; every entry navigates to a real page state.</p><p wicket:id="status" role="status" class="ex-muted"></p><button wicket:id="refresh"></button></section>
+      <section class="ex-sidebar-panel" aria-labelledby="sidebar-options"><h2 id="sidebar-options">Make it fit</h2><p class="ex-muted">Try a different frame, collapse style or logical side. Your desktop preference is remembered. Ctrl/Cmd+B also toggles the sidebar outside text fields.</p><div class="ex-sidebar-options"><span>Frame</span><div class="ex-row"><a wicket:id="variant-sidebar">Sidebar</a><a wicket:id="variant-floating">Floating</a><a wicket:id="variant-inset">Inset</a></div><span>Collapse</span><div class="ex-row"><a wicket:id="collapse-offcanvas">Off-canvas</a><a wicket:id="collapse-icon">Icons</a><a wicket:id="collapse-none">Always open</a></div><span>Side</span><div class="ex-row"><a wicket:id="side-start">Start</a><a wicket:id="side-end">End</a></div></div><label class="ex-sidebar-field">Try the shortcut in a text field<input type="text" class="sw-input" placeholder="Ctrl/Cmd+B leaves your typing alone"></label></section>
+      <p class="ex-muted">Use “Mark all read” in the sidebar to refresh just the badge list through Ajax. “Refresh sidebar” replaces the whole panel and closes it on mobile.</p>
+    </div>
+  </div>
+</div>
+</wicket:extend>

@@ -260,7 +260,7 @@ list, drag/drop and removal. The Uploads showcase covers plain and Ajax submissi
 and request limits. The landing dialog includes an optional local reference file.
 
 Phase 4 is complete: confirmations, sheets, popovers, tooltips, dropdown menus and
-the general-purpose toast API are implemented. App shell is next.
+the general-purpose toast API are implemented. Phase 5 app shell is now in progress.
 
 For each group, include showcase examples, validation and Ajax tests, both skins
 and modes, and appropriate landing-page updates.
@@ -283,8 +283,16 @@ General-purpose ToastBehavior / Sw.toast helpers are now implemented, including
 titles, variants, timing, full-render scripts, keyboard access and native modal context.
 Feedback messages retain their existing persistent behavior.
 
-Next phase: app shell. Start with site header, breadcrumb and skip link, then sidebar,
-user menu, layouts and per-user themes.
+## Phase 5 — app shell (CURRENT)
+
+Site header, breadcrumb and skip link are implemented. SwSiteHeader composes
+caller-owned native markup, SwBreadcrumb matches Oat's generic trail API and
+reuses the existing dropdown menu for hidden levels, and SwSkipLink gives native
+keyboard access to focusable content. The /shell showcase and landing studio
+exercise this group; all showcase pages have a skip link.
+
+Sidebar is implemented with native navigation, groups, badges and responsive desktop/mobile behavior.
+The /sidebar showcase and landing studio exercise it. Next group: user menu, then app layouts and per-user themes.
 
 ## Later phases (rough order)
 
@@ -839,3 +847,119 @@ release, docs/showcase site.
   library-backed toast demos alongside the completed form controls.
 - User authorized committing and pushing all accumulated overlay work, updating
   the landing page and publishing through the existing GitHub Pages workflow.
+
+
+### Phase 5 site header, breadcrumb and skip link
+
+- References: OatBreadcrumb + its tests and OncePerRequestModel; OatAppLayout's
+  native skip link; OatPageHeader was read but is a distinct title/subtitle Border,
+  not Shadleaf's site header. No OatSiteHeader/standalone skip component exists.
+- SwSiteHeader uses SwCard's caller-owned WebMarkupContainer API, with a matching
+  SiteHeaderBehavior and siteHeaderEnd helper for end-aligned content. Native header
+  placement determines landmark semantics. setInset(true) removes its ground/border.
+  Header/end rows wrap and grow; no sticky option or responsive sidebar/menu yet.
+- SwBreadcrumb<T> ports the generic constructor, populateItem/of, setCurrent,
+  setLabel and setMaxItems. Reuse existing OncePerRequestModel for levels/current.
+  Each row supplies link + label children; root is a native nav. All levels render
+  by default, otherwise first + an ellipsis menu + tail, counting current text in
+  maxItems (minimum 2). Last link or escaped current text gets aria-current=page.
+- Breadcrumb markup/identity adapt Shadleaf: ol/li structure, decorative sibling
+  separators, RTL chevrons, long-word wrapping, per-skin type/gaps/focus. Existing
+  DropdownMenuBehavior/ItemBehavior own ellipsis keyboard/placement/cleanup; no
+  second menu implementation. Empty/null levels hide via an Ajax-safe placeholder;
+  replacing a trail closes it. Resource keys: SwBreadcrumb.label/more.
+- Standalone BreadcrumbBehavior and Sw.Behaviors list/item/link/page/separator
+  helpers support caller markup, preserving aria-label/aria-labelledby. The behavior's
+  fallback key is BreadcrumbBehavior.label; application localization remains Wicket's.
+- SwSkipLink is an escaped Label on an anchor, with default/main, literal target id
+  and Component target constructors, plus String/IModel setLabel. Key SwSkipLink.label.
+  SkipLinkBehavior sets an encoded native fragment href. With a Component it adds
+  an id and tabindex=-1 only where missing and not a native control/contenteditable;
+  explicit tabindex is preserved. Unbinding removes only the focusability behavior
+  it installed. Literal-id targets need their own tabindex if not naturally focusable.
+- CSS-only skip-link reveal + native navigation moves focus and works without JS;
+  forced-color focus is explicit. No extra client script/dependency/CSP relaxation.
+- BasePage uses transparent header/main containers so existing component paths stay
+  stable; every showcase page gets a first-in-body skip link and focusable #main.
+  ShellPage demonstrates header actions, native breadcrumb routes, Ajax clear/restore,
+  current text updates, long labels and inset context. Its clover fixture copies the
+  canonical site logo for the example's packaged resource only.
+- Landing replaces its custom skip styling with core sw-skip-link, gives #main a
+  tabindex, and adds a real sw-site-header/breadcrumb studio row. App shell remains
+  in progress; sidebar is next. No commit/push/publish is implied by component work.
+- Browser helper: axe injects scripts and stalls in a JavaScript-disabled context.
+  Keep native no-script interaction assertions there, and run WCAG axe audits on
+  the normal page/context passes. Do not imply the no-script pass runs axe.
+- Verification: 422 core tests and 25 showcase page tests passed; all 280 Chromium
+  browser cases passed, including 20 focused shell cases and all existing flows.
+  Landing and packaged showcase checks passed at 1440/390 px in both skins/modes,
+  with WCAG axe audits, open breadcrumb menus, native skip focus and long labels.
+  Native no-JavaScript navigation passed separately. Long skip labels in embedded
+  bundles without a host reset now use border-box, auto height and per-skin minimum
+  height; both skins/modes fit at 320 px without clipping and focus the target.
+  Preview servers were stopped. Changes remain local and uncommitted; sidebar is next.
+
+### Phase 5 sidebar
+
+- References: OatAppLayout, MenuItem, CurrentPage and its navigation/group/badge tests;
+  Shadleaf sidebar/provider/inset/trigger/menu templates, sidebar.js, menu-tooltip.js,
+  both skins, sidebar CSS and docs. App-layout base pages and user menus remain later work.
+- SwSidebar is a Panel bound directly to <nav> inside one sidebar provider. MenuItem
+  retains Oat's constructors/factories/groups/badges and adds optional withIcon
+  String/IModel (Lucide; generic circle fallback). Groups are one level deep, use native
+  details/summary, and open for a current child. Exact page class and supplied parameters
+  determine aria-current=page; protected isCurrentPage/newMenuLink/newMenuIcon/isAuthorized
+  hooks permit application customization. Authorization filters links and empty groups.
+- Badges are escaped sibling Labels, hidden for null/blank/numeric zero; visible badges
+  describe their links even when visually hidden in the icon rail. Link labels and the
+  item-list model use OncePerRequestModel. Header/footer components use HEADER_ID/FOOTER_ID. getMenu() is the
+  Ajax refresh target for retaining an open mobile panel; a full replacement closes it.
+- SidebarBehavior/SidebarProviderBehavior/SidebarTriggerBehavior and Sw.Behaviors helpers
+  support caller markup. SwSidebarTrigger is a native icon button. Provider controls
+  default EXPANDED/COLLAPSED, optional persistence, and a validated distinct cookie name
+  (default sw-sidebar-state). Only validated expanded/collapsed values are read; desktop
+  toggles write a root-path, one-year, SameSite=Lax preference, Secure on HTTPS.
+- Plain/floating/inset variants, logical start/end (including RTL), offcanvas/icon/none
+  desktop collapse at 48rem. One native auto-popover nav is a normal sticky desktop
+  column and a top-layer mobile panel. JavaScript synchronizes invoker ARIA, focuses the
+  current/first link on mobile, traps Tab, owns/restores only newly added inert attributes,
+  and handles Escape, light dismiss, links, resize, pagehide and Ajax teardown/replacement.
+  Ctrl/Cmd+B scopes to the focused/single provider; text fields, modal dialogs, Alt and
+  Shift combinations keep their normal behavior. sw-sidebar-toggle exposes state/open/mobile.
+- Nested menu Escape and Tab must consume only their own layer, including the interval
+  before a deferred focus timer moves focus off their invoker. The sidebar checks open
+  nested content as well as the focused ancestor. Tab wrapping uses the actual active
+  element after the menu's capture handler returns focus, rather than its stale event target.
+  Toasts adopt an open mobile sidebar's context as they already do native modal dialogs.
+- Icon-only hints reuse TooltipBehavior in label mode, showing only in a collapsed desktop
+  icon rail, on the logical outside edge. Ordinary links use normal Tab order, not ARIA menu
+  roles. Resource keys: SwSidebar.label/close, SidebarBehavior.label, SidebarTriggerBehavior.label.
+- Native navigation and mobile opening work without script; desktop collapse styles are
+  gated on scripting:enabled, so a stored collapsed preference cannot hide no-script links.
+  Mobile focus/inert enhancement needs script. Dedicated reduced-motion, forced-color and
+  print styles; explicit component box sizing keeps the embedded bundle usable without a
+  host reset. Printing an open panel releases the root's scroll lock.
+- SidebarPage (/sidebar) demonstrates routes, current groups, badges, header/footer slots,
+  appearance controls, shortcuts and Ajax menu/full-panel refresh. Its skip link targets
+  the inset past both global and sidebar navigation. The landing studio uses the same
+  provider/nav/trigger anatomy in a bounded desktop composition and a native mobile panel,
+  with persistence disabled. Next: user menu, then app layouts and per-user themes.
+- Verification: 438 core tests and 26 showcase-page tests passed. The full 308-case
+  Chromium run passed 305 cases and exposed three nested-menu focus races. After
+  fixing Escape before initial menu focus, a focused run exposed the equivalent Tab
+  race; the final 28-case sidebar run passed in both skins/modes, including repeated
+  rapid Escape/Tab, forced colors, reduced motion, remembered no-script fallback,
+  mobile inertness/focus, Ajax replacement, RTL/end placement and toast context.
+  The remaining previously passing cases were unaffected by those sidebar-only fixes.
+  Landing desktop/mobile checks passed in both skins/modes, including open panels,
+  WCAG axe audits, no-script controls and disabled persistence. Both embedded skins
+  in light/dark fit at desktop/320 px without a host reset and release scroll locking
+  for printing. CSS/site build/check, JS syntax and whitespace checks passed.
+  Changes remain local and uncommitted; no push or publication was requested.
+
+### App-shell publication
+
+- User authorized committing and pushing the accumulated site header, breadcrumb, skip
+  link and sidebar work, with the updated landing page. Publish through the existing
+  Website GitHub Pages workflow on main. The studio now previews responsive navigation
+  and the catalog names the app-shell group. The next roadmap task remains user menu.

@@ -20,6 +20,8 @@ public class HomePage extends BasePage {
         add(new BookmarkablePageLink<>("popupsLink", PopupPage.class));
         add(new BookmarkablePageLink<>("menusLink", MenuPage.class));
         add(new BookmarkablePageLink<>("toastsLink", ToastPage.class));
+        add(new BookmarkablePageLink<>("shellLink", ShellPage.class));
+        add(new BookmarkablePageLink<>("sidebarLink", SidebarPage.class));
         add(new BookmarkablePageLink<>("displayLink", DisplayPage.class));
         add(new BookmarkablePageLink<>("feedbackLink", FeedbackPage.class));
     }

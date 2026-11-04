@@ -2,7 +2,7 @@
 
 A static, responsive website for GitHub Pages. Plain HTML, CSS and JavaScript; no site package installation, client framework or external runtime requests. Geist is self-hosted under its SIL Open Font License (`assets/fonts/OFL.txt`). The icon sprite uses Lucide shapes (ISC; see the root NOTICE).
 
-The component studio uses **the library's compiled embedded CSS and component script**, with a custom green token palette. Skin selection loads the actual Vega or Lyra bundle. Light/dark mode applies to the studio and its overlays. Demo forms, buttons, dialogs, sheets, dropdown menus, popovers, tooltips and toasts run locally in the browser; no information is submitted or persisted. The site explicitly distinguishes this static preview from Wicket's server-side behavior.
+The component studio uses **the library's compiled embedded CSS and component script**, with a custom green token palette. Skin selection loads the actual Vega or Lyra bundle. Light/dark mode applies to the studio and its overlays. The studio sidebar, header, breadcrumb and first-in-body skip link use core styles too. Demo forms, buttons, dialogs, sheets, dropdown menus, popovers, tooltips and toasts run locally in the browser; no information is submitted or persisted. The site explicitly distinguishes this static preview from Wicket's server-side behavior.
 
 ## Build and preview
 
@@ -34,3 +34,6 @@ The default URL for this repository is `https://danielbartl.github.io/shadwick/`
 The page uses an ivory canvas, forest-green accents, Geist typography and a live component composition. Shadwick’s original four-leaf clover represents a lucky find and a welcoming developer experience, with a botanical nod to Shadleaf. The vector mark lives in `assets/logo.svg`, with the same artwork in the favicon and a one-color version in the icon sprite; the social card carries the same identity. A reduced-motion preference disables decorative animation. Navigation, skin/mode controls, code copying, field validation, menus and overlays work with a keyboard. The page remains readable with JavaScript disabled; interactive controls are progressively enabled.
 
 `check.mjs` verifies IDs, local anchors, SVG symbols, fonts, required assets, license files and subpath-safe references. Before shipping visual changes, inspect desktop and narrow mobile layouts in a browser, try both skins and modes, test invalid form input, menu arrows/typeahead/Tab, toast Alt+T/dismissal/timer pausing, Escape and focus return on overlays (including the menu’s delete confirmation), and copy a code snippet. Browser testing should serve the built `dist/` at `/shadwick/`, as the preview does.
+
+The studio includes the library sidebar: desktop icon rail, expandable navigation and a native mobile panel.
+Its provider uses `data-sidebar-remember="false"`, so the preview stores no sidebar cookie.

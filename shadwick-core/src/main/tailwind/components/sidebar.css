@@ -1,0 +1,585 @@
+/*
+  Sidebar provider, sidebar, trigger and inset: structure only. Colour, border colour, the widths (--sw-sidebar-width,
+  --sw-sidebar-width-mobile) and the speed of the transitions are identity and live in the skins.
+
+  The sidebar is one <nav popover> for both widths (768 px, Tailwind's md, is the breakpoint, as in shadcn and
+  slSidebar):
+  - from 768 px it is a column in the page flow beside the inset, sticky at the top and as tall as the screen. The
+    provider's data-state (rendered from the cookie) collapses it: offcanvas (no data-collapsible) moves it out past
+    its edge with a negative margin, so the inset takes the room and the sidebar's content never reflows, and hides it,
+    so its links leave the tab order and the accessibility tree; icon narrows it to --sw-sidebar-width-icon, where the
+    menu buttons (sized in the skins) show only their icons, centred, the labels visually hidden but still their names;
+    none never collapses. The user agent's popover styles (fixed, centred, display: none) are undone.
+  - below 768 px it is what the popover is: hidden until the trigger opens it in the top layer, then fixed to its edge
+    with the ::backdrop over the page. data-state does not apply there.
+  variant (desktop only): floating draws it as a panel with a margin all round; inset gives it no edge and makes the
+  inset a card on the sidebar's ground (the skins colour the provider for that). The phone panel is the same for all.
+  start and end are logical, so they swap on a right-to-left page, and the slide follows. Motion (the slide on a phone,
+  the collapse on a desktop) only where the user has not asked for less: without it the change is immediate.
+*/
+/* Adapted from Shadleaf (Apache-2.0, see NOTICE). */
+@layer components {
+  .sw-sidebar-provider {
+    @apply flex min-h-svh w-full;
+    /* Not hidden: clip makes no scroll container, so the sidebar stays sticky. */
+    overflow-x: clip;
+  }
+
+  /* No transition unless the motion rules below name one: the skins' duration would otherwise animate everything. */
+  .sw-sidebar {
+    @apply m-0 flex-col overflow-y-auto overscroll-contain p-0 transition-none forced-colors:border-solid;
+  }
+
+  /* The inset card's margin follows a collapse only under the motion rules below, as the sidebar. */
+  .sw-sidebar-inset {
+    @apply relative flex min-w-0 w-full flex-1 flex-col transition-none;
+  }
+
+  /*
+    The inset takes the focus only from a skip link (tabindex="-1"). It is no control, so no ring around the whole
+    content: the page scrolls to it and the next Tab goes on from there.
+  */
+  .sw-sidebar-inset:focus-visible {
+    @apply outline-none;
+  }
+
+  /*
+    The icon shows a panel on the left: on a right-to-left page the sidebar is on the right, and so is a sidebar on
+    the end of a left-to-right one.
+  */
+  .sw-sidebar-trigger-icon {
+    @apply rtl:-scale-x-100;
+  }
+
+  .sw-sidebar-provider:has(> .sw-sidebar[data-side='right']) .sw-sidebar-trigger-icon {
+    @apply -scale-x-100 rtl:scale-x-100;
+  }
+
+  /* Phone: the panel. */
+  @media (width < 48rem) {
+    .sw-sidebar {
+      @apply fixed inset-y-0 h-full max-h-none max-w-[calc(100%-3rem)] border-0;
+      inline-size: var(--sw-sidebar-width-mobile);
+    }
+
+    .sw-sidebar:popover-open {
+      @apply flex;
+    }
+
+    .sw-sidebar:not([data-side]) {
+      @apply start-0 end-auto border-e;
+      --sw-sidebar-from: -100%;
+    }
+
+    .sw-sidebar[data-side='right'] {
+      @apply start-auto end-0 border-s;
+      --sw-sidebar-from: 100%;
+    }
+
+    .sw-sidebar:not([data-side]):dir(rtl) {
+      --sw-sidebar-from: 100%;
+    }
+
+    .sw-sidebar[data-side='right']:dir(rtl) {
+      --sw-sidebar-from: -100%;
+    }
+
+    /* The page behind the open panel does not scroll, as behind a sheet. */
+    :root:has(.sw-sidebar:popover-open) {
+      @apply overflow-hidden;
+    }
+  }
+
+  @media (width < 48rem) and (prefers-reduced-motion: no-preference) {
+    .sw-sidebar {
+      @apply transition-[translate,overlay,display] transition-discrete
+        backdrop:opacity-0 backdrop:transition-[opacity,overlay,display] backdrop:transition-discrete
+        open:backdrop:opacity-100 starting:open:backdrop:opacity-0;
+      translate: var(--sw-sidebar-from) 0;
+    }
+
+    .sw-sidebar:popover-open {
+      translate: 0 0;
+    }
+
+    @starting-style {
+      .sw-sidebar:popover-open {
+        translate: var(--sw-sidebar-from) 0;
+      }
+    }
+  }
+
+  /* Desktop: a column in the page flow. */
+  @media (width >= 48rem) {
+    .sw-sidebar {
+      @apply sticky inset-auto top-0 flex h-svh max-h-none max-w-none flex-none self-start border-0 translate-none;
+      inline-size: var(--sw-sidebar-width);
+    }
+
+    .sw-sidebar:not([data-variant]):not([data-side]) {
+      @apply border-e;
+    }
+
+    .sw-sidebar[data-side='right'] {
+      @apply order-1;
+    }
+
+    .sw-sidebar[data-side='right']:not([data-variant]) {
+      @apply border-s;
+    }
+
+    /*
+      Floating: a panel with a margin all round, its footprint as wide as the plain sidebar's (--sw-sidebar-width), so a
+      page lays out the same with either.
+    */
+    .sw-sidebar[data-variant='floating'] {
+      @apply border;
+      top: --spacing(2);
+      block-size: calc(100svh - --spacing(4));
+      inline-size: calc(var(--sw-sidebar-width) - --spacing(4));
+      margin: --spacing(2);
+    }
+
+    /* Inset: no edge of its own, the content inside the same margin the inset card keeps. */
+    .sw-sidebar[data-variant='inset'] {
+      @apply p-2;
+    }
+
+    /*
+      The inset as a card on the sidebar's ground: a margin all round but on the sidebar's side, where the sidebar's
+      own padding is the gap. Collapsed, that side gets the margin too.
+    */
+    .sw-sidebar-provider:has(> .sw-sidebar[data-variant='inset']) > .sw-sidebar-inset {
+      @apply m-2 forced-colors:border forced-colors:border-solid;
+    }
+
+    .sw-sidebar-provider:has(> .sw-sidebar[data-variant='inset']:not([data-side])) > .sw-sidebar-inset {
+      @apply ms-0;
+    }
+
+    .sw-sidebar-provider:has(> .sw-sidebar[data-variant='inset'][data-side='right']) > .sw-sidebar-inset {
+      @apply me-0;
+    }
+
+    .sw-sidebar-provider[data-state='collapsed']:has(> .sw-sidebar[data-variant='inset']:not([data-collapsible])) > .sw-sidebar-inset {
+      @media (scripting: enabled) {
+        @apply m-2;
+      }
+    }
+
+    .sw-sidebar-provider[data-state='expanded'] > .sw-sidebar {
+      @apply visible;
+    }
+
+    /* Collapsed offcanvas: out past its edge, hidden. */
+    .sw-sidebar-provider[data-state='collapsed'] > .sw-sidebar:not([data-collapsible]) {
+      @media (scripting: enabled) {
+        @apply invisible;
+      }
+    }
+
+    .sw-sidebar-provider[data-state='collapsed'] > .sw-sidebar:not([data-collapsible]):not([data-side]) {
+      @media (scripting: enabled) {
+        margin-inline-start: calc(-1 * var(--sw-sidebar-width));
+      }
+    }
+
+    .sw-sidebar-provider[data-state='collapsed'] > .sw-sidebar:not([data-collapsible])[data-side='right'] {
+      @media (scripting: enabled) {
+        margin-inline-end: calc(-1 * var(--sw-sidebar-width));
+      }
+    }
+
+    /* The floating panel keeps its outer margin, so its footprint is still -(width - margin) + width = 0. */
+    .sw-sidebar-provider[data-state='collapsed'] > .sw-sidebar:not([data-collapsible])[data-variant='floating']:not([data-side]) {
+      @media (scripting: enabled) {
+        margin-inline-start: calc(-1 * (var(--sw-sidebar-width) - --spacing(2)));
+      }
+    }
+
+    .sw-sidebar-provider[data-state='collapsed'] > .sw-sidebar:not([data-collapsible])[data-variant='floating'][data-side='right'] {
+      @media (scripting: enabled) {
+        margin-inline-end: calc(-1 * (var(--sw-sidebar-width) - --spacing(2)));
+      }
+    }
+
+    /*
+      Collapsed to icons: a strip as wide as --sw-sidebar-width-icon (a skin token), its content inside. Floating and
+      inset add their margin or padding around it, as their expanded widths do (shadcn's): the floating panel is the
+      strip plus its borders, the inset sidebar the strip plus its padding.
+    */
+    /* Nothing scrolls sideways in the strip (Firefox would make it a tab stop). */
+    .sw-sidebar-provider[data-state='collapsed'] > .sw-sidebar[data-collapsible='icon'] {
+      @media (scripting: enabled) {
+        @apply overflow-x-hidden;
+        inline-size: var(--sw-sidebar-width-icon);
+      }
+    }
+
+    .sw-sidebar-provider[data-state='collapsed'] > .sw-sidebar[data-collapsible='icon'][data-variant='floating'] {
+      @media (scripting: enabled) {
+        inline-size: calc(var(--sw-sidebar-width-icon) + 2px);
+      }
+    }
+
+    .sw-sidebar-provider[data-state='collapsed'] > .sw-sidebar[data-collapsible='icon'][data-variant='inset'] {
+      @media (scripting: enabled) {
+        inline-size: calc(var(--sw-sidebar-width-icon) + --spacing(4));
+      }
+    }
+
+    /*
+      What the strip has no room for: badges, actions, a collapsible item's chevron and sub-menus (shadcn hides them).
+      A badge is only hidden from view: it still describes its button, and a description from hidden content would
+      read all its text, the visible count a label replaces included ("12 12 unread"). Group labels move up out of the
+      way in the skins, but stay the groups' names. The content does not scroll sideways.
+    */
+    .sw-sidebar-provider[data-state='collapsed'] > .sw-sidebar[data-collapsible='icon'] :is(
+      .sw-sidebar-menu-action, .sw-sidebar-group-action, .sw-sidebar-menu-button-chevron, .sw-sidebar-menu-sub) {
+      @media (scripting: enabled) {
+        @apply hidden;
+      }
+    }
+
+    /*
+      A collapsible group shows its links in the strip whether it is open or not: its label is out of view anyway.
+      The label (the summary) is hidden, so it takes no focus, and still names the group.
+    */
+    .sw-sidebar-provider[data-state='collapsed'] > .sw-sidebar[data-collapsible='icon'] .sw-sidebar-group-collapsible > summary {
+      @media (scripting: enabled) {
+        @apply invisible;
+      }
+    }
+
+    .sw-sidebar-provider[data-state='collapsed'] > .sw-sidebar[data-collapsible='icon'] .sw-sidebar-group-collapsible::details-content {
+      @media (scripting: enabled) {
+        content-visibility: visible;
+      }
+    }
+
+    /* A group the application leaves out of the strip (icon-hidden). */
+    .sw-sidebar-provider[data-state='collapsed'] > .sw-sidebar[data-collapsible='icon'] .sw-sidebar-group[data-icon-hidden] {
+      @media (scripting: enabled) {
+        @apply hidden;
+      }
+    }
+
+    /* sr-only, not hidden: the menu button's aria-describedby points here, and a display: none element contributes
+       all its text, aria-hidden children included ("12 12 unread"). min-w-0 beats the skins' min-w-5. */
+    .sw-sidebar-provider[data-state='collapsed'] > .sw-sidebar[data-collapsible='icon'] .sw-sidebar-menu-badge {
+      @media (scripting: enabled) {
+        @apply sr-only min-w-0;
+      }
+    }
+
+    .sw-sidebar-provider[data-state='collapsed'] > .sw-sidebar[data-collapsible='icon'] .sw-sidebar-content {
+      @media (scripting: enabled) {
+        @apply overflow-hidden;
+      }
+    }
+
+    /*
+      A menu button shows its icon only, centred: the label (and anything after it, an icon-end) is visually hidden, so
+      it stays the button's name. Clipping by the button's size alone left part of a label in view beside an icon
+      smaller than the square, as in a large button, which has no padding there.
+    */
+    .sw-sidebar-provider[data-state='collapsed'] > .sw-sidebar[data-collapsible='icon'] .sw-sidebar-menu-button {
+      @media (scripting: enabled) {
+        @apply justify-center;
+      }
+    }
+
+    .sw-sidebar-provider[data-state='collapsed'] > .sw-sidebar[data-collapsible='icon'] .sw-sidebar-menu-button > :is(
+      .sw-sidebar-menu-button-label, .sw-sidebar-menu-button-label ~ :not(.sw-sidebar-menu-tooltip)) {
+      @media (scripting: enabled) {
+        @apply sr-only;
+      }
+    }
+
+    /* None: nothing to collapse, so no trigger on a desktop. */
+    .sw-sidebar-provider:has(> .sw-sidebar[data-collapsible='none']) .sw-sidebar-trigger {
+      display: none;
+    }
+  }
+
+  /*
+    The menu button's tooltip shows only while the sidebar is collapsed to icons on a desktop (slSidebarMenuTooltip
+    checks the same before showing it): this hides one left showing when that changes.
+  */
+  .sw-sidebar-provider:not([data-state='collapsed']) .sw-sidebar-menu-tooltip,
+  .sw-sidebar:not([data-collapsible='icon']) .sw-sidebar-menu-tooltip {
+    display: none;
+  }
+
+  @media (width < 48rem) {
+    .sw-sidebar .sw-sidebar-menu-tooltip {
+      display: none;
+    }
+  }
+
+  /* On a sidebar at the end it shows on the other side, the start (the menu button renders side="right"). */
+  .sw-sidebar[data-side='right'] .sw-sidebar-menu-tooltip {
+    --sw-popup-side: inline-start;
+    --sw-popup-margin-inline: 0 var(--sw-popup-offset);
+    --sw-popup-from: var(--sw-popup-slide) 0;
+    transform-origin: right;
+  }
+
+  .sw-sidebar[data-side='right'] .sw-sidebar-menu-tooltip:dir(rtl) {
+    --sw-popup-from: calc(-1 * var(--sw-popup-slide)) 0;
+    transform-origin: left;
+  }
+
+  @media (width >= 48rem) and (prefers-reduced-motion: no-preference) {
+    /* visibility changes at the end of a collapse and at the start of an expansion, so the slide is seen both ways. */
+    .sw-sidebar {
+      @apply transition-[margin,visibility,width];
+    }
+
+    .sw-sidebar-provider:has(> .sw-sidebar[data-variant='inset']) > .sw-sidebar-inset {
+      @apply transition-[margin];
+    }
+  }
+
+  /*
+    A dropdown menu opened from the sidebar (sl:dropdown-menu-trigger as="sidebar-menu-button" or
+    "sidebar-menu-action"). In the column it opens on the side its content asks for (side="right": beside the sidebar,
+    as shadcn's team switcher and user menu). In the phone panel and in the header row there is no room beside the
+    trigger, so a right or left menu opens below it instead, lined up with its end (shadcn's isMobile choice), and
+    flips above it as usual when there is no room below. Older browsers' positioning stand-in (popup.js) still reads
+    data-side. A menu button's menu is at least as wide as the button, as shadcn's team switcher.
+  */
+  .sw-sidebar-menu-button[aria-haspopup='menu'] ~ .sw-dropdown-menu-content {
+    min-inline-size: max(anchor-size(inline), --spacing(56));
+  }
+
+  @media (width < 48rem) {
+    .sw-sidebar .sw-dropdown-menu-content:is([data-side='right'], [data-side='left']) {
+      --sw-popup-side: block-end;
+      --sw-popup-align: span-inline-start;
+      --sw-popup-margin-block: var(--sw-popup-offset) 0;
+      --sw-popup-margin-inline: 0;
+      --sw-popup-from: 0 calc(-1 * var(--sw-popup-slide));
+      transform-origin: top;
+    }
+  }
+
+  /* Without JavaScript nothing can collapse the sidebar on a desktop; the panel still opens on a phone. */
+  @media (scripting: none) and (width >= 48rem) {
+    .sw-sidebar-trigger {
+      display: none;
+    }
+  }
+
+  /*
+    The content parts: structure only, the same in the desktop column and the phone panel. Sizes, colours, the active
+    and hover looks and the positions of actions and badges are in the skins.
+  */
+  .sw-sidebar-header,
+  .sw-sidebar-footer {
+    @apply flex flex-col;
+  }
+
+  /* The part that scrolls, so header and footer stay in view. */
+  .sw-sidebar-content {
+    @apply flex min-h-0 flex-1 flex-col overflow-auto;
+  }
+
+  .sw-sidebar-separator {
+    @apply h-px w-auto shrink-0 forced-colors:bg-[CanvasText];
+  }
+
+  .sw-sidebar-group {
+    @apply relative flex w-full min-w-0 flex-col;
+  }
+
+  .sw-sidebar-group-label {
+    @apply flex shrink-0 items-center;
+  }
+
+  .sw-sidebar-group-content {
+    @apply w-full;
+  }
+
+  .sw-sidebar-menu {
+    @apply m-0 flex w-full min-w-0 list-none flex-col p-0;
+  }
+
+  .sw-sidebar-menu-item {
+    @apply relative;
+  }
+
+  /*
+    The label takes the room the icons leave and ends in an ellipsis; with elements of its own (two lines) each one
+    does. Disabled: as a disabled button.
+  */
+  .sw-sidebar-menu-button {
+    @apply flex w-full items-center overflow-hidden text-start no-underline outline-none
+      disabled:pointer-events-none disabled:opacity-50 aria-disabled:pointer-events-none aria-disabled:opacity-50;
+  }
+
+  :is(.sw-sidebar-group-label, .sw-sidebar-menu-button, .sw-sidebar-group-action, .sw-sidebar-menu-action) > svg {
+    @apply shrink-0;
+  }
+
+  .sw-sidebar-menu-button-label {
+    @apply min-w-0 flex-1 truncate;
+  }
+
+  .sw-sidebar-menu-button-label > * {
+    @apply block truncate;
+  }
+
+  /* Room for the action or badge that lies over the button's end. */
+  .sw-sidebar-menu-item:has(> .sw-sidebar-menu-action, > .sw-sidebar-menu-badge, > .sw-sidebar-menu-sub-collapsible) > .sw-sidebar-menu-button {
+    @apply pe-8;
+  }
+
+  /*
+    A collapsible item: details, with the menu button as its summary (no marker) and the sub-menu as its content. A
+    collapsible group: details, with the group label as its summary. A collapsible sub-menu: details beside the menu
+    button, its summary a menu action holding only the chevron. The chevron turns down when it opens (and points the
+    other way on a right-to-left page while closed).
+  */
+  :is(.sw-sidebar-menu-collapsible, .sw-sidebar-group-collapsible, .sw-sidebar-menu-sub-collapsible) > summary {
+    @apply list-none;
+  }
+
+  :is(.sw-sidebar-menu-collapsible, .sw-sidebar-group-collapsible, .sw-sidebar-menu-sub-collapsible) > summary::-webkit-details-marker {
+    @apply hidden;
+  }
+
+  .sw-sidebar-menu-button-chevron,
+  .sw-sidebar-group-label-chevron {
+    @apply ms-auto shrink-0 transition-none rtl:-scale-x-100 motion-safe:transition-[rotate];
+  }
+
+  .sw-sidebar-menu-sub-toggle-icon {
+    @apply shrink-0 transition-none rtl:-scale-x-100 motion-safe:transition-[rotate];
+  }
+
+  .sw-sidebar-menu-collapsible[open] > summary > .sw-sidebar-menu-button-chevron,
+  .sw-sidebar-group-collapsible[open] > summary > .sw-sidebar-group-label-chevron,
+  .sw-sidebar-menu-sub-collapsible[open] > summary > .sw-sidebar-menu-sub-toggle-icon {
+    rotate: 90deg;
+    scale: none;
+  }
+
+  /* A sub-menu: indented along a line (the skins draw it), its buttons as the menu's. */
+  .sw-sidebar-menu-sub {
+    @apply m-0 flex min-w-0 list-none flex-col;
+  }
+
+  .sw-sidebar-menu-sub-item {
+    @apply relative;
+  }
+
+  .sw-sidebar-menu-sub-button {
+    @apply flex min-w-0 items-center overflow-hidden no-underline outline-none
+      disabled:pointer-events-none disabled:opacity-50 aria-disabled:pointer-events-none aria-disabled:opacity-50;
+  }
+
+  .sw-sidebar-menu-sub-button > svg {
+    @apply shrink-0;
+  }
+
+  .sw-sidebar-menu-sub-button-label {
+    @apply min-w-0 flex-1 truncate;
+  }
+
+  /*
+    Action and badge lie over the end of the button. On a phone the action's hit area is larger than the icon
+    (after: -inset-2), as shadcn's.
+  */
+  .sw-sidebar-group-action,
+  .sw-sidebar-menu-action {
+    @apply absolute flex aspect-square items-center justify-center outline-none no-underline
+      after:absolute after:-inset-2 md:after:hidden;
+  }
+
+  @media (width >= 48rem) {
+    .sw-sidebar-menu-action[data-show-on-hover] {
+      @apply opacity-0;
+    }
+
+    .sw-sidebar-menu-item:is(:hover, :focus-within) > .sw-sidebar-menu-action[data-show-on-hover],
+    .sw-sidebar-menu-action[data-show-on-hover][aria-expanded='true'] {
+      @apply opacity-100;
+    }
+  }
+
+  .sw-sidebar-menu-badge {
+    @apply pointer-events-none absolute flex items-center justify-center tabular-nums select-none;
+  }
+
+  /*
+    Forced colours drop backgrounds and box shadows: the current entry gets an outline, focus a thicker one.
+  */
+  @media (forced-colors: active) {
+    .sw-sidebar-menu-button:is([aria-current='page'], [aria-current='true']),
+    .sw-sidebar-menu-sub-button:is([aria-current='page'], [aria-current='true']) {
+      @apply outline-1 -outline-offset-1 outline-solid;
+    }
+
+    .sw-sidebar-provider[data-state='collapsed'] > .sw-sidebar[data-collapsible='icon']
+      .sw-sidebar-menu-collapsible:has(.sw-sidebar-menu-sub-button:is([aria-current='page'], [aria-current='true'])) > .sw-sidebar-menu-button,
+    .sw-sidebar-provider[data-state='collapsed'] > .sw-sidebar[data-collapsible='icon']
+      .sw-sidebar-menu-item:has(> .sw-sidebar-menu-sub-collapsible .sw-sidebar-menu-sub-button:is([aria-current='page'], [aria-current='true'])) > .sw-sidebar-menu-button {
+      @media (scripting: enabled) {
+        @apply outline-1 -outline-offset-1 outline-solid;
+      }
+    }
+
+    .sw-sidebar-menu-button:focus-visible,
+    .sw-sidebar-menu-sub-button:focus-visible,
+    .sw-sidebar-group-action:focus-visible,
+    .sw-sidebar-menu-action:focus-visible,
+    .sw-sidebar-group-label:focus-visible {
+      @apply outline-2 -outline-offset-2 outline-solid;
+    }
+  }
+
+  /*
+    Print: the page alone, across the paper. The sidebar and its trigger stay on the screen, and the inset loses the
+    card the inset variant draws (margin, corners, shadow, the sidebar's ground around it). !important, because the
+    rules for the screen select the sidebar and the card more specifically, in the skins too.
+  */
+  @media print {
+    :root:has(.sw-sidebar:popover-open) { overflow: visible !important; }
+
+    .sw-sidebar,
+    .sw-sidebar-trigger {
+      display: none !important;
+    }
+
+    .sw-sidebar-provider {
+      @apply block min-h-0;
+      background: none !important;
+    }
+
+    .sw-sidebar-inset {
+      margin: 0 !important;
+      border-radius: 0 !important;
+      box-shadow: none !important;
+    }
+  }
+}
+
+@layer components {
+  .sw-sidebar,
+  .sw-sidebar-inset,
+  .sw-sidebar-header,
+  .sw-sidebar-content,
+  .sw-sidebar-footer,
+  .sw-sidebar-group,
+  .sw-sidebar-group-label,
+  .sw-sidebar-menu,
+  .sw-sidebar-menu-button,
+  .sw-sidebar-menu-badge { @apply box-border; }
+  .sw-sidebar-close { @apply absolute end-2 top-2; }
+  .sw-button.sw-sidebar-close { @apply size-7; }
+  @media (width >= 48rem) { .sw-sidebar-close { @apply hidden; } }
+  @media (width < 48rem) { .sw-sidebar-header { @apply pe-10; } }
+  .sw-sidebar-menu-button-label { @apply whitespace-nowrap; }
+  .sw-sidebar-group-label { @apply gap-2; }
+}

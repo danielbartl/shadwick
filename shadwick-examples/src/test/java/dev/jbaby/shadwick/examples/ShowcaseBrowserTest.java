@@ -49,7 +49,7 @@ class ShowcaseBrowserTest {
     // WCAG 2.2 A and AA, as axe-core tags its rules
     private static final List<String> WCAG = List.of("wcag2a", "wcag2aa", "wcag21a", "wcag21aa", "wcag22aa");
 
-    private static final List<String> PAGES = List.of("", "buttons", "form", "inputs", "choices", "selections", "dates", "groups", "uploads", "dialog", "overlays", "popups", "menus", "toasts", "display", "feedback");
+    private static final List<String> PAGES = List.of("", "buttons", "form", "inputs", "choices", "selections", "dates", "groups", "uploads", "dialog", "overlays", "popups", "menus", "toasts", "shell", "sidebar", "display", "feedback");
     private static final List<String> SKINS = List.of("vega", "lyra");
     private static final List<String> MODES = List.of("light", "dark");
 
@@ -125,8 +125,11 @@ class ShowcaseBrowserTest {
                     + ".map(a => a.finished.catch(() => {})))");
 
             String where = "/" + page + " in " + skin + ", " + mode;
-            assertThat(describe(new AxeBuilder(tab).withTags(WCAG).analyze().getViolations()))
-                    .as("axe-core's WCAG violations on " + where).isEmpty();
+            // axe injects scripts; no-JavaScript navigation is checked separately from the normal page audits.
+            if (!Boolean.FALSE.equals(options.javaScriptEnabled)) {
+                assertThat(describe(new AxeBuilder(tab).withTags(WCAG).analyze().getViolations()))
+                        .as("axe-core's WCAG violations on " + where).isEmpty();
+            }
             assertThat(errors).as("console errors on " + where).isEmpty();
         }
     }
@@ -1520,6 +1523,121 @@ class ShowcaseBrowserTest {
         });
     }
 
+    @ParameterizedTest(name = "{0}, {1}")
+    @MethodSource("everySkinAndMode")
+    void shellSkipLinkIsFirstAndMovesFocusPastGlobalNavigation(String skin, String mode) {
+        check("shell", skin, mode, tab -> {
+            tab.keyboard().press("Tab");
+            Locator skip = tab.getByRole(AriaRole.LINK, new Page.GetByRoleOptions().setName("Skip to main content").setExact(true));
+            assertThat(skip).isFocused();
+            assertThat(skip).hasCSS("position", "fixed");
+            assertThat(skip.boundingBox().x).isGreaterThanOrEqualTo(0);
+            assertThat(describe(new AxeBuilder(tab).withTags(WCAG).analyze().getViolations())).isEmpty();
+            tab.keyboard().press("Enter");
+            assertThat(tab.getByRole(AriaRole.MAIN)).isFocused();
+            assertThat(tab.getByRole(AriaRole.MAIN)).hasAttribute("tabindex", "-1");
+            tab.keyboard().press("Tab");
+            assertThat(tab.getByRole(AriaRole.MAIN).getByRole(AriaRole.LINK, new Locator.GetByRoleOptions().setName("Shadwick").setExact(true))).isFocused();
+            assertThat(tab.getByRole(AriaRole.BANNER)).hasCount(1);
+            tab.getByRole(AriaRole.BUTTON, new Page.GetByRoleOptions().setName("Save view").setExact(true)).click();
+            assertThat(tab.getByRole(AriaRole.STATUS)).hasText("View saved.");
+        });
+    }
+
+    @ParameterizedTest(name = "{0}, {1}")
+    @MethodSource("everySkinAndMode")
+    void shellBreadcrumbOverflowNavigatesWithKeyboardAndKeepsCurrentSemantics(String skin, String mode) {
+        check("shell", skin, mode, tab -> {
+            Locator trail = tab.getByRole(AriaRole.NAVIGATION, new Page.GetByRoleOptions().setName("Workspace path").setExact(true));
+            assertThat(trail.locator("[aria-current='page']")).hasCount(1);
+            assertThat(trail.locator("[aria-current='page']")).hasText("Overview");
+            assertThat(trail.locator("span[aria-current='page']")).hasCount(1);
+            assertThat(trail.getByRole(AriaRole.LISTITEM)).hasCount(4);
+            Locator more = trail.getByRole(AriaRole.BUTTON, new Locator.GetByRoleOptions().setName("Show more levels"));
+            more.press("ArrowDown");
+            Locator menu = trail.getByRole(AriaRole.MENU, new Locator.GetByRoleOptions().setName("Show more levels"));
+            assertThat(menu.getByRole(AriaRole.MENUITEM, new Locator.GetByRoleOptions().setName("Workspace").setExact(true))).isFocused();
+            tab.keyboard().press("End");
+            assertThat(menu.getByRole(AriaRole.MENUITEM, new Locator.GetByRoleOptions().setName("Design system").setExact(true))).isFocused();
+            tab.keyboard().press("p");
+            assertThat(menu.getByRole(AriaRole.MENUITEM, new Locator.GetByRoleOptions().setName("Projects").setExact(true))).isFocused();
+            menu.evaluate("n=>Promise.all(n.getAnimations().map(a=>a.finished))");
+            assertThat(describe(new AxeBuilder(tab).withTags(WCAG).analyze().getViolations())).isEmpty();
+            tab.keyboard().press("Escape");
+            assertThat(menu).isHidden(); assertThat(more).isFocused();
+            more.press("ArrowUp");
+            Locator design = menu.getByRole(AriaRole.MENUITEM, new Locator.GetByRoleOptions().setName("Design system").setExact(true));
+            assertThat(design).isFocused(); design.press("Enter");
+            tab.waitForURL("**/shell*page=Design*");
+            assertThat(tab.getByRole(AriaRole.STATUS)).hasText("Viewing: Design system.");
+            assertThat(trail.locator("[aria-current='page']")).hasText("Design system");
+        });
+    }
+
+    @ParameterizedTest(name = "{0}, {1}")
+    @MethodSource("everySkinAndMode")
+    void shellBreadcrumbAjaxClearsRestoresAndDismissesReplacedMenus(String skin, String mode) {
+        check("shell", skin, mode, tab -> {
+            Locator trail = tab.getByRole(AriaRole.NAVIGATION, new Page.GetByRoleOptions().setName("Workspace path").setExact(true));
+            trail.getByRole(AriaRole.BUTTON, new Locator.GetByRoleOptions().setName("Show more levels")).click();
+            assertThat(trail.getByRole(AriaRole.MENU)).isVisible();
+            tab.getByRole(AriaRole.BUTTON, new Page.GetByRoleOptions().setName("Refresh breadcrumb")).evaluate("n=>n.click()");
+            assertThat(tab.getByRole(AriaRole.STATUS)).hasText("Breadcrumb refreshed.");
+            assertThat(trail.locator("[aria-current='page']")).hasText("Updated overview");
+            assertThat(trail.getByRole(AriaRole.MENU)).hasCount(0);
+            assertThat(trail.getByRole(AriaRole.BUTTON)).hasAttribute("aria-expanded", "false");
+            tab.getByRole(AriaRole.BUTTON, new Page.GetByRoleOptions().setName("Clear breadcrumb")).click();
+            assertThat(tab.getByRole(AriaRole.STATUS)).hasText("Breadcrumb cleared.");
+            assertThat(trail).hasCount(0);
+            tab.getByRole(AriaRole.BUTTON, new Page.GetByRoleOptions().setName("Restore breadcrumb")).click();
+            assertThat(trail).isVisible();
+            assertThat(trail.locator("[aria-current='page']")).hasText("Overview");
+            trail.getByRole(AriaRole.BUTTON).press("ArrowDown");
+            assertThat(trail.getByRole(AriaRole.MENUITEM, new Locator.GetByRoleOptions().setName("Workspace").setExact(true))).isFocused();
+            tab.keyboard().press("Escape");
+            assertThat(tab.locator("#main")).hasAttribute("tabindex", "-1");
+        });
+    }
+
+    @ParameterizedTest(name = "{0}, {1}")
+    @MethodSource("everySkinAndMode")
+    void shellHeadersAndLongBreadcrumbsWrapAndReverseInRtl(String skin, String mode) {
+        check("shell", skin, mode, new Browser.NewContextOptions().setViewportSize(320, 700), tab -> {
+            tab.getByRole(AriaRole.BUTTON, new Page.GetByRoleOptions().setName("Use long labels")).click();
+            assertThat(tab.getByRole(AriaRole.STATUS)).hasText("Long labels applied.");
+            for (String direction : List.of("ltr", "rtl")) {
+                tab.locator("html").evaluate("(n,dir)=>n.dir=dir", direction);
+                assertThat((Boolean) tab.evaluate("document.documentElement.scrollWidth<=innerWidth+1")).isTrue();
+                Locator trail = tab.getByRole(AriaRole.NAVIGATION, new Page.GetByRoleOptions().setName("Workspace path").setExact(true));
+                assertThat((Boolean) trail.evaluate("n=>n.scrollWidth<=n.clientWidth+1")).isTrue();
+                assertThat(trail.locator(".sw-breadcrumb-separator-icon").first()).hasCSS("scale", direction.equals("rtl") ? "-1 1" : "none");
+                assertThat(tab.locator(".sw-site-header[data-inset='true']")).hasCSS("border-bottom-width", "0px");
+            }
+        });
+    }
+
+    @ParameterizedTest(name = "{0}, {1}")
+    @MethodSource("everySkinAndMode")
+    void shellSkipAndBreadcrumbLinksWorkWithoutJavaScriptAndHaveForcedColorFocus(String skin, String mode) {
+        check("shell", skin, mode, new Browser.NewContextOptions().setJavaScriptEnabled(false), tab -> {
+            tab.keyboard().press("Tab");
+            Locator skip = tab.getByRole(AriaRole.LINK, new Page.GetByRoleOptions().setName("Skip to main content"));
+            assertThat(skip).isFocused(); tab.keyboard().press("Enter");
+            assertThat(tab.getByRole(AriaRole.MAIN)).isFocused();
+            tab.emulateMedia(new Page.EmulateMediaOptions().setForcedColors(ForcedColors.ACTIVE));
+            skip.focus();
+            assertThat(skip).hasCSS("outline-style", "solid");
+            Locator home = tab.getByRole(AriaRole.NAVIGATION, new Page.GetByRoleOptions().setName("Simple path").setExact(true))
+                    .getByRole(AriaRole.LINK, new Locator.GetByRoleOptions().setName("Home").setExact(true));
+            home.focus(); tab.keyboard().press("Tab"); tab.keyboard().press("Shift+Tab");
+            assertThat(home).hasCSS("outline-style", "solid");
+            home.press("Enter");
+            tab.waitForURL("**/shell*page=Home*");
+            assertThat(tab.getByRole(AriaRole.STATUS)).hasText("Viewing: Home.");
+            tab.emulateMedia(new Page.EmulateMediaOptions().setForcedColors(ForcedColors.NONE));
+        });
+    }
+
     private static List<String> describe(List<Rule> violations) {
         return violations.stream().map(rule -> rule.getId() + " (" + rule.getImpact() + "): " + rule.getHelp()
                         + rule.getNodes().stream().map(ShowcaseBrowserTest::describe).collect(Collectors.joining()))
@@ -1529,4 +1647,169 @@ class ShowcaseBrowserTest {
     private static String describe(CheckedNode node) {
         return "\n    " + node.getTarget() + ": " + String.valueOf(node.getFailureSummary()).replace("\n", " ");
     }
+    @ParameterizedTest(name = "{0}, {1}")
+    @MethodSource("everySkinAndMode")
+    void sidebarDesktopCollapsePreservesNamesAndRemembersThePreference(String skin, String mode) {
+        check("sidebar", skin, mode, tab -> {
+            Locator nav = tab.getByRole(AriaRole.NAVIGATION, new Page.GetByRoleOptions().setName("Workspace sidebar"));
+            Locator trigger = tab.getByRole(AriaRole.BUTTON, new Page.GetByRoleOptions().setName("Toggle sidebar"));
+            assertThat(trigger).hasAttribute("aria-expanded", "true");
+            trigger.click();
+            assertThat(trigger).hasAttribute("aria-expanded", "false");
+            assertThat(nav.getByRole(AriaRole.LINK, new Locator.GetByRoleOptions().setName("Inbox").setExact(true))).isVisible();
+            assertThat(nav).hasCSS("width", "64px"); // inset includes its padding around the icon rail
+            Locator inbox = nav.getByRole(AriaRole.LINK, new Locator.GetByRoleOptions().setName("Inbox").setExact(true));
+            inbox.focus(); tab.keyboard().press("Tab"); tab.keyboard().press("Shift+Tab");
+            assertThat(tab.locator(".sw-sidebar-menu-tooltip:popover-open")).hasCount(1);
+            tab.keyboard().press("Escape");
+            tab.reload(); assertThat(trigger).hasAttribute("aria-expanded", "false");
+            tab.keyboard().press("Control+b"); assertThat(trigger).hasAttribute("aria-expanded", "true");
+            trigger.focus(); tab.keyboard().press("Control+Shift+b");
+            assertThat(trigger).hasAttribute("aria-expanded", "true");
+            tab.getByRole(AriaRole.TEXTBOX).focus(); tab.keyboard().press("Control+b");
+            assertThat(trigger).hasAttribute("aria-expanded", "true");
+            assertThat(tab.locator(".sw-sidebar-menu-tooltip:popover-open")).hasCount(0);
+        });
+    }
+
+    @ParameterizedTest(name = "{0}, {1}")
+    @MethodSource("everySkinAndMode")
+    void sidebarMobileTrapsFocusAndRestoresOnlyOwnedInertState(String skin, String mode) {
+        check("sidebar", skin, mode, new Browser.NewContextOptions().setViewportSize(390, 800), tab -> {
+            Locator nav = tab.locator(".sw-sidebar"), trigger = tab.locator(".sw-sidebar-trigger");
+            tab.evaluate("() => { const e=document.createElement('div'); e.id='preexisting-inert'; e.inert=true; document.body.appendChild(e); }");
+            trigger.click();
+            assertThat(nav).isVisible();
+            assertThat(nav.locator("a[aria-current=page]")).isFocused();
+            assertThat(tab.locator(".sw-sidebar-inset")).hasAttribute("inert", "");
+            assertThat(describe(new AxeBuilder(tab).withTags(WCAG).analyze().getViolations())).isEmpty();
+            nav.locator(".sw-sidebar-close").focus(); tab.keyboard().press("Tab");
+            assertThat(nav.getByRole(AriaRole.LINK).first()).isFocused();
+            tab.keyboard().press("Shift+Tab"); assertThat(nav.locator(".sw-sidebar-close")).isFocused();
+            tab.keyboard().press("Escape"); assertThat(trigger).isFocused();
+            assertThat(nav).isHidden(); assertThat(tab.locator(".sw-sidebar-inset")).not().hasAttribute("inert", "");
+            assertThat(tab.locator("#preexisting-inert")).hasAttribute("inert", "");
+            trigger.click(); tab.mouse().click(380, 400); assertThat(nav).isHidden();
+            trigger.click(); tab.setViewportSize(1200, 800);
+            assertThat(nav).isVisible(); assertThat(nav).not().hasAttribute("inert", "");
+            assertThat(tab.locator(".sw-sidebar:popover-open")).hasCount(0);
+            assertThat(tab.locator(".sw-sidebar-inset")).not().hasAttribute("inert", "");
+        });
+    }
+
+    @ParameterizedTest(name = "{0}, {1}")
+    @MethodSource("everySkinAndMode")
+    void sidebarBadgesUpdateWithoutClosingAndReplacingThePanelReleasesFocus(String skin, String mode) {
+        check("sidebar", skin, mode, new Browser.NewContextOptions().setViewportSize(390, 800), tab -> {
+            Locator nav = tab.locator(".sw-sidebar"), trigger = tab.locator(".sw-sidebar-trigger"); trigger.click();
+            assertThat(nav.locator(".sw-sidebar-menu-badge")).hasText("3");
+            nav.getByRole(AriaRole.BUTTON, new Locator.GetByRoleOptions().setName("Mark all read")).click();
+            assertThat(nav.locator(".sw-sidebar-menu-badge")).hasCount(0);
+            assertThat(nav).isVisible(); assertThat(nav.locator("button").last()).isVisible();
+            // Exercise a full Ajax replacement from inside the otherwise inert panel.
+            tab.evaluate("() => document.querySelector('.sw-sidebar').appendChild(document.querySelector('button[id^=refresh]'))");
+            nav.getByRole(AriaRole.BUTTON, new Locator.GetByRoleOptions().setName("Refresh sidebar")).click();
+            assertThat(nav).isHidden(); assertThat(tab.locator(".sw-sidebar-inset")).not().hasAttribute("inert", "");
+            trigger.click(); assertThat(nav.locator(".sw-sidebar-menu-badge")).hasText("3");
+            nav.getByRole(AriaRole.LINK, new Locator.GetByRoleOptions().setName("Inbox").setExact(true)).click();
+            assertThat(tab.getByRole(AriaRole.HEADING, new Page.GetByRoleOptions().setName("Inbox").setExact(true))).isVisible();
+            trigger.click();
+            assertThat(nav.locator("a[aria-current=page]")).isFocused();
+            tab.evaluate("() => document.querySelector('.sw-sidebar-provider').remove()");
+            assertThat(tab.locator("body > [inert]")).hasCount(0);
+        });
+    }
+
+    @ParameterizedTest(name = "{0}, {1}")
+    @MethodSource("everySkinAndMode")
+    void sidebarOffcanvasNoneEndAndRtlLayoutsFit(String skin, String mode) {
+        check("sidebar", skin, mode, tab -> {
+            tab.getByRole(AriaRole.LINK, new Page.GetByRoleOptions().setName("Off-canvas").setExact(true)).click();
+            Locator trigger = tab.locator(".sw-sidebar-trigger"), nav = tab.locator(".sw-sidebar");
+            trigger.click(); assertThat(nav).isHidden();
+            assertThat(nav.locator("a").first()).not().isInViewport();
+            trigger.click(); assertThat(nav).isVisible();
+            nav.locator("a[aria-current=page]").focus(); tab.keyboard().press("Control+b");
+            assertThat(trigger).isFocused(); tab.keyboard().press("Control+b");
+            tab.getByRole(AriaRole.LINK, new Page.GetByRoleOptions().setName("End").setExact(true)).click();
+            assertThat(nav.boundingBox().x).isGreaterThan(tab.locator(".sw-sidebar-inset").boundingBox().x);
+            tab.locator("html").evaluate("n => n.dir='rtl'");
+            assertThat(nav.boundingBox().x).isLessThan(tab.locator(".sw-sidebar-inset").boundingBox().x);
+            tab.getByRole(AriaRole.LINK, new Page.GetByRoleOptions().setName("Always open").setExact(true)).click();
+            assertThat(trigger).isHidden(); assertThat(nav).isVisible();
+            tab.setViewportSize(320, 700); assertThat(trigger).isVisible(); trigger.click();
+            assertThat(nav.boundingBox().width).isLessThanOrEqualTo(272.1);
+            tab.keyboard().press("Escape");
+            assertThat((Boolean) tab.evaluate("() => document.documentElement.scrollWidth <= innerWidth")).isTrue();
+        });
+    }
+
+    @ParameterizedTest(name = "{0}, {1}")
+    @MethodSource("everySkinAndMode")
+    void sidebarNativeNavigationWorksWithoutJavaScript(String skin, String mode) {
+        check("sidebar", skin, mode, new Browser.NewContextOptions().setJavaScriptEnabled(false).setViewportSize(390, 800), tab -> {
+            tab.context().addCookies(List.of(new com.microsoft.playwright.options.Cookie("sw-sidebar-state", "collapsed")
+                    .setUrl(url("sidebar", skin, mode))));
+            tab.reload();
+            tab.locator(".sw-sidebar-trigger").click();
+            Locator nav = tab.locator(".sw-sidebar"); assertThat(nav).isVisible();
+            nav.getByRole(AriaRole.LINK, new Locator.GetByRoleOptions().setName("Inbox").setExact(true)).click();
+            assertThat(tab.getByRole(AriaRole.HEADING, new Page.GetByRoleOptions().setName("Inbox").setExact(true))).isVisible();
+            tab.setViewportSize(1200, 800); assertThat(nav).isVisible(); assertThat(tab.locator(".sw-sidebar-trigger")).isHidden();
+            assertThat(nav.boundingBox().width).isGreaterThan(200);
+        });
+    }
+
+    @ParameterizedTest(name = "{0}, {1}")
+    @MethodSource("everySkinAndMode")
+    void sidebarNestedMenusAndToastsHandleEscapeBeforeThePanel(String skin, String mode) {
+        check("sidebar", skin, mode, new Browser.NewContextOptions().setViewportSize(390, 800), tab -> {
+            Locator nav = tab.locator(".sw-sidebar"); tab.locator(".sw-sidebar-trigger").click();
+            nav.evaluate("n => n.insertAdjacentHTML('beforeend', `<button id='nested-trigger' type='button' popovertarget='nested-menu' aria-haspopup='menu' aria-expanded='false'>More actions</button><div id='nested-menu' class='sw-dropdown-menu-content' popover='auto' role='menu' aria-label='More actions' tabindex='-1'><button type='button' role='menuitem'>A nested action</button></div>`)");
+            tab.locator("#nested-trigger").click();
+            assertThat(tab.locator("#nested-menu")).isVisible();
+            tab.keyboard().press("Escape"); assertThat(tab.locator("#nested-menu")).isHidden();
+            assertThat(nav).isVisible(); assertThat(tab.locator("#nested-trigger")).isFocused();
+            // Escape may arrive before the nested popup's deferred initial focus.
+            for (int attempt = 0; attempt < 6; attempt++) {
+                tab.locator("#nested-trigger").click(); tab.keyboard().press("Escape");
+                assertThat(tab.locator("#nested-menu")).isHidden(); assertThat(nav).isVisible();
+                assertThat(tab.locator("#nested-trigger")).isFocused();
+            }
+            for (int attempt = 0; attempt < 6; attempt++) {
+                tab.locator("#nested-trigger").focus(); tab.keyboard().press("ArrowDown");
+                assertThat(tab.locator("#nested-menu")).isVisible();
+                tab.keyboard().press("Tab");
+                assertThat(tab.locator("#nested-menu")).isHidden();
+                assertThat(nav.getByRole(AriaRole.LINK).first()).isFocused();
+            }
+            tab.evaluate("() => Shadwick.toast('Within the sidebar', {duration:0})");
+            assertThat(nav.locator(".sw-toaster")).hasCount(1);
+            tab.keyboard().press("Alt+t");
+            assertThat(nav.locator(".sw-toast-close")).isFocused();
+            tab.keyboard().press("Escape"); assertThat(nav.locator(".sw-toast")).hasCount(0); assertThat(nav).isVisible();
+            tab.keyboard().press("Escape"); assertThat(nav).isHidden();
+        });
+    }
+
+    @ParameterizedTest(name = "{0}, {1}")
+    @MethodSource("everySkinAndMode")
+    void sidebarForcedColorsAndReducedMotionKeepCurrentAndFocusedLinksVisible(String skin, String mode) {
+        check("sidebar", skin, mode, tab -> {
+            tab.emulateMedia(new Page.EmulateMediaOptions().setForcedColors(ForcedColors.ACTIVE)
+                    .setReducedMotion(com.microsoft.playwright.options.ReducedMotion.REDUCE));
+            tab.locator(".sw-sidebar-trigger").click();
+            Locator current = tab.locator(".sw-sidebar a[aria-current=page]");
+            current.focus(); tab.keyboard().press("Tab"); tab.keyboard().press("Shift+Tab");
+            assertThat(current).isFocused(); assertThat(current).hasCSS("outline-style", "solid");
+            assertThat(current).hasCSS("outline-width", "2px");
+            tab.keyboard().press("Escape");
+            tab.setViewportSize(390, 800); tab.locator(".sw-sidebar-trigger").click();
+            assertThat(current).isFocused();
+            assertThat(tab.locator(".sw-sidebar:popover-open")).hasCount(1);
+            tab.keyboard().press("Escape"); assertThat(tab.locator(".sw-sidebar-trigger")).isFocused();
+            tab.emulateMedia(new Page.EmulateMediaOptions().setForcedColors(ForcedColors.NONE));
+        });
+    }
+
 }

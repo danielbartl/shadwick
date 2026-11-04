@@ -6,7 +6,8 @@
     <title wicket:id="title">Shadwick</title>
 </head>
 <body>
-<header class="ex-header">
+<a wicket:id="skip"></a>
+<header wicket:id="siteHeader" class="ex-header">
     <nav aria-label="Examples" class="ex-nav">
         <a wicket:id="navHome">Shadwick</a>
         <a wicket:id="navButtons">Buttons</a>
@@ -22,6 +23,8 @@
         <a wicket:id="navPopups">Popovers &amp; tooltips</a>
         <a wicket:id="navMenus">Menus</a>
         <a wicket:id="navToasts">Toasts</a>
+        <a wicket:id="navShell">App shell</a>
+        <a wicket:id="navSidebar">Sidebar</a>
         <a wicket:id="navDisplay">Display</a>
         <a wicket:id="navFeedback">Feedback</a>
     </nav>
@@ -36,7 +39,7 @@
         </div>
     </div>
 </header>
-<main class="ex-main">
+<main wicket:id="main" class="ex-main">
     <wicket:child/>
 </main>
 </body>

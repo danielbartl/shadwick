@@ -306,7 +306,7 @@
     document.addEventListener('beforetoggle', function (event) {
         var popup = event.target;
         if (popup instanceof Element && event.newState === 'closed' && activeTooltip
-            && popup.matches(popupSelector + ',dialog') && popup.contains(activeTooltip.source)) {
+            && popup.matches(popupSelector + ',dialog,.sw-sidebar') && popup.contains(activeTooltip.source)) {
             activeTooltip.focused = false; activeTooltip.dismissed = true; hideTooltip(activeTooltip);
         }
         if (!(popup instanceof Element) || !popup.matches(popupSelector)) return;
@@ -373,6 +373,12 @@
     }
     function showTooltip(state) {
         clearTimeout(state.showTimer); clearTimeout(state.hideTimer);
+        if (state.source.hasAttribute('data-sw-sidebar-hint')) {
+            var sidebar = state.source.closest('.sw-sidebar');
+            if (!sidebar || !window.matchMedia('(width >= 48rem)').matches || sidebar.dataset.collapsible !== 'icon'
+                || sidebar.closest('.sw-sidebar-provider').dataset.state !== 'collapsed') return;
+            state.tip.dataset.side = sidebar.dataset.side === 'right' ? 'left' : 'right';
+        }
         var parentPopup = state.source.closest(popupSelector);
         var parentDialog = state.source.closest('dialog');
         if (!state.source.isConnected || !visibleControl(state.source) || state.dismissed
@@ -406,7 +412,7 @@
         if (!text || !text.trim() || typeof source.showPopover !== 'function') return;
         var tip = document.createElement('span');
         do { tip.id = 'sw-tooltip-' + (++tooltipCounter); } while (document.getElementById(tip.id));
-        tip.className = 'sw-tooltip-content';
+        tip.className = 'sw-tooltip-content' + (source.hasAttribute('data-sw-sidebar-hint') ? ' sw-sidebar-menu-tooltip' : '');
         tip.setAttribute('popover', 'manual'); tip.setAttribute('role', 'tooltip');
         tip.setAttribute('data-side', placement); tip.setAttribute('data-align', 'center');
         if (mode === 'label') tip.setAttribute('aria-hidden', 'true');
@@ -593,12 +599,197 @@
         attributeFilter: ['src', 'srcset', 'data-sw-tooltip', 'data-tooltip-placement', 'data-tooltip-mode', 'data-tooltip-delay', 'aria-describedby']});
     scanAvatars(document);
 
+    // Responsive sidebar: ordinary navigation on desktop, a modal-like native popover on mobile.
+    // Own only the inert attributes we add, so caller-owned disabled regions survive close/Ajax.
+    var sidebarDesktop = window.matchMedia('(width >= 48rem)');
+    var sidebarStates = new Map();
+    function sidebarNav(provider) {
+        return Array.from(provider.children).find(function (child) { return child.matches('.sw-sidebar'); });
+    }
+    function sidebarTriggers(nav) {
+        return Array.from(document.querySelectorAll('.sw-sidebar-trigger')).filter(function (trigger) {
+            return trigger.getAttribute('aria-controls') === nav.id || trigger.getAttribute('popovertarget') === nav.id;
+        });
+    }
+    function sidebarControls(nav) {
+        return Array.from(nav.querySelectorAll(tabbable + ',summary')).filter(function (node) {
+            return node.tabIndex >= 0 && !node.matches(':disabled') && visibleControl(node);
+        });
+    }
+    function sidebarInert(state) {
+        var branch = state.nav;
+        while (branch && branch !== document.body) {
+            Array.from(branch.parentElement ? branch.parentElement.children : []).forEach(function (sibling) {
+                if (sibling !== branch && !sibling.inert) { sibling.inert = true; state.inerted.add(sibling); }
+            });
+            branch = branch.parentElement;
+        }
+    }
+    function sidebarRelease(state) {
+        clearTimeout(state.focusTimer);
+        state.inerted.forEach(function (node) { node.inert = false; });
+        state.inerted.clear();
+    }
+    function sidebarSync(provider, state, open) {
+        if (open === undefined) open = state.nav.matches(':popover-open');
+        sidebarTriggers(state.nav).forEach(function (trigger) {
+            trigger.setAttribute('aria-controls', state.nav.id);
+            trigger.setAttribute('aria-expanded', String(sidebarDesktop.matches
+                ? state.nav.dataset.collapsible === 'none' || provider.dataset.state !== 'collapsed' : open));
+            if (sidebarDesktop.matches) trigger.removeAttribute('popovertarget');
+            else trigger.setAttribute('popovertarget', state.nav.id);
+        });
+    }
+    function sidebarAnnounce(provider, state, open) {
+        provider.dispatchEvent(new CustomEvent('sw-sidebar-toggle', {bubbles: true,
+            detail: {state: provider.dataset.state, open: open, mobile: !sidebarDesktop.matches}}));
+    }
+    function sidebarClose(state, restore) {
+        var focused = state.nav.contains(document.activeElement);
+        hidePopup(state.nav); sidebarRelease(state);
+        if (restore && focused && state.source && state.source.isConnected && visibleControl(state.source)) state.source.focus();
+    }
+    function sidebarToggle(provider, state, source) {
+        state.source = source || sidebarTriggers(state.nav)[0];
+        if (!sidebarDesktop.matches) {
+            if (state.nav.matches(':popover-open')) sidebarClose(state, true);
+            else showPopup(state.nav, state.source);
+            return;
+        }
+        if (state.nav.dataset.collapsible === 'none') return;
+        provider.dataset.state = provider.dataset.state === 'collapsed' ? 'expanded' : 'collapsed';
+        if (provider.dataset.sidebarRemember !== 'false') {
+            var name = provider.dataset.sidebarCookie || 'sw-sidebar-state';
+            if (/^[A-Za-z0-9_-]+$/.test(name)) document.cookie = name + '=' + provider.dataset.state
+                + ';path=/;max-age=31536000;SameSite=Lax' + (location.protocol === 'https:' ? ';Secure' : '');
+        }
+        if (activeTooltip && state.nav.contains(activeTooltip.source)) hideTooltip(activeTooltip);
+        if (provider.dataset.state === 'collapsed' && state.nav.contains(document.activeElement)
+            && (state.nav.dataset.collapsible !== 'icon' || document.activeElement.matches('summary'))
+            && state.source) state.source.focus();
+        sidebarSync(provider, state); sidebarAnnounce(provider, state, false);
+    }
+    function scanSidebars() {
+        sidebarStates.forEach(function (state, provider) {
+            if (!provider.isConnected || sidebarNav(provider) !== state.nav) {
+                sidebarClose(state, false); sidebarStates.delete(provider);
+            }
+        });
+        document.querySelectorAll('.sw-sidebar-provider').forEach(function (provider) {
+            var nav = sidebarNav(provider);
+            if (!nav) return;
+            var state = sidebarStates.get(provider);
+            if (!state) {
+                state = {nav: nav, source: null, inerted: new Set(), focusTimer: 0};
+                sidebarStates.set(provider, state);
+            }
+            sidebarSync(provider, state);
+            if (nav.matches(':popover-open') && !sidebarDesktop.matches) {
+                sidebarInert(state);
+                if (!nav.contains(document.activeElement) && !document.activeElement.closest('dialog:modal'))
+                    (sidebarControls(nav)[0] || nav).focus();
+            }
+        });
+    }
+    document.addEventListener('beforetoggle', function (event) {
+        var nav = event.target;
+        if (!(nav instanceof Element) || !nav.matches('.sw-sidebar')) return;
+        var provider = nav.closest('.sw-sidebar-provider'), state = sidebarStates.get(provider);
+        if (!state) return;
+        var opening = event.newState === 'open';
+        if (opening && sidebarDesktop.matches) { event.preventDefault(); return; }
+        if (opening) {
+            state.source = event.source || state.source || sidebarTriggers(nav)[0];
+            sidebarInert(state);
+            state.focusTimer = setTimeout(function () {
+                if (!nav.isConnected || !nav.matches(':popover-open')) return;
+                var current = nav.querySelector('a[aria-current="page"]');
+                (current && visibleControl(current) ? current : sidebarControls(nav)[0] || nav).focus();
+            }, 0);
+        } else {
+            var focused = nav.contains(document.activeElement);
+            sidebarRelease(state);
+            if (focused && state.source && state.source.isConnected && visibleControl(state.source)) state.source.focus();
+        }
+        sidebarSync(provider, state, opening); sidebarAnnounce(provider, state, opening);
+    }, true);
+    document.addEventListener('toggle', function (event) {
+        if (event.target instanceof Element && event.target.matches('.sw-sidebar')) placeToaster();
+    }, true);
+    document.addEventListener('click', function (event) {
+        if (!(event.target instanceof Element)) return;
+        var trigger = event.target.closest('.sw-sidebar-trigger');
+        if (trigger) {
+            var nav = document.getElementById(trigger.getAttribute('aria-controls'));
+            var provider = nav && nav.closest('.sw-sidebar-provider'), state = sidebarStates.get(provider);
+            if (state) {
+                state.source = trigger;
+                if (sidebarDesktop.matches) { event.preventDefault(); sidebarToggle(provider, state, trigger); }
+            }
+        }
+        var link = event.target.closest('.sw-sidebar a[href]');
+        if (link && !link.hasAttribute('data-sidebar-keep-open')) {
+            var sidebar = link.closest('.sw-sidebar'), entry = sidebarStates.get(sidebar.closest('.sw-sidebar-provider'));
+            if (entry && sidebar.matches(':popover-open')) setTimeout(function () { sidebarClose(entry, true); }, 0);
+        }
+    }, true);
+    document.addEventListener('keydown', function (event) {
+        if (event.defaultPrevented || !(event.target instanceof Element)) return;
+        var target = event.target;
+        if ((event.ctrlKey || event.metaKey) && !event.altKey && !event.shiftKey && event.key.toLowerCase() === 'b'
+            && !target.closest('input,textarea,select,[contenteditable]:not([contenteditable="false"]),dialog:modal')) {
+            var provider = target.closest('.sw-sidebar-provider');
+            if (!provider && sidebarStates.size === 1) provider = sidebarStates.keys().next().value;
+            var state = sidebarStates.get(provider);
+            if (state && (!sidebarDesktop.matches || state.nav.dataset.collapsible !== 'none')) {
+                event.preventDefault(); sidebarToggle(provider, state, sidebarTriggers(state.nav)[0]);
+            }
+            return;
+        }
+        var nav = target.closest('.sw-sidebar:popover-open');
+        if (!nav || sidebarDesktop.matches || target.closest('dialog:modal')) return;
+        var state = sidebarStates.get(nav.closest('.sw-sidebar-provider'));
+        if (!state) return;
+        if (event.key === 'Escape') {
+            // A native invoker can still own focus before the nested popup's focus timer runs.
+            // Consume Escape here too, so the browser and this handler cannot close two layers.
+            var nested = Array.from(nav.querySelectorAll(':is(' + popupSelector + '):popover-open')).pop();
+            event.preventDefault();
+            if (nested) Shadwick.closePopover(nested.id);
+            else sidebarClose(state, true);
+        }
+        if (event.key === 'Tab') {
+            // Match the menu's Tab behavior even when focus is still on its invoker.
+            var nestedMenu = Array.from(nav.querySelectorAll(menuSelector + ':popover-open')).pop();
+            if (nestedMenu) Shadwick.closePopover(nestedMenu.id);
+            var controls = sidebarControls(nav), first = controls[0], last = controls[controls.length - 1];
+            var focused = document.activeElement;
+            if (!first) { event.preventDefault(); nav.focus(); }
+            else if (event.shiftKey && (focused === first || focused === nav)) { event.preventDefault(); last.focus(); }
+            else if (!event.shiftKey && (focused === last || focused === nav)) { event.preventDefault(); first.focus(); }
+        }
+    });
+    sidebarDesktop.addEventListener('change', function () {
+        sidebarStates.forEach(function (state, provider) {
+            sidebarClose(state, true); sidebarSync(provider, state);
+            if (state.nav.contains(document.activeElement) && !visibleControl(document.activeElement)) {
+                var trigger = sidebarTriggers(state.nav)[0]; if (trigger) trigger.focus();
+            }
+        });
+    });
+    window.addEventListener('pagehide', function () { sidebarStates.forEach(function (state) { sidebarClose(state, false); }); });
+    window.addEventListener('pageshow', scanSidebars);
+    new MutationObserver(function (records) {
+        if (records.some(function (record) { return record.type === 'childList'; })) scanSidebars();
+    }).observe(document.documentElement, {subtree: true, childList: true});
+    scanSidebars();
+
     // ---- Toasts: Shadleaf anatomy/interactions, with a CSS column instead of inline stack geometry ----
     var toaster = null, toastStates = new Map(), toastReturnFocus = null, toastHover = false;
     var toastCounter = 0;
     function topToastModal() {
-        return document.activeElement.closest && document.activeElement.closest('dialog:modal')
-            || Array.from(document.querySelectorAll('dialog:modal')).pop() || null;
+        return document.activeElement.closest && document.activeElement.closest('dialog:modal,.sw-sidebar:popover-open')
+            || Array.from(document.querySelectorAll('dialog:modal,.sw-sidebar:popover-open')).pop() || null;
     }
     function placeToaster() {
         if (!toaster || !toastStates.size) return;

@@ -89,20 +89,6 @@ body {
   margin-inline:auto
 }
 
-.skip-link {
-  position:fixed;
-  top:10px;
-  left:10px;
-  padding:10px 20px;
-  background:#fff;
-  z-index:100;
-  transform:translateY(-150%)
-}
-
-.skip-link:focus {
-  transform:translateY(0)
-}
-
 .site-header {
   height:88px;
   display:flex;
@@ -415,11 +401,14 @@ body {
   box-shadow:0 1px 3px #1c3b2618
 }
 
-.studio-canvas {
+.studio-surface {
   display:grid;
   grid-template-columns:1.06fr 1fr 1fr;
   gap:20px;
   padding:30px;
+}
+
+.studio-canvas {
   background-color:#eef1e9;
   background-image:radial-gradient(#c9d2c0 0.7px,transparent 0.7px);
   background-size:16px 16px;
@@ -1355,7 +1344,7 @@ h2 {
   .wrap {
     width:calc(100% - 48px)
   }
-  .studio-canvas {
+  .studio-surface {
     padding:22px;
     gap:15px;
     grid-template-columns:1fr 1fr
@@ -1519,7 +1508,7 @@ h2 {
   .control-divider {
     display:none
   }
-  .studio-canvas {
+  .studio-surface {
     padding:16px;
     gap:16px
   }
@@ -1689,7 +1678,7 @@ h2 {
 }
 
 @media(max-width:480px) {
-  .studio-canvas {
+  .studio-surface {
     grid-template-columns:1fr;
     padding:18px
   }
@@ -1912,3 +1901,21 @@ h2 {
 .sheet-demo-details dd { margin:0; font-weight:500; }
 
 .badge-samples button.sw-badge { min-height:24px; cursor:pointer; }
+
+.studio-workspace { grid-column:1 / -1; border:1px solid var(--border); border-radius:var(--radius); }
+.studio-workspace .sw-breadcrumb { flex:1; }
+.studio-canvas[data-skin=lyra] .studio-workspace { border-radius:0; }
+
+/* The live sidebar uses library behavior inside this bounded studio composition. */
+.studio-canvas.sw-sidebar-provider { display:flex; min-height:0; --sw-sidebar-width:12rem; --sidebar:var(--card); --sidebar-foreground:var(--foreground); --sidebar-accent:var(--accent); --sidebar-accent-foreground:var(--accent-foreground); --sidebar-border:var(--border); --sidebar-ring:var(--ring); }
+.studio-surface.sw-sidebar-inset { display:grid; }
+.studio-sidebar .sw-sidebar-menu { padding-inline:.5rem; }
+.studio-sidebar .sw-sidebar-menu-button { white-space:nowrap; }
+.studio-sidebar img { flex-shrink:0; }
+.studio-sidebar .sw-sidebar-menu-button-label small { color:var(--muted-foreground); }
+@media (width >= 48rem) {
+  .studio-canvas > .studio-sidebar { position:relative; top:auto; block-size:auto; align-self:stretch; }
+}
+@media (width < 48rem) {
+  .studio-workspace .sw-site-header-end { display:none; }
+}

@@ -778,3 +778,313 @@
     @apply text-accent-foreground;
   }
 }
+
+/* Header, breadcrumb and skip link identity, adapted from Shadleaf (Apache-2.0, see NOTICE). */
+@layer components {
+  .sw-breadcrumb-list {
+    @apply gap-1.5 text-xs text-muted-legible;
+  }
+
+  .sw-breadcrumb-item {
+    @apply gap-1;
+  }
+
+  .sw-breadcrumb-link {
+    @apply rounded-none motion-safe:transition-colors hover:text-foreground focus-visible:ring-1 focus-visible:ring-ring/50;
+  }
+
+  .sw-breadcrumb-page {
+    @apply font-normal text-foreground;
+  }
+
+  .sw-breadcrumb-separator > svg:not([class*='size-'], [data-icon-size]) {
+    @apply size-3.5;
+  }
+
+  .sw-breadcrumb-ellipsis {
+    @apply size-5;
+  }
+
+  .sw-breadcrumb-ellipsis > svg:not([class*='size-'], [data-icon-size]) {
+    @apply size-4;
+  }
+
+  /* Skip link: drawn as an outline button once it has the focus. */
+  .sw-skip-link:focus {
+    @apply inline-flex min-h-8 h-auto py-1.5 rounded-none px-2.5 text-xs items-center border border-border bg-background font-medium
+      text-foreground shadow-md;
+  }
+
+  .sw-skip-link:focus-visible {
+    @apply border-ring ring-1 ring-ring/50;
+  }
+
+  /*
+    Site header, after shadcn's page headers (sidebar-16's site header, sidebar-07's inset header): 3.5rem high,
+    px-4, gap-2. Across the top of the page it is the page's ground with a border below; inside the inset, or above an
+    inset card (it then lies on the sidebar's ground), it has neither. The trigger sits a little outside the padding,
+    and a vertical separator keeps some room before what follows.
+  */
+  .sw-site-header {
+    --sw-site-header-height: 3.5rem;
+    @apply gap-2 border-b border-border bg-background px-4;
+  }
+
+  .sw-site-header[data-inset='true'] { @apply border-b-0 bg-transparent; }
+
+  .sw-site-header-end {
+    @apply gap-2;
+  }
+
+  .sw-site-header > .sw-separator[data-orientation='vertical'] {
+    @apply me-2;
+  }
+
+  .sw-button.sw-breadcrumb-ellipsis-trigger { @apply size-7 p-0; }
+}
+
+/* Sidebar identity, adapted from Shadleaf (Apache-2.0, see NOTICE). */
+@layer components {
+  .sw-sidebar-provider {
+    --sw-sidebar-width: 16rem;
+    --sw-sidebar-width-mobile: 18rem;
+    --sw-sidebar-width-icon: 3rem;
+  }
+
+  .sw-sidebar {
+    @apply border-sidebar-border bg-sidebar text-xs/relaxed text-sidebar-foreground duration-200 ease-linear
+      backdrop:bg-black/10 backdrop:duration-200 supports-backdrop-filter:backdrop:backdrop-blur-xs;
+  }
+
+  .sw-sidebar:popover-open {
+    @apply shadow-lg;
+  }
+
+  .sw-sidebar-inset {
+    @apply bg-background;
+  }
+
+  /*
+    Variants on a desktop, after shadcn's lyra style: floating is a square panel with a shadow; inset puts the
+    sidebar's colour around the page, which becomes a square card with a shadow. Margins and edges are structure.
+  */
+  .sw-sidebar[data-variant='floating'] {
+    @apply md:rounded-none md:shadow-sm;
+  }
+
+  .sw-sidebar-provider:has(> .sw-sidebar[data-variant='inset']) {
+    @apply bg-sidebar;
+  }
+
+  .sw-sidebar-provider:has(> .sw-sidebar[data-variant='inset']) > .sw-sidebar-inset {
+    @apply duration-200 ease-linear md:rounded-none md:shadow-sm;
+  }
+
+  /*
+    The sidebar's content parts, after shadcn's lyra style. The current entry
+    ([aria-current]) and a hovered one take the accent; the focus ring is the sidebar's. A badge follows the
+    colour of the button it describes.
+  */
+  .sw-sidebar-header,
+  .sw-sidebar-footer {
+    @apply gap-2 p-2;
+  }
+
+  /*
+    Firefox makes the content a tab stop of its own when it scrolls (so do other browsers when nothing in it can take
+    the focus): an outline inside its edge shows it has the focus.
+  */
+  .sw-sidebar-content {
+    @apply gap-0 focus-visible:outline-1 focus-visible:-outline-offset-1 focus-visible:outline-sidebar-ring;
+  }
+
+  .sw-sidebar-separator {
+    @apply mx-2 bg-sidebar-border;
+  }
+
+  .sw-sidebar-group {
+    @apply p-2;
+  }
+
+  .sw-sidebar-group-label {
+    @apply h-8 rounded-none px-2 text-xs text-sidebar-foreground ring-sidebar-ring focus-visible:ring-2
+      [&>svg:not([class*='size-'],[data-icon-size])]:size-4;
+  }
+
+  /* The label of a collapsible group opens and closes it. */
+  summary.sw-sidebar-group-label {
+    @apply hover:bg-sidebar-accent hover:text-sidebar-accent-foreground;
+  }
+
+  .sw-sidebar-group-content {
+    @apply text-xs;
+  }
+
+  .sw-sidebar-menu {
+    @apply gap-0;
+  }
+
+  .sw-sidebar-menu-button:not([data-variant]) {
+    @apply bg-transparent;
+  }
+
+  .sw-sidebar-menu-button[data-variant='outline'] {
+    @apply bg-background hover:bg-sidebar-accent hover:text-sidebar-accent-foreground
+      shadow-[0_0_0_1px_var(--sidebar-border)] hover:shadow-[0_0_0_1px_var(--sidebar-accent)];
+  }
+
+  /* After the variants, so hover and the current entry win over their background. */
+  .sw-sidebar-menu-button {
+    @apply gap-2 rounded-none p-2 text-sidebar-foreground ring-sidebar-ring
+      hover:bg-sidebar-accent hover:text-sidebar-accent-foreground
+      active:bg-sidebar-accent active:text-sidebar-accent-foreground focus-visible:ring-2
+      [&_svg:not([class*='size-'],[data-icon-size])]:size-4;
+  }
+
+  .sw-sidebar-menu-button:is([aria-current='page'], [aria-current='true']) {
+    @apply bg-sidebar-accent font-medium text-sidebar-accent-foreground;
+  }
+
+  /* A menu button or action whose dropdown menu is open. */
+  .sw-sidebar-menu-button[aria-expanded='true'],
+  .sw-sidebar-menu-action[aria-expanded='true'] {
+    @apply bg-sidebar-accent text-sidebar-accent-foreground;
+  }
+
+  .sw-sidebar-menu-button:not([data-size]) {
+    @apply h-8 text-xs;
+  }
+
+  .sw-sidebar-menu-button[data-size='sm'] {
+    @apply h-7 text-xs;
+  }
+
+  .sw-sidebar-menu-button[data-size='lg'] {
+    @apply h-12 text-xs;
+  }
+
+  .sw-sidebar-menu-button-label > small {
+    @apply text-xs;
+  }
+
+  .sw-sidebar-group-action {
+    @apply end-3 top-3.5 w-5 rounded-none p-0 text-sidebar-foreground ring-sidebar-ring
+      hover:bg-sidebar-accent hover:text-sidebar-accent-foreground focus-visible:ring-2
+      [&>svg:not([class*='size-'],[data-icon-size])]:size-4;
+  }
+
+  .sw-sidebar-menu-action {
+    @apply end-1 top-1 w-6 rounded-none p-0 text-sidebar-foreground ring-sidebar-ring
+      hover:bg-sidebar-accent hover:text-sidebar-accent-foreground focus-visible:ring-2
+      [&>svg:not([class*='size-'],[data-icon-size])]:size-4;
+  }
+
+  .sw-sidebar-menu-badge {
+    @apply end-1 top-1.5 h-5 min-w-5 rounded-none px-1 text-xs font-medium text-sidebar-foreground;
+  }
+
+  .sw-sidebar-menu-button[data-size='sm'] ~ .sw-sidebar-menu-badge {
+    @apply top-1;
+  }
+
+  .sw-sidebar-menu-button[data-size='lg'] ~ .sw-sidebar-menu-badge {
+    @apply top-3.5;
+  }
+
+  /* 24px at every width (WCAG 2.2's target size; shadcn's 20px is flagged by axe once shown), centred on the button. */
+  .sw-sidebar-menu-button[data-size='sm'] ~ .sw-sidebar-menu-action {
+    @apply top-0.5;
+  }
+
+  .sw-sidebar-menu-button[data-size='lg'] ~ .sw-sidebar-menu-action {
+    @apply top-3;
+  }
+
+  .sw-sidebar-menu-button:is(:hover, [aria-current='page'], [aria-current='true'], [aria-expanded='true']) ~ :is(.sw-sidebar-menu-action, .sw-sidebar-menu-badge) {
+    @apply text-sidebar-accent-foreground;
+  }
+
+  /*
+    A sub-menu, after shadcn's lyra style: indented along a line from the middle of the icons above it. Its buttons
+    look like the menu's, a little lower.
+  */
+  .sw-sidebar-menu-sub {
+    @apply mx-3.5 gap-1 border-s border-sidebar-border px-2.5 py-0.5;
+  }
+
+  .sw-sidebar-menu-sub-button {
+    @apply h-7 gap-2 rounded-none px-2 text-sidebar-foreground ring-sidebar-ring
+      hover:bg-sidebar-accent hover:text-sidebar-accent-foreground
+      active:bg-sidebar-accent active:text-sidebar-accent-foreground focus-visible:ring-2
+      [&>svg]:text-sidebar-accent-foreground [&>svg:not([class*='size-'],[data-icon-size])]:size-4;
+  }
+
+  .sw-sidebar-menu-sub-button:is([aria-current='page'], [aria-current='true']) {
+    @apply bg-sidebar-accent text-sidebar-accent-foreground;
+  }
+
+  .sw-sidebar-menu-sub-button:not([data-size]) {
+    @apply text-xs;
+  }
+
+  .sw-sidebar-menu-sub-button[data-size='sm'] {
+    @apply text-xs;
+  }
+
+  /*
+    Collapsed to icons (desktop only), after shadcn's lyra style: every menu button is a square as large as the
+    default height around its icon (the structure hides the label); a large one loses its padding, so a logo of
+    that size fills it. Group
+    labels move up out of view (they still name their groups). A collapsible item whose hidden sub-menu holds the
+    current page shows it on its icon. Width, padding and the label's move follow the sidebar only without reduced
+    motion.
+  */
+  @media (width >= 48rem) {
+    .sw-sidebar-provider[data-state='collapsed'] > .sw-sidebar[data-collapsible='icon'] .sw-sidebar-menu-button {
+      @media (scripting: enabled) {
+        @apply size-8 p-2;
+      }
+    }
+
+    .sw-sidebar-provider[data-state='collapsed'] > .sw-sidebar[data-collapsible='icon'] .sw-sidebar-menu-button[data-size='lg'] {
+      @media (scripting: enabled) {
+        @apply p-0;
+      }
+    }
+
+    .sw-sidebar-provider[data-state='collapsed'] > .sw-sidebar[data-collapsible='icon'] .sw-sidebar-group-label {
+      @media (scripting: enabled) {
+        @apply -mt-8 opacity-0;
+      }
+    }
+
+    .sw-sidebar-provider[data-state='collapsed'] > .sw-sidebar[data-collapsible='icon']
+      .sw-sidebar-menu-collapsible:has(.sw-sidebar-menu-sub-button:is([aria-current='page'], [aria-current='true'])) > .sw-sidebar-menu-button,
+    .sw-sidebar-provider[data-state='collapsed'] > .sw-sidebar[data-collapsible='icon']
+      .sw-sidebar-menu-item:has(> .sw-sidebar-menu-sub-collapsible .sw-sidebar-menu-sub-button:is([aria-current='page'], [aria-current='true'])) > .sw-sidebar-menu-button {
+      @media (scripting: enabled) {
+        @apply bg-sidebar-accent font-medium text-sidebar-accent-foreground;
+      }
+    }
+  }
+
+  @media (width >= 48rem) and (prefers-reduced-motion: no-preference) {
+    .sw-sidebar[data-collapsible='icon'] .sw-sidebar-menu-button {
+      @apply transition-[width,height,padding] duration-200 ease-linear;
+    }
+
+    .sw-sidebar[data-collapsible='icon'] .sw-sidebar-group-label {
+      @apply transition-[margin,opacity] duration-200 ease-linear;
+    }
+  }
+
+  /*
+    On a phone the group actions are 24px too (WCAG 2.2's target size; shadcn's 20px with a larger pseudo-element hit
+    area does not count). On a desktop they stand alone beside the label, with room around them.
+  */
+  @media (width < 48rem) {
+    .sw-sidebar-group-action {
+      @apply top-3 w-6;
+    }
+  }
+}

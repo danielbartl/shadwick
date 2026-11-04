@@ -1,0 +1,10 @@
+/* Site header structure, adapted from Shadleaf (Apache-2.0, see NOTICE). */
+@layer components {
+  .sw-site-header {
+    @apply box-border flex w-full min-w-0 shrink-0 flex-wrap items-center;
+    min-block-size: var(--sw-site-header-height);
+  }
+  .sw-site-header-end { @apply ms-auto flex min-w-0 max-w-full shrink-0 flex-wrap items-center; }
+  .sw-site-header > .sw-separator[data-orientation='vertical'] { @apply h-4 self-center; }
+  @media print { .sw-site-header { display: none !important; } }
+}

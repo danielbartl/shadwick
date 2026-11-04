@@ -29,6 +29,8 @@ public class ExamplesApplication extends WebApplication {
         mountPage("/popups", PopupPage.class);
         mountPage("/menus", MenuPage.class);
         mountPage("/toasts", ToastPage.class);
+        mountPage("/shell", ShellPage.class);
+        mountPage("/sidebar", SidebarPage.class);
         mountPage("/display", DisplayPage.class);
         mountPage("/feedback", FeedbackPage.class);
 

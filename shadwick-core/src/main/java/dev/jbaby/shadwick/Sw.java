@@ -1,6 +1,12 @@
 package dev.jbaby.shadwick;
 
 import dev.jbaby.shadwick.behaviors.ButtonBehavior;
+import dev.jbaby.shadwick.behaviors.BreadcrumbBehavior;
+import dev.jbaby.shadwick.behaviors.SiteHeaderBehavior;
+import dev.jbaby.shadwick.behaviors.SkipLinkBehavior;
+import dev.jbaby.shadwick.behaviors.SidebarBehavior;
+import dev.jbaby.shadwick.behaviors.SidebarProviderBehavior;
+import dev.jbaby.shadwick.behaviors.SidebarTriggerBehavior;
 import dev.jbaby.shadwick.behaviors.AlertBehavior;
 import dev.jbaby.shadwick.behaviors.BadgeBehavior;
 import dev.jbaby.shadwick.behaviors.CardBehavior;
@@ -66,6 +72,46 @@ public final class Sw {
             return new ButtonBehavior(variant);
         }
 
+        public static SidebarBehavior sidebar() { return new SidebarBehavior(); }
+        public static SidebarProviderBehavior sidebarProvider() { return new SidebarProviderBehavior(); }
+        public static SidebarTriggerBehavior sidebarTrigger(Component sidebar) { return new SidebarTriggerBehavior(sidebar); }
+        public static StyledBehavior sidebarInset() {
+            return new StyledBehavior("sw-sidebar-inset") {
+                @Override public void onComponentTag(Component component, ComponentTag tag) {
+                    super.onComponentTag(component, tag); if (tag.getAttribute("tabindex") == null) tag.put("tabindex", "-1");
+                }
+            };
+        }
+        public static StyledBehavior sidebarHeader() { return new StyledBehavior("sw-sidebar-header"); }
+        public static StyledBehavior sidebarContent() { return new StyledBehavior("sw-sidebar-content"); }
+        public static StyledBehavior sidebarFooter() { return new StyledBehavior("sw-sidebar-footer"); }
+        public static StyledBehavior sidebarMenu() { return new StyledBehavior("sw-sidebar-menu"); }
+        public static StyledBehavior sidebarMenuItem() { return new StyledBehavior("sw-sidebar-menu-item"); }
+        public static StyledBehavior sidebarMenuButton() { return new StyledBehavior("sw-sidebar-menu-button"); }
+        public static StyledBehavior sidebarMenuLabel() { return new StyledBehavior("sw-sidebar-menu-button-label"); }
+        public static SiteHeaderBehavior siteHeader() { return new SiteHeaderBehavior(); }
+        public static StyledBehavior siteHeaderEnd() { return new StyledBehavior("sw-site-header-end"); }
+        public static BreadcrumbBehavior breadcrumb() { return new BreadcrumbBehavior(); }
+        public static StyledBehavior breadcrumbList() { return new StyledBehavior("sw-breadcrumb-list"); }
+        public static StyledBehavior breadcrumbItem() { return new StyledBehavior("sw-breadcrumb-item"); }
+        public static StyledBehavior breadcrumbSeparator() {
+            return new StyledBehavior("sw-breadcrumb-separator") {
+                @Override public void onComponentTag(Component component, ComponentTag tag) {
+                    super.onComponentTag(component, tag); tag.put("role", "presentation"); tag.put("aria-hidden", "true");
+                }
+            };
+        }
+        public static StyledBehavior breadcrumbLink() { return new StyledBehavior("sw-breadcrumb-link"); }
+        public static StyledBehavior breadcrumbPage() {
+            return new StyledBehavior("sw-breadcrumb-page") {
+                @Override public void onComponentTag(Component component, ComponentTag tag) {
+                    super.onComponentTag(component, tag); tag.put("aria-current", "page");
+                }
+            };
+        }
+        public static SkipLinkBehavior skipLink() { return new SkipLinkBehavior(); }
+        public static SkipLinkBehavior skipLink(String targetId) { return new SkipLinkBehavior(targetId); }
+        public static SkipLinkBehavior skipLink(Component target) { return new SkipLinkBehavior(target); }
         public static CardBehavior card() { return new CardBehavior(); }
         public static BadgeBehavior badge() { return new BadgeBehavior(); }
         public static BadgeBehavior badge(BadgeBehavior.Variant variant) { return new BadgeBehavior(variant); }

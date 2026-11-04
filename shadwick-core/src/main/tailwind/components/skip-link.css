@@ -1,0 +1,12 @@
+/* Skip link structure, adapted from Shadleaf (Apache-2.0, see NOTICE). */
+@layer components {
+  .sw-skip-link { @apply box-border sr-only no-underline outline-none;
+    overflow-wrap: anywhere; }
+  .sw-skip-link:focus {
+    @apply fixed start-2 top-2 z-50 m-0 h-auto w-auto max-w-[calc(100dvw-1rem)] overflow-visible whitespace-normal;
+    clip-path: none;
+  }
+  @media (forced-colors: active) {
+    .sw-skip-link:focus { @apply border border-solid outline-2 outline-offset-2 outline-solid; }
+  }
+}

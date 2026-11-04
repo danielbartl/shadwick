@@ -1,0 +1,15 @@
+/* Breadcrumb structure, adapted from Shadleaf (Apache-2.0, see NOTICE). */
+@layer components {
+  .sw-breadcrumb { @apply min-w-0; }
+  .sw-breadcrumb-list { @apply m-0 flex min-w-0 list-none flex-wrap items-center p-0; }
+  .sw-breadcrumb-item { @apply inline-flex min-w-0 max-w-full items-center; overflow-wrap: anywhere; }
+  .sw-breadcrumb-link { @apply min-w-0 text-inherit no-underline outline-none; overflow-wrap: anywhere; }
+  .sw-breadcrumb-separator { @apply inline-flex shrink-0 items-center select-none; }
+  .sw-breadcrumb-separator-icon { @apply rtl:-scale-x-100; }
+  .sw-breadcrumb-ellipsis { @apply flex items-center justify-center; }
+  @media (forced-colors: active) {
+    .sw-breadcrumb-link:focus-visible, .sw-breadcrumb-ellipsis-trigger:focus-visible {
+      @apply outline-2 outline-offset-2 outline-solid;
+    }
+  }
+}

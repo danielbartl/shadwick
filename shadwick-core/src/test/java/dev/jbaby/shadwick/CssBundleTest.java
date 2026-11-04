@@ -58,6 +58,8 @@ class CssBundleTest {
                     .contains(".sw-popover-content", ".sw-popover-header", ".sw-tooltip-content", "position-area:");
             assertThat(css).contains(".sw-dropdown-menu-content", ".sw-dropdown-menu-item", ".sw-dropdown-menu-checkbox-item",
                     ".sw-dropdown-menu-radio-item", ".sw-dropdown-menu-separator", ".sw-dropdown-menu-shortcut");
+            assertThat(css).contains(".sw-site-header", ".sw-site-header-end", ".sw-skip-link", ".sw-breadcrumb-list", ".sw-breadcrumb-link", ".sw-breadcrumb-separator-icon");
+            assertThat(css).contains(".sw-sidebar-provider", ".sw-sidebar-inset", ".sw-sidebar-trigger", ".sw-sidebar-menu-button", "--sw-sidebar-width-icon");
             assertThat(css).contains(".sw-toaster", ".sw-toast-title", ".sw-toast-description", ".sw-toast-close");
             assertThat(css).doesNotContain("-webkit-text-size-adjust", "font-synthesis", "@layer theme {")
                     .doesNotContainPattern("(?s)(?:^|[{}])\\s*\\*[^{}]*\\{[^{}]*box-sizing\\s*:");
