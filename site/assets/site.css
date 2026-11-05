@@ -584,17 +584,22 @@ body {
   color:#495d30
 }
 
+.buttons-card { container-type:inline-size; }
+
 .buttons-card .sw-card-header {
   padding-bottom:0
 }
 
 .button-samples {
   display:grid;
-  grid-template-columns:1fr 1fr;
+  grid-template-columns:repeat(2,minmax(0,1fr));
   gap:10px
 }
 
 .button-samples .sw-button {
+  min-width:0;
+  white-space:normal;
+  text-align:center;
   font-size:10px;
   padding-inline:9px;
   gap:6px
@@ -820,7 +825,7 @@ body {
   margin-bottom:15px
 }
 
-h2 {
+.section-intro h2, .code-copy h2, .start-heading h2 {
   font-size:43px;
   line-height:1.12;
   letter-spacing:-1.8px;
@@ -1569,7 +1574,7 @@ h2 {
     font-size:8px;
     margin-bottom:13px
   }
-  h2 {
+  .section-intro h2, .code-copy h2, .start-heading h2 {
     font-size:35px;
     letter-spacing:-1.4px
   }
@@ -1924,8 +1929,8 @@ h2 {
 
 .studio-account [hidden] { display:none !important; }
 
-.studio-tabs > .sw-tabs-list { margin-inline:24px; }
-.studio-disclosures { display:grid; gap:14px; padding:4px 24px 24px; font-size:12px; }
+.studio-tabs > .sw-tabs-list { margin-inline:0; }
+.studio-disclosures { display:grid; gap:14px; padding:4px 0 0; font-size:12px; }
 .studio-disclosures .sw-accordion-trigger { font-size:12px; }
 .studio-disclosures .sw-accordion-content, .studio-disclosures .sw-collapsible-trigger { font-size:11px; }
 .studio-disclosures .sw-collapsible-trigger > svg { width:14px; height:14px; flex-shrink:0; }
@@ -1944,8 +1949,10 @@ h2 {
 
 .studio-file-card { display:grid; gap:10px; padding:16px; border:1px solid var(--border); border-radius:var(--radius); background:var(--card); }
 .studio-file-card .demo-eyebrow { margin:0; }
-.studio-file-card .sw-attachment { min-width:0; }
-.studio-attachment-art { display:block; width:100%; max-height:55dvh; object-fit:contain; }
+.studio-file-card .sw-attachment { min-width:0; flex-wrap:nowrap; }
+.studio-file-card .sw-attachment-image { display:block; inline-size:100%; block-size:100%; object-fit:cover; }
+.studio-image-fallback { width:20px; height:20px; }
+.studio-attachment-art { display:block; width:100%; height:auto; max-height:55dvh; object-fit:contain; }
 .attachment-preview { margin:auto; }
 
 /* The table is a full-width part of the same component studio. */
@@ -1988,3 +1995,5 @@ h2 {
 .studio-months:has(> .studio-agenda-month:target) > .studio-agenda-month:first-child:not(:target) { display:none; }
 .studio-months > .studio-agenda-month:target { display:block; }
 @media(max-width:1050px) { .studio-insights { grid-template-columns:minmax(0,1fr); } }
+
+@container (max-width:17rem) { .button-samples { grid-template-columns:minmax(0,1fr); } }

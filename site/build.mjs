@@ -1,6 +1,7 @@
 import {access, cp, mkdir, readFile, rm, writeFile} from 'node:fs/promises';
 import path from 'node:path';
 import {fileURLToPath} from 'node:url';
+import {createHash} from 'node:crypto';
 
 const root = path.dirname(fileURLToPath(import.meta.url));
 const output = path.join(root, 'dist');
@@ -17,7 +18,7 @@ if (!['https:', 'http:'].includes(url.protocol)) throw new Error('SITE_URL must 
 url.hash = ''; url.search = '';
 if (!url.pathname.endsWith('/')) url.pathname += '/';
 const escapeHtml = value => value.replaceAll('&', '&amp;').replaceAll('"', '&quot;').replaceAll('<', '&lt;').replaceAll('>', '&gt;');
-const html = (await readFile(path.join(root, 'index.html'), 'utf8')).replaceAll('__SITE_URL__', escapeHtml(url.href));
+let html = (await readFile(path.join(root, 'index.html'), 'utf8')).replaceAll('__SITE_URL__', escapeHtml(url.href));
 await rm(output, {recursive: true, force: true});
 await mkdir(output, {recursive: true});
 await cp(path.join(root, 'assets'), path.join(output, 'assets'), {recursive: true});
@@ -32,6 +33,30 @@ await cp(path.resolve(css, '../js/select.js'), path.join(output, 'assets/select.
 await cp(path.resolve(css, '../js/theme.js'), path.join(output, 'assets/theme.js'));
 await cp(path.resolve(root, '../NOTICE'), path.join(output, 'NOTICE.txt'));
 await cp(path.resolve(root, '../LICENSE'), path.join(output, 'LICENSE.txt'));
+
+// Browsers may retain Pages assets for ten minutes. Content versions keep a new
+// page from using old component CSS/scripts, including when switching skins.
+async function versioned(reference) {
+  const [filename, fragment] = reference.split('#');
+  const content = await readFile(path.join(output, filename));
+  const version = createHash('sha256').update(content).digest('hex').slice(0, 12);
+  return `${filename}?v=${version}${fragment === undefined ? '' : `#${fragment}`}`;
+}
+const sprite = await versioned('./assets/icons.svg');
+const tableScript = path.join(output, 'assets/table-demo.js');
+await writeFile(tableScript, (await readFile(tableScript, 'utf8')).replaceAll('./assets/icons.svg', sprite));
+for (const skin of ['vega', 'lyra', 'nova']) {
+  const stylesheet = (await versioned(`./assets/shadwick-${skin}.css`)).replace('./assets/', '');
+  html = html.replace(`<option value="${skin}">`, `<option value="${skin}" data-stylesheet="${stylesheet}">`);
+}
+const references = new Map();
+for (const [, reference] of html.matchAll(/\b(?:src|href)="([^"]+)"/g)) {
+  if (/^\.\/assets\/.*\.(?:css|js|svg|png)(?:#.*)?$/.test(reference) && !references.has(reference)) {
+    references.set(reference, await versioned(reference));
+  }
+}
+html = html.replace(/\b(src|href)="([^"]+)"/g, (_, attribute, reference) =>
+  `${attribute}="${references.get(reference) || reference}"`);
 await writeFile(path.join(output, 'index.html'), html);
 await writeFile(path.join(output, '.nojekyll'), '');
 await writeFile(path.join(output, 'robots.txt'), `User-agent: *\nAllow: /\nSitemap: ${url.href}sitemap.xml\n`);

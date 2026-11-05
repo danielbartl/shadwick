@@ -19,7 +19,7 @@ Open **http://127.0.0.1:4173/shadwick/**. The preview deliberately uses a projec
 
 If Node isn't on your PATH, use the Node installed by Maven: `./shadwick-core/target/node/node` instead of `node` (Windows: `shadwick-core\target\node\node.exe`).
 
-`build.mjs` writes the ignored `site/dist/`, copying the three minified skin bundles and core component scripts from `shadwick-core/target/classes`. Never edit these copied assets or commit generated site output. Edit the page in `index.html`, presentation in `assets/site.css` and site interactions in `assets/site.js`. All asset URLs are relative.
+`build.mjs` writes the ignored `site/dist/`, copying the three minified skin bundles and core component scripts from `shadwick-core/target/classes`. Never edit these copied assets or commit generated site output. Edit the page in `index.html`, presentation in `assets/site.css` and site interactions in `assets/site.js`. All asset URLs are relative. CSS, scripts and image/icon references receive content hashes in their query strings, including dynamically selected skins and table icons, so a new deployment does not reuse stale assets from a previous version.
 
 ## GitHub Pages
 
@@ -33,7 +33,7 @@ The default URL for this repository is `https://danielbartl.github.io/shadwick/`
 
 The page uses an ivory canvas, forest-green accents, Geist typography and a live component composition. Shadwick’s original four-leaf clover represents a lucky find and a welcoming developer experience, with a botanical nod to Shadleaf. The vector mark lives in `assets/logo.svg`, with the same artwork in the favicon and a one-color version in the icon sprite; the social card carries the same identity. A reduced-motion preference disables decorative animation. Navigation, skin/mode controls, code copying, field validation, menus and overlays work with a keyboard. The page remains readable with JavaScript disabled; interactive controls are progressively enabled.
 
-`check.mjs` verifies IDs, local anchors, SVG symbols, fonts, required assets, license files and subpath-safe references. Before shipping visual changes, inspect desktop and narrow mobile layouts in a browser, try all skins and modes, test invalid form input, menu arrows/typeahead/Tab, toast Alt+T/dismissal/timer pausing, Escape and focus return on overlays (including the menu’s delete confirmation), and copy a code snippet. Browser testing should serve the built `dist/` at `/shadwick/`, as the preview does.
+`check.mjs` verifies IDs, local anchors, SVG symbols, fonts, required assets, license files, subpath-safe references and matching content hashes. Before shipping visual changes, inspect desktop and narrow mobile layouts in a browser, try all skins and modes, test invalid form input, menu arrows/typeahead/Tab, toast Alt+T/dismissal/timer pausing, Escape and focus return on overlays (including the menu’s delete confirmation), and copy a code snippet. Browser testing should serve the built `dist/` at `/shadwick/`, as the preview does. Keep marketing typography scoped to its sections so it cannot override component dialog headings.
 
 The studio includes the library sidebar: desktop icon rail, expandable navigation and a native mobile panel.
 Its provider uses `data-sidebar-remember="false"`, so the preview stores no sidebar cookie.
@@ -58,7 +58,8 @@ appearance control hides. Check all three choices in all skins, including OS cha
 
 Actions/Details in the button card uses the core tabs runtime and styles. Actions stays the initial panel; Details
 contains a native single accordion and standalone collapsible. Keyboard arrows switch tabs, and the native sections
-use Enter/Space. Inactive panels remain zero-sized even with host card padding. The accordion has a fixed unique
+use Enter/Space. The tabs wrapper is the direct card-content child so the selected skin supplies its inset;
+narrow cards stack the action buttons. Inactive panels remain zero-sized even with host card padding. The accordion has a fixed unique
 name because this static preview is never replaced over Ajax; Wicket's repeating component generates names per render.
 With scripting disabled the initial Actions panel remains visible. Check open disclosure content, switching back to
 Actions and opening its menu, in all skins/modes and both sidebar/header compositions. These previews store no state.
@@ -67,7 +68,8 @@ The studio's illustration attachment uses the core attachment anatomy, embedded 
 Its stretched native button opens a labelled image-preview dialog; the separate download link saves the actual SVG
 without opening the preview. Both remain usable without script in browsers with invoker commands. The preview follows
 the studio theme and supports Escape, its native close button and backdrop dismissal. Check the trigger/actions in
-all skins and modes at desktop/mobile widths. The original SVG is shared with the Wicket `/attachments` showcase.
+all skins and modes at desktop/mobile widths. The thumbnail has explicit dimensions, cover cropping and a fallback
+icon; the preview preserves the illustration's aspect ratio. The original SVG is shared with the Wicket `/attachments` showcase.
 
 The studio now includes a full-width invoice table using the actual table/pagination CSS. The six original rows
 remain visible without script. With scripting, the preview filters names/invoices, sorts by invoice or amount,

@@ -59,7 +59,7 @@
     const sequence = ++skinRequest;
     const next = document.createElement('link');
     next.rel = 'stylesheet';
-    next.href = new URL(`shadwick-${requested}.css`, stylesheet.href).href;
+    next.href = new URL(skinSelect.selectedOptions[0].dataset.stylesheet || `shadwick-${requested}.css`, stylesheet.href).href;
     next.media = 'not all';
     try {
       await new Promise((resolve, reject) => {

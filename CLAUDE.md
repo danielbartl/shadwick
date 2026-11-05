@@ -49,6 +49,16 @@ Current publication checkpoint — 2026-11-05:
   Site build/check passed 155 internal references and 104 unique IDs (about 1,228 KB).
 - Website workflow: https://github.com/danielbartl/shadwick/actions/workflows/pages.yml .
   It builds/tests the library, checks the static site and deploys main to GitHub Pages.
+- Landing visual repair: button tabs now receive the selected skin's card-content inset,
+  with single-column actions in narrow cards. Marketing headings no longer override dialog
+  titles. The attachment has explicit thumbnail sizing, a fallback icon and a proportional
+  preview. Content-versioned asset URLs prevent fresh markup from reusing old CSS/scripts,
+  including dynamically selected skins and table icons; the build checker validates hashes.
+  Screenshot/geometry/download checks passed all 36 Chromium/Firefox × six widths (320–1440)
+  × three skins, including light/dark image dialogs. The 24 layout/skin/mode accessibility
+  checks and two no-script cases also passed. Cache blocking, failed-image fallback, build
+  determinism and rejection of stale asset hashes passed. WebKit was unavailable locally
+  because required system libraries are absent. Site checks now pass 159 internal references.
 - Next implementation group: Maia, then the remaining skins and translations/docs/tooling.
 
 Previous published baseline (historical):
