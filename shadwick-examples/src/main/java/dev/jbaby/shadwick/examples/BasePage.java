@@ -4,6 +4,7 @@ import dev.jbaby.shadwick.ShadwickSettings;
 import dev.jbaby.shadwick.Skin;
 import dev.jbaby.shadwick.Sw;
 import dev.jbaby.shadwick.behaviors.ButtonBehavior;
+import dev.jbaby.shadwick.behaviors.ThemeBehavior;
 import org.apache.wicket.AttributeModifier;
 import org.apache.wicket.Page;
 import org.apache.wicket.markup.head.CssHeaderItem;
@@ -32,7 +33,9 @@ public abstract class BasePage extends WebPage {
 
         // class="dark" on <html>, rendered on the server, so the page never flashes light first
         TransparentWebMarkupContainer html = new TransparentWebMarkupContainer("html");
-        html.add(AttributeModifier.replace("class", (IModel<String>) () -> Appearance.isDark() ? "dark" : null));
+        ThemeBehavior theme = newThemeBehavior(parameters);
+        if (theme != null) html.add(theme);
+        else html.add(AttributeModifier.replace("class", (IModel<String>) () -> Appearance.isDark() ? "dark" : null));
         add(html);
         TransparentWebMarkupContainer main = new TransparentWebMarkupContainer("main");
         main.setMarkupId("main"); add(main);
@@ -46,6 +49,11 @@ public abstract class BasePage extends WebPage {
         add(navLink("navInputs", InputPage.class));
         add(navLink("navChoices", ChoicePage.class));
         add(navLink("navSelections", SelectPage.class));
+        add(navLink("navCustomSelect", CustomSelectPage.class));
+        add(navLink("navCombobox", ComboboxPage.class));
+        add(navLink("navCalendar", CalendarPage.class));
+        add(navLink("navMonthView", MonthViewPage.class));
+        add(navLink("navCharts", ChartPage.class));
         add(navLink("navDates", DateTimePage.class));
         add(navLink("navGroups", GroupPage.class));
         add(navLink("navUploads", UploadPage.class));
@@ -56,15 +64,27 @@ public abstract class BasePage extends WebPage {
         add(navLink("navToasts", ToastPage.class));
         add(navLink("navShell", ShellPage.class));
         add(navLink("navSidebar", SidebarPage.class));
+        add(navLink("navUserMenu", UserMenuPage.class));
+        add(navLink("navTheme", ThemePage.class));
+        add(navLink("navLayouts", AppLayoutPage.class));
+        add(navLink("navDisclosure", DisclosurePage.class));
+        add(navLink("navAttachments", AttachmentPage.class));
+        add(navLink("navData", DataTablePage.class));
+        add(navLink("navTables", TablePage.class));
+        add(navLink("navPagination", PaginationPage.class));
         add(navLink("navDisplay", DisplayPage.class));
         add(navLink("navFeedback", FeedbackPage.class));
 
         for (Skin skin : Skin.values()) {
             add(switchLink(skin.id(), "skin", skin.id(), () -> currentSkin() == skin));
         }
+        add(new TransparentWebMarkupContainer("modeLinks").setVisible(theme == null));
         add(switchLink("light", "mode", "light", () -> !Appearance.isDark()));
         add(switchLink("dark", "mode", "dark", Appearance::isDark));
     }
+
+    /** Opt in to the browser preference demo; other showcases keep server reference modes. */
+    protected ThemeBehavior newThemeBehavior(PageParameters parameters) { return null; }
 
     /** The page's name, for its {@code <title>}. */
     protected abstract String getTitle();

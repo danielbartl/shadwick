@@ -20,6 +20,11 @@ public class ExamplesApplication extends WebApplication {
         mountPage("/form", FormPage.class);
         mountPage("/inputs", InputPage.class);
         mountPage("/selections", SelectPage.class);
+        mountPage("/custom-select", CustomSelectPage.class);
+        mountPage("/combobox", ComboboxPage.class);
+        mountPage("/calendar", CalendarPage.class);
+        mountPage("/month-view", MonthViewPage.class);
+        mountPage("/charts", ChartPage.class);
         mountPage("/dates", DateTimePage.class);
         mountPage("/groups", GroupPage.class);
         mountPage("/uploads", UploadPage.class);
@@ -31,6 +36,17 @@ public class ExamplesApplication extends WebApplication {
         mountPage("/toasts", ToastPage.class);
         mountPage("/shell", ShellPage.class);
         mountPage("/sidebar", SidebarPage.class);
+        mountPage("/user-menu", UserMenuPage.class);
+        mountPage("/theme", ThemePage.class);
+        mountPage("/layouts", AppLayoutPage.class);
+        mountPage("/header-layout", HeaderLayoutPage.class);
+        mountPage("/disclosure", DisclosurePage.class);
+        mountPage("/attachments", AttachmentPage.class);
+        mountPage("/data", DataTablePage.class);
+        mountPage("/tables", TablePage.class);
+        mountPage("/pagination", PaginationPage.class);
+        mountPage("/invoice", InvoicePage.class);
+        mountPage("/demo-sign-in", UserSignInPage.class);
         mountPage("/display", DisplayPage.class);
         mountPage("/feedback", FeedbackPage.class);
 

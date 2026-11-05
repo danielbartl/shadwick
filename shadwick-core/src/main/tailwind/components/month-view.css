@@ -1,0 +1,91 @@
+/* Adapted from Shadleaf (Apache-2.0, see NOTICE). */
+@layer components {
+  .sw-month-view {
+    --sw-nav-size: var(--sw-cell-size);
+    @apply relative w-full;
+  }
+
+  .sw-month-view-nav {
+    @apply pointer-events-none absolute inset-x-0 top-0 flex w-full items-center justify-between gap-1;
+  }
+
+  .sw-month-view-nav-button {
+    @apply pointer-events-auto inline-flex relative size-(--sw-nav-size) shrink-0 items-center justify-center p-0 outline-none
+      select-none
+      [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0 rtl:[&_svg]:rotate-180
+      forced-colors:focus-visible:outline-2 forced-colors:focus-visible:outline-solid;
+  }
+
+  /* A bigger hit area than the look: an invisible ::after of at least 44px square, centred, on a touch screen. The
+     two links sit at either end of the row, so nothing is near enough to lose a click. */
+  @media (pointer: coarse) {
+    .sw-month-view-nav-button::after {
+      content: '';
+      @apply absolute inset-0 m-auto h-[max(100%,2.75rem)] w-[max(100%,2.75rem)];
+    }
+  }
+
+  .sw-month-view-grid {
+    @apply w-full table-fixed border-separate border-spacing-1;
+  }
+
+  .sw-month-view-caption {
+    @apply h-(--sw-cell-size) px-(--sw-cell-size) text-center leading-(--sw-cell-size) select-none;
+  }
+
+  .sw-month-view-weekday {
+    @apply h-(--sw-cell-size) p-0 text-center select-none;
+  }
+
+  .sw-month-view-week-number-header,
+  .sw-month-view-week-number {
+    @apply w-(--sw-cell-size) p-0 text-center align-middle select-none;
+  }
+
+  .sw-month-view-day {
+    @apply h-(--sw-day-height) p-0 align-top;
+  }
+
+  .sw-month-view-day-link,
+  .sw-month-view-day-body {
+    @apply relative flex size-full min-h-(--sw-day-height) min-w-0 flex-col items-start gap-1 overflow-hidden
+      rounded-(--sw-day-radius) p-1 text-start no-underline outline-none
+      forced-colors:border forced-colors:border-solid;
+  }
+
+  .sw-month-view-day-link {
+    @apply focus-visible:z-10
+      forced-colors:focus-visible:outline-2 forced-colors:focus-visible:-outline-offset-2
+      forced-colors:focus-visible:outline-solid;
+  }
+
+  .sw-month-view-day-number {
+    @apply inline-flex h-(--sw-cell-size) shrink-0 items-center rounded-(--sw-cell-radius) px-1.5 leading-none;
+  }
+
+  .sw-month-view-day[data-today] .sw-month-view-day-number {
+    @apply forced-colors:outline-1 forced-colors:outline-solid;
+  }
+
+  /* The content starts where the number's text does. */
+  .sw-month-view-day-content {
+    @apply flex w-full min-w-0 flex-col items-start gap-1 overflow-hidden px-1.5;
+  }
+}
+
+@layer components {
+.sw-month-view, .sw-month-view * { box-sizing:border-box; }
+.sw-month-view-grid { margin:0; }
+.sw-month-view-sr-only { @apply sr-only; }
+.sw-month-view-day-content > * { max-width:100%; overflow:hidden; text-overflow:ellipsis; }
+.sw-month-view-nav-button svg { fill:none; stroke:currentColor; stroke-width:2; }
+}
+
+@layer components {
+ .sw-month-view-nav-button[aria-disabled='true'] { opacity:.4; }
+ @media (width < 30rem) {
+  .sw-month-view-day-link,.sw-month-view-day-body { padding:.125rem; }
+  .sw-month-view-day-number { padding-inline:.125rem; }
+  .sw-month-view-day-content { padding-inline:0; }
+ }
+}

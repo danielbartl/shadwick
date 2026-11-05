@@ -1,0 +1,23 @@
+<!doctype html>
+<html wicket:id="html" xmlns:wicket="http://wicket.apache.org">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title wicket:id="appTitle">Application</title>
+</head>
+<body>
+<a wicket:id="skip"></a>
+<div wicket:id="provider">
+  <nav wicket:id="sidebar"></nav>
+  <div wicket:id="workspace">
+    <header wicket:id="topNav">
+      <button wicket:id="trigger" type="button"></button>
+      <span wicket:id="appName" class="sw-app-name"></span>
+      <nav wicket:id="headerNavigation"></nav>
+      <div class="sw-site-header-end"><div wicket:id="topNavExtra"></div></div>
+    </header>
+    <main wicket:id="main"><wicket:child/></main>
+  </div>
+</div>
+</body>
+</html>

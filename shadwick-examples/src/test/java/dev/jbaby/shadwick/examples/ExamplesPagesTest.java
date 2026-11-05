@@ -42,7 +42,7 @@ class ExamplesPagesTest {
     }
 
     @ParameterizedTest
-    @ValueSource(strings = {"HomePage", "ButtonPage", "FormPage", "InputPage", "ChoicePage", "SelectPage", "DateTimePage", "GroupPage", "UploadPage", "DialogPage", "OverlayPage", "PopupPage", "MenuPage", "ToastPage", "ShellPage", "SidebarPage", "DisplayPage", "FeedbackPage"})
+    @ValueSource(strings = {"HomePage", "ButtonPage", "FormPage", "InputPage", "ChoicePage", "SelectPage", "CustomSelectPage", "ComboboxPage", "CalendarPage", "MonthViewPage", "ChartPage", "DateTimePage", "GroupPage", "UploadPage", "DialogPage", "OverlayPage", "PopupPage", "MenuPage", "ToastPage", "ShellPage", "SidebarPage", "ThemePage", "AppLayoutPage", "HeaderLayoutPage", "DisclosurePage", "AttachmentPage", "DataTablePage", "InvoicePage", "TablePage", "PaginationPage", "UserMenuPage", "UserSignInPage", "DisplayPage", "FeedbackPage"})
     void everyPageRendersInTheDefaultSkinWithoutInlineStylesOrHandlers(String name) throws ClassNotFoundException {
         tester.startPage(page(name));
 
@@ -52,15 +52,16 @@ class ExamplesPagesTest {
         assertThat(TagTester.createTagByName(html(), "html").getAttribute("class")).isNull();
     }
 
-    @Test
-    void theSkinSwitcherKeepsTheSkinForTheSession() {
-        tester.startPage(ButtonPage.class, new org.apache.wicket.request.mapper.parameter.PageParameters().add("skin", "lyra"));
-        assertThat(html()).contains("shadwick-lyra").doesNotContain("shadwick-vega");
-        assertThat(tester.getTagByWicketId("lyra").getAttribute("aria-current")).isEqualTo("true");
+    @ParameterizedTest
+    @ValueSource(strings = {"lyra", "nova"})
+    void theSkinSwitcherKeepsTheSkinForTheSession(String skin) {
+        tester.startPage(ButtonPage.class, new org.apache.wicket.request.mapper.parameter.PageParameters().add("skin", skin));
+        assertThat(html()).contains("shadwick-" + skin).doesNotContain("shadwick-vega");
+        assertThat(tester.getTagByWicketId(skin).getAttribute("aria-current")).isEqualTo("true");
         assertThat(tester.getTagByWicketId("vega").getAttribute("aria-current")).isNull();
 
         tester.startPage(FormPage.class);
-        assertThat(html()).contains("shadwick-lyra").doesNotContain("shadwick-vega");
+        assertThat(html()).contains("shadwick-" + skin).doesNotContain("shadwick-vega");
     }
 
     @Test

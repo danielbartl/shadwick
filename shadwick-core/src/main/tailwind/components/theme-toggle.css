@@ -1,0 +1,12 @@
+/* Theme-toggle structure adapted from Shadleaf (Apache-2.0, see NOTICE). Button/menu identity comes from the skins. */
+@layer components {
+  .sw-theme-toggle { @apply contents; }
+  .sw-theme-toggle:not([data-sw-theme-ready]) { @apply invisible; }
+  .sw-theme-toggle-light { @apply block; }
+  .sw-theme-toggle-dark { @apply hidden; }
+  .sw-theme-toggle[data-sw-theme-dark='true'] .sw-theme-toggle-light { @apply hidden; }
+  .sw-theme-toggle[data-sw-theme-dark='true'] .sw-theme-toggle-dark { @apply block; }
+  [data-sw-theme-root] { color-scheme: light; }
+  [data-sw-theme-root].dark { color-scheme: dark; }
+  @media (scripting: none), print { .sw-theme-toggle { display: none !important; } }
+}

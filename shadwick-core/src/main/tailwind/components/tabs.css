@@ -1,0 +1,94 @@
+/* Adapted from Shadleaf (Apache-2.0, see NOTICE). */
+/*
+  Tabs and their parts: structure only. Colour, radius, spacing, type, the focus ring and the gap between the list and
+  the panel are identity and live in the skins.
+
+  The list sits above the panels, or beside them with data-orientation="vertical". Only the active panel shows. The
+  others are hidden: plainly by the server, and hidden="until-found" once slTabs runs, so find-in-page can reach them.
+  An until-found panel keeps a box (its content is skipped), so it is taken out of the flow here, where it would take
+  a share of the row or add a gap. The line variant marks the active tab with a bar under it (or at its end, vertical).
+*/
+@layer components {
+  .sw-tabs {
+    @apply flex flex-col;
+  }
+
+  .sw-tabs[data-orientation='vertical'] {
+    @apply flex-row;
+  }
+
+  .sw-tabs-list {
+    @apply inline-flex w-fit items-center justify-center;
+  }
+
+  .sw-tabs[data-orientation='vertical'] > .sw-tabs-list {
+    @apply h-fit flex-col;
+  }
+
+  .sw-tabs-trigger {
+    @apply relative inline-flex flex-1 cursor-default items-center justify-center whitespace-nowrap bg-transparent no-underline
+      outline-none select-none
+      disabled:pointer-events-none disabled:opacity-50 aria-disabled:pointer-events-none aria-disabled:opacity-50
+      forced-colors:focus-visible:outline-2 forced-colors:focus-visible:outline-solid
+      forced-colors:disabled:text-[GrayText] forced-colors:disabled:opacity-100
+      forced-colors:aria-disabled:text-[GrayText] forced-colors:aria-disabled:opacity-100
+      [&_svg]:pointer-events-none [&_svg]:shrink-0;
+    font-family: inherit;
+  }
+
+  .sw-tabs[data-orientation='vertical'] > .sw-tabs-list > .sw-tabs-trigger {
+    @apply w-full justify-start;
+  }
+
+  /* The active tab in forced-colors mode, where backgrounds and shadows are gone: underlined. */
+  .sw-tabs-trigger[aria-selected='true'] {
+    @apply forced-colors:underline forced-colors:underline-offset-4;
+  }
+
+  .sw-tabs-list[data-variant='line'] > .sw-tabs-trigger {
+    @apply after:absolute after:opacity-0 motion-safe:after:transition-opacity;
+  }
+
+  .sw-tabs:not([data-orientation]) > .sw-tabs-list[data-variant='line'] > .sw-tabs-trigger {
+    @apply after:inset-x-0 after:-bottom-1.25 after:h-0.5;
+  }
+
+  .sw-tabs[data-orientation='vertical'] > .sw-tabs-list[data-variant='line'] > .sw-tabs-trigger {
+    @apply after:inset-y-0 after:-end-1 after:w-0.5;
+  }
+
+  .sw-tabs-list[data-variant='line'] > .sw-tabs-trigger[aria-selected='true'] {
+    @apply after:opacity-100;
+  }
+
+  .sw-tabs-content {
+    @apply flex-1 outline-none forced-colors:focus-visible:outline-2 forced-colors:focus-visible:outline-solid;
+  }
+
+  .sw-tabs-content[hidden] {
+    @apply absolute size-0 overflow-hidden border-0 p-0;
+  }
+}
+
+@layer components {
+  .sw-tabs { @apply min-w-0; }
+  .sw-tabs, .sw-tabs-list, .sw-tabs-trigger, .sw-tabs-content { @apply box-border; }
+  .sw-tabs-list { @apply min-w-0 max-w-full overflow-x-auto overflow-y-hidden; scrollbar-width: thin; }
+  .sw-tabs[data-orientation='vertical'] > .sw-tabs-list { @apply max-w-[45%] shrink-0; }
+  .sw-tabs:not([data-orientation]) > .sw-tabs-list[data-variant='line'] { @apply h-auto pb-2; }
+  .sw-tabs-content { @apply min-w-0 break-words; }
+  .sw-tabs-content[hidden]:not([hidden='until-found']) { display:none !important; }
+  /* Hidden is a state invariant, even when a host gives panels padding, borders or layout classes. */
+  .sw-tabs-content[hidden] {
+    position:absolute !important;
+    inline-size:0 !important;
+    block-size:0 !important;
+    min-inline-size:0 !important;
+    min-block-size:0 !important;
+    margin:0 !important;
+    padding:0 !important;
+    border:0 !important;
+    overflow:hidden !important;
+    pointer-events:none;
+  }
+}

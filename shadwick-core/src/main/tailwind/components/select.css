@@ -1,0 +1,173 @@
+/* Adapted from Shadleaf select.css (Apache-2.0, see NOTICE). */
+@layer components {
+  .sw-select-wrapper {
+    @apply relative block w-full has-[>.sw-select:disabled]:opacity-50 forced-colors:has-[>.sw-select:disabled]:opacity-100;
+  }
+
+  .sw-select-wrapper:has(> .sw-select:disabled) > .sw-select-icon {
+    @apply forced-colors:text-[GrayText];
+  }
+
+  /* The select, and Shadwick's button in its place. */
+  .sw-select {
+    @apply flex w-full min-w-0 appearance-none items-center text-start whitespace-nowrap outline-none select-none
+      disabled:pointer-events-none disabled:cursor-not-allowed
+      forced-colors:disabled:border-[GrayText] forced-colors:disabled:text-[GrayText];
+  }
+
+  .sw-select-icon {
+    @apply pointer-events-none absolute top-1/2 end-2.5 size-4 -translate-y-1/2 select-none;
+  }
+
+  /* Hidden, not removed, once Shadwick has put its button in place: it still submits, resets and validates. */
+  .sw-select-wrapper[data-enhanced] > select.sw-select {
+    @apply pointer-events-none absolute inset-0 size-full opacity-0;
+  }
+
+  .sw-select-value {
+    @apply flex min-w-0 flex-1 items-center overflow-hidden;
+  }
+
+  .sw-select-value > .sw-select-item-indicator {
+    @apply hidden;
+  }
+
+
+  /* The list box Shadwick adds: at least as wide as the select, scrolling when taller than the viewport. */
+  .sw-select-content {
+    @apply overflow-x-hidden overflow-y-auto border-0 outline-none;
+    min-inline-size: max(9rem, anchor-size(self-inline));
+    max-block-size: calc(100dvh - 1rem);
+  }
+
+  .sw-select-item {
+    @apply relative flex w-full cursor-default items-center outline-none select-none
+      disabled:pointer-events-none disabled:opacity-50 aria-disabled:pointer-events-none aria-disabled:opacity-50
+      [&_svg]:pointer-events-none [&_svg]:shrink-0
+      forced-colors:focus:outline-2 forced-colors:focus:-outline-offset-2 forced-colors:focus:outline-solid
+      forced-colors:data-active:outline-2 forced-colors:data-active:-outline-offset-2
+      forced-colors:data-active:outline-solid;
+  }
+
+  .sw-select-item-indicator {
+    @apply pointer-events-none invisible absolute;
+  }
+
+  .sw-select-item:is(:checked, [aria-selected='true']) > .sw-select-item-indicator {
+    @apply visible;
+  }
+
+  .sw-select-separator {
+    @apply h-px border-0;
+  }
+}
+
+/*
+  Browsers that draw the list natively, in their own colours: without these, dark mode can give dark text on a dark
+  list. Not with base-select, which draws the list with the page's styles.
+*/
+@supports not (appearance: base-select) {
+  @layer components {
+    select.sw-select :is(option, optgroup) {
+      @apply bg-[Canvas] text-[CanvasText];
+    }
+  }
+}
+
+/*
+  The customizable select. Both the select and its picker opt in. The picker keeps the side and gap of the other
+  popups: below the select, lined up with its start, flipped above when there is no room below (the margin flips
+  with it), and fades in, zooming and sliding where motion is fine. The browser's own picker icon and check mark give
+  way to the chevron and the item's indicator; an item without one (th:text replaced it) keeps the check mark.
+*/
+@supports (appearance: base-select) {
+  @layer components {
+    select.sw-select,
+    .sw-select::picker(select) {
+      appearance: base-select;
+    }
+
+    .sw-select::picker-icon {
+      display: none;
+    }
+
+    /* The full height of the select, which has no padding of its own: a target of at least 24 pixels (WCAG 2.5.8). */
+    .sw-select > button {
+      @apply flex min-w-0 flex-1 items-center self-stretch border-0 bg-transparent p-0 text-start;
+      color: inherit;
+      font: inherit;
+    }
+
+    .sw-select selectedcontent {
+      @apply flex min-w-0 items-center overflow-hidden;
+    }
+
+    .sw-select selectedcontent > .sw-select-item-indicator {
+      @apply hidden;
+    }
+
+    .sw-select-item:has(> .sw-select-item-indicator)::checkmark {
+      display: none;
+    }
+
+    .sw-select::picker(select) {
+      @apply border-0 opacity-0 forced-colors:border forced-colors:border-solid;
+      inset: auto;
+      margin-block: var(--sw-popup-offset) 0;
+      margin-inline: 0;
+      position-area: block-end span-inline-end;
+      position-try-fallbacks: flip-block;
+      /* The browser's own is most-block-size, which opens the list above whenever there is more room there. */
+      position-try-order: normal;
+      min-inline-size: max(9rem, anchor-size(self-inline));
+      max-block-size: calc(100dvh - 1rem);
+      overflow-x: hidden;
+      overflow-y: auto;
+      transform-origin: top;
+      transition-property: opacity, scale, translate, overlay, display;
+      transition-behavior: allow-discrete;
+    }
+
+    .sw-select:open::picker(select) {
+      opacity: 1;
+    }
+
+    @starting-style {
+      .sw-select:open::picker(select) {
+        opacity: 0;
+      }
+    }
+
+    .sw-select-group {
+      @apply block;
+    }
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    @layer components {
+      .sw-select::picker(select) {
+        scale: 0.95;
+        translate: 0 calc(-1 * var(--sw-popup-slide));
+      }
+
+      .sw-select:open::picker(select) {
+        scale: 1;
+        translate: 0 0;
+      }
+
+      @starting-style {
+        .sw-select:open::picker(select) {
+          scale: 0.95;
+          translate: 0 calc(-1 * var(--sw-popup-slide));
+        }
+      }
+    }
+  }
+}
+
+@layer components {
+  select.sw-select :is(option,optgroup)[hidden] { display: none; }
+  .sw-select-content { @apply forced-colors:border forced-colors:border-solid; }
+  .sw-select-value > svg { flex-shrink: 0; }
+  .sw-select-value { text-overflow: ellipsis; }
+}

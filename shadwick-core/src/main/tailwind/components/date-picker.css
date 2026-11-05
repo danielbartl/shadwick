@@ -1,0 +1,36 @@
+/* Adapted from Shadleaf (Apache-2.0, see NOTICE). */
+@layer components {
+  .sw-date-picker {
+    @apply inline-flex max-w-full align-middle;
+  }
+
+  .sw-button.sw-date-picker-trigger {
+    @apply min-w-0 flex-1 justify-start text-start;
+  }
+
+  .sw-date-picker-value {
+    @apply truncate;
+  }
+}
+
+@layer components {
+  .sw-date-picker { @apply w-full; }
+  .sw-date-picker-content:not(:has(.sw-calendar[data-enhanced])) { @apply min-w-64 p-3; }
+}
+
+@layer components {
+  .sw-date-picker[data-native] > .sw-date-picker-trigger { display:none; }
+  .sw-date-picker[data-native] > .sw-date-picker-content { position:static; display:block; opacity:1; scale:1; translate:none; margin:0; }
+}
+@supports not selector(:popover-open) {
+  @layer components {
+    .sw-date-picker > .sw-date-picker-trigger { display:none; }
+    .sw-date-picker > .sw-date-picker-content { position:static; display:block; opacity:1; scale:1; translate:none; margin:0; }
+  }
+}
+
+@layer components { .sw-date-picker, .sw-date-picker-value { @apply min-w-0; } }
+
+@layer components {
+  .sw-date-picker-value { flex:1 1 0%; width:0; }
+}

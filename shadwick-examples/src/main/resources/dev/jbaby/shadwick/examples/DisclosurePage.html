@@ -1,0 +1,22 @@
+<wicket:extend xmlns:wicket="http://wicket.apache.org">
+<div><p class="ex-sidebar-eyebrow">A LITTLE SPACE TO EXPLORE</p><h1 class="ex-title">One thing at a time.</h1><p class="ex-lead">A familiar place for every detail. Open a section, choose a view, and make yourself at home.</p></div>
+<section class="ex-section" aria-labelledby="settings-heading"><h2 id="settings-heading">Your workspace, your way.</h2>
+  <div wicket:id="settingsTabs">
+    <div wicket:id="tablist"><button wicket:id="tabButtons"><span wicket:id="tabLabel"></span></button></div>
+    <div wicket:id="tabPanels" class="ex-disclosure-panel"><h3 wicket:id="panelTitle"></h3><p wicket:id="panelText" class="ex-muted"></p><label wicket:id="noteLabel"></label><input wicket:id="note" class="sw-input" type="text"></div>
+  </div>
+  <p class="ex-muted">Your chosen view is in the address too. History is still taking shape.</p><button wicket:id="refreshTabs"></button>
+</section>
+<section class="ex-section" aria-labelledby="views-heading"><h2 id="views-heading">Room for a closer look.</h2><p class="ex-muted">Move between views with the arrow keys, then choose with Enter or Space.</p>
+  <div wicket:id="manualTabs">
+    <div wicket:id="tablist"><button wicket:id="tabButtons"><span wicket:id="tabLabel"></span></button></div>
+    <div wicket:id="tabPanels" class="ex-disclosure-panel"><p wicket:id="panelContent"></p><div wicket:id="nestedTabs"><div wicket:id="tablist"><button wicket:id="tabButtons"><span wicket:id="tabLabel"></span></button></div><div wicket:id="tabPanels"><p wicket:id="panelContent"></p></div></div></div>
+  </div>
+</section>
+<section class="ex-section" aria-labelledby="answers-heading"><h2 id="answers-heading">A few good questions.</h2>
+  <div wicket:id="single" class="sw-accordion"><details wicket:id="questions"><summary wicket:id="trigger"><span wicket:id="heading"><span wicket:id="title"></span></span><svg class="sw-accordion-trigger-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></summary><div wicket:id="body"><p wicket:id="content"></p></div></details></div>
+  <div class="ex-row"><a href="#faq-answer-1" class="sw-button" data-variant="outline">Read about making it yours</a><button wicket:id="refreshAccordion"></button></div>
+</section>
+<section class="ex-section" aria-labelledby="details-heading"><h2 id="details-heading">Good details belong together.</h2><div class="sw-accordion"><details wicket:id="multiple"><summary wicket:id="trigger"><span wicket:id="heading"><span wicket:id="title"></span></span><svg class="sw-accordion-trigger-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></summary><div wicket:id="body"><p wicket:id="content"></p></div></details></div></section>
+<section class="ex-section" aria-labelledby="more-heading"><h2 id="more-heading">There is a little more.</h2><details wicket:id="more"></details><details wicket:id="unavailable"></details><details wicket:id="managed"></details></section>
+</wicket:extend>

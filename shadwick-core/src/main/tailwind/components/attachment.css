@@ -1,0 +1,198 @@
+/*
+  Attachment and its parts: structure only, from shadcn's component classes. What shadcn's styles set per style
+  (radius, padding, gap, type, widths, the media's square) and every colour (the border, the idle and error states,
+  the dimmed image) are identity and live in the skins.
+
+  The trigger covers the card (z-10) behind the actions (z-20), so a click anywhere but on an action activates it. It
+  takes the card's radius, so the skins draw its focus ring on it as the card's. In forced-colors mode a ring (a
+  box-shadow) is gone: the trigger gets an outline instead.
+
+  The title's shimmer is shadcn's shimmer utility: a gradient of the text colour clipped to the text, moving across,
+  its highlight the text colour at 20%, so it fades towards the card in either theme (shadcn brightens it in dark mode,
+  which barely shows on light text). Only for users who have not asked for reduced motion, and not in forced-colors
+  mode, where the system's text colour must show.
+
+  The group's edge fade is shadcn's scroll-fade-x: a mask whose ends grow with the scroll position through
+  a scroll-driven animation, or are always there without one (Firefox). The mask would hide a focus ring drawn
+  outside the group, so a focused group drops it. Its lengths are written out (2.5rem is --spacing(10), 6rem
+  --spacing(24)): outside @apply, --spacing() compiles to var(--spacing), which the embedded bundle must not use.
+
+  A grid group (data-layout="grid") wraps instead: no scrolling, snap or fade. It fills its container, also as a flex
+  item, which would shrink it to its content. Its columns and gap are the skins'.
+*/
+@layer components {
+  .sw-attachment {
+    @apply relative flex max-w-full min-w-0 shrink-0 flex-wrap motion-safe:transition-colors;
+  }
+
+  .sw-attachment:not([data-orientation]) {
+    @apply items-center;
+  }
+
+  .sw-attachment[data-orientation='vertical'] {
+    @apply flex-col;
+  }
+
+  .sw-attachment[data-width='full'] {
+    @apply w-full;
+  }
+
+  .sw-attachment-media {
+    @apply relative flex aspect-square shrink-0 items-center justify-center overflow-hidden
+      [&_svg]:pointer-events-none [&_svg]:shrink-0;
+  }
+
+  .sw-attachment-media[data-variant='image'] > img {
+    @apply aspect-square w-full object-cover;
+  }
+
+  .sw-attachment-content {
+    @apply max-w-full min-w-0 flex-1;
+  }
+
+  .sw-attachment-title {
+    @apply block max-w-full min-w-0 truncate;
+  }
+
+  .sw-attachment-description {
+    @apply block max-w-full min-w-0 truncate;
+  }
+
+  .sw-attachment-actions {
+    @apply relative z-20 flex shrink-0 items-center;
+  }
+
+  .sw-attachment[data-orientation='vertical'] > .sw-attachment-actions {
+    @apply absolute end-3 top-3 gap-1;
+  }
+
+  .sw-attachment-trigger {
+    @apply absolute inset-0 z-10 rounded-[inherit] outline-none
+      forced-colors:focus-visible:outline-2 forced-colors:focus-visible:outline-solid;
+  }
+
+  @media (prefers-reduced-motion: no-preference) and (not (forced-colors: active)) {
+    .sw-attachment:is([data-state='uploading'], [data-state='processing']) > .sw-attachment-content > .sw-attachment-title {
+      --sw-shimmer-spread: calc(3ch + 40px);
+      --sw-shimmer-highlight: color-mix(in oklch, currentColor 20%, transparent);
+      background-image: linear-gradient(110deg,
+        currentColor calc(50% - var(--sw-shimmer-spread)),
+        color-mix(in oklch, var(--sw-shimmer-highlight), currentColor 50%) calc(50% - var(--sw-shimmer-spread) * 0.5),
+        var(--sw-shimmer-highlight) 50%,
+        color-mix(in oklch, var(--sw-shimmer-highlight), currentColor 50%) calc(50% + var(--sw-shimmer-spread) * 0.5),
+        currentColor calc(50% + var(--sw-shimmer-spread)));
+      background-repeat: no-repeat;
+      background-size: calc(200% + var(--sw-shimmer-spread) * 2) 100%;
+      background-position: 0 0;
+      background-clip: text;
+      -webkit-text-fill-color: transparent;
+      animation: sw-attachment-shimmer 2s linear infinite;
+
+      &:where([dir='rtl'], [dir='rtl'] *) {
+        animation-direction: reverse;
+      }
+    }
+  }
+
+  .sw-attachment-group {
+    @apply min-w-0 outline-none;
+  }
+
+  .sw-attachment-group:not([data-layout]) {
+    --sw-scroll-fade-size: min(12%, 2.5rem);
+    --sw-scroll-fade: linear-gradient(to right,
+      transparent 0, #000 var(--sw-scroll-fade-s, 0px),
+      #000 calc(100% - var(--sw-scroll-fade-e, 0px)), transparent 100%);
+    @apply flex snap-x snap-mandatory overflow-x-auto overscroll-x-contain;
+    scrollbar-width: none;
+    mask-image: var(--sw-scroll-fade);
+    mask-repeat: no-repeat;
+
+    &::-webkit-scrollbar {
+      display: none;
+    }
+
+    &:where([dir='rtl'], [dir='rtl'] *) {
+      --sw-scroll-fade: linear-gradient(to left,
+        transparent 0, #000 var(--sw-scroll-fade-s, 0px),
+        #000 calc(100% - var(--sw-scroll-fade-e, 0px)), transparent 100%);
+    }
+
+    @supports (animation-timeline: scroll()) {
+      animation: sw-attachment-scroll-fade-s 1ms ease-in-out, sw-attachment-scroll-fade-e 1ms ease-in-out;
+      animation-timeline: scroll(self inline), scroll(self inline);
+      animation-range: 0 6rem, calc(100% - 6rem) 100%;
+      animation-fill-mode: both;
+    }
+
+    @supports not (animation-timeline: scroll()) {
+      --sw-scroll-fade-s: var(--sw-scroll-fade-size);
+      --sw-scroll-fade-e: var(--sw-scroll-fade-size);
+    }
+  }
+
+  .sw-attachment-group:not([data-layout]):focus-visible {
+    mask-image: none;
+  }
+
+  .sw-attachment-group:not([data-layout]) > .sw-attachment {
+    @apply flex-none snap-start;
+  }
+
+  .sw-attachment-group[data-layout='grid'] {
+    @apply grid w-full;
+  }
+}
+
+/* Registered, so the scroll-driven animation can move them; not inherited, so a nested group starts anew. */
+@property --sw-scroll-fade-s {
+  syntax: '<length-percentage>';
+  inherits: false;
+  initial-value: 0px;
+}
+
+@property --sw-scroll-fade-e {
+  syntax: '<length-percentage>';
+  inherits: false;
+  initial-value: 0px;
+}
+
+@keyframes sw-attachment-shimmer {
+  from {
+    background-position: 100% 0;
+  }
+  to {
+    background-position: 0 0;
+  }
+}
+
+@keyframes sw-attachment-scroll-fade-s {
+  from {
+    --sw-scroll-fade-s: 0px;
+  }
+  to {
+    --sw-scroll-fade-s: min(12%, 2.5rem);
+  }
+}
+
+@keyframes sw-attachment-scroll-fade-e {
+  from {
+    --sw-scroll-fade-e: min(12%, 2.5rem);
+  }
+  to {
+    --sw-scroll-fade-e: 0px;
+  }
+}
+
+@layer components {
+  .sw-attachment-image { @apply absolute inset-0 size-full; background: inherit; }
+  .sw-attachment-image:is([data-status='loading'], [data-status='error']) { @apply invisible; }
+  .sw-attachment-group:not([data-layout]):focus-within { mask-image: none; }
+  @media print {
+    .sw-attachment-group:not([data-layout]) { @apply flex-wrap overflow-visible; mask-image: none; animation: none; }
+    .sw-attachment-actions, .sw-attachment-trigger { display: none; }
+    .sw-attachment:is([data-state='uploading'], [data-state='processing']) > .sw-attachment-content > .sw-attachment-title {
+      animation: none; background: none; -webkit-text-fill-color: currentColor;
+    }
+  }
+}

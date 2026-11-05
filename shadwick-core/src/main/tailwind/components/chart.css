@@ -1,0 +1,56 @@
+/* Native SVG structure; tooltip/legend patterns adapted from Shadleaf (Apache-2.0, see NOTICE). */
+@layer components {
+  .sw-chart { @apply m-0 min-w-0 w-full text-foreground; }
+  .sw-chart, .sw-chart * { box-sizing:border-box; }
+  .sw-chart-title { @apply mb-5 font-medium text-sm; }
+  .sw-chart-container { display:grid; grid-template-columns:auto minmax(0,1fr); column-gap:1rem; row-gap:.75rem; }
+  .sw-chart-container[data-y-axis='false'] { grid-template-columns:minmax(0,1fr); }
+  .sw-chart-y-axis { @apply flex flex-col justify-between text-xs text-muted-foreground tabular-nums; height:240px; max-width:7rem; }
+  .sw-chart-y-axis > span { @apply truncate; }
+  .sw-chart-plot { @apply relative min-w-0 outline-none; height:240px; }
+  .sw-chart-svg { fill:none; stroke:none; display:block; width:100%; height:240px; overflow:visible; }
+  .sw-chart-svg:dir(rtl) { transform:scaleX(-1); }
+  .sw-chart-grid { stroke:var(--border); stroke-opacity:.5; vector-effect:non-scaling-stroke; }
+  .sw-chart-bar, .sw-chart-dot { stroke:none; fill:var(--sw-series-color); }
+  .sw-chart-line { fill:none; stroke:var(--sw-series-color); stroke-width:2; vector-effect:non-scaling-stroke; }
+  .sw-chart-area { stroke:none; fill:var(--sw-series-color); }
+  .sw-chart-hit { stroke:none; fill:transparent; }
+  .sw-chart-hit[data-active] { fill:var(--muted); fill-opacity:.35; }
+  .sw-chart-x-axis { @apply flex min-w-0 text-xs text-muted-foreground; }
+  .sw-chart-x-axis > span { @apply min-w-0 flex-1 truncate text-center; }
+  .sw-chart-legend-content { @apply mt-4 mb-0 flex list-none flex-wrap items-center justify-center gap-x-4 gap-y-2 p-0 text-xs; }
+  .sw-chart-legend-item { @apply flex min-w-0 items-center gap-1.5; }
+  .sw-chart-legend-indicator { @apply size-2 shrink-0; background:var(--sw-series-color); }
+  .sw-chart-tooltip-content { @apply pointer-events-none absolute z-20 grid gap-1.5; inset-block-start:.5rem; inset-inline-end:.5rem; max-width:calc(100% - 1rem); }
+  .sw-chart-tooltip-content[hidden] { display:none; }
+  .sw-chart-tooltip-label { @apply font-medium; }
+  .sw-chart-tooltip-items { @apply grid gap-1.5; }
+  .sw-chart-tooltip-item { @apply flex min-w-0 items-center gap-2; }
+  .sw-chart-tooltip-name { @apply min-w-0 break-words text-muted-foreground; }
+  .sw-chart-tooltip-value { @apply ms-auto shrink-0 ps-2 font-mono font-medium tabular-nums; }
+  .sw-chart-tooltip-indicator { @apply size-2.5 shrink-0; background:var(--sw-series-color); }
+  .sw-chart-legend-indicator[data-dashed],.sw-chart-tooltip-indicator[data-dashed] { background:transparent; border:1.5px dashed var(--sw-series-color); }
+  .sw-chart-series-1 { --sw-series-color:var(--chart-1); }
+  .sw-chart-series-2 { --sw-series-color:var(--chart-2); }
+  .sw-chart-series-3 { --sw-series-color:var(--chart-3); }
+  .sw-chart-series-4 { --sw-series-color:var(--chart-4); }
+  .sw-chart-series-5 { --sw-series-color:var(--chart-5); }
+  .sw-chart-data { @apply mt-5 text-xs text-muted-foreground; }
+  .sw-chart-data > summary { @apply w-fit cursor-pointer rounded-sm outline-none focus-visible:ring-2 focus-visible:ring-ring; }
+  .sw-chart-table-scroll { @apply mt-3 max-w-full overflow-x-auto; }
+  .sw-chart-data table { @apply w-full text-sm; }
+  .sw-chart-empty { @apply flex min-h-40 items-center justify-center rounded-md border border-dashed text-sm text-muted-foreground; }
+  .sw-chart-sr-only { @apply sr-only; }
+  @media (width < 30rem) { .sw-chart-container { column-gap:.5rem; } .sw-chart-x-axis > span:nth-child(even) { visibility:hidden; } }
+  @media (forced-colors:active) {
+    .sw-chart-plot:focus-visible { outline:2px solid Highlight; }
+    .sw-chart-tooltip-content { outline:1px solid CanvasText; }
+    .sw-chart-svg g,.sw-chart-legend-indicator,.sw-chart-tooltip-indicator { forced-color-adjust:none; }
+    .sw-chart-hit[data-active] { fill:Highlight; fill-opacity:.2; }
+  }
+}
+
+@layer components {
+ .sw-chart-legend-item { overflow-wrap:anywhere; max-width:100%; }
+ .sw-chart-tooltip-value { flex-shrink:1; max-inline-size:60%; overflow-wrap:anywhere; }
+}

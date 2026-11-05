@@ -1,0 +1,16 @@
+<wicket:extend xmlns:wicket="http://wicket.apache.org">
+<div><h1 class="ex-title">Calendar &amp; date picker</h1><p class="ex-lead">Choose a day or a range. Locale-aware grids, native ISO values and familiar Wicket forms.</p></div>
+<div class="ex-forms">
+<section class="ex-section"><h2>Normal submission</h2><form wicket:id="form" class="ex-form" aria-label="Normal booking" novalidate><div wicket:id="day"></div><div wicket:id="stay"></div><div class="ex-row"><button wicket:id="save" type="submit">Save booking</button><button type="reset" class="sw-button" data-variant="outline">Reset</button></div><p wicket:id="saved" role="status" class="ex-muted"></p></form></section>
+<section class="ex-section"><h2>Ajax validation</h2><form wicket:id="ajaxForm" class="ex-form" aria-label="Ajax booking" novalidate><div wicket:id="day"></div><div wicket:id="stay"></div><div class="ex-row"><button wicket:id="save" type="submit">Save booking</button><button type="reset" class="sw-button" data-variant="outline">Reset</button></div><p wicket:id="saved" role="status" class="ex-muted"></p></form></section>
+</div>
+<section class="ex-section"><h2>Inline calendar</h2><div wicket:id="inline"></div></section>
+<section class="ex-section"><h2>Two-month range</h2><div wicket:id="range"></div></section>
+<section class="ex-section"><h2>Month and year captions</h2><div class="ex-form"><div wicket:id="birthday"></div></div></section>
+<section class="ex-section"><h2>Immediate updates</h2><form wicket:id="liveForm" class="ex-form" aria-label="Live calendar"><div wicket:id="day"></div><a wicket:id="refresh">Refresh picker</a><p wicket:id="current" role="status" class="ex-muted"></p></form></section>
+<section class="ex-section"><h2>Live range validation</h2><form wicket:id="liveRangeForm" class="ex-form" aria-label="Live range"><div wicket:id="range"></div><p wicket:id="current" role="status" class="ex-muted"></p></form></section>
+<section class="ex-section"><h2>Managed and read-only dates</h2><div class="ex-forms"><div wicket:id="managed"></div><div wicket:id="readonly"></div></div></section>
+<section class="ex-section"><h2>Inside overlays</h2><div class="ex-row"><button type="button" class="sw-button" data-variant="outline" commandfor="calendar-dialog" command="show-modal">Open calendar dialog</button><button type="button" class="sw-button" data-variant="outline" popovertarget="calendar-popover" aria-expanded="false" aria-haspopup="dialog">Open calendar popover</button></div></section>
+<dialog id="calendar-dialog" class="sw-dialog" aria-labelledby="calendar-dialog-title" closedby="any"><div class="sw-dialog-form"><div class="sw-dialog-header"><h2 class="sw-dialog-title" id="calendar-dialog-title">Choose a date</h2><p class="sw-dialog-description">Date pickers work inside native dialogs.</p></div><div wicket:id="dialogDate"></div><div class="sw-dialog-footer"><button type="button" class="sw-button" commandfor="calendar-dialog" command="close">Close dialog</button></div></div></dialog>
+<div id="calendar-popover" class="sw-popover-content" role="dialog" popover="auto" data-side="bottom" data-align="start" tabindex="-1" aria-labelledby="calendar-popover-title"><h2 class="sw-popover-title" id="calendar-popover-title">Plan a visit</h2><div wicket:id="popoverDate"></div></div>
+</wicket:extend>

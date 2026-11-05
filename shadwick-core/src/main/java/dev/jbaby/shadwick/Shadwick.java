@@ -6,6 +6,8 @@ import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.core.request.handler.IPageRequestHandler;
 import org.apache.wicket.markup.head.CssHeaderItem;
 import org.apache.wicket.markup.head.IHeaderResponse;
+import org.apache.wicket.markup.head.JavaScriptHeaderItem;
+import org.apache.wicket.markup.head.PriorityHeaderItem;
 import org.apache.wicket.protocol.http.WebApplication;
 import org.apache.wicket.request.cycle.RequestCycle;
 import org.apache.wicket.request.resource.CssResourceReference;
@@ -47,6 +49,13 @@ public final class Shadwick {
      * isn't added to every page.
      */
     public static final JavaScriptResourceReference SHADWICK_JS = new JavaScriptResourceReference(Shadwick.class, "js/shadwick.js");
+
+    /** Parser-blocking color-preference bootstrap; priority puts it before styles and the page body. */
+    public static final JavaScriptResourceReference THEME_JS = new JavaScriptResourceReference(Shadwick.class, "js/theme.js");
+
+    public static void renderThemeScript(IHeaderResponse response) {
+        response.render(new PriorityHeaderItem(JavaScriptHeaderItem.forReference(THEME_JS)));
+    }
 
     private Shadwick() {
     }

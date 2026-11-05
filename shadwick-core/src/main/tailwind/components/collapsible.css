@@ -1,0 +1,30 @@
+/* Adapted from Shadleaf (Apache-2.0, see NOTICE). */
+/*
+  Collapsible and its parts: structure only. A <details> element whose <summary> is the trigger, without the marker;
+  the browser opens and closes it, and opens it when find-in-page finds a match inside. It does not animate, as
+  shadcn/ui's does not. A trigger drawn as a button takes the button's classes (.sw-button), which set its look.
+*/
+@layer components {
+  .sw-collapsible-trigger {
+    @apply cursor-pointer list-none outline-none [&::-webkit-details-marker]:hidden
+      forced-colors:focus-visible:outline-2 forced-colors:focus-visible:outline-solid;
+  }
+
+  .sw-collapsible-trigger:not(.sw-button) {
+    @apply inline-flex items-center gap-2;
+  }
+
+  .sw-collapsible[data-disabled] > .sw-collapsible-trigger {
+    @apply pointer-events-none opacity-50 forced-colors:text-[GrayText] forced-colors:opacity-100;
+  }
+}
+
+@layer components {
+  .sw-collapsible, .sw-collapsible-trigger, .sw-collapsible-content { @apply box-border min-w-0; }
+  .sw-collapsible-trigger { @apply max-w-full; }
+  .sw-collapsible-trigger > span { @apply min-w-0 whitespace-normal break-words; overflow-wrap:anywhere; }
+  .sw-collapsible-content { @apply break-words; overflow-wrap:anywhere; }
+  .sw-collapsible-icon { @apply size-4 shrink-0; }
+  .sw-collapsible[open] > summary > .sw-collapsible-icon { @apply rotate-180; }
+  .sw-collapsible-trigger[data-size='icon'] > span { @apply sr-only; }
+}

@@ -1,0 +1,6 @@
+/* Composition of Shadleaf's application-shell layouts (Apache-2.0, see NOTICE). Page content belongs to the app. */
+@layer components {
+  .sw-app-layout { @apply box-border; }
+  .sw-app-name { @apply min-w-0 shrink-0 truncate; max-inline-size: 40vw; }
+  .sw-app-layout main { @apply min-w-0; }
+}

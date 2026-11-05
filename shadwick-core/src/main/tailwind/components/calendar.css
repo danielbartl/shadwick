@@ -1,0 +1,153 @@
+/* Adapted from Shadleaf (Apache-2.0, see NOTICE). */
+@layer components {
+  .sw-calendar {
+    @apply relative w-fit;
+  }
+
+  .sw-calendar:not([data-enhanced]) {
+    @apply flex flex-col gap-2;
+  }
+
+  .sw-popover-content > .sw-calendar,
+  .sw-card-content > .sw-calendar {
+    @apply bg-transparent;
+  }
+
+  /* Hidden, not removed: they submit, reset and validate. */
+  .sw-calendar[data-enhanced] input[type="date"], .sw-calendar[data-enhanced] > .sw-calendar-inputs {
+    @apply pointer-events-none absolute inset-0 size-full opacity-0;
+  }
+
+  .sw-calendar-months {
+    @apply relative flex flex-col gap-4 md:flex-row;
+  }
+
+  .sw-calendar-month {
+    @apply flex w-full flex-col gap-4;
+  }
+
+  .sw-calendar-nav {
+    @apply pointer-events-none absolute inset-x-0 top-0 flex w-full items-center justify-between gap-1;
+  }
+
+  .sw-calendar-nav-button {
+    @apply pointer-events-auto inline-flex size-(--sw-cell-size) shrink-0 cursor-default items-center justify-center p-0
+      outline-none select-none disabled:pointer-events-none disabled:opacity-50
+      [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0 rtl:[&_svg]:rotate-180
+      forced-colors:focus-visible:outline-2 forced-colors:focus-visible:outline-solid
+      forced-colors:disabled:text-[GrayText] forced-colors:disabled:opacity-100;
+  }
+
+  .sw-calendar-caption {
+    @apply flex h-(--sw-cell-size) w-full items-center justify-center px-(--sw-cell-size) select-none;
+  }
+
+  .sw-calendar-dropdowns {
+    @apply flex h-(--sw-cell-size) w-full items-center justify-center gap-1.5;
+  }
+
+  /* The select lies over its label, invisible: the label shows the chosen value, the select takes the click. */
+  .sw-calendar-dropdown {
+    @apply relative rounded-(--sw-cell-radius);
+  }
+
+  .sw-calendar-dropdown > .sw-calendar-select {
+    @apply absolute inset-0 size-full cursor-default appearance-none opacity-0 disabled:cursor-not-allowed;
+  }
+
+  .sw-calendar-dropdown-label {
+    @apply flex items-center gap-1 rounded-(--sw-cell-radius) select-none [&>svg]:size-3.5;
+  }
+
+  .sw-calendar-dropdown:has(> .sw-calendar-select:disabled) {
+    @apply opacity-50 forced-colors:text-[GrayText] forced-colors:opacity-100;
+  }
+
+  .sw-calendar-grid {
+    @apply w-full border-collapse;
+  }
+
+  .sw-calendar-weekdays {
+    @apply flex;
+  }
+
+  .sw-calendar-weekday {
+    @apply flex-1 rounded-(--sw-cell-radius) select-none;
+  }
+
+  .sw-calendar-week {
+    @apply mt-2 flex w-full;
+  }
+
+  /* Fixed width beside the days, which share the rest; the number in the middle of the row's height. */
+  .sw-calendar-week-number-header {
+    @apply w-(--sw-cell-size) shrink-0 select-none;
+  }
+
+  .sw-calendar-week-number {
+    @apply flex w-(--sw-cell-size) shrink-0 items-center justify-center p-0 text-center select-none;
+  }
+
+  .sw-calendar-day {
+    @apply relative aspect-square h-full w-full rounded-(--sw-cell-radius) p-0 text-center select-none;
+  }
+
+  /* The band of a range, under the start and end buttons and reaching into the next and previous cell. */
+  .sw-calendar-day[data-range-start] {
+    @apply isolate z-0 rounded-s-(--sw-cell-radius) after:absolute after:inset-y-0 after:end-0 after:w-4;
+  }
+
+  .sw-calendar-day[data-range-end] {
+    @apply isolate z-0 rounded-e-(--sw-cell-radius) after:absolute after:inset-y-0 after:start-0 after:w-4;
+  }
+
+  .sw-calendar-day[data-range-start][data-range-end] {
+    @apply after:hidden;
+  }
+
+  .sw-calendar-day[data-range-middle] {
+    @apply rounded-none;
+  }
+
+  /* A band that starts or ends at the edge of a week gets the rounded corner there. */
+  .sw-calendar-day[data-range-middle]:first-child > .sw-calendar-day-button,
+  .sw-calendar-week-number + .sw-calendar-day[data-range-middle] > .sw-calendar-day-button {
+    @apply rounded-s-(--sw-cell-radius);
+  }
+
+  .sw-calendar-day[data-range-middle]:last-child > .sw-calendar-day-button {
+    @apply rounded-e-(--sw-cell-radius);
+  }
+
+  .sw-calendar-day-button {
+    @apply relative isolate z-10 flex aspect-square size-auto w-full min-w-(--sw-cell-size) cursor-default flex-col
+      items-center justify-center rounded-(--sw-cell-radius) border-0 bg-transparent p-0 leading-none outline-none
+      select-none disabled:pointer-events-none
+      focus-visible:z-20
+      forced-colors:focus-visible:outline-2 forced-colors:focus-visible:-outline-offset-2
+      forced-colors:focus-visible:outline-solid
+      forced-colors:data-selected:outline-2 forced-colors:data-selected:-outline-offset-2
+      forced-colors:data-selected:outline-solid
+      forced-colors:disabled:text-[GrayText];
+  }
+
+  .sw-calendar-day-button[data-range-middle] {
+    @apply rounded-none;
+  }
+}
+
+@layer components {
+  .sw-calendar { @apply max-w-full box-border; }
+  .sw-calendar :is(.sw-calendar-months,.sw-calendar-month,.sw-calendar-caption,.sw-calendar-grid,.sw-calendar-week,.sw-calendar-day,.sw-calendar-day-button,.sw-calendar-dropdown,.sw-calendar-dropdown-label) { @apply box-border; }
+  .sw-calendar-grid { border-spacing:0; margin:0; }
+  .sw-calendar-months { max-inline-size:100%; }
+  .sw-calendar-sr-only, .sw-calendar-status { @apply sr-only; }
+  .sw-calendar-inputs { @apply flex flex-col gap-2; }
+  .sw-calendar[aria-invalid='true'] { outline: 1px solid var(--destructive); outline-offset:2px; }
+}
+
+
+
+@layer components {
+  .sw-field:not([data-orientation='horizontal']) > .sw-calendar { width: fit-content; }
+}

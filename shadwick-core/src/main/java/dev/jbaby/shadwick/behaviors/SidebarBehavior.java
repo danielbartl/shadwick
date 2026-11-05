@@ -16,10 +16,12 @@ public class SidebarBehavior extends StyledBehavior {
     public enum Side { START, END }
     public enum Variant { SIDEBAR, FLOATING, INSET }
     public enum Collapsible { OFFCANVAS, ICON, NONE }
+    public enum Placement { SIDEBAR, HEADER }
 
     private Side side = Side.START;
     private Variant variant = Variant.SIDEBAR;
     private Collapsible collapsible = Collapsible.OFFCANVAS;
+    private Placement placement = Placement.SIDEBAR;
 
     public SidebarBehavior() {
         super("sw-sidebar");
@@ -46,11 +48,18 @@ public class SidebarBehavior extends StyledBehavior {
         return this;
     }
 
+    public SidebarBehavior setPlacement(Placement placement) {
+        this.placement = Objects.requireNonNull(placement);
+        return this;
+    }
+
     @Override
     public void onComponentTag(Component component, ComponentTag tag) {
         super.onComponentTag(component, tag);
         tag.put("popover", "auto");
         tag.put("tabindex", "-1");
+        if (placement == Placement.HEADER) tag.put("data-placement", "header");
+        else tag.remove("data-placement");
         if (side == Side.END) tag.put("data-side", "right");
         else tag.remove("data-side");
         if (variant != Variant.SIDEBAR) tag.put("data-variant", variant.name().toLowerCase(Locale.ROOT));

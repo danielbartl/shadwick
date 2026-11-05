@@ -2,10 +2,13 @@
   'use strict';
   const preview = document.querySelector('#component-preview');
   const skinSelect = document.querySelector('#skin');
+  const layoutSelect = document.querySelector('#layout');
   const stylesheet = document.querySelector('#component-styles');
   const dialog = document.querySelector('#project-dialog');
   const confirmation = document.querySelector('#confirm-dialog');
   const sheet = document.querySelector('#details-sheet');
+  const attachmentPreview = document.querySelector('#attachment-preview');
+  const invoicePreview = document.querySelector('#studio-invoice-preview');
   let skinRequest = 0;
 
   function syncToastTheme() {
@@ -20,7 +23,8 @@
     syncToastTheme();
   }
   function updateDescription() {
-    document.querySelector('#preview-description').textContent = `${skinSelect.value === 'lyra' ? 'Lyra' : 'Vega'} · ${preview.classList.contains('dark') ? 'Dark' : 'Light'}`;
+    const automatic = window.ShadwickTheme && ShadwickTheme.getMode(preview) === 'system';
+    document.querySelector('#preview-description').textContent = `${skinSelect.selectedOptions[0].textContent} · ${automatic ? 'System · ' : ''}${preview.classList.contains('dark') ? 'Dark' : 'Light'}`;
   }
   document.querySelector('.demo-submit').disabled = false;
   document.querySelector('#open-project').disabled = false;
@@ -28,6 +32,28 @@
   document.querySelector('#project-actions').disabled = false;
   document.querySelector('#open-sheet').disabled = false;
   skinSelect.disabled = false;
+  layoutSelect.disabled = false;
+  layoutSelect.addEventListener('change', () => {
+    const navigation = document.querySelector('#studio-sidebar');
+    const header = document.querySelector('.studio-workspace');
+    const surface = document.querySelector('.studio-surface');
+    const inHeader = layoutSelect.value === 'header';
+    if (navigation.matches(':popover-open')) navigation.hidePopover();
+    navigation.querySelectorAll('[popover]:popover-open').forEach(popup => Shadwick.closePopover(popup.id));
+    preview.dataset.layout = layoutSelect.value;
+    if (inHeader) {
+      navigation.dataset.placement = 'header';
+      preview.insertBefore(header, surface);
+      header.insertBefore(navigation, header.querySelector('.sw-site-header-end'));
+    } else {
+      delete navigation.dataset.placement;
+      preview.insertBefore(navigation, surface);
+      surface.prepend(header);
+    }
+    [navigation.querySelector('.sw-sidebar-header'), navigation.querySelector('.sw-sidebar-footer')].forEach(part => {
+      part.toggleAttribute('data-panel-only', inHeader);
+    });
+  });
   skinSelect.addEventListener('change', async () => {
     const requested = skinSelect.value;
     const sequence = ++skinRequest;
@@ -52,21 +78,43 @@
       notify('This skin could not load. Please try again.');
     }
   });
-  document.querySelectorAll('[data-mode]').forEach(button => {
-    button.disabled = false;
-    button.addEventListener('click', () => {
-      const dark = button.dataset.mode === 'dark';
-      preview.classList.toggle('dark', dark);
-      dialog.classList.toggle('dark', dark);
-      confirmation.classList.toggle('dark', dark);
-      sheet.classList.toggle('dark', dark);
-      syncToastTheme();
-      document.querySelectorAll('[data-mode]').forEach(control => control.setAttribute('aria-pressed', String(control === button)));
-      updateDescription();
-    });
+  document.addEventListener('sw-theme-change', event => {
+    if (event.target !== preview) return;
+    [dialog, confirmation, sheet, attachmentPreview, invoicePreview].forEach(overlay => overlay.classList.toggle('dark', event.detail.dark));
+    syncToastTheme();
+    updateDescription();
   });
 
   document.querySelector('#close-java').addEventListener('click', () => Shadwick.closePopover('java-popover'));
+
+  const accountRoots = Array.from(document.querySelectorAll('.studio-account'));
+  function previewAccount(signedIn, source) {
+    accountRoots.forEach(root => {
+      root.querySelector('.sw-user-menu-dropdown').hidden = !signedIn;
+      root.querySelector('[data-account-sign-in]').hidden = signedIn;
+    });
+    (source.querySelector(signedIn ? '.sw-user-menu-trigger' : '[data-account-sign-in]')).focus();
+  }
+  document.querySelectorAll('[data-account-action]').forEach(button => {
+    button.disabled = false;
+    button.addEventListener('click', () => {
+      const root = button.closest('.studio-account');
+      Shadwick.closePopover(button.closest('[popover]').id);
+      if (button.dataset.accountAction === 'sign-out') {
+        previewAccount(false, root);
+      } else {
+        const sidebar = document.querySelector('.studio-sidebar');
+        if (sidebar.matches(':popover-open')) sidebar.hidePopover();
+        document.querySelector(button.dataset.accountAction === 'account' ? '#demo-name' : '#demo-quiet').focus();
+      }
+    });
+  });
+  document.querySelectorAll('[data-account-sign-in]').forEach(button => {
+    button.disabled = false;
+    button.addEventListener('click', () => {
+      previewAccount(true, button.closest('.studio-account'));
+    });
+  });
 
   const preferences = document.querySelector('.choice-demo');
   preferences.addEventListener('change', () => {
@@ -94,7 +142,9 @@
     const seatsValid = validate(seats, 'demo-seats-error', 'Choose between 1 and 10 seats.');
     if (!nameValid || !emailValid || !seatsValid) { (!nameValid ? name : !emailValid ? email : seats).focus(); return; }
     const plan = document.querySelector('#demo-plan');
-    notify(`Looking good, ${name.value.trim().split(/\s+/)[0]}. ${plan.selectedOptions[0].text} plan selected. This demo stays in your browser.`);
+    const teams = Array.from(document.querySelector('#demo-teams').selectedOptions, option => option.text);
+    const teamSummary = teams.length ? `Teams: ${teams.join(', ')}.` : 'No teams selected.';
+    notify(`Looking good, ${name.value.trim().split(/\s+/)[0]}. ${plan.selectedOptions[0].text} plan selected. ${teamSummary} This demo stays in your browser.`);
   });
   document.querySelectorAll('[data-demo-variant]').forEach(button => {
     button.addEventListener('click', () => notify(`${button.dataset.demoVariant} button. Same Wicket API, a different expression.`));
@@ -140,7 +190,7 @@
     button.addEventListener('click', () => button.closest('dialog').close());
   });
   // Native closedby handles this in current browsers; keep the same behavior in older ones.
-  for (const overlay of [dialog, sheet]) {
+  for (const overlay of [dialog, sheet, attachmentPreview, invoicePreview]) {
     let backdropPointer = false;
     const outside = event => {
       const rect = overlay.getBoundingClientRect();

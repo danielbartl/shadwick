@@ -313,7 +313,11 @@
         var state = popupState(popup);
         var opening = event.newState === 'open';
         if (opening && popup.matches(menuSelector)) state.choosing = false;
-        if (opening) state.source = event.source || popupTriggers(popup)[0];
+        if (opening) {
+            state.source = event.source || popupTriggers(popup)[0];
+            var hint = state.source && tooltipStates.get(state.source);
+            if (hint && state.source.hasAttribute('data-sw-sidebar-hint')) { hint.dismissed = true; hideTooltip(hint); }
+        }
         popupTriggers(popup).forEach(function (trigger) { trigger.setAttribute('aria-expanded', String(opening)); });
         clearTimeout(state.focusTimer);
         if (opening) state.focusTimer = setTimeout(function () {
@@ -375,7 +379,8 @@
         clearTimeout(state.showTimer); clearTimeout(state.hideTimer);
         if (state.source.hasAttribute('data-sw-sidebar-hint')) {
             var sidebar = state.source.closest('.sw-sidebar');
-            if (!sidebar || !window.matchMedia('(width >= 48rem)').matches || sidebar.dataset.collapsible !== 'icon'
+            if (state.source.getAttribute('aria-expanded') === 'true' || !sidebar
+                || !window.matchMedia('(width >= 48rem)').matches || sidebar.dataset.collapsible !== 'icon'
                 || sidebar.closest('.sw-sidebar-provider').dataset.state !== 'collapsed') return;
             state.tip.dataset.side = sidebar.dataset.side === 'right' ? 'left' : 'right';
         }
@@ -512,6 +517,10 @@
             activeTooltip.dismissed = true; hideTooltip(activeTooltip);
             return;
         }
+        // A nested select keeps focus on its trigger; dismiss only its own picker.
+        var selectWrapper = event.target instanceof Element ? event.target.closest('.sw-select-wrapper,.sw-combobox') : null;
+        if (selectWrapper && HTMLElement.prototype.showPopover && (selectWrapper.querySelector('.sw-select-content:popover-open,.sw-combobox-content:popover-open')
+            || CSS.supports('appearance', 'base-select') && selectWrapper.querySelector('select.sw-select:open'))) return;
         var popup = event.target instanceof Element ? event.target.closest(popupSelector) : null;
         if (popup && popup.matches(':popover-open')) {
             event.preventDefault(); event.stopPropagation(); Shadwick.closePopover(popup.id);
@@ -555,11 +564,20 @@
     }, true);
     scanPopups(document);
 
-    // ---- Avatar images: delegated load/error handlers also cover Ajax replacements ----
+    function scanTableCheckboxes(root) {
+        function sync(box) { box.indeterminate = box.getAttribute('data-sw-indeterminate') === 'true'; }
+        if (root instanceof Element && root.matches('input[data-sw-indeterminate]')) sync(root);
+        if (root.querySelectorAll) root.querySelectorAll('input[data-sw-indeterminate]').forEach(sync);
+    }
+    scanTableCheckboxes(document);
+
+    // ---- Avatar and attachment images: delegated handlers also cover Ajax replacements ----
     // Adapted from Shadleaf's avatar.js (Apache-2.0, see NOTICE).
-    var avatarSelector = 'img.sw-avatar-image';
+    var avatarSelector = 'img.sw-avatar-image, img.sw-attachment-image';
     function markFinished(image) {
-        if (!image.complete || !image.getAttribute('src')) {
+        if (!image.getAttribute('src')) { return; }
+        if (!image.complete) {
+            image.dataset.status = 'loading';
             return;
         }
         var src = image.currentSrc;
@@ -581,12 +599,15 @@
         if (root.querySelectorAll) { root.querySelectorAll(avatarSelector).forEach(markFinished); }
     }
     new MutationObserver(function (records) {
+        dialogReturnIds.forEach(function (source, id) { if (!document.getElementById(id)) dialogReturnIds.delete(id); });
         records.forEach(function (record) {
             if (record.type === 'attributes' && record.target.matches(avatarSelector)) {
                 delete record.target.dataset.status;
                 markFinished(record.target);
             }
             record.addedNodes.forEach(scanAvatars);
+            record.addedNodes.forEach(scanTableCheckboxes);
+            if (record.type === 'attributes' && record.attributeName === 'data-sw-indeterminate') scanTableCheckboxes(record.target);
             record.addedNodes.forEach(scanUploads);
             record.addedNodes.forEach(scanPopups);
             record.removedNodes.forEach(cleanupPopups);
@@ -596,7 +617,7 @@
             }
         });
     }).observe(document.documentElement, {subtree: true, childList: true, attributes: true,
-        attributeFilter: ['src', 'srcset', 'data-sw-tooltip', 'data-tooltip-placement', 'data-tooltip-mode', 'data-tooltip-delay', 'aria-describedby']});
+        attributeFilter: ['src', 'srcset', 'data-sw-indeterminate', 'data-sw-tooltip', 'data-tooltip-placement', 'data-tooltip-mode', 'data-tooltip-delay', 'aria-describedby']});
     scanAvatars(document);
 
     // Responsive sidebar: ordinary navigation on desktop, a modal-like native popover on mobile.
@@ -604,7 +625,9 @@
     var sidebarDesktop = window.matchMedia('(width >= 48rem)');
     var sidebarStates = new Map();
     function sidebarNav(provider) {
-        return Array.from(provider.children).find(function (child) { return child.matches('.sw-sidebar'); });
+        return Array.from(provider.querySelectorAll('.sw-sidebar')).find(function (nav) {
+            return nav.closest('.sw-sidebar-provider') === provider;
+        });
     }
     function sidebarTriggers(nav) {
         return Array.from(document.querySelectorAll('.sw-sidebar-trigger')).filter(function (trigger) {
@@ -634,6 +657,9 @@
         if (open === undefined) open = state.nav.matches(':popover-open');
         sidebarTriggers(state.nav).forEach(function (trigger) {
             trigger.setAttribute('aria-controls', state.nav.id);
+            if (sidebarDesktop.matches && state.nav.dataset.placement === 'header') {
+                trigger.removeAttribute('popovertarget'); trigger.removeAttribute('aria-expanded'); return;
+            }
             trigger.setAttribute('aria-expanded', String(sidebarDesktop.matches
                 ? state.nav.dataset.collapsible === 'none' || provider.dataset.state !== 'collapsed' : open));
             if (sidebarDesktop.matches) trigger.removeAttribute('popovertarget');
@@ -656,7 +682,7 @@
             else showPopup(state.nav, state.source);
             return;
         }
-        if (state.nav.dataset.collapsible === 'none') return;
+        if (state.nav.dataset.collapsible === 'none' || state.nav.dataset.placement === 'header') return;
         provider.dataset.state = provider.dataset.state === 'collapsed' ? 'expanded' : 'collapsed';
         if (provider.dataset.sidebarRemember !== 'false') {
             var name = provider.dataset.sidebarCookie || 'sw-sidebar-state';
@@ -727,6 +753,16 @@
                 if (sidebarDesktop.matches) { event.preventDefault(); sidebarToggle(provider, state, trigger); }
             }
         }
+        var summary = event.target.closest('summary.sw-sidebar-menu-button');
+        if (summary && sidebarDesktop.matches) {
+            var summaryNav = summary.closest('.sw-sidebar');
+            var summaryProvider = summaryNav && summaryNav.closest('.sw-sidebar-provider');
+            var summaryState = sidebarStates.get(summaryProvider);
+            if (summaryState && summaryNav.dataset.collapsible === 'icon' && summaryProvider.dataset.state === 'collapsed') {
+                event.preventDefault(); summary.parentElement.open = true;
+                sidebarToggle(summaryProvider, summaryState, sidebarTriggers(summaryNav)[0]);
+            }
+        }
         var link = event.target.closest('.sw-sidebar a[href]');
         if (link && !link.hasAttribute('data-sidebar-keep-open')) {
             var sidebar = link.closest('.sw-sidebar'), entry = sidebarStates.get(sidebar.closest('.sw-sidebar-provider'));
@@ -741,7 +777,7 @@
             var provider = target.closest('.sw-sidebar-provider');
             if (!provider && sidebarStates.size === 1) provider = sidebarStates.keys().next().value;
             var state = sidebarStates.get(provider);
-            if (state && (!sidebarDesktop.matches || state.nav.dataset.collapsible !== 'none')) {
+            if (state && (!sidebarDesktop.matches || state.nav.dataset.collapsible !== 'none' && state.nav.dataset.placement !== 'header')) {
                 event.preventDefault(); sidebarToggle(provider, state, sidebarTriggers(state.nav)[0]);
             }
             return;
@@ -751,9 +787,12 @@
         var state = sidebarStates.get(nav.closest('.sw-sidebar-provider'));
         if (!state) return;
         if (event.key === 'Escape') {
+            // Let a customizable native select dismiss its own picker first.
+            var select = target.closest('select.sw-select');
+            if (select && CSS.supports('appearance', 'base-select') && select.matches(':open')) return;
             // A native invoker can still own focus before the nested popup's focus timer runs.
             // Consume Escape here too, so the browser and this handler cannot close two layers.
-            var nested = Array.from(nav.querySelectorAll(':is(' + popupSelector + '):popover-open')).pop();
+            var nested = Array.from(nav.querySelectorAll(':is(' + popupSelector + ',.sw-select-content,.sw-combobox-content):popover-open')).pop();
             event.preventDefault();
             if (nested) Shadwick.closePopover(nested.id);
             else sidebarClose(state, true);
@@ -783,6 +822,117 @@
         if (records.some(function (record) { return record.type === 'childList'; })) scanSidebars();
     }).observe(document.documentElement, {subtree: true, childList: true});
     scanSidebars();
+
+    // ---- Tabs: Shadleaf's ARIA pattern, with delegated listeners for Wicket Ajax replacement ----
+    var tabRoots = new WeakMap();
+    function ownTabs(root) {
+        return Array.from(root.querySelectorAll('[role="tab"]')).filter(function (tab) { return tab.closest('.sw-tabs') === root; });
+    }
+    function enabledTab(tab) { return !tab.matches(':disabled,[aria-disabled="true"],[hidden]'); }
+    function tabPanel(root, tab) {
+        var panel = document.getElementById(tab.getAttribute('aria-controls'));
+        return panel && panel.matches('[role="tabpanel"]') && panel.closest('.sw-tabs') === root ? panel : null;
+    }
+    function tabFrom(target) { return target instanceof Element ? target.closest('.sw-tabs [role="tab"]') : null; }
+    function activateTab(root, tab, announce, keepFocused) {
+        var focused = keepFocused && root.dataset.activation === 'manual' ? ownTabs(root).find(function (candidate) {
+            return candidate === document.activeElement && enabledTab(candidate);
+        }) : null;
+        var state = tabRoots.get(root) || {}; state.activeId = tab.id; tabRoots.set(root, state);
+        ownTabs(root).forEach(function (other) {
+            var active = other === tab, panel = tabPanel(root, other);
+            other.setAttribute('aria-selected', String(active));
+            other.setAttribute('tabindex', (focused ? other === focused : active) && enabledTab(other) ? '0' : '-1');
+            if (!panel) return;
+            var shown = active && panel.hasAttribute('hidden');
+            if (active) { panel.removeAttribute('hidden'); panel.setAttribute('tabindex', '0'); }
+            else { panel.setAttribute('hidden', enabledTab(other) ? 'until-found' : 'hidden'); panel.setAttribute('tabindex', '-1'); }
+            if (shown && announce) panel.dispatchEvent(new CustomEvent('sw-tabs-show'));
+        });
+    }
+    function tabAddress(tab) {
+        if (!(tab instanceof HTMLAnchorElement) || !tab.hasAttribute('href') || tab.hasAttribute('download')
+            || tab.target && tab.target !== '_self') return null;
+        try {
+            var url = new URL(tab.href);
+            return url.origin === location.origin && /^(http|https):$/.test(url.protocol) ? url : null;
+        } catch (error) { return null; }
+    }
+    function chooseTab(tab, keepHash) {
+        if (!enabledTab(tab)) return;
+        var root = tab.closest('.sw-tabs');
+        if (tab.getAttribute('aria-selected') === 'true') return;
+        activateTab(root, tab, true);
+        var url = tabAddress(tab);
+        if (url) {
+            if (keepHash) url.hash = location.hash;
+            try { history.replaceState(history.state, '', url.href); } catch (error) { /* The content still switches. */ }
+        }
+    }
+    function scanTabs() {
+        document.querySelectorAll('.sw-tabs').forEach(function (root) {
+            var tabs = ownTabs(root), state = tabRoots.get(root);
+            var current = state && tabs.find(function (tab) { return tab.id === state.activeId && enabledTab(tab); });
+            if (!current) current = tabs.find(function (tab) { return enabledTab(tab) && tab.getAttribute('aria-selected') === 'true'; })
+                || tabs.find(enabledTab) || tabs.find(function (tab) { return tab.getAttribute('aria-selected') === 'true'; });
+            if (current) activateTab(root, current, false, true);
+        });
+    }
+    document.addEventListener('click', function (event) {
+        var tab = tabFrom(event.target);
+        if (!tab || event.defaultPrevented) return;
+        if (!enabledTab(tab)) { event.preventDefault(); return; }
+        if (tab instanceof HTMLAnchorElement && (event.button !== 0 || event.ctrlKey || event.metaKey || event.shiftKey || event.altKey || !tabAddress(tab))) return;
+        event.preventDefault(); chooseTab(tab);
+    });
+    document.addEventListener('keydown', function (event) {
+        var tab = tabFrom(event.target);
+        if (!tab || event.defaultPrevented || event.ctrlKey || event.metaKey || event.altKey || !enabledTab(tab)) return;
+        var root = tab.closest('.sw-tabs'), tabs = ownTabs(root).filter(enabledTab), index = tabs.indexOf(tab);
+        if (index < 0 || !tabs.length) return;
+        var vertical = root.dataset.orientation === 'vertical', manual = root.dataset.activation === 'manual';
+        var forward = getComputedStyle(root).direction === 'rtl' ? -1 : 1, offset = 0, next;
+        if (event.key === 'ArrowRight' && !vertical) offset = forward;
+        else if (event.key === 'ArrowLeft' && !vertical) offset = -forward;
+        else if (event.key === 'ArrowDown' && vertical) offset = 1;
+        else if (event.key === 'ArrowUp' && vertical) offset = -1;
+        else if (event.key === 'Home') next = tabs[0];
+        else if (event.key === 'End') next = tabs[tabs.length - 1];
+        else if (event.key === ' ' || event.key === 'Enter') { event.preventDefault(); chooseTab(tab); return; }
+        else return;
+        if (offset) next = tabs[(index + offset + tabs.length) % tabs.length];
+        event.preventDefault();
+        ownTabs(root).forEach(function (other) { other.setAttribute('tabindex', other === next ? '0' : '-1'); });
+        next.focus(); if (!manual) chooseTab(next);
+    });
+    document.addEventListener('focusout', function (event) {
+        var tab = tabFrom(event.target); if (!tab) return;
+        var root = tab.closest('.sw-tabs'), next = tabFrom(event.relatedTarget);
+        if (root.dataset.activation !== 'manual' || next && next.closest('.sw-tabs') === root) return;
+        ownTabs(root).forEach(function (other) {
+            other.setAttribute('tabindex', other.getAttribute('aria-selected') === 'true' && enabledTab(other) ? '0' : '-1');
+        });
+    });
+    document.addEventListener('beforematch', function (event) {
+        var panel = event.target instanceof Element ? event.target.closest('[role="tabpanel"]') : null;
+        while (panel) {
+            var root = panel.closest('.sw-tabs');
+            var tab = root && ownTabs(root).find(function (candidate) { return tabPanel(root, candidate) === panel; });
+            if (tab) chooseTab(tab, true);
+            panel = panel.parentElement && panel.parentElement.closest('[role="tabpanel"]');
+        }
+    }, true);
+    // Disabled native summaries are skipped without script too; this also prevents programmatic keyboard activation.
+    ['click', 'keydown'].forEach(function (type) {
+        document.addEventListener(type, function (event) {
+            if (!(event.target instanceof Element)) return;
+            var summary = event.target.closest('summary');
+            if (summary && summary.parentElement.matches('.sw-accordion-item[data-disabled],.sw-collapsible[data-disabled]')
+                && (type === 'click' || event.key === 'Enter' || event.key === ' ')) event.preventDefault();
+        }, true);
+    });
+    new MutationObserver(scanTabs).observe(document.documentElement, {childList: true, subtree: true});
+    if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', scanTabs); else scanTabs();
 
     // ---- Toasts: Shadleaf anatomy/interactions, with a CSS column instead of inline stack geometry ----
     var toaster = null, toastStates = new Map(), toastReturnFocus = null, toastHover = false;
@@ -987,12 +1137,32 @@
         if (event.target instanceof HTMLDialogElement && event.target.open) focusSheetField(event.target);
     }, true);
 
+    // A server action can replace the opener while its dialog is open. Remember its stable id,
+    // and prefer a menu's trigger to the menu item hidden by showModal(). Native focus handles other closes.
+    var dialogReturnIds = new Map();
+    document.addEventListener('close', function (event) {
+        var dialog = event.target;
+        if (!(dialog instanceof HTMLDialogElement) || !dialog.isConnected || !dialogReturnIds.has(dialog.id)) return;
+        var sourceId = dialogReturnIds.get(dialog.id); dialogReturnIds.delete(dialog.id);
+        setTimeout(function () {
+            if (document.querySelector('dialog:modal')) return;
+            var active = document.activeElement, source = document.getElementById(sourceId);
+            if (source && visibleControl(source) && (active === document.body || active === document.documentElement || dialog.contains(active))) source.focus();
+        }, 0);
+    }, true);
+
     Shadwick.showDialog = function (id) {
         var dialog = document.getElementById(id);
         if (!dialog) {
             return;
         }
         if (!dialog.open) {
+            if (!dialogReturnIds.has(id)) {
+                var source = document.activeElement;
+                var popup = source instanceof Element ? source.closest(popupSelector) : null;
+                if (popup) source = popupState(popup).source || popupTriggers(popup)[0] || source;
+                if (source && source.id) dialogReturnIds.set(id, source.id);
+            }
             dialog.showModal();
             focusSheetField(dialog);
         }

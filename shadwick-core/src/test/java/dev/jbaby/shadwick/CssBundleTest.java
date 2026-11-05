@@ -60,6 +60,15 @@ class CssBundleTest {
                     ".sw-dropdown-menu-radio-item", ".sw-dropdown-menu-separator", ".sw-dropdown-menu-shortcut");
             assertThat(css).contains(".sw-site-header", ".sw-site-header-end", ".sw-skip-link", ".sw-breadcrumb-list", ".sw-breadcrumb-link", ".sw-breadcrumb-separator-icon");
             assertThat(css).contains(".sw-sidebar-provider", ".sw-sidebar-inset", ".sw-sidebar-trigger", ".sw-sidebar-menu-button", "--sw-sidebar-width-icon");
+            assertThat(css).contains(".sw-app-layout", ".sw-sidebar-menu-sub-button", ".sw-sidebar-menu-action", "data-placement", "data-panel-only");
+            assertThat(css).contains(".sw-combobox", ".sw-combobox-input", ".sw-combobox-chip", ".sw-combobox-content");
+            assertThat(css).contains(".sw-month-view", ".sw-month-view-day-link", ".sw-chart-plot", ".sw-chart-tooltip-content", ".sw-chart-series-5");
+            assertThat(css).contains(".sw-select-wrapper", ".sw-select-item", ".sw-select-content", "base-select", "selectedcontent");
+            assertThat(css).contains(".sw-table", ".sw-table-container", ".sw-table-sort", ".sw-table-footer", ".sw-pagination", ".sw-pagination-content", "--sw-table-scrolled");
+            assertThat(css).contains(".sw-attachment", ".sw-attachment-trigger", ".sw-attachment-group", "sw-attachment-shimmer", "sw-attachment-scroll-fade");
+            assertThat(css).contains(".sw-tabs-list", ".sw-tabs-trigger", ".sw-tabs-content", ".sw-accordion-trigger", ".sw-collapsible-trigger", "--sw-accordion-duration");
+            assertThat(css).contains(".sw-theme-toggle", ".sw-theme-toggle-dark", ".sw-theme-toggle-light", "color-scheme:");
+            assertThat(css).contains(".sw-user-menu", ".sw-user-menu-label", ".sw-user-menu-text", ".sw-user-menu-trigger");
             assertThat(css).contains(".sw-toaster", ".sw-toast-title", ".sw-toast-description", ".sw-toast-close");
             assertThat(css).doesNotContain("-webkit-text-size-adjust", "font-synthesis", "@layer theme {")
                     .doesNotContainPattern("(?s)(?:^|[{}])\\s*\\*[^{}]*\\{[^{}]*box-sizing\\s*:");

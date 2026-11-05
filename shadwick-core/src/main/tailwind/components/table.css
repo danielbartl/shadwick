@@ -1,0 +1,134 @@
+/*
+  The pinned column's edge is drawn while the container is scrolled: a scroll-driven animation raises this from 0 to 1
+  over the first 1.5rem of inline scrolling. Without animation-timeline support the edge is always drawn.
+*/
+@property --sw-table-scrolled {
+  syntax: '<number>';
+  inherits: true;
+  initial-value: 1;
+}
+
+@keyframes sw-table-scrolled {
+  from { --sw-table-scrolled: 0; }
+  to { --sw-table-scrolled: 1; }
+}
+
+/*
+  Table: structure only. sl:table renders a container that scrolls sideways around a table; the rows and cells are
+  the application's own plain elements. Every selector reaches them through child combinators, so a table nested in a
+  cell is not styled twice. The sort link is a button (.button), whose rules set its look.
+*/
+@layer components {
+  .sw-table-container {
+    @apply relative w-full overflow-x-auto;
+  }
+
+  /* Collapsed borders: the row lines are on tr, the column group lines on colgroup, neither drawn otherwise. */
+  .sw-table {
+    @apply w-full caption-bottom border-collapse;
+  }
+
+  .sw-table > :is(thead, tbody, tfoot) > tr > :is(th, td) {
+    @apply align-middle whitespace-nowrap;
+  }
+
+  /* data-align on a cell: sl:table-head renders it, and a column's td cells take the same. */
+  .sw-table > :is(thead, tbody, tfoot) > tr > :is(th, td):not([data-align]),
+  .sw-table-head:not([data-align]) {
+    @apply text-start;
+  }
+
+  .sw-table > :is(thead, tbody, tfoot) > tr > :is(th, td)[data-align='center'],
+  .sw-table-head[data-align='center'] {
+    @apply text-center;
+  }
+
+  .sw-table > :is(thead, tbody, tfoot) > tr > :is(th, td)[data-align='end'],
+  .sw-table-head[data-align='end'] {
+    @apply text-end;
+  }
+
+  .sw-table-sort {
+    @apply align-middle;
+  }
+
+  .sw-table > tbody > tr.sw-table-empty > td {
+    @apply text-center whitespace-normal;
+  }
+
+  /*
+    sl:table-select-all and sl:table-selection-count only work with Alpine, which removes their x-cloak. Until then,
+    and for good without JavaScript, they keep their space but do not show (and take no focus).
+  */
+  .sw-table-select-all[x-cloak],
+  .sw-table-selection-count[x-cloak] {
+    @apply invisible;
+  }
+
+  /*
+    sticky-first-column: the first cell of every row sticks to the inline start (logical, so RTL works). The skins give
+    it a background; its ::after is the edge, which shows only after the container has scrolled.
+  */
+  .sw-table[data-sticky='first-column'] > :is(thead, tbody, tfoot) > tr > :is(th, td):first-child {
+    position: sticky;
+    inset-inline-start: 0;
+    z-index: 1;
+  }
+
+  .sw-table[data-sticky='first-column'] > :is(thead, tbody, tfoot) > tr > :is(th, td):first-child::after {
+    content: '';
+    position: absolute;
+    inset-block: 0;
+    inset-inline-end: 0;
+    pointer-events: none;
+    opacity: var(--sw-table-scrolled);
+  }
+
+  /*
+    Column groups (colgroup): the skins draw a line on the start edge of every group after the first. When the second
+    group starts at the second column, that line runs along the pinned edge: the edge moves onto it, so the two are
+    one line, and the pinned cell covers the group line once it scrolls under.
+  */
+  .sw-table[data-sticky='first-column']:has(> colgroup + colgroup) > :is(thead, tbody, tfoot) > tr > :is(th, td):first-child::after {
+    inset-inline-end: -1px;
+  }
+
+  @supports (animation-timeline: scroll()) {
+    .sw-table-container:has(> .sw-table[data-sticky='first-column']) {
+      --sw-table-scrolled: 0;
+      animation: sw-table-scrolled linear both;
+      animation-timeline: scroll(self inline);
+      animation-range: 0 1.5rem;
+    }
+  }
+
+  /* Nothing scrolls on paper: the column stays in the flow and has no edge. */
+  @media print {
+    .sw-table[data-sticky='first-column'] > :is(thead, tbody, tfoot) > tr > :is(th, td):first-child {
+      position: static;
+    }
+
+    .sw-table[data-sticky='first-column'] > :is(thead, tbody, tfoot) > tr > :is(th, td):first-child::after {
+      display: none;
+    }
+  }
+}
+
+@layer components {
+  .sw-table-container { min-width: 0; }
+  .sw-table > :is(thead, tbody, tfoot) > tr > .sw-table-align-end { text-align: end; }
+  .sw-table > :is(thead, tbody, tfoot) > tr > .sw-table-align-center { text-align: center; }
+  .sw-table-column-label { @apply sr-only; }
+  @media print { .sw-table-container { overflow: visible; animation: none; } }
+}
+
+@layer components {
+  .sw-data-table { @apply min-w-0; }
+  .sw-table-toolbar, .sw-table-bulk-actions, .sw-table-footer, .sw-table-footer-controls { @apply flex flex-wrap items-center; }
+  .sw-table-footer { @apply justify-between; }
+  .sw-table-footer-controls { @apply min-w-0; }
+  .sw-table-footer .sw-pagination { width:auto; margin:0; }
+  .sw-table-actions .sw-dropdown { @apply inline-block; }
+  .sw-table-actions .sw-dropdown-menu-trigger > svg { display:none; }
+  .sw-table-actions .sw-dropdown-menu-trigger { @apply align-middle; }
+}

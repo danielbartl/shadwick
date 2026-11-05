@@ -1,0 +1,7 @@
+<wicket:extend xmlns:wicket="http://wicket.apache.org">
+<div class="ex-data-heading"><div><p class="ex-sidebar-eyebrow">A CLEARER PICTURE</p><h1 class="ex-title">Good work. Well accounted for.</h1><p class="ex-lead">Keep the details close and the next step in view.</p></div><button wicket:id="create"></button></div>
+<div wicket:id="stats" class="ex-data-stats"><article><span>Total invoices</span><strong wicket:id="count"></strong><small>A little progress, on paper.</small></article><article><span>Open balance</span><strong wicket:id="open"></strong><small>Good work, ready to be paid.</small></article><article><span>Paid in full</span><strong wicket:id="paid"></strong><small>One less thing on your mind.</small></article></div>
+<section class="ex-section" aria-labelledby="invoices-heading"><div class="ex-data-heading"><div><h2 id="invoices-heading">Your invoices.</h2><p wicket:id="status" role="status" aria-live="polite" class="ex-muted"></p></div><div class="ex-row" role="group" aria-label="Navigation style"><a wicket:id="bookmarkable">Bookmarkable links</a><a wicket:id="ajax">Ajax updates</a></div></div><div wicket:id="invoices"></div><p class="ex-muted ex-data-footnote">Your demo workspace is kept in this browser session. INV-2005 is a locked record.</p></section>
+<noscript><p class="ex-muted">Sorting, filters, paging and invoice links work without JavaScript. Editing and live selection need JavaScript.</p></noscript>
+<div wicket:id="editor"></div><div wicket:id="confirmation"></div>
+</wicket:extend>

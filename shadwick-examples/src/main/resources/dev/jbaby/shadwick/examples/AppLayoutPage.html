@@ -1,0 +1,10 @@
+<wicket:extend xmlns:wicket="http://wicket.apache.org">
+<div class="ex-layout-page">
+  <div class="ex-layout-toolbar"><span class="ex-sidebar-eyebrow" wicket:id="layoutName"></span><div class="ex-row"><a wicket:id="vega">Vega</a><a wicket:id="lyra">Lyra</a><a wicket:id="nova">Nova</a><a wicket:id="showcase">All components</a></div></div>
+  <h1 class="ex-title" wicket:id="heading"></h1>
+  <p class="ex-lead">Your work, with a little breathing room. Familiar navigation, wherever you open it.</p>
+  <div class="ex-layout-stats"><article class="sw-card"><div class="sw-card-content"><span class="ex-muted">In good company</span><strong>12 members</strong><p>Small team. Plenty of ideas.</p></div></article><article class="sw-card"><div class="sw-card-content"><span class="ex-muted">Taking shape</span><strong>8 projects</strong><p>A few good things in progress.</p></div></article><article class="sw-card"><div class="sw-card-content"><span class="ex-muted">A little momentum</span><strong>24 updates</strong><p>Every small step counts.</p></div></article></div>
+  <section class="sw-card"><header class="sw-card-header"><h2 class="sw-card-title">Make yourself at home.</h2><p class="sw-card-description">Choose a page, open a section, or try the same workspace with a different layout.</p></header><div class="sw-card-content"><label class="ex-theme-demo-field">Find something<input class="sw-input" type="search" placeholder="A project, a person, a new idea"></label><p class="ex-muted" wicket:id="status" role="status"></p><div class="ex-row"><a wicket:id="otherLayout">Try the other layout</a><button wicket:id="refreshMenu"></button><button wicket:id="replaceSidebar"></button></div></div></section>
+  <p class="ex-muted">Use Ctrl/⌘B to open the menu on your phone or collapse the sidebar on a desktop. Theme follows your saved choice.</p>
+</div>
+</wicket:extend>

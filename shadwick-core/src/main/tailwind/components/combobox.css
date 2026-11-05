@@ -1,0 +1,144 @@
+/* Adapted from Shadleaf combobox.css (Apache-2.0, see NOTICE). */
+@layer components {
+  .sw-combobox {
+    @apply relative block w-full
+      has-[>.sw-combobox-select:disabled]:opacity-50 forced-colors:has-[>.sw-combobox-select:disabled]:opacity-100;
+  }
+
+  .sw-combobox:has(> .sw-combobox-select:disabled) :is(.sw-combobox-icon, .sw-combobox-control, .sw-combobox-input, .sw-combobox-chip) {
+    @apply forced-colors:border-[GrayText] forced-colors:text-[GrayText];
+  }
+
+  /* hidden on the parts slCombobox shows and hides, whatever display their rules give them. */
+  .sw-combobox [hidden]:not([hidden='until-found']) {
+    @apply hidden;
+  }
+
+  .sw-combobox-select {
+    @apply w-full min-w-0 appearance-none outline-none select-none
+      disabled:pointer-events-none disabled:cursor-not-allowed
+      forced-colors:disabled:border-[GrayText] forced-colors:disabled:text-[GrayText];
+  }
+
+  .sw-combobox-select :is(option, optgroup) {
+    @apply bg-[Canvas] text-[CanvasText];
+  }
+
+  .sw-combobox-icon {
+    @apply pointer-events-none absolute top-1/2 end-2.5 size-4 -translate-y-1/2 select-none;
+  }
+
+  /* Hidden, not removed, once slCombobox has put its control in place: it still submits, resets and validates. */
+  .sw-combobox[data-enhanced] > .sw-combobox-select {
+    @apply pointer-events-none absolute inset-0 size-full opacity-0;
+  }
+
+  .sw-combobox[data-enhanced] > .sw-combobox-icon {
+    @apply hidden;
+  }
+
+  /* The box around the input: one line for a single value, wrapping chips for several. */
+  .sw-combobox-control {
+    @apply flex w-full min-w-0 cursor-text items-center;
+  }
+
+  .sw-combobox[data-multiple] > .sw-combobox-control {
+    @apply flex-wrap;
+  }
+
+  .sw-combobox-input {
+    @apply min-w-0 flex-1 self-stretch border-0 bg-transparent p-0 outline-none
+      disabled:cursor-not-allowed;
+    color: inherit;
+    font: inherit;
+  }
+
+  .sw-combobox[data-multiple] .sw-combobox-input {
+    @apply min-w-16;
+  }
+
+  .sw-combobox-clear,
+  .sw-combobox-trigger {
+    @apply inline-flex size-6 shrink-0 cursor-default items-center justify-center border-0 bg-transparent p-0
+      outline-none disabled:pointer-events-none
+      forced-colors:focus-visible:outline-2 forced-colors:focus-visible:outline-solid;
+    color: inherit;
+  }
+
+  /* shadcn's: the clear button takes the chevron's place while there is something to clear. */
+  .sw-combobox-control:has(> .sw-combobox-clear:not([hidden])) > .sw-combobox-trigger {
+    @apply hidden;
+  }
+
+  .sw-combobox-chip {
+    @apply inline-flex w-fit shrink-0 items-center whitespace-nowrap
+      forced-colors:border forced-colors:border-solid;
+  }
+
+  .sw-combobox-chip-remove {
+    @apply inline-flex shrink-0 cursor-default items-center justify-center border-0 bg-transparent p-0 outline-none
+      disabled:pointer-events-none
+      forced-colors:focus-visible:outline-2 forced-colors:focus-visible:outline-solid;
+    color: inherit;
+  }
+
+  /*
+    The list box: at least as wide as the control, its list scrolling when taller than the viewport. Flex only while
+    open: a display of its own would override the browser's display: none on a closed popover.
+  */
+  .sw-combobox-content {
+    @apply overflow-hidden border-0 outline-none;
+    min-inline-size: max(9rem, anchor-size(self-inline));
+    max-block-size: calc(100dvh - 1rem);
+  }
+
+  .sw-combobox-content:popover-open {
+    @apply flex flex-col;
+  }
+
+  .sw-combobox-list {
+    @apply min-h-0 overflow-x-hidden overflow-y-auto overscroll-contain outline-none;
+  }
+
+  .sw-combobox-item {
+    @apply relative flex w-full cursor-default items-center outline-none select-none
+      aria-disabled:pointer-events-none aria-disabled:opacity-50
+      [&_svg]:pointer-events-none [&_svg]:shrink-0
+      forced-colors:data-active:outline-2 forced-colors:data-active:-outline-offset-2
+      forced-colors:data-active:outline-solid;
+  }
+
+  .sw-combobox-item-indicator {
+    @apply pointer-events-none invisible absolute;
+  }
+
+  .sw-combobox-item[aria-selected='true'] > .sw-combobox-item-indicator {
+    @apply visible;
+  }
+
+  .sw-combobox-separator {
+    @apply h-px border-0;
+  }
+
+  .sw-combobox-empty {
+    @apply flex w-full justify-center text-center;
+  }
+
+  .sw-combobox-status {
+    @apply sr-only;
+  }
+}
+
+@layer components {
+  .sw-combobox-content { @apply forced-colors:border forced-colors:border-solid; }
+  .sw-combobox-content [hidden] { display: none; }
+  .sw-combobox-select option[hidden] { display: none; }
+  .sw-combobox-chip { max-inline-size: 100%; }
+  .sw-combobox-chip-label { @apply min-w-0 truncate; }
+  .sw-combobox-chip-remove { @apply size-6; }
+}
+
+@layer components {
+  .sw-combobox-select, .sw-combobox-control, .sw-combobox-input,
+  .sw-combobox-item, .sw-combobox-chip { @apply box-border; }
+}

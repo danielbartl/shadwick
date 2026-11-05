@@ -103,6 +103,15 @@ public class SwIcon extends WebComponent {
         ICONS.put(name, shapes);
     }
 
+    /** Decorative SVG for native option bodies, from the same trusted icon registry. */
+    public static String decorativeMarkup(String name) {
+        java.util.Objects.requireNonNull(name, "name");
+        requireKnown(name);
+        return "<svg class=\"sw-icon\" xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\""
+                + " fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\""
+                + " aria-hidden=\"true\" focusable=\"false\">" + ICONS.get(name) + "</svg>";
+    }
+
     private String shapes() {
         String name = getDefaultModelObjectAsString();
         String shapes = ICONS.get(name);

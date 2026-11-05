@@ -25,6 +25,9 @@ for (const match of html.matchAll(/\b(?:src|href)="([^"]+)"/g)) {
 }
 const css = await readFile(path.join(root, 'assets/site.css'), 'utf8');
 for (const [, filename] of css.matchAll(/url\(['"]?([^)'"\s]+)['"]?\)/g)) await access(path.resolve(root, 'assets', filename));
+for (const [, skin] of html.matchAll(/<option value="(vega|lyra|nova)">/g)) {
+  await access(path.join(root, 'assets', `shadwick-${skin}.css`));
+}
 await access(path.join(root, 'assets/social.png'));
 for (const file of ['LICENSE.txt', 'NOTICE.txt', 'assets/fonts/OFL.txt']) await access(path.join(root, file));
 let bytes = 0;

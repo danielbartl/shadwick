@@ -5,6 +5,16 @@ import dev.jbaby.shadwick.behaviors.BreadcrumbBehavior;
 import dev.jbaby.shadwick.behaviors.SiteHeaderBehavior;
 import dev.jbaby.shadwick.behaviors.SkipLinkBehavior;
 import dev.jbaby.shadwick.behaviors.SidebarBehavior;
+import dev.jbaby.shadwick.behaviors.SidebarActionBehavior;
+import dev.jbaby.shadwick.behaviors.AccordionBehavior;
+import dev.jbaby.shadwick.behaviors.CollapsibleBehavior;
+import dev.jbaby.shadwick.behaviors.DisclosureTriggerBehavior;
+import dev.jbaby.shadwick.behaviors.TabsBehavior;
+import dev.jbaby.shadwick.components.SwAccordion;
+import dev.jbaby.shadwick.components.SwTabs;
+import dev.jbaby.shadwick.util.SerializableBiConsumer;
+import org.apache.wicket.markup.html.list.ListItem;
+import java.util.List;
 import dev.jbaby.shadwick.behaviors.SidebarProviderBehavior;
 import dev.jbaby.shadwick.behaviors.SidebarTriggerBehavior;
 import dev.jbaby.shadwick.behaviors.AlertBehavior;
@@ -72,7 +82,29 @@ public final class Sw {
             return new ButtonBehavior(variant);
         }
 
+        public static dev.jbaby.shadwick.behaviors.ThemeBehavior theme() { return new dev.jbaby.shadwick.behaviors.ThemeBehavior(); }
         public static SidebarBehavior sidebar() { return new SidebarBehavior(); }
+        public static dev.jbaby.shadwick.behaviors.AttachmentBehavior attachment() { return new dev.jbaby.shadwick.behaviors.AttachmentBehavior(); }
+        public static dev.jbaby.shadwick.behaviors.AttachmentGroupBehavior attachmentGroup() { return new dev.jbaby.shadwick.behaviors.AttachmentGroupBehavior(); }
+        public static dev.jbaby.shadwick.behaviors.AttachmentControlBehavior attachmentAction() { return new dev.jbaby.shadwick.behaviors.AttachmentControlBehavior(dev.jbaby.shadwick.behaviors.AttachmentControlBehavior.Kind.ACTION); }
+        public static dev.jbaby.shadwick.behaviors.AttachmentControlBehavior attachmentTrigger() { return new dev.jbaby.shadwick.behaviors.AttachmentControlBehavior(dev.jbaby.shadwick.behaviors.AttachmentControlBehavior.Kind.TRIGGER); }
+        public static dev.jbaby.shadwick.behaviors.CalendarBehavior calendar() { return new dev.jbaby.shadwick.behaviors.CalendarBehavior(); }
+        public static dev.jbaby.shadwick.behaviors.ComboboxBehavior combobox() { return new dev.jbaby.shadwick.behaviors.ComboboxBehavior(); }
+        public static dev.jbaby.shadwick.behaviors.SelectBehavior select() { return new dev.jbaby.shadwick.behaviors.SelectBehavior(); }
+        public static dev.jbaby.shadwick.behaviors.TableBehavior table() { return new dev.jbaby.shadwick.behaviors.TableBehavior(); }
+        public static StyledBehavior tableContainer() { return new StyledBehavior("sw-table-container"); }
+        public static dev.jbaby.shadwick.behaviors.PaginationBehavior pagination() { return new dev.jbaby.shadwick.behaviors.PaginationBehavior(); }
+        public static dev.jbaby.shadwick.behaviors.PaginationLinkBehavior paginationLink() { return new dev.jbaby.shadwick.behaviors.PaginationLinkBehavior(); }
+        public static TabsBehavior tabs() { return new TabsBehavior(); }
+        public static AccordionBehavior accordion() { return new AccordionBehavior(); }
+        public static AccordionBehavior accordion(boolean exclusive) { return new AccordionBehavior(exclusive); }
+        public static CollapsibleBehavior collapsible() { return new CollapsibleBehavior(); }
+        public static DisclosureTriggerBehavior accordionTrigger() { return new DisclosureTriggerBehavior(DisclosureTriggerBehavior.Kind.ACCORDION); }
+        public static DisclosureTriggerBehavior collapsibleTrigger() { return new DisclosureTriggerBehavior(DisclosureTriggerBehavior.Kind.COLLAPSIBLE); }
+        public static StyledBehavior accordionContent() { return new StyledBehavior("sw-accordion-content"); }
+        public static StyledBehavior collapsibleContent() { return new StyledBehavior("sw-collapsible-content"); }
+        public static SidebarActionBehavior sidebarMenuAction() { return new SidebarActionBehavior(SidebarActionBehavior.Kind.MENU); }
+        public static SidebarActionBehavior sidebarGroupAction() { return new SidebarActionBehavior(SidebarActionBehavior.Kind.GROUP); }
         public static SidebarProviderBehavior sidebarProvider() { return new SidebarProviderBehavior(); }
         public static SidebarTriggerBehavior sidebarTrigger(Component sidebar) { return new SidebarTriggerBehavior(sidebar); }
         public static StyledBehavior sidebarInset() {
@@ -163,6 +195,20 @@ public final class Sw {
     public static final class Components {
 
         private Components() {
+        }
+
+        public static <T> dev.jbaby.shadwick.components.SwPagination<T> pagination(String id, IModel<List<T>> items, SerializableBiConsumer<ListItem<T>, T> populate) {
+            return dev.jbaby.shadwick.components.SwPagination.of(id, items, populate);
+        }
+        public static <T> SwAccordion<T> accordion(String id, IModel<List<T>> items, SerializableBiConsumer<ListItem<T>, T> populate) {
+            return SwAccordion.of(id, items, populate);
+        }
+        public static <T> SwAccordion<T> accordion(String id, IModel<List<T>> items, boolean exclusive, SerializableBiConsumer<ListItem<T>, T> populate) {
+            return SwAccordion.of(id, items, exclusive, populate);
+        }
+        public static <T> SwTabs<T> tabs(String id, IModel<List<T>> items, SerializableBiConsumer<ListItem<T>, T> tab,
+                                        SerializableBiConsumer<ListItem<T>, T> panel) {
+            return SwTabs.of(id, items, tab, panel);
         }
 
         public static SwButton button(String id, String label, SerializableConsumer<AjaxRequestTarget> onClick) {

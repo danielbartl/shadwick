@@ -16,7 +16,10 @@ public enum Skin {
     VEGA,
 
     /** Boxy and sharp: square corners, small type, a thin focus ring. */
-    LYRA;
+    LYRA,
+
+    /** Compact controls, generous radii and muted card/dialog footers. */
+    NOVA;
 
     /** The name used in the stylesheet's file name, e.g. {@code vega} for {@code shadwick-vega.css}. */
     public String id() {

@@ -1,0 +1,39 @@
+/*
+  Pagination: structure only. The links are buttons (.button), whose rules set their look; the skins set the gaps and the
+  ellipsis's size. Summary and size menu are separate, so the application lays out a table's footer itself.
+*/
+@layer components {
+  /* Safe: a pagination wider than its container keeps its start in view, and overflows at the end. */
+  .sw-pagination {
+    @apply mx-auto flex w-full justify-center-safe;
+  }
+
+  /* The embedded bundle has no preflight of its own: an application without one still gets a bare list. */
+  .sw-pagination-content {
+    @apply m-0 flex list-none flex-row items-center p-0;
+  }
+
+  .sw-pagination-ellipsis {
+    @apply flex items-center justify-center;
+  }
+
+  /* As shadcn/ui's: on a narrow screen Previous and Next show only their chevron (their aria-label names them). */
+  .sw-pagination-previous-text,
+  .sw-pagination-next-text {
+    @apply hidden sm:block;
+  }
+
+  .sw-pagination-previous > .sw-button-icon,
+  .sw-pagination-next > .sw-button-icon {
+    @apply rtl:-scale-x-100;
+  }
+
+  .sw-pagination-size {
+    @apply flex items-center;
+  }
+}
+
+@layer components {
+  .sw-pagination-ellipsis-label { @apply sr-only; }
+  .sw-pagination-size { @apply min-w-0; }
+}

@@ -830,7 +830,8 @@
     @apply gap-2 border-b border-border bg-background px-4;
   }
 
-  .sw-site-header[data-inset='true'] { @apply border-b-0 bg-transparent; }
+  .sw-site-header[data-inset='true'],
+  .sw-sidebar-provider > .sw-site-header:has(> .sw-sidebar[data-variant='inset']) { @apply border-b-0 bg-transparent; }
 
   .sw-site-header-end {
     @apply gap-2;
@@ -872,11 +873,11 @@
     @apply md:rounded-lg md:shadow-sm;
   }
 
-  .sw-sidebar-provider:has(> .sw-sidebar[data-variant='inset']) {
+  .sw-sidebar-provider:has(> .sw-sidebar[data-variant='inset'], > .sw-site-header > .sw-sidebar[data-variant='inset']) {
     @apply bg-sidebar;
   }
 
-  .sw-sidebar-provider:has(> .sw-sidebar[data-variant='inset']) > .sw-sidebar-inset {
+  .sw-sidebar-provider:has(> .sw-sidebar[data-variant='inset'], > .sw-site-header > .sw-sidebar[data-variant='inset']) > .sw-sidebar-inset {
     @apply duration-200 ease-linear md:rounded-xl md:shadow-sm;
   }
 
@@ -968,7 +969,7 @@
   }
 
   .sw-sidebar-group-action {
-    @apply end-3 top-3.5 w-5 rounded-md p-0 text-sidebar-foreground ring-sidebar-ring
+    @apply end-3 top-3 w-6 rounded-md p-0 text-sidebar-foreground ring-sidebar-ring
       hover:bg-sidebar-accent hover:text-sidebar-accent-foreground focus-visible:ring-2
       [&>svg:not([class*='size-'],[data-icon-size])]:size-4;
   }
@@ -1079,7 +1080,7 @@
   }
 
   /*
-    On a phone the group actions are 24px too (WCAG 2.2's target size; shadcn's 20px with a larger pseudo-element hit
+    Group actions are 24px on every screen (WCAG 2.2's target size; shadcn's 20px with a larger pseudo-element hit
     area does not count). On a desktop they stand alone beside the label, with room around them.
   */
   @media (width < 48rem) {
@@ -1087,4 +1088,877 @@
       @apply top-3 w-6;
     }
   }
+}
+
+/* User-menu identity, adapted from Shadleaf (Apache-2.0, see NOTICE). */
+@layer components {
+  .sw-dropdown-menu-label.sw-user-menu-label {
+    @apply gap-2 px-1 py-1.5 text-sm font-normal leading-tight text-popover-foreground;
+  }
+
+  .sw-user-menu-name {
+    @apply font-medium;
+  }
+
+  .sw-user-menu-detail {
+    @apply text-xs;
+  }
+
+  .sw-button.sw-user-menu-trigger {
+    @apply rounded-full;
+  }
+
+}
+
+/* Disclosure identity, adapted from Shadleaf (Apache-2.0, see NOTICE). */
+@layer components {
+  /* Accordion. The height animation's speed (components/accordion.css) is --sw-accordion-duration. */
+  .sw-accordion-item {
+    @apply border-border not-last:border-b;
+    --sw-accordion-duration: 200ms;
+  }
+
+  .sw-accordion-trigger {
+    @apply rounded-md py-4 text-sm font-medium hover:underline
+      focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50;
+  }
+
+  .sw-accordion-trigger-icon {
+    @apply size-4 text-muted-foreground;
+  }
+
+  .sw-accordion-content {
+    @apply pt-0 pb-4 text-sm [&_a]:underline [&_a]:underline-offset-3 [&_a:hover]:text-foreground
+      [&_p:not(:last-child)]:mb-4;
+  }
+
+  /* Collapsible. A trigger drawn as a button (.sw-button) gets the rest from the button's rules. */
+  .sw-collapsible-trigger {
+    @apply rounded-md focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50;
+  }
+
+  /* shadcn's examples put gap-2 between the trigger and the content. */
+  .sw-collapsible-content {
+    @apply mt-2;
+  }
+
+  .sw-collapsible-trigger:not(.sw-button) {
+    @apply text-sm font-medium;
+  }
+
+  /*
+    Tabs. The inactive tabs' text is mixed from the foreground, as in shadcn, and the active one raised on the muted
+    track; in the line variant a bar in the foreground colour marks it.
+  */
+  .sw-tabs {
+    @apply gap-2;
+  }
+
+  .sw-tabs-list {
+    @apply rounded-lg p-[3px] text-muted-foreground;
+  }
+
+  .sw-tabs:not([data-orientation]) > .sw-tabs-list {
+    @apply h-9;
+  }
+
+  .sw-tabs-list:not([data-variant]) {
+    @apply bg-muted;
+  }
+
+  .sw-tabs-list[data-variant='line'] {
+    @apply gap-1 rounded-none bg-transparent;
+  }
+
+  .sw-tabs-trigger {
+    @apply gap-1.5 rounded-md border border-transparent px-2 py-1 text-sm font-medium text-muted-legible
+      hover:text-foreground dark:text-muted-legible dark:hover:text-foreground
+      focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50 focus-visible:outline-1
+      focus-visible:outline-ring motion-safe:transition-all
+      [&_svg:not([class*='size-'],[data-icon-size])]:size-4;
+  }
+
+  .sw-tabs:not([data-orientation]) > .sw-tabs-list > .sw-tabs-trigger {
+    @apply h-[calc(100%-1px)];
+  }
+
+  .sw-tabs-trigger:has(> svg:first-child) {
+    @apply ps-1.5;
+  }
+
+  .sw-tabs-trigger:has(> svg:last-child) {
+    @apply pe-1.5;
+  }
+
+  .sw-tabs-list:not([data-variant]) > .sw-tabs-trigger[aria-selected='true'] {
+    @apply bg-background text-foreground shadow-sm dark:border-input dark:bg-input/30 dark:text-foreground;
+  }
+
+  .sw-tabs-list[data-variant='line'] > .sw-tabs-trigger {
+    @apply after:bg-foreground;
+  }
+
+  .sw-tabs-list[data-variant='line'] > .sw-tabs-trigger[aria-selected='true'] {
+    @apply text-foreground;
+  }
+
+  /* The panel takes the focus after the tabs (tabindex="0"). */
+  .sw-tabs-content {
+    @apply rounded-md text-sm focus-visible:ring-[3px] focus-visible:ring-ring/50;
+  }
+
+}
+
+/* A summary's label can wrap; keep the skin's button minimum height instead of clipping it. */
+@layer components {
+  .sw-collapsible-trigger.sw-button:not([data-size='icon']) { @apply h-auto; }
+  .sw-collapsible-trigger.sw-button:not([data-size]) { @apply min-h-9; }
+  .sw-collapsible-trigger.sw-button[data-size='sm'] { @apply min-h-8; }
+  .sw-collapsible-trigger.sw-button[data-size='lg'] { @apply min-h-10; }
+}
+
+/* Attachment display, adapted from Shadleaf (Apache-2.0; see NOTICE). */
+@layer components {
+  .sw-attachment {
+    @apply rounded-xl border border-border bg-card text-card-foreground;
+  }
+
+  .sw-attachment:not([data-width]) {
+    @apply w-fit;
+  }
+
+  .sw-attachment:not([data-state]),
+  .sw-attachment[data-state='uploading'],
+  .sw-attachment[data-state='processing'] {
+    @apply border-solid;
+  }
+
+  .sw-attachment[data-state='idle'] {
+    @apply border-dashed;
+  }
+
+  .sw-attachment[data-state='error'] {
+    @apply border-destructive/30;
+  }
+
+  .sw-attachment:has(> .sw-attachment-trigger):hover {
+    @apply bg-muted/50;
+  }
+
+  .sw-attachment:has(> .sw-attachment-trigger:focus-visible) {
+    @apply border-ring;
+  }
+
+  .sw-attachment-trigger:focus-visible {
+    @apply ring-[3px] ring-ring/50;
+  }
+
+  .sw-attachment:not([data-orientation]) {
+    @apply min-w-40;
+  }
+
+  .sw-attachment[data-orientation='vertical']:not([data-width]) {
+    @apply w-24;
+  }
+
+  .sw-attachment[data-orientation='vertical']:not([data-width]):has(> .sw-attachment-content) {
+    @apply w-30;
+  }
+
+  .sw-attachment:not([data-size]) {
+    @apply gap-2 text-sm;
+  }
+
+  .sw-attachment:not([data-size]):has(> .sw-attachment-media) {
+    @apply p-2;
+  }
+
+  .sw-attachment:not([data-size]):has(> .sw-attachment-content) {
+    @apply px-2.5 py-2;
+  }
+
+  .sw-attachment[data-size='sm'] {
+    @apply gap-2.5 text-xs;
+  }
+
+  .sw-attachment[data-size='sm']:has(> .sw-attachment-media) {
+    @apply p-1.5;
+  }
+
+  .sw-attachment[data-size='sm']:has(> .sw-attachment-content) {
+    @apply px-2 py-1.5;
+  }
+
+  .sw-attachment[data-size='xs'] {
+    @apply gap-1.5 rounded-lg text-xs;
+  }
+
+  .sw-attachment[data-size='xs']:has(> .sw-attachment-media) {
+    @apply p-1;
+  }
+
+  .sw-attachment[data-size='xs']:has(> .sw-attachment-content) {
+    @apply px-1.5 py-1;
+  }
+
+  .sw-attachment-media {
+    @apply w-10 rounded-lg bg-muted text-foreground;
+  }
+
+  .sw-attachment-media:not([data-variant]) svg:not([class*='size-'], [data-icon-size]) {
+    @apply size-4;
+  }
+
+  .sw-attachment[data-size='sm'] > .sw-attachment-media {
+    @apply w-8;
+  }
+
+  .sw-attachment[data-size='xs'] > .sw-attachment-media {
+    @apply w-7 rounded-md;
+  }
+
+  .sw-attachment[data-size='xs'] > .sw-attachment-media:not([data-variant]) svg:not([class*='size-'], [data-icon-size]) {
+    @apply size-3.5;
+  }
+
+  .sw-attachment[data-orientation='vertical'] > .sw-attachment-media {
+    @apply w-full;
+  }
+
+  .sw-attachment[data-orientation='vertical'] > .sw-attachment-media:not([data-variant]) svg:not([class*='size-'], [data-icon-size]) {
+    @apply size-6;
+  }
+
+  .sw-attachment[data-state='error'] > .sw-attachment-media {
+    @apply bg-destructive/10 text-destructive-legible;
+  }
+
+  .sw-attachment[data-state='uploading'] > .sw-attachment-media[data-variant='image'],
+  .sw-attachment[data-state='processing'] > .sw-attachment-media[data-variant='image'],
+  .sw-attachment[data-state='error'] > .sw-attachment-media[data-variant='image'] {
+    @apply opacity-60;
+  }
+
+  .sw-attachment-content {
+    @apply leading-tight;
+  }
+
+  .sw-attachment[data-orientation='vertical'] > .sw-attachment-content {
+    @apply px-1;
+  }
+
+  .sw-attachment-title {
+    @apply font-medium;
+  }
+
+  .sw-attachment-description {
+    @apply mt-0.5 text-xs text-muted-foreground;
+  }
+
+  .sw-attachment:has(> .sw-attachment-trigger):hover > .sw-attachment-content > .sw-attachment-description {
+    @apply text-muted-legible;
+  }
+
+  .sw-attachment[data-state='error'] > .sw-attachment-content > .sw-attachment-description {
+    @apply text-destructive-legible;
+  }
+
+  .sw-attachment-group {
+    @apply rounded-lg;
+  }
+
+  .sw-attachment-group:not([data-layout]) {
+    @apply gap-3 scroll-px-1 py-1;
+  }
+
+  .sw-attachment-group[data-layout='grid'] {
+    @apply grid-cols-[repeat(auto-fill,minmax(min(100%,8rem),1fr))] gap-3;
+  }
+
+  .sw-attachment-group:focus-visible {
+    @apply ring-[3px] ring-ring/50;
+  }
+
+
+  .sw-attachment { --sw-attachment-ring-width: 3px; }
+  .sw-attachment-action.sw-button[data-size='icon'] { @apply size-6 p-0; }
+  .sw-attachment-action.sw-button[data-size='icon'] svg { @apply size-3.5; }
+}
+
+@layer components {
+  .sw-attachment > .sw-attachment-trigger.sw-button { width:auto; height:auto; min-width:0; padding:0; border:0; background:transparent; box-shadow:none; }
+  .sw-attachment > .sw-attachment-trigger.sw-button:focus-visible { box-shadow:0 0 0 var(--sw-attachment-ring-width) color-mix(in oklch, var(--ring) 50%, transparent); }
+}
+
+/* Table/pagination, adapted from Shadleaf (Apache-2.0; see NOTICE). */
+@layer components {
+  .sw-table {
+    @apply text-sm;
+  }
+
+  .sw-table > :is(thead, tbody, tfoot) > tr {
+    @apply border-b border-border;
+  }
+
+  .sw-table > tbody > tr {
+    @apply hover:bg-muted/50 motion-safe:transition-colors;
+  }
+
+  /* A selected row, as shadcn/ui's data-state=selected: one whose first cell holds a checked checkbox. */
+  .sw-table > tbody > tr:has(> :first-child .sw-checkbox:checked) {
+    @apply bg-muted;
+  }
+
+  .sw-table > tbody > tr:last-child,
+  .sw-table > tfoot > tr:last-child {
+    @apply border-b-0;
+  }
+
+  .sw-table > tfoot {
+    @apply border-t border-border bg-muted/50 font-medium;
+  }
+
+  .sw-table > :is(thead, tbody, tfoot) > tr > th {
+    @apply h-10 px-2 font-medium text-foreground;
+  }
+
+  .sw-table > :is(thead, tbody, tfoot) > tr > td {
+    @apply p-2;
+  }
+
+  .sw-table > :is(thead, tbody, tfoot) > tr > :is(th, td):has(> .sw-checkbox-wrapper) {
+    @apply pe-0;
+  }
+
+  .sw-table > caption {
+    @apply mt-4 text-sm text-muted-foreground;
+  }
+
+  /*
+    Pinned first column (sticky-first-column): the cells hide what scrolls under them with the table's background
+    (--sw-table-bg, --background unless the table sits on something else, such as a card), and a gradient carries the
+    tint of the row's hover, selected and foot state. The edge fades in with the container's scroll (table.css).
+  */
+  .sw-table[data-sticky='first-column'] {
+    --sw-table-tint: transparent;
+  }
+
+  .sw-table[data-sticky='first-column'] > tbody > tr:has(> :first-child .sw-checkbox:checked) {
+    --sw-table-tint: var(--muted);
+  }
+
+  .sw-table[data-sticky='first-column'] > tfoot > tr {
+    --sw-table-tint: color-mix(in oklab, var(--muted) 50%, transparent);
+  }
+
+  @media (hover: hover) {
+    .sw-table[data-sticky='first-column'] > tbody > tr:hover:not(:has(> :first-child .sw-checkbox:checked)) {
+      --sw-table-tint: color-mix(in oklab, var(--muted) 50%, transparent);
+    }
+  }
+
+  .sw-table[data-sticky='first-column'] > :is(thead, tbody, tfoot) > tr > :is(th, td):first-child {
+    background-color: var(--sw-table-bg, var(--background));
+    background-image: linear-gradient(var(--sw-table-tint), var(--sw-table-tint));
+  }
+
+  .sw-table[data-sticky='first-column'] > :is(thead, tbody, tfoot) > tr > :is(th, td):first-child::after {
+    border-inline-end: 1px solid var(--border);
+  }
+
+  /* Column groups: a line on the start edge of every colgroup after the first, through every row (table.css). */
+  .sw-table > colgroup + colgroup {
+    border-inline-start: 1px solid var(--border);
+  }
+
+  .sw-table-sort {
+    @apply -ms-2.5;
+  }
+
+  .sw-table-head[data-align='center'] > .sw-table-sort {
+    @apply ms-0;
+  }
+
+  .sw-table-head[data-align='end'] > .sw-table-sort {
+    @apply ms-0 -me-2.5;
+  }
+
+  .sw-table > tbody > tr.sw-table-empty > td {
+    @apply h-24;
+  }
+
+  /*
+    Compact table (size sm): smaller cells and text, for dense figures and print. The sort link is an xs
+    button there (table-head.html), so its offset follows that button's padding.
+  */
+  .sw-table[data-size='sm'] {
+    @apply text-xs;
+  }
+
+  .sw-table[data-size='sm'] > :is(thead, tbody, tfoot) > tr > th {
+    @apply h-8 px-2;
+  }
+
+  .sw-table[data-size='sm'] > :is(thead, tbody, tfoot) > tr > td {
+    @apply px-2 py-1;
+  }
+
+  .sw-table[data-size='sm'] > :is(thead, tbody, tfoot) > tr > :is(th, td):has(> .sw-checkbox-wrapper) {
+    @apply pe-0;
+  }
+
+  .sw-table[data-size='sm'] > caption {
+    @apply mt-2 text-xs;
+  }
+
+  .sw-table[data-size='sm'] > :is(thead, tbody, tfoot) > tr > .sw-table-head > .sw-table-sort {
+    @apply -ms-2;
+  }
+
+  .sw-table[data-size='sm'] > :is(thead, tbody, tfoot) > tr > .sw-table-head[data-align='center'] > .sw-table-sort {
+    @apply ms-0;
+  }
+
+  .sw-table[data-size='sm'] > :is(thead, tbody, tfoot) > tr > .sw-table-head[data-align='end'] > .sw-table-sort {
+    @apply ms-0 -me-2;
+  }
+
+  .sw-table[data-size='sm'] > tbody > tr.sw-table-empty > td {
+    @apply h-16;
+  }
+
+  /*
+    Pagination. The links are ghost buttons, the current page an outline one (.sw-button rules). Previous and Next keep
+    their own padding on the chevron's side, as shadcn/ui's.
+  */
+  .sw-pagination-content {
+    @apply gap-1;
+  }
+
+  .sw-pagination-ellipsis {
+    @apply size-9;
+  }
+
+  .sw-pagination-ellipsis > svg:not([class*='size-'], [data-icon-size]) {
+    @apply size-4;
+  }
+
+  .sw-button.sw-pagination-previous:has(> [data-icon]) {
+    @apply ps-2;
+  }
+
+  .sw-button.sw-pagination-next:has(> [data-icon]) {
+    @apply pe-2;
+  }
+
+  .sw-pagination-summary,
+  .sw-table-selection-count {
+    @apply text-sm text-muted-foreground;
+  }
+
+  .sw-pagination-size {
+    @apply gap-2;
+  }
+
+  .sw-pagination-size-label {
+    @apply text-sm font-medium;
+  }
+
+
+}
+
+@layer components {
+  .sw-table-toolbar { @apply mb-4 gap-3; }
+  .sw-table-bulk-actions { @apply mb-3 gap-2; }
+  .sw-table-footer { @apply mt-4 gap-4; }
+  .sw-table-footer-controls { @apply gap-4; }
+  .sw-table > :is(thead, tbody, tfoot) > tr > .sw-table-select { @apply w-10 pe-0; }
+  .sw-table[data-size='sm'] .sw-table-sort.sw-button { @apply h-6 px-2 text-xs; }
+}
+
+@layer components { .sw-table-select .sw-checkbox-wrapper { @apply p-1; } }
+
+/* Custom select: Shadleaf identity, Apache-2.0. */
+@layer components {
+  .sw-select {
+    @apply gap-1.5 rounded-md border border-input bg-transparent ps-2.5 pe-8 text-sm shadow-xs
+      motion-safe:transition-[color,box-shadow]
+      focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50
+      aria-invalid:border-destructive aria-invalid:ring-3 aria-invalid:ring-destructive/20
+      dark:bg-input/30 dark:hover:bg-input/50
+      dark:aria-invalid:border-destructive/50 dark:aria-invalid:ring-destructive/40
+      [&_:is(selectedcontent,.sw-select-value)]:gap-1.5
+      [&_svg:not([class*='size-'],[data-icon-size])]:size-4;
+  }
+
+  .sw-select-wrapper:not([data-size]) > .sw-select,
+  .sw-select-wrapper[data-size='default'] > .sw-select {
+    @apply h-9;
+  }
+
+  .sw-select-wrapper[data-size='sm'] > .sw-select {
+    @apply h-8;
+  }
+
+  .sw-select:has(> option[data-placeholder]:checked),
+  .sw-select[data-placeholder] {
+    @apply text-muted-foreground;
+  }
+
+  .sw-select-icon {
+    @apply text-muted-foreground;
+  }
+
+  .sw-select-content {
+    @apply rounded-md bg-popover p-1 text-popover-foreground shadow-md ring-1 ring-foreground/10 duration-100;
+  }
+
+  /* The customizable select's list. A rule of its own: a browser without it drops a rule that names it. */
+  .sw-select::picker(select) {
+    @apply rounded-md bg-popover p-1 text-popover-foreground shadow-md ring-1 ring-foreground/10 duration-100;
+  }
+
+  .sw-select-content,
+  .sw-select {
+    --sw-popup-offset: .25rem;
+    --sw-popup-slide: .5rem;
+  }
+
+  .sw-select-item {
+    @apply gap-2 rounded-sm py-1.5 ps-2 pe-8 text-sm
+      hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground
+      data-active:bg-accent data-active:text-accent-foreground;
+  }
+
+  .sw-select-item svg:not([class*='size-'], [data-icon-size]) {
+    @apply size-4;
+  }
+
+  .sw-select-item:focus-visible,
+  .sw-select-wrapper:has(> .sw-select:focus-visible) .sw-select-item[data-active] {
+    @apply ring-[3px] ring-ring/50 ring-inset;
+  }
+
+  .sw-select-item-indicator {
+    @apply end-2;
+  }
+
+  .sw-select-group,
+  .sw-select-label {
+    @apply text-xs text-muted-foreground;
+  }
+
+  .sw-select-label {
+    @apply px-2 py-1.5;
+  }
+
+  .sw-select-group > .sw-select-item {
+    @apply text-sm text-popover-foreground;
+  }
+
+  .sw-select-separator {
+    @apply -mx-1 my-1 bg-border;
+  }
+
+
+}
+
+/* Combobox identity adapted from Shadleaf (Apache-2.0). */
+@layer components {
+  .sw-combobox-select {
+    @apply rounded-md border border-input bg-transparent py-1 ps-2.5 pe-8 text-sm shadow-xs
+      motion-safe:transition-[color,box-shadow] focus-visible:border-ring focus-visible:ring-3
+      focus-visible:ring-ring/50 aria-invalid:border-destructive aria-invalid:ring-3
+      aria-invalid:ring-destructive/20 dark:bg-input/30 dark:hover:bg-input/50
+      dark:aria-invalid:border-destructive/50 dark:aria-invalid:ring-destructive/40;
+  }
+
+  .sw-combobox-select[multiple] {
+    @apply pe-2.5;
+  }
+
+  .sw-combobox-select:not([multiple]) {
+    @apply h-9;
+  }
+
+  .sw-combobox-icon {
+    @apply text-muted-foreground;
+  }
+
+  .sw-combobox-control {
+    @apply min-h-9 rounded-md border border-input bg-transparent px-2.5 py-1 text-base shadow-xs
+      motion-safe:transition-[color,box-shadow] dark:bg-input/30 md:text-sm;
+  }
+
+  .sw-combobox-control:has(> .sw-combobox-input[aria-invalid='true']) {
+    @apply border-destructive ring-3 ring-destructive/20 dark:border-destructive/50 dark:ring-destructive/40;
+  }
+
+  .sw-combobox-control:has(> .sw-combobox-input:focus-visible) {
+    @apply border-ring ring-3 ring-ring/50;
+  }
+
+  .sw-combobox-control:has(> .sw-combobox-input:disabled) {
+    @apply cursor-not-allowed;
+  }
+
+  .sw-combobox-control:has(> .sw-combobox-input[readonly]) {
+    @apply bg-muted shadow-none;
+  }
+
+  .sw-combobox-input {
+    @apply placeholder:text-muted-foreground;
+  }
+
+  .sw-combobox[data-multiple] > .sw-combobox-control {
+    @apply gap-1.5 py-1.5;
+  }
+
+  .sw-combobox[data-multiple] > .sw-combobox-control:has(> .sw-combobox-chip) {
+    @apply ps-1.5;
+  }
+
+  .sw-combobox-clear,
+  .sw-combobox-trigger {
+    @apply rounded-[calc(var(--radius)-5px)] -me-1.5 text-muted-foreground hover:bg-muted hover:text-foreground;
+  }
+
+  .sw-combobox-clear:focus-visible,
+  .sw-combobox-trigger:focus-visible {
+    @apply ring-3 ring-ring/50;
+  }
+
+  .sw-combobox-clear svg:not([class*='size-'], [data-icon-size]),
+  .sw-combobox-trigger svg:not([class*='size-'], [data-icon-size]) {
+    @apply size-4;
+  }
+
+  .sw-combobox-chip {
+    @apply h-5.5 gap-1 rounded-sm bg-muted px-1.5 text-xs font-medium text-foreground has-[>.sw-combobox-chip-remove]:pe-0;
+  }
+
+  .sw-combobox-chip-remove {
+    @apply -ms-1 rounded-sm size-5 opacity-50 hover:opacity-100 focus-visible:opacity-100 focus-visible:ring-2
+      focus-visible:ring-ring/50;
+  }
+
+  .sw-combobox-chip-remove svg:not([class*='size-'], [data-icon-size]) {
+    @apply size-3.5;
+  }
+
+  .sw-combobox-empty {
+    @apply py-2 text-sm text-muted-foreground;
+  }
+
+
+  .sw-combobox-content {
+    @apply rounded-md bg-popover p-1 text-popover-foreground shadow-md ring-1 ring-foreground/10 duration-100;
+  }
+
+  .sw-combobox-content {
+    --sw-popup-offset: .25rem;
+    --sw-popup-slide: .5rem;
+  }
+
+  .sw-combobox-item {
+    @apply gap-2 rounded-sm py-1.5 ps-2 pe-8 text-sm
+      hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground
+      data-active:bg-accent data-active:text-accent-foreground;
+  }
+
+  .sw-combobox-item svg:not([class*='size-'], [data-icon-size]) {
+    @apply size-4;
+  }
+
+  .sw-combobox-item-indicator {
+    @apply end-2;
+  }
+
+  .sw-combobox-label {
+    @apply text-xs text-muted-foreground;
+  }
+
+  .sw-combobox-label {
+    @apply px-2 py-1.5;
+  }
+
+  .sw-combobox-separator {
+    @apply -mx-1 my-1 bg-border;
+  }
+  .sw-combobox:has(.sw-combobox-input:focus-visible) .sw-combobox-item[data-active] { @apply ring-3 ring-ring/50 ring-inset; }
+
+}
+
+/* Calendar/date picker identity from Shadleaf (Apache-2.0). */
+@layer components {
+  .sw-calendar {
+    @apply bg-background p-3;
+    --sw-cell-size: 2rem;
+    --sw-cell-radius: calc(var(--radius) - 2px);
+  }
+
+  .sw-calendar-nav-button {
+    @apply rounded-(--sw-cell-radius) hover:bg-muted hover:text-foreground dark:hover:bg-muted/50 focus-visible:ring-[3px] focus-visible:ring-ring/50;
+  }
+
+  .sw-calendar-caption,
+  .sw-calendar-dropdowns {
+    @apply text-sm font-medium;
+  }
+
+  .sw-calendar-dropdown {
+    @apply border border-input shadow-xs;
+  }
+
+  .sw-calendar-dropdown:has(> .sw-calendar-select:focus-visible) {
+    @apply border-ring ring-[3px] ring-ring/50;
+  }
+
+  .sw-calendar-dropdown-label {
+    @apply h-8 pe-1 ps-2;
+  }
+
+  .sw-calendar-dropdown-label > svg {
+    @apply text-muted-foreground;
+  }
+
+  .sw-calendar-weekday,
+  .sw-calendar-week-number {
+    @apply text-[0.8rem] font-normal text-muted-foreground;
+  }
+
+  .sw-calendar-day-button {
+    @apply text-sm font-normal hover:bg-muted hover:text-foreground focus-visible:ring-[3px] focus-visible:ring-ring/50;
+  }
+
+  .sw-calendar-day[data-today]:not([data-selected], [data-range-start], [data-range-end]),
+  .sw-calendar-day[data-range-start],
+  .sw-calendar-day[data-range-end] {
+    @apply bg-muted text-foreground after:bg-muted;
+  }
+
+  .sw-calendar-day-button[data-outside] {
+    @apply text-muted-foreground;
+  }
+
+  .sw-calendar-day-button[data-outside]:is([data-today], [data-range-middle], :hover) {
+    @apply text-muted-legible;
+  }
+
+  .sw-calendar-day-button[data-range-middle] {
+    @apply bg-muted text-foreground;
+  }
+
+  .sw-calendar-day-button[data-selected]:not([data-range-middle]) {
+    @apply bg-primary text-primary-foreground hover:bg-primary hover:text-primary-foreground;
+  }
+
+  .sw-calendar-day-button[data-disabled],
+  .sw-calendar-day-button:disabled {
+    @apply opacity-50 forced-colors:text-[GrayText] forced-colors:opacity-100;
+  }
+
+  /*
+    Date picker, as shadcn's example: the outline button in the body's weight, its text muted while no date is chosen
+    (the foreground, as for any outline button, on the hover and open backgrounds, where muted text is under 4.5:1);
+    the popover fits the calendar, which brings its own padding.
+  */
+  .sw-button.sw-date-picker-trigger {
+    @apply font-normal;
+  }
+
+  .sw-button.sw-date-picker-trigger[data-empty] {
+    @apply text-muted-foreground hover:text-foreground aria-expanded:text-foreground;
+  }
+
+  .sw-popover-content.sw-date-picker-content {
+    @apply w-auto p-0;
+  }
+
+
+}
+
+@media(width < 22rem) { @layer components { .sw-calendar { --sw-cell-size: 1.75rem; } } }
+
+/* Month view — adapted from Shadleaf. */
+@layer components {
+  .sw-month-view {
+    --sw-cell-size: 1.75rem;
+    --sw-cell-radius: calc(var(--radius) - 2px);
+    --sw-day-height: 4.0rem;
+    --sw-day-radius: calc(var(--radius) - 2px);
+  }
+
+  @media (width >= 48rem) {
+    .sw-month-view {
+      --sw-day-height: 6.0rem;
+    }
+  }
+
+  .sw-month-view-nav-button {
+    @apply rounded-(--sw-cell-radius) hover:bg-muted hover:text-foreground dark:hover:bg-muted/50 focus-visible:ring-[3px] focus-visible:ring-ring/50;
+  }
+
+  /* Month view navigation: nav-size is the size of an icon button. */
+  .sw-month-view:not([data-nav-size]) {
+    --sw-nav-size: var(--sw-cell-size);
+  }
+
+  .sw-month-view[data-nav-size='icon-xs'] {
+    --sw-nav-size: 1.5rem;
+  }
+
+  .sw-month-view[data-nav-size='icon-sm'] {
+    --sw-nav-size: 2.0rem;
+  }
+
+  .sw-month-view[data-nav-size='icon'] {
+    --sw-nav-size: 2.25rem;
+  }
+
+  .sw-month-view[data-nav-size='icon-lg'] {
+    --sw-nav-size: 2.5rem;
+  }
+
+  .sw-month-view[data-nav-size='icon-xs'] > .sw-month-view-nav > .sw-month-view-nav-button svg {
+    @apply size-3;
+  }
+
+  .sw-month-view-caption {
+    @apply text-sm font-medium;
+  }
+
+  .sw-month-view-weekday,
+  .sw-month-view-week-number {
+    @apply text-[0.8rem] font-normal text-muted-foreground;
+  }
+
+  .sw-month-view-day-link,
+  .sw-month-view-day-body {
+    @apply border border-border text-sm font-normal text-foreground;
+  }
+
+  .sw-month-view-day-link {
+    @apply hover:bg-muted dark:hover:bg-muted/50 focus-visible:ring-[3px] focus-visible:ring-ring/50;
+  }
+
+  .sw-month-view-day[data-outside] .sw-month-view-day-number {
+    @apply text-muted-foreground;
+  }
+
+  .sw-month-view-day[data-outside] > .sw-month-view-day-link:hover .sw-month-view-day-number {
+    @apply text-muted-legible;
+  }
+
+  .sw-month-view-day[data-today] .sw-month-view-day-number {
+    @apply bg-primary font-medium text-primary-foreground;
+  }
+
+}
+
+/* Chart tooltip identity — adapted from Shadleaf. */
+@layer components {
+ .sw-chart-tooltip-content { @apply rounded-lg border border-border/50 bg-background px-2.5 py-1.5 text-xs shadow-xl; }
+ .sw-chart-plot:focus-visible { @apply outline-[3px] outline-offset-2 outline-solid outline-ring/50; }
+ .sw-chart-legend-indicator,.sw-chart-tooltip-indicator { @apply rounded-[2px]; }
 }

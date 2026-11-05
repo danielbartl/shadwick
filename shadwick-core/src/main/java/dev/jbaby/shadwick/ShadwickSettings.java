@@ -19,6 +19,8 @@ public class ShadwickSettings implements Serializable {
     private static final MetaDataKey<ShadwickSettings> KEY = new MetaDataKey<>() {};
 
     private Skin skin = Skin.VEGA;
+    private ThemeMode defaultThemeMode = ThemeMode.SYSTEM;
+    private String themeStorageKey = "shadwick-theme";
     private Bundle bundle = Bundle.STANDALONE;
     private SkinStore skinStore;
     private boolean addResources = true;
@@ -45,7 +47,15 @@ public class ShadwickSettings implements Serializable {
         return settings;
     }
 
-    /** The app-wide skin; {@code VEGA} by default. */
+    /** Fallback color preference before a visitor chooses; SYSTEM by default. */
+    public ThemeMode getDefaultThemeMode() { return defaultThemeMode; }
+    public ShadwickSettings setDefaultThemeMode(ThemeMode mode) { defaultThemeMode = Objects.requireNonNull(mode); return this; }
+    public String getThemeStorageKey() { return themeStorageKey; }
+    public ShadwickSettings setThemeStorageKey(String key) {
+        themeStorageKey = dev.jbaby.shadwick.behaviors.ThemeBehavior.validateStorageKey(key); return this;
+    }
+
+    /** The app-wide skin; VEGA by default. */
     public Skin getSkin() {
         return skin;
     }

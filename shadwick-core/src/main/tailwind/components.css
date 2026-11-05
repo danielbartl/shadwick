@@ -34,3 +34,26 @@
 @import "./components/breadcrumb.css";
 @import "./components/skip-link.css";
 @import "./components/sidebar.css";
+@import "./components/app-layout.css";
+@import "./components/user-menu.css";
+@import "./components/theme-toggle.css";
+
+@import "./components/tabs.css";
+@import "./components/accordion.css";
+@import "./components/collapsible.css";
+
+@import "./components/attachment.css";
+
+@import "./components/table.css";
+@import "./components/pagination.css";
+
+@import "./components/select.css";
+
+@import "./components/combobox.css";
+
+@import "./components/calendar.css";
+@import "./components/date-picker.css";
+
+@import "./components/month-view.css";
+
+@import "./components/chart.css";

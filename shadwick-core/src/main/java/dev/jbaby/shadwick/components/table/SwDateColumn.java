@@ -1,0 +1,133 @@
+package dev.jbaby.shadwick.components.table;
+
+import dev.jbaby.shadwick.util.SerializableFunction;
+import org.apache.wicket.extensions.markup.html.repeater.data.grid.ICellPopulator;
+import org.apache.wicket.extensions.markup.html.repeater.data.table.LambdaColumn;
+import org.apache.wicket.markup.html.basic.Label;
+import org.apache.wicket.markup.repeater.Item;
+import org.apache.wicket.model.IModel;
+import org.apache.wicket.util.convert.IConverter;
+
+import java.time.Instant;
+import java.time.LocalDate;
+import java.time.LocalTime;
+import java.time.OffsetDateTime;
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
+import java.time.format.FormatStyle;
+import java.time.temporal.ChronoField;
+import java.time.temporal.TemporalAccessor;
+import java.time.temporal.TemporalQueries;
+import java.util.Locale;
+
+/**
+ * A data table column showing a date, time or date-time in the user's locale:
+ * {@code Oct 9, 2026} in English, {@code 09.10.2026} in German. It takes any
+ * {@code java.time} value - {@link LocalDate}, {@code java.time.LocalDateTime},
+ * {@code java.time.ZonedDateTime}, {@code OffsetDateTime}, {@link LocalTime} or {@link Instant}
+ * (shown in {@link #setZone the zone}, the server's by default):
+ * <pre>{@code
+ * new SwDateColumn<Invoice, String>(Model.of("Due"), "dueDate", Invoice::dueDate)
+ * }</pre>
+ * Dates use {@link FormatStyle#MEDIUM} and times {@link FormatStyle#SHORT} by default;
+ * {@link #setStyle} or {@link #setPattern} change that. Empty cells stay empty for a
+ * {@code null} value. A value with neither a date nor a time of day, such as a
+ * {@code YearMonth}, shows as its {@code toString()} ({@code 2026-10}) unless a pattern
+ * is set, e.g. {@code "MMMM yyyy"}.
+ *
+ * @param <T> the row type
+ * @param <S> the sort property type
+ */
+public class SwDateColumn<T, S> extends LambdaColumn<T, S> {
+
+    private FormatStyle dateStyle = FormatStyle.MEDIUM;
+    private FormatStyle timeStyle = FormatStyle.SHORT;
+    private String pattern;
+    private ZoneId zone;
+
+    /** An unsortable column. */
+    public SwDateColumn(IModel<String> displayModel, SerializableFunction<T, ? extends TemporalAccessor> value) {
+        this(displayModel, null, value);
+    }
+
+    /** @param sortProperty the property to sort by, or {@code null} if unsortable */
+    public SwDateColumn(IModel<String> displayModel, S sortProperty, SerializableFunction<T, ? extends TemporalAccessor> value) {
+        super(displayModel, sortProperty, value::apply);
+    }
+
+    /**
+     * The locale's date and time styles, e.g. {@code (SHORT, SHORT)}. A {@code LONG} or
+     * {@code FULL} time style shows the zone, or an {@code OffsetDateTime}'s offset;
+     * values without one ({@code java.time.LocalDateTime}, {@code LocalTime}) show {@code MEDIUM},
+     * the same time to the second.
+     */
+    public SwDateColumn<T, S> setStyle(FormatStyle dateStyle, FormatStyle timeStyle) {
+        this.dateStyle = dateStyle;
+        this.timeStyle = timeStyle;
+        this.pattern = null;
+        return this;
+    }
+
+    /** A fixed pattern instead of the locale's style, e.g. {@code "yyyy-MM-dd"}. */
+    public SwDateColumn<T, S> setPattern(String pattern) {
+        DateTimeFormatter.ofPattern(pattern); // fail fast on a bad pattern
+        this.pattern = pattern;
+        return this;
+    }
+
+    /** The time zone {@link Instant}s are shown in. */
+    public SwDateColumn<T, S> setZone(ZoneId zone) {
+        this.zone = zone;
+        return this;
+    }
+
+    @Override
+    public void populateItem(Item<ICellPopulator<T>> item, String componentId, IModel<T> rowModel) {
+        item.add(new Label(componentId, getDataModel(rowModel)) {
+            @Override
+            protected IConverter<?> createConverter(Class<?> type) {
+                return new DateConverter(dateStyle, timeStyle, pattern, zone);
+            }
+        });
+    }
+
+    private record DateConverter(FormatStyle dateStyle, FormatStyle timeStyle, String pattern, ZoneId zone)
+            implements IConverter<Object> {
+
+        @Override
+        public String convertToString(Object value, Locale locale) {
+            if (value == null) {
+                return null;
+            }
+            TemporalAccessor temporal = value instanceof Instant instant
+                    ? instant.atZone(zone != null ? zone : ZoneId.systemDefault())
+                    // Its offset as the zone, which the LONG and FULL time styles show
+                    : value instanceof OffsetDateTime offset ? offset.toZonedDateTime()
+                    : (TemporalAccessor) value;
+            if (pattern != null) {
+                return DateTimeFormatter.ofPattern(pattern).withLocale(locale).format(temporal);
+            }
+            boolean hasDate = temporal.isSupported(ChronoField.EPOCH_DAY);
+            boolean hasTime = temporal.isSupported(ChronoField.NANO_OF_DAY);
+            // A value without a zone can't show one: MEDIUM is LONG and FULL without it
+            FormatStyle time = temporal.query(TemporalQueries.zoneId()) == null
+                    && (timeStyle == FormatStyle.LONG || timeStyle == FormatStyle.FULL) ? FormatStyle.MEDIUM : timeStyle;
+            DateTimeFormatter formatter;
+            if (hasDate && hasTime) {
+                formatter = DateTimeFormatter.ofLocalizedDateTime(dateStyle, time);
+            } else if (hasDate) {
+                formatter = DateTimeFormatter.ofLocalizedDate(dateStyle);
+            } else if (hasTime) {
+                formatter = DateTimeFormatter.ofLocalizedTime(time);
+            } else {
+                return value.toString(); // e.g. a YearMonth, which has no style of its own
+            }
+            return formatter.withLocale(locale).format(temporal);
+        }
+
+        @Override
+        public Object convertToObject(String value, Locale locale) {
+            throw new UnsupportedOperationException("A table cell is never parsed");
+        }
+    }
+}

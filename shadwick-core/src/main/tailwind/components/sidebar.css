@@ -27,7 +27,7 @@
 
   /* No transition unless the motion rules below name one: the skins' duration would otherwise animate everything. */
   .sw-sidebar {
-    @apply m-0 flex-col overflow-y-auto overscroll-contain p-0 transition-none forced-colors:border-solid;
+    @apply m-0 flex-col overflow-y-auto overscroll-contain p-0 transition-none forced-colors:border-solid forced-colors:bg-[Canvas] forced-colors:text-[CanvasText];
   }
 
   /* The inset card's margin follows a collapse only under the motion rules below, as the sidebar. */
@@ -111,20 +111,20 @@
 
   /* Desktop: a column in the page flow. */
   @media (width >= 48rem) {
-    .sw-sidebar {
+    .sw-sidebar:not([data-placement]) {
       @apply sticky inset-auto top-0 flex h-svh max-h-none max-w-none flex-none self-start border-0 translate-none;
       inline-size: var(--sw-sidebar-width);
     }
 
-    .sw-sidebar:not([data-variant]):not([data-side]) {
+    .sw-sidebar:not([data-variant]):not([data-side]):not([data-placement]) {
       @apply border-e;
     }
 
-    .sw-sidebar[data-side='right'] {
+    .sw-sidebar:not([data-placement])[data-side='right'] {
       @apply order-1;
     }
 
-    .sw-sidebar[data-side='right']:not([data-variant]) {
+    .sw-sidebar:not([data-placement])[data-side='right']:not([data-variant]) {
       @apply border-s;
     }
 
@@ -132,7 +132,7 @@
       Floating: a panel with a margin all round, its footprint as wide as the plain sidebar's (--sw-sidebar-width), so a
       page lays out the same with either.
     */
-    .sw-sidebar[data-variant='floating'] {
+    .sw-sidebar:not([data-placement])[data-variant='floating'] {
       @apply border;
       top: --spacing(2);
       block-size: calc(100svh - --spacing(4));
@@ -141,7 +141,7 @@
     }
 
     /* Inset: no edge of its own, the content inside the same margin the inset card keeps. */
-    .sw-sidebar[data-variant='inset'] {
+    .sw-sidebar:not([data-placement])[data-variant='inset'] {
       @apply p-2;
     }
 
@@ -342,6 +342,86 @@
   }
 
   /*
+    The header placement (data-placement="header", inside sl:site-header): the provider stacks the header above the
+    inset. From 768 px the sidebar is a row of links in the header, which takes the room the header leaves and
+    scrolls sideways when its links do not fit (a link that takes the focus scrolls into view). It never collapses,
+    so there is no trigger on a desktop and data-state does not apply (the provider's collapsed rules only reach a
+    sidebar that is its child). In the row: groups and menus run along it, group labels are visually hidden (they
+    still name their groups), icons (but the end icon of a menu button that opens a menu: its chevron), group actions,
+    separators and collapsible items are left out, and every entry
+    keeps its width. With variant="inset" the inset is a card below the header. Below 768 px it is the panel above,
+    unchanged.
+  */
+  .sw-sidebar-provider:has(> .sw-site-header) {
+    @apply flex-col;
+  }
+
+  /* In a column the inset stretches across: a full width would add the card's margin to it. */
+  .sw-sidebar-provider:has(> .sw-site-header) > .sw-sidebar-inset {
+    @apply w-auto;
+  }
+
+  @media (width >= 48rem) {
+    .sw-sidebar[data-placement='header'] {
+      @apply static inset-auto flex h-auto max-h-none max-w-none min-w-0 flex-auto flex-row items-center self-stretch
+        overflow-x-auto overflow-y-hidden border-0 bg-transparent translate-none;
+      inline-size: auto;
+      scrollbar-width: thin;
+    }
+
+    .sw-sidebar[data-placement='header'] :is(.sw-sidebar-header, .sw-sidebar-content, .sw-sidebar-footer, .sw-sidebar-group,
+      .sw-sidebar-menu) {
+      @apply w-auto flex-none flex-row items-center overflow-visible p-0;
+    }
+
+    .sw-sidebar[data-placement='header'] .sw-sidebar-group-content {
+      @apply w-auto;
+    }
+
+    .sw-sidebar[data-placement='header'] .sw-sidebar-group-label {
+      @apply sr-only;
+    }
+
+    .sw-sidebar[data-placement='header'] :is(.sw-sidebar-group-action, .sw-sidebar-separator, .sw-sidebar-menu-tooltip,
+      .sw-sidebar-menu-button:not([aria-haspopup]) > svg,
+      .sw-sidebar-menu-button[aria-haspopup] > svg:not(.sw-sidebar-menu-button-label ~ svg)),
+    .sw-sidebar[data-placement='header'] .sw-sidebar-menu-item:has(> .sw-sidebar-menu-collapsible),
+    .sw-sidebar[data-placement='header'] :is(.sw-sidebar-menu-sub-collapsible, .sw-sidebar-group-collapsible > summary) {
+      display: none;
+    }
+
+    /* A collapsible group's links show in the row whether it is open or not; its label is hidden, and names it. */
+    .sw-sidebar[data-placement='header'] .sw-sidebar-group-collapsible::details-content {
+      content-visibility: visible;
+    }
+
+    .sw-sidebar[data-placement='header'] .sw-sidebar-group-collapsible {
+      @apply flex flex-row items-center;
+    }
+
+    .sw-sidebar[data-placement='header'] .sw-sidebar-menu-item {
+      @apply flex-none;
+    }
+
+    .sw-sidebar[data-placement='header'] .sw-sidebar-menu-button {
+      @apply w-auto whitespace-nowrap;
+    }
+
+    .sw-sidebar-provider:has(.sw-sidebar[data-placement='header']) .sw-sidebar-trigger {
+      display: none;
+    }
+
+    .sw-sidebar-provider:has(> .sw-site-header > .sw-sidebar[data-variant='inset']) > .sw-sidebar-inset {
+      @apply m-2 mt-0 forced-colors:border forced-colors:border-solid;
+    }
+
+    /* Panel-only parts, in either placement. */
+    .sw-sidebar [data-panel-only] {
+      display: none;
+    }
+  }
+
+  /*
     A dropdown menu opened from the sidebar (sl:dropdown-menu-trigger as="sidebar-menu-button" or
     "sidebar-menu-action"). In the column it opens on the side its content asks for (side="right": beside the sidebar,
     as shadcn's team switcher and user menu). In the phone panel and in the header row there is no room beside the
@@ -355,6 +435,17 @@
 
   @media (width < 48rem) {
     .sw-sidebar .sw-dropdown-menu-content:is([data-side='right'], [data-side='left']) {
+      --sw-popup-side: block-end;
+      --sw-popup-align: span-inline-start;
+      --sw-popup-margin-block: var(--sw-popup-offset) 0;
+      --sw-popup-margin-inline: 0;
+      --sw-popup-from: 0 calc(-1 * var(--sw-popup-slide));
+      transform-origin: top;
+    }
+  }
+
+  @media (width >= 48rem) {
+    .sw-sidebar[data-placement='header'] .sw-dropdown-menu-content:is([data-side='right'], [data-side='left']) {
       --sw-popup-side: block-end;
       --sw-popup-align: span-inline-start;
       --sw-popup-margin-block: var(--sw-popup-offset) 0;
@@ -516,6 +607,9 @@
     Forced colours drop backgrounds and box shadows: the current entry gets an outline, focus a thicker one.
   */
   @media (forced-colors: active) {
+    .sw-sidebar .sw-sidebar-header,
+    .sw-sidebar .sw-sidebar-footer { @apply text-[CanvasText]; }
+
     .sw-sidebar-menu-button:is([aria-current='page'], [aria-current='true']),
     .sw-sidebar-menu-sub-button:is([aria-current='page'], [aria-current='true']) {
       @apply outline-1 -outline-offset-1 outline-solid;
@@ -582,4 +676,14 @@
   @media (width < 48rem) { .sw-sidebar-header { @apply pe-10; } }
   .sw-sidebar-menu-button-label { @apply whitespace-nowrap; }
   .sw-sidebar-group-label { @apply gap-2; }
+}
+
+@layer components {
+  .sw-sidebar-menu-sub-button:has(+ .sw-sidebar-menu-badge) { @apply pe-8; }
+  .sw-sidebar-menu-sub-item > .sw-sidebar-menu-badge { @apply top-0.5; }
+  .sw-sidebar-menu-item:has(> .sw-sidebar-menu-action, > .sw-sidebar-menu-sub-collapsible) > .sw-sidebar-menu-badge { @apply end-8; }
+  .sw-sidebar-menu-item:has(> .sw-sidebar-menu-badge):has(> .sw-sidebar-menu-action, > .sw-sidebar-menu-sub-collapsible) > .sw-sidebar-menu-button { @apply pe-14; }
+  .sw-sidebar-group:has(> .sw-sidebar-group-action) > details > summary { @apply pe-8; }
+  .sw-sidebar-menu-action, .sw-sidebar-group-action { @apply box-border cursor-pointer disabled:pointer-events-none disabled:opacity-50; }
+  .sw-sidebar-provider:has(> .sw-site-header) > .sw-site-header { @apply flex-nowrap; }
 }

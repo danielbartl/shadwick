@@ -1,0 +1,16 @@
+<wicket:extend xmlns:wicket="http://wicket.apache.org">
+<div><h1 class="ex-title">Combobox</h1><p class="ex-lead">Find the right choice. Searchable fields, removable chips and server-backed suggestions, with native select fallbacks.</p></div>
+<div class="ex-forms">
+<section class="ex-section"><h2>Normal submission</h2><form wicket:id="form" class="ex-form" aria-label="Normal combobox" novalidate>
+<div wicket:id="place"></div><div wicket:id="tags"></div><div class="ex-row"><button wicket:id="save" type="submit">Save choices</button><button type="reset" class="sw-button" data-variant="outline">Reset</button></div><p wicket:id="saved" role="status" class="ex-muted"></p></form></section>
+<section class="ex-section"><h2>Ajax validation</h2><form wicket:id="ajaxForm" class="ex-form" aria-label="Ajax combobox" novalidate>
+<div wicket:id="place"></div><div wicket:id="tags"></div><div class="ex-row"><button wicket:id="save" type="submit">Save choices</button><button type="reset" class="sw-button" data-variant="outline">Reset</button></div><p wicket:id="saved" role="status" class="ex-muted"></p></form></section>
+</div>
+<section class="ex-section"><h2>Immediate updates</h2><form wicket:id="liveForm" class="ex-form" aria-label="Live combobox"><div wicket:id="place"></div><div class="ex-row"><a wicket:id="refresh">Refresh cities</a></div><p wicket:id="current" role="status" class="ex-muted"></p></form></section>
+<section class="ex-section"><h2>Options from the server</h2><p class="ex-muted">Single and multiple choices share bounded server search. Selected values remain available when the results change.</p>
+<form wicket:id="remoteForm" class="ex-form" aria-label="Server combobox"><div wicket:id="remote"></div><div wicket:id="destinations"></div><div class="ex-row"><button wicket:id="save" type="submit">Save destinations</button><button type="reset" class="sw-button" data-variant="outline">Reset</button></div><p wicket:id="saved" role="status" class="ex-muted"></p></form></section>
+<section class="ex-section"><h2>Managed selection</h2><div class="ex-form"><div wicket:id="managed"></div></div></section>
+<section class="ex-section"><h2>Inside overlays</h2><div class="ex-row"><button type="button" class="sw-button" data-variant="outline" commandfor="combobox-dialog" command="show-modal">Open combobox dialog</button><button type="button" class="sw-button" data-variant="outline" popovertarget="combobox-popover" aria-haspopup="dialog" aria-expanded="false">Open combobox popover</button></div></section>
+<dialog id="combobox-dialog" class="sw-dialog" aria-labelledby="combobox-dialog-title" closedby="any"><div class="sw-dialog-form"><div class="sw-dialog-header"><h2 class="sw-dialog-title" id="combobox-dialog-title">Find your city</h2><p class="sw-dialog-description">Escape closes the list first.</p></div><div wicket:id="dialogPlace"></div><div class="sw-dialog-footer"><button type="button" class="sw-button" commandfor="combobox-dialog" command="close">Close dialog</button></div></div></dialog>
+<div id="combobox-popover" class="sw-popover-content" data-side="bottom" data-align="start" popover="auto" role="dialog" tabindex="-1" aria-labelledby="combobox-popover-title"><h2 id="combobox-popover-title" class="sw-popover-title">Choose a city</h2><div wicket:id="popoverPlace"></div></div>
+</wicket:extend>

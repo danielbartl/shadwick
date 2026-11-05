@@ -1,0 +1,21 @@
+/* Adapted from Shadleaf (Apache-2.0, see NOTICE). Composition uses the existing avatar/menu/sidebar/button skins. */
+@layer components {
+  .sw-user-menu { @apply min-w-0 w-full; }
+  .sw-user-menu[data-placement='header'] { @apply w-auto shrink-0; }
+  .sw-user-menu-dropdown { @apply min-w-0; }
+  .sw-user-menu-trigger { @apply box-border; }
+  .sw-user-menu-avatar { @apply inline-flex size-8 shrink-0; }
+  .sw-user-menu-avatar .sw-avatar-fallback[data-initials]::before { content: attr(data-initials); }
+  .sw-user-menu-avatar > .sw-avatar { @apply size-full; }
+  .sw-user-menu-label { @apply box-border flex min-w-0 items-center text-start; }
+  .sw-user-menu-text { @apply grid min-w-0 flex-1; }
+  :is(.sw-user-menu-name, .sw-user-menu-detail) { @apply truncate; }
+  .sw-user-menu-chevron { @apply ms-auto size-4 shrink-0; }
+  .sw-user-menu-content { min-inline-size: max(anchor-size(inline), 14rem); }
+  .sw-button.sw-user-menu-trigger { @apply overflow-hidden p-0; }
+  .sw-user-menu[data-placement='header'] .sw-user-menu-trigger > .sw-user-menu-avatar { @apply size-full; }
+  .sw-user-menu[data-placement='header'] .sw-user-menu-trigger > :is(.sw-user-menu-text, .sw-user-menu-chevron) { @apply hidden; }
+  .sw-user-menu[data-placement='header'] .sw-user-menu-sign-in .sw-sidebar-menu-button-label { @apply flex-none; }
+  .sw-user-menu-sign-in { @apply box-border; }
+  @media print { .sw-user-menu { display: none !important; } }
+}

@@ -1,0 +1,1949 @@
+/*
+  Skin: nova, compact controls, reduced spacing and muted card/dialog footers. The visual identity of every component: radius, border,
+  colour, shadow, weight, sizes, focus ring and motion. Skins consume the tokens from tokens.css and never define
+  colours. Adapted from Shadleaf's skins/nova.css (Apache-2.0, see NOTICE), which follows shadcn's Nova style
+  through Basecoat's.
+*/
+@layer components {
+  /* Button. Icons without an explicit size take the button's icon size. */
+  .sw-button {
+    @apply rounded-lg border border-transparent bg-clip-padding text-sm font-medium
+      focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50 aria-invalid:border-destructive aria-invalid:ring-[3px] aria-invalid:ring-destructive/20
+      dark:aria-invalid:border-destructive/50 dark:aria-invalid:ring-destructive/40 motion-safe:active:not-aria-[haspopup]:translate-y-px [&_svg:not([class*='size-'])]:size-4;
+  }
+
+  .sw-button:not([data-size]) {
+    @apply h-8 gap-1.5 px-2.5;
+  }
+
+  .sw-button[data-size='sm'] {
+    @apply h-7 gap-1 rounded-[min(--theme(--radius-md),12px)] px-2.5 [&_svg:not([class*='size-'],[data-icon-size])]:size-3.5 text-[0.8rem];
+  }
+
+  .sw-button[data-size='lg'] {
+    @apply h-9 gap-1.5 px-2.5;
+  }
+
+  .sw-button[data-size='icon'] {
+    @apply size-8;
+  }
+
+  .sw-button:not([data-variant]) {
+    @apply bg-primary text-primary-foreground hover:bg-primary/80;
+  }
+
+  .sw-button[data-variant='secondary'] {
+    @apply bg-secondary text-secondary-foreground hover:bg-[color-mix(in_oklch,var(--secondary),var(--foreground)_5%)];
+  }
+
+  .sw-button[data-variant='outline'] {
+    @apply border-border bg-background hover:bg-muted hover:text-foreground dark:border-input dark:bg-input/30
+      dark:hover:bg-input/50;
+  }
+
+  .sw-button[data-variant='ghost'] {
+    @apply hover:bg-muted hover:text-foreground dark:hover:bg-muted/50;
+  }
+
+  .sw-button[data-variant='link'] {
+    @apply text-primary underline-offset-4 hover:underline;
+  }
+
+  /* text-destructive-legible (components/base.css): shadcn's text-destructive is under 4.5:1 on the tint. */
+  .sw-button[data-variant='destructive'] {
+    @apply bg-destructive/10 text-destructive-legible hover:bg-destructive/20
+      focus-visible:border-destructive/40 focus-visible:ring-destructive/20
+      dark:bg-destructive/20 dark:hover:bg-destructive/30 dark:focus-visible:ring-destructive/40;
+  }
+
+  /* Label */
+  .sw-label {
+    @apply gap-2 text-sm leading-none font-medium;
+  }
+
+  /*
+    Read-only (input and textarea): the muted background says it cannot be changed, and it drops the shadow of an
+    editable one. The text keeps its full colour; the placeholder gets the legible mix on --muted.
+  */
+
+  /* Input. text-base under md keeps iOS from zooming into a focused input. */
+  .sw-input {
+    @apply h-8 rounded-lg border border-input bg-transparent px-2.5
+      py-1 text-base motion-safe:transition-colors file:h-6 file:text-sm file:font-medium
+      file:text-foreground placeholder:text-muted-foreground focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50 aria-invalid:border-destructive
+      aria-invalid:ring-3 aria-invalid:ring-destructive/20 readonly:bg-muted readonly:placeholder:text-muted-legible dark:bg-input/30 dark:aria-invalid:border-destructive/50
+      dark:aria-invalid:ring-destructive/40 md:text-sm dark:disabled:bg-input/80 disabled:bg-input/50;
+  }
+
+  /* Textarea */
+  .sw-textarea {
+    @apply rounded-lg border border-input bg-transparent px-2.5 py-2
+      text-base motion-safe:transition-colors placeholder:text-muted-foreground focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50
+      aria-invalid:border-destructive aria-invalid:ring-3 aria-invalid:ring-destructive/20 readonly:bg-muted readonly:placeholder:text-muted-legible dark:bg-input/30
+      dark:aria-invalid:border-destructive/50 dark:aria-invalid:ring-destructive/40 md:text-sm dark:disabled:bg-input/80 disabled:bg-input/50;
+  }
+
+  /* Field */
+  .sw-field {
+    @apply gap-2;
+  }
+
+  .sw-field-label {
+    @apply leading-snug;
+  }
+
+  .sw-field[data-invalid='true'] > .sw-field-label {
+    @apply text-destructive-legible;
+  }
+
+  .sw-field-description {
+    @apply text-sm leading-normal text-muted-foreground;
+  }
+
+  .sw-field-error {
+    @apply text-sm text-destructive-legible;
+  }
+
+  /* Dialog */
+  .sw-dialog {
+    @apply max-w-[calc(100%-2rem)] rounded-xl bg-popover p-4 text-sm text-popover-foreground
+      ring-1 ring-foreground/10 duration-100 sm:max-w-sm backdrop:bg-black/10 backdrop:duration-100
+      supports-backdrop-filter:backdrop:backdrop-blur-xs gap-4;
+  }
+
+  .sw-dialog-form {
+    @apply gap-4;
+  }
+
+  /* shadcn's close button: ghost, icon-sm (as specific as the button's size rules, and later, so it wins). */
+  .sw-button.sw-dialog-close {
+    @apply top-2 end-2 size-7 rounded-[min(--theme(--radius-md),12px)];
+  }
+
+  .sw-dialog-header {
+    @apply gap-2;
+  }
+
+  .sw-dialog-title {
+    @apply leading-none font-medium text-base;
+  }
+
+  .sw-dialog-description {
+    @apply text-sm text-muted-foreground [&_a]:underline [&_a]:underline-offset-3 [&_a:hover]:text-foreground;
+  }
+
+  .sw-dialog-footer {
+    @apply gap-2 rounded-b-xl border-t bg-muted/50 p-4 -mx-4
+      -mb-4;
+  }
+}
+
+/* Display components. Adapted from Shadleaf (Apache-2.0, see NOTICE). */
+@layer components {
+  .sw-badge {
+    @apply h-5 gap-1 rounded-4xl border border-transparent px-2 py-0.5 text-xs font-medium
+      focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50
+      aria-invalid:border-destructive aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40
+      has-[[data-icon='inline-end']]:pe-1.5 has-[[data-icon='inline-start']]:ps-1.5
+      [&_svg:not([class*='size-'],[data-icon-size])]:size-3;
+  }
+
+  .sw-badge:not([data-variant]),
+  .sw-badge[data-variant='default'] {
+    @apply bg-primary text-primary-foreground [a]:hover:bg-primary/80;
+  }
+
+  .sw-badge[data-variant='secondary'] {
+    @apply bg-secondary text-secondary-foreground
+      [a]:hover:bg-[color-mix(in_oklch,var(--secondary),var(--foreground)_5%)];
+  }
+
+  .sw-badge[data-variant='outline'] {
+    @apply border-border text-foreground [a]:hover:bg-muted;
+  }
+
+  .sw-badge[data-variant='ghost'] {
+    @apply text-foreground [a]:hover:bg-muted dark:[a]:hover:bg-muted/50;
+  }
+
+  .sw-badge[data-variant='link'] {
+    @apply text-primary underline-offset-4 [a]:hover:underline;
+  }
+
+  .sw-badge[data-variant='destructive'] {
+    @apply bg-destructive/10 text-destructive-legible
+      [a]:hover:bg-destructive/20 focus-visible:ring-destructive/20
+      dark:bg-destructive/20 dark:[a]:hover:bg-destructive/30 dark:focus-visible:ring-destructive/40;
+  }
+
+  .sw-card {
+    @apply rounded-xl bg-card text-sm text-card-foreground ring-1 ring-foreground/10
+      has-[>img:first-child]:pt-0 [&>img:first-child]:rounded-t-xl [&>img:last-child]:rounded-b-xl has-[>.sw-card-footer:last-child]:pb-0;
+  }
+
+  .sw-card:not([data-size]),
+  .sw-card[data-size='default'] {
+    @apply gap-4 py-4;
+  }
+
+  .sw-card[data-size='sm'] {
+    @apply gap-3 py-3;
+  }
+
+  .sw-card:is(:not([data-size]), [data-size='default']) > :is(.sw-card-header, .sw-card-content, .sw-card-footer) {
+    @apply px-4;
+  }
+
+  .sw-card[data-size='sm'] > :is(.sw-card-header, .sw-card-content, .sw-card-footer) {
+    @apply px-3;
+  }
+
+  .sw-card-header {
+    @apply gap-1 data-border:border-b data-border:pb-4;
+  }
+
+  .sw-card[data-size='sm'] > .sw-card-header {
+    @apply data-border:pb-3;
+  }
+
+  .sw-card-title {
+    @apply text-base leading-snug font-medium;
+  }
+
+  .sw-card[data-size='sm'] > .sw-card-header > .sw-card-title {
+    @apply text-sm;
+  }
+
+  .sw-card-description {
+    @apply text-sm text-muted-foreground;
+  }
+
+  .sw-card-footer {
+    @apply gap-2 border-t bg-muted/50 py-4;
+  }
+
+  .sw-card[data-size='sm'] > .sw-card-footer {
+    @apply py-3;
+  }
+
+  .sw-alert {
+    @apply gap-y-0.5 rounded-lg border px-2.5 py-2 text-start
+      text-sm has-[>svg]:gap-x-2 [&>svg]:translate-y-0.5 [&>svg:not([class*='size-'],[data-icon-size])]:size-4;
+  }
+
+  .sw-alert:not([data-variant]) {
+    @apply bg-card text-card-foreground;
+  }
+
+  .sw-alert[data-variant='destructive'] {
+    @apply bg-card text-destructive-legible;
+  }
+
+  .sw-alert-title {
+    @apply min-h-4 font-medium tracking-tight;
+  }
+
+  .sw-alert-description {
+    @apply gap-1 text-sm text-muted-foreground [&_p]:leading-relaxed;
+  }
+
+  .sw-alert[data-variant='destructive'] > .sw-alert-description {
+    @apply text-destructive-legible;
+  }
+
+  .sw-empty {
+    @apply gap-4 rounded-xl p-6 border-dashed data-border:border;
+  }
+
+  .sw-empty-header {
+    @apply gap-2;
+  }
+
+  .sw-empty-media {
+    @apply mb-2;
+  }
+
+  .sw-empty-media:not([data-variant]) {
+    @apply bg-transparent;
+  }
+
+  .sw-empty-media[data-variant='icon'] {
+    @apply size-8 rounded-lg bg-muted text-foreground [&_svg:not([class*='size-'],[data-icon-size])]:size-4;
+  }
+
+  .sw-empty-title {
+    @apply text-sm font-medium tracking-tight;
+  }
+
+  .sw-empty-description {
+    @apply text-sm/relaxed text-muted-foreground
+      [&>a]:underline [&>a]:underline-offset-4 [&>a:hover]:text-primary;
+  }
+
+  .sw-empty-content {
+    @apply gap-2.5 text-sm;
+  }
+
+  .sw-separator {
+    @apply bg-border;
+  }
+
+  .sw-separator:not([data-orientation]),
+  .sw-separator[data-orientation='horizontal'] {
+    @apply h-px;
+  }
+
+  .sw-separator[data-orientation='vertical'] {
+    @apply w-px;
+  }
+
+  .sw-skeleton {
+    @apply bg-accent motion-safe:animate-pulse;
+  }
+
+  .sw-skeleton:not([data-shape]),
+  .sw-skeleton[data-shape='line'] {
+    @apply h-4 w-full rounded-md;
+  }
+
+  .sw-skeleton[data-shape='circle'] {
+    @apply size-10;
+  }
+
+  .sw-skeleton:is(:not([data-shape]), [data-shape='line']) + .sw-skeleton:is(:not([data-shape]), [data-shape='line']) {
+    @apply mt-2;
+  }
+
+  .sw-kbd {
+    @apply h-5 min-w-5 gap-1 rounded-sm bg-muted px-1 font-sans text-xs font-medium text-muted-legible
+      [&_svg:not([class*='size-'],[data-icon-size])]:size-3;
+  }
+
+  .sw-kbd-group {
+    @apply gap-1;
+  }
+
+  .sw-avatar {
+    @apply rounded-full bg-muted;
+  }
+
+  .sw-avatar:not([data-size]),
+  .sw-avatar[data-size='default'] {
+    @apply size-8;
+  }
+
+  .sw-avatar[data-size='sm'] {
+    @apply size-6;
+  }
+
+  .sw-avatar[data-size='lg'] {
+    @apply size-10;
+  }
+
+  .sw-avatar-fallback {
+    @apply text-sm text-muted-legible [&_svg:not([class*='size-'],[data-icon-size])]:size-4;
+  }
+
+  .sw-avatar[data-size='sm'] > .sw-avatar-fallback {
+    @apply text-xs [&_svg:not([class*='size-'],[data-icon-size])]:size-3;
+  }
+}
+
+@layer components {
+  .sw-skeleton[data-shape='box'] { @apply h-24 w-full rounded-md; }
+  .sw-spinner[data-size='sm'] { @apply size-3; }
+  .sw-spinner[data-size='lg'] { @apply size-6; }
+}
+
+@layer components {
+  .sw-toast { @apply gap-2 border border-border bg-popover p-4 text-[13px] text-popover-foreground shadow-lg rounded-2xl; }
+  .sw-toast[data-variant='destructive'] { @apply text-destructive-legible; }
+  .sw-toast[data-variant='error'] > svg { @apply text-destructive-legible; }
+  .sw-toast-content { @apply gap-0.5; }
+  .sw-toast-title { @apply font-medium leading-normal; }
+  .sw-toast-description { @apply leading-snug text-muted-legible; }
+  .sw-button.sw-toast-close { @apply -my-1 -me-1 size-6; }
+}
+
+/* Choice fields. Adapted from Shadleaf (Apache-2.0, see NOTICE). */
+@layer components {
+  .sw-checkbox {
+    @apply size-4 rounded-[4px] border border-input bg-transparent motion-safe:transition-colors
+      checked:border-primary checked:bg-primary indeterminate:border-primary indeterminate:bg-primary focus-visible:border-ring focus-visible:ring-3
+      focus-visible:ring-ring/50 aria-invalid:border-destructive aria-invalid:ring-3 aria-invalid:ring-destructive/20 aria-invalid:checked:border-primary aria-invalid:indeterminate:border-primary
+      dark:bg-input/30 dark:checked:bg-primary dark:indeterminate:bg-primary dark:aria-invalid:border-destructive/50 dark:aria-invalid:ring-destructive/40;
+  }
+
+  .sw-checkbox-indicator,
+  .sw-checkbox-indeterminate-indicator {
+    @apply size-3.5 text-primary-foreground;
+  }
+
+  .sw-radio-group {
+    @apply gap-2;
+  }
+
+  .sw-radio-group-item {
+    @apply size-4 border border-input bg-transparent
+      checked:border-primary checked:bg-primary bg-size-[0.5rem]
+      checked:bg-[radial-gradient(circle_closest-side,var(--primary-foreground)_calc(100%-1px),transparent_100%)]
+      focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50
+      aria-invalid:border-destructive aria-invalid:ring-3 aria-invalid:ring-destructive/20
+      aria-invalid:checked:border-primary
+      dark:bg-input/30 dark:checked:bg-primary
+      dark:aria-invalid:border-destructive/50 dark:aria-invalid:ring-destructive/40;
+  }
+
+  .sw-switch {
+    @apply border border-transparent bg-input [--sw-switch-thumb:var(--background)] checked:bg-primary focus-visible:border-ring
+      focus-visible:ring-3 focus-visible:ring-ring/50 aria-invalid:border-destructive aria-invalid:ring-3 aria-invalid:ring-destructive/20 dark:bg-input/80
+      dark:[--sw-switch-thumb:var(--foreground)] dark:checked:bg-primary dark:checked:[--sw-switch-thumb:var(--primary-foreground)] dark:aria-invalid:border-destructive/50 dark:aria-invalid:ring-destructive/40;
+  }
+
+  .sw-switch:not([data-size]),
+  .sw-switch[data-size='default'] {
+    @apply h-[18.4px] w-8 bg-size-[1rem];
+  }
+
+  .sw-switch[data-size='sm'] {
+    @apply h-3.5 w-6 bg-size-[0.75rem];
+  }
+}
+
+/* Native selects. Adapted from Shadleaf (Apache-2.0, see NOTICE). */
+@layer components {
+  /* Native select. The end padding leaves room for the chevron. */
+  .sw-native-select {
+    @apply rounded-lg border border-input bg-transparent py-1 ps-2.5
+      pe-8 text-sm motion-safe:transition-colors focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50
+      aria-invalid:border-destructive aria-invalid:ring-3 aria-invalid:ring-destructive/20 dark:bg-input/30 dark:hover:bg-input/50 dark:aria-invalid:border-destructive/50
+      dark:aria-invalid:ring-destructive/40 [&[multiple]]:pe-2.5 dark:disabled:bg-input/80 disabled:bg-input/50;
+  }
+
+  .sw-native-select-wrapper:not([data-size]) > .sw-native-select:not([multiple]),
+  .sw-native-select-wrapper[data-size='default'] > .sw-native-select:not([multiple]) {
+    @apply h-8;
+  }
+
+  .sw-native-select-wrapper[data-size='sm'] > .sw-native-select:not([multiple]) {
+    @apply h-7 rounded-[min(--theme(--radius-md),10px)] py-0.5;
+  }
+
+  .sw-native-select-icon {
+    @apply text-muted-foreground;
+  }
+
+  .sw-checkbox-group { @apply gap-3; }
+  .sw-field > .sw-checkbox-group { @apply mt-2; }
+}
+
+/* Toggles and input groups. Adapted from Shadleaf (Apache-2.0, see NOTICE). */
+@layer components {
+  .sw-input-group {
+    @apply h-8 rounded-lg border border-input bg-transparent motion-safe:transition-colors
+      dark:bg-input/30;
+  }
+
+  .sw-input-group:has(> .sw-input-group-input[aria-invalid='true']),
+  .sw-input-group:has(> .sw-input-group-textarea[aria-invalid='true']) {
+    @apply border-destructive ring-3 ring-destructive/20 dark:border-destructive/50 dark:ring-destructive/40;
+  }
+
+  .sw-input-group:has(> .sw-input-group-input:focus-visible),
+  .sw-input-group:has(> .sw-input-group-textarea:focus-visible) {
+    @apply border-ring ring-3 ring-ring/50;
+  }
+
+  .sw-input-group:has(> .sw-input-group-input[readonly]),
+  .sw-input-group:has(> .sw-input-group-textarea[readonly]) {
+    @apply bg-muted;
+  }
+
+  .sw-input-group:has(> .sw-input-group-input[readonly]) :is(.sw-input-group-addon, .sw-input-group-text),
+  .sw-input-group:has(> .sw-input-group-textarea[readonly]) :is(.sw-input-group-addon, .sw-input-group-text) {
+    @apply text-muted-legible;
+  }
+
+  .sw-input-group:has(> :is(.sw-input-group-input, .sw-input-group-textarea):disabled) :is(.sw-input-group-addon, .sw-input-group-text) {
+    @apply text-muted-legible;
+  }
+
+  .sw-input-group-input[readonly],
+  .sw-input-group-textarea[readonly] {
+    @apply placeholder:text-muted-legible;
+  }
+
+  .sw-input-group-input {
+    @apply px-2.5 py-1 text-base placeholder:text-muted-foreground md:text-sm;
+  }
+
+  .sw-input-group-textarea {
+    @apply px-2.5 py-2 text-base placeholder:text-muted-foreground md:text-sm;
+  }
+
+  .sw-input-group:has(> .sw-input-group-addon:is(:not([data-align]), [data-align='inline-start'])) > .sw-input-group-input {
+    @apply ps-1.5;
+  }
+
+  .sw-input-group:has(> .sw-input-group-addon[data-align='inline-end']) > .sw-input-group-input {
+    @apply pe-1.5;
+  }
+
+  .sw-input-group:has(> .sw-input-group-addon[data-align='block-start']) > .sw-input-group-input {
+    @apply pb-3;
+  }
+
+  .sw-input-group:has(> .sw-input-group-addon[data-align='block-end']) > .sw-input-group-input {
+    @apply pt-3;
+  }
+
+  .sw-input-group-addon {
+    @apply gap-2 py-1.5 text-sm font-medium text-muted-foreground;
+  }
+
+  .sw-input-group-addon > svg:not([class*='size-'], [data-icon-size]) {
+    @apply size-4;
+  }
+
+  .sw-input-group-addon > .sw-kbd {
+    @apply rounded-[calc(var(--radius)-5px)];
+  }
+
+  .sw-input-group-addon:is(:not([data-align]), [data-align='inline-start']) {
+    @apply ps-2 has-[>.sw-button]:-ms-[0.3rem] has-[>.sw-kbd]:-ms-[0.15rem];
+  }
+
+  .sw-input-group-addon[data-align='inline-end'] {
+    @apply pe-2 has-[>.sw-button]:-me-[0.3rem] has-[>.sw-kbd]:-me-[0.15rem];
+  }
+
+  .sw-input-group-addon[data-align='block-start'] {
+    @apply px-2.5 pt-2;
+  }
+
+  .sw-input-group-addon[data-align='block-end'] {
+    @apply px-2.5 pb-2;
+  }
+
+  .sw-input-group-addon[data-border='bottom'] {
+    @apply pb-2;
+  }
+
+  .sw-input-group-addon[data-border='top'] {
+    @apply pt-2;
+  }
+
+  .sw-input-group-text {
+    @apply gap-2 text-sm text-muted-foreground;
+  }
+
+  .sw-input-group-text svg:not([class*='size-'], [data-icon-size]) {
+    @apply size-4;
+  }
+
+  .sw-button.sw-input-group-button {
+    @apply gap-2 text-sm shadow-none;
+  }
+
+  .sw-button.sw-input-group-button[data-size='xs'] {
+    @apply h-6 gap-1 rounded-[calc(var(--radius)-3px)] px-1.5;
+  }
+
+  .sw-button.sw-input-group-button[data-size='xs'] svg:not([class*='size-'], [data-icon-size]) {
+    @apply size-3.5;
+  }
+
+  .sw-button.sw-input-group-button[data-size='icon-xs'] {
+    @apply size-6 rounded-[calc(var(--radius)-3px)] p-0;
+  }
+
+  .sw-button.sw-input-group-button[data-size='icon'] {
+    @apply size-8 p-0;
+  }
+
+  .sw-toggle {
+    @apply gap-1 rounded-lg border border-transparent text-sm font-medium
+      hover:text-foreground motion-safe:transition-all [&_svg:not([class*='size-'],[data-icon-size])]:size-4;
+  }
+
+  .sw-toggle:not([data-variant]) {
+    @apply bg-transparent hover:bg-muted;
+  }
+
+  .sw-toggle[data-variant='outline'] {
+    @apply border-input bg-transparent hover:bg-muted;
+  }
+
+  .sw-toggle:not([data-size]),
+  .sw-toggle[data-size='default'] {
+    @apply h-8 min-w-8 px-2.5 has-[[data-icon='inline-end']]:pe-2 has-[[data-icon='inline-start']]:ps-2;
+  }
+
+  .sw-toggle[data-size='sm'] {
+    @apply h-7 min-w-7 rounded-[min(--theme(--radius-md),12px)] px-2.5 has-[[data-icon='inline-end']]:pe-1.5 has-[[data-icon='inline-start']]:ps-1.5
+      [&_svg:not([class*='size-'],[data-icon-size])]:size-3.5 text-[0.8rem];
+  }
+
+  .sw-toggle[data-size='lg'] {
+    @apply h-9 min-w-9 px-2.5 has-[[data-icon='inline-end']]:pe-2 has-[[data-icon='inline-start']]:ps-2;
+  }
+
+  .sw-toggle:has(> .sw-toggle-input:checked) {
+    @apply bg-muted;
+  }
+
+  .sw-toggle:has(> .sw-toggle-input:indeterminate:not([type='radio'])) {
+    @apply bg-muted/50;
+  }
+
+  .sw-toggle:has(> .sw-toggle-input:focus-visible) {
+    @apply border-ring ring-[3px] ring-ring/50;
+  }
+
+  .sw-toggle:has(> .sw-toggle-input[aria-invalid='true']) {
+    @apply border-destructive ring-destructive/20 dark:ring-destructive/40;
+  }
+
+  /* Toggle group: spacing="0" joins the items, rounding only the ends. An item may sit in a sl:tooltip. */
+  .sw-toggle-group[data-spacing='0'] > .sw-toggle-group-item,
+  .sw-toggle-group[data-spacing='0'] > .sw-tooltip > .sw-toggle-group-item {
+    @apply rounded-none px-2 shadow-none
+      has-[[data-icon='inline-end']]:pe-1.5 has-[[data-icon='inline-start']]:ps-1.5;
+  }
+
+  .sw-toggle-group[data-spacing='0']:not([data-orientation]) > .sw-toggle-group-item:first-child,
+  .sw-toggle-group[data-spacing='0']:not([data-orientation]) > .sw-tooltip:first-child > .sw-toggle-group-item {
+    @apply rounded-s-lg;
+  }
+
+  .sw-toggle-group[data-spacing='0']:not([data-orientation]) > .sw-toggle-group-item:last-child,
+  .sw-toggle-group[data-spacing='0']:not([data-orientation]) > .sw-tooltip:last-child > .sw-toggle-group-item {
+    @apply rounded-e-lg;
+  }
+
+  .sw-toggle-group[data-spacing='0'][data-orientation='vertical'] > .sw-toggle-group-item:first-child,
+  .sw-toggle-group[data-spacing='0'][data-orientation='vertical'] > .sw-tooltip:first-child > .sw-toggle-group-item {
+    @apply rounded-t-lg;
+  }
+
+  .sw-toggle-group[data-spacing='0'][data-orientation='vertical'] > .sw-toggle-group-item:last-child,
+  .sw-toggle-group[data-spacing='0'][data-orientation='vertical'] > .sw-tooltip:last-child > .sw-toggle-group-item {
+    @apply rounded-b-lg;
+  }
+
+  .sw-toggle-group[data-spacing='0']:has(
+      > .sw-toggle-group-item[data-variant='outline'],
+      > .sw-tooltip > .sw-toggle-group-item[data-variant='outline']
+    ) {
+    @apply rounded-lg;
+  }
+
+
+  .sw-field > .sw-toggle-group { @apply mt-2; }
+}
+
+/* File upload. Adapted from Shadleaf (Apache-2.0, see NOTICE). */
+@layer components {
+  .sw-file-upload {
+    @apply gap-3;
+  }
+
+  .sw-file-upload:not([data-layout]) > .sw-file-upload-list {
+    @apply gap-2;
+  }
+
+  .sw-file-upload:has(> .sw-file-upload-input:focus-visible) > .sw-file-upload-dropzone > .sw-empty-content > .sw-file-upload-browse {
+    @apply border-ring ring-[3px] ring-ring/50;
+  }
+
+  .sw-file-upload:has(> .sw-file-upload-input[aria-invalid='true']) > .sw-file-upload-dropzone {
+    @apply border-destructive dark:border-destructive/50;
+  }
+
+  .sw-file-upload[data-dragging] > .sw-file-upload-dropzone {
+    @apply border-ring bg-muted/50;
+  }
+
+  .sw-file-upload-item { @apply gap-3 rounded-md border border-border bg-background p-2; }
+  .sw-file-upload-name { @apply text-sm font-medium; }
+  .sw-file-upload-size { @apply text-xs text-muted-legible; }
+  .sw-file-upload-item[data-rejected] { @apply border-destructive; }
+  .sw-file-upload-item[data-rejected] .sw-file-upload-size { @apply text-destructive-legible; }
+}
+
+/* Alert dialogs and sheets. Adapted from Shadleaf (Apache-2.0, see NOTICE). */
+@layer components {
+  .sw-alert-dialog {
+    @apply max-w-[calc(100%-2rem)] rounded-xl p-4 text-sm sm:max-w-sm bg-popover
+      text-popover-foreground ring-1 ring-foreground/10 duration-100 backdrop:bg-black/10 backdrop:duration-100
+      supports-backdrop-filter:backdrop:backdrop-blur-xs gap-4;
+  }
+  .sw-alert-dialog-form { @apply gap-4; }
+  .sw-alert-dialog-header { @apply gap-1.5 has-[>.sw-alert-dialog-media]:gap-x-4; }
+  .sw-alert-dialog-title { @apply text-base font-medium; }
+  .sw-alert-dialog-description {
+    @apply text-sm text-balance text-muted-foreground md:text-pretty
+      [&_a]:underline [&_a]:underline-offset-3 [&_a:hover]:text-foreground;
+  }
+  .sw-alert-dialog-footer { @apply gap-2 rounded-b-xl border-t bg-muted/50 p-4 -mx-4
+      -mb-4; }
+
+  .sw-sheet {
+    @apply rounded-none border-border bg-popover bg-clip-padding text-sm
+      text-popover-foreground shadow-lg duration-200 ease-in-out
+      backdrop:bg-black/10 backdrop:duration-200 supports-backdrop-filter:backdrop:backdrop-blur-xs;
+    --sw-sheet-slide: --spacing(10);
+  }
+  .sw-sheet:is([data-side='start'], [data-side='end']) { @apply w-3/4 sm:max-w-sm; }
+  .sw-sheet-form { @apply gap-4; }
+  .sw-sheet-body-content { @apply px-4; }
+  .sw-button.sw-sheet-close { @apply top-3 end-3 size-7 rounded-[min(--theme(--radius-md),12px)]; }
+  .sw-sheet-header { @apply gap-0.5 p-4 pe-14; }
+  .sw-sheet-footer { @apply gap-2 p-4; }
+  .sw-sheet-title { @apply font-medium text-foreground text-base; }
+  .sw-sheet-description {
+    @apply text-sm text-muted-foreground
+      [&_a]:underline [&_a]:underline-offset-3 [&_a:hover]:text-foreground;
+  }
+}
+
+/* Popover and tooltip identity, adapted from Shadleaf (Apache-2.0, see NOTICE). */
+@layer components {
+  .sw-popover-content {
+    @apply w-72 gap-2.5 rounded-lg p-2.5 text-sm bg-popover
+      text-popover-foreground shadow-md ring-1 ring-foreground/10 duration-100;
+    --sw-popup-offset: --spacing(1);
+    --sw-popup-slide: --spacing(2);
+  }
+  .sw-popover-content:focus-visible { @apply ring-[3px] ring-ring/50; }
+  .sw-popover-header { @apply gap-0.5 text-sm; }
+  .sw-popover-title { @apply font-medium; }
+  .sw-popover-description { @apply text-sm text-muted-foreground; }
+  .sw-tooltip-content {
+    @apply max-w-[min(20rem,calc(100dvw-2rem))] gap-1.5 rounded-md bg-foreground px-3 py-1.5 text-xs text-background duration-100;
+    --sw-popup-offset: --spacing(1.5);
+    --sw-popup-slide: --spacing(2);
+  }
+  .sw-tooltip-arrow { @apply size-2.5 rounded-[2px] bg-foreground; }
+}
+
+/* Dropdown menu identity, adapted from Shadleaf (Apache-2.0, see NOTICE). */
+@layer components {
+  .sw-dropdown-menu-content {
+    @apply rounded-lg p-1 bg-popover text-popover-foreground shadow-md ring-1
+      ring-foreground/10 duration-100;
+    --sw-popup-offset: --spacing(1);
+    --sw-popup-slide: --spacing(2);
+  }
+  .sw-dropdown-menu-item, .sw-dropdown-menu-checkbox-item, .sw-dropdown-menu-radio-item {
+    @apply gap-2 rounded-sm py-1.5 text-sm focus:bg-accent focus:text-accent-foreground
+      [&_svg:not([class*='size-'],[data-icon-size])]:size-4 px-1.5 data-inset:ps-7;
+  }
+  .sw-dropdown-menu-item:focus-visible, .sw-dropdown-menu-checkbox-item:focus-visible, .sw-dropdown-menu-radio-item:focus-visible {
+    @apply ring-[3px] ring-ring/50 ring-inset;
+  }
+  .sw-dropdown-menu-item { @apply px-1.5 data-inset:ps-7; }
+  .sw-dropdown-menu-checkbox-item, .sw-dropdown-menu-radio-item { @apply ps-1.5 pe-8 data-inset:ps-7; }
+  .sw-dropdown-menu-item[data-variant='destructive'] {
+    @apply text-destructive-legible focus:bg-destructive/10 dark:focus:bg-destructive/20;
+  }
+  :is(.sw-dropdown-menu-checkbox-item, .sw-dropdown-menu-radio-item)[aria-checked='true']::after {
+    @apply end-3 h-3 w-1.5 -translate-y-2/3 rotate-45 border-r-2 border-b-2 border-current;
+  }
+  .sw-dropdown-menu-label { @apply px-1.5 py-1 text-xs font-medium text-muted-foreground data-inset:ps-7; }
+  .sw-dropdown-menu-separator { @apply -mx-1 my-1 bg-border; }
+  .sw-dropdown-menu-shortcut { @apply text-xs tracking-widest text-muted-foreground; }
+  :is(.sw-dropdown-menu-item, .sw-dropdown-menu-checkbox-item, .sw-dropdown-menu-radio-item):focus > .sw-dropdown-menu-shortcut {
+    @apply text-accent-foreground;
+  }
+}
+
+/* Header, breadcrumb and skip link identity, adapted from Shadleaf (Apache-2.0, see NOTICE). */
+@layer components {
+  .sw-breadcrumb-list {
+    @apply gap-1.5 text-sm text-muted-legible;
+  }
+
+  .sw-breadcrumb-item {
+    @apply gap-1;
+  }
+
+  .sw-breadcrumb-link {
+    @apply rounded-sm motion-safe:transition-colors hover:text-foreground focus-visible:ring-[3px] focus-visible:ring-ring/50;
+  }
+
+  .sw-breadcrumb-page {
+    @apply font-normal text-foreground;
+  }
+
+  .sw-breadcrumb-separator > svg:not([class*='size-'], [data-icon-size]) {
+    @apply size-3.5;
+  }
+
+  .sw-breadcrumb-ellipsis {
+    @apply size-5;
+  }
+
+  .sw-breadcrumb-ellipsis > svg:not([class*='size-'], [data-icon-size]) {
+    @apply size-4;
+  }
+
+  /* Skip link: drawn as an outline button once it has the focus. */
+  .sw-skip-link:focus {
+    @apply inline-flex min-h-8 h-auto py-1.5 text-sm items-center
+      border border-border bg-background font-medium text-foreground shadow-md
+      rounded-lg px-2.5;
+  }
+
+  .sw-skip-link:focus-visible {
+    @apply border-ring ring-[3px] ring-ring/50;
+  }
+
+  /*
+    Site header, after shadcn's page headers (sidebar-16's site header, sidebar-07's inset header): 3.5rem high,
+    px-4, gap-2. Across the top of the page it is the page's ground with a border below; inside the inset, or above an
+    inset card (it then lies on the sidebar's ground), it has neither. The trigger sits a little outside the padding,
+    and a vertical separator keeps some room before what follows.
+  */
+  .sw-site-header {
+    --sw-site-header-height: 3.5rem;
+    @apply gap-2 border-b border-border bg-background px-4;
+  }
+
+  .sw-site-header[data-inset='true'],
+  .sw-sidebar-provider > .sw-site-header:has(> .sw-sidebar[data-variant='inset']) { @apply border-b-0 bg-transparent; }
+
+  .sw-site-header-end {
+    @apply gap-2;
+  }
+
+  .sw-site-header > .sw-separator[data-orientation='vertical'] {
+    @apply me-2;
+  }
+
+  .sw-button.sw-breadcrumb-ellipsis-trigger { @apply size-7 p-0; }
+}
+
+/* Sidebar identity, adapted from Shadleaf (Apache-2.0, see NOTICE). */
+@layer components {
+  .sw-sidebar-provider {
+    --sw-sidebar-width: 16rem;
+    --sw-sidebar-width-mobile: 18rem;
+    --sw-sidebar-width-icon: 3rem;
+  }
+
+  .sw-sidebar {
+    @apply border-sidebar-border bg-sidebar text-sm text-sidebar-foreground duration-200 ease-linear
+      backdrop:bg-black/10 backdrop:duration-200 supports-backdrop-filter:backdrop:backdrop-blur-xs;
+  }
+
+  .sw-sidebar:popover-open {
+    @apply shadow-lg;
+  }
+
+  .sw-sidebar-inset {
+    @apply bg-background;
+  }
+
+  /*
+    Variants on a desktop, after shadcn's nova style: floating is a rounded panel with a shadow; inset puts the
+    sidebar's colour around the page, which becomes a rounded card with a shadow. Margins and edges are structure.
+  */
+  .sw-sidebar[data-variant='floating'] {
+    @apply md:rounded-lg md:shadow-sm;
+  }
+
+  .sw-sidebar-provider:has(> .sw-sidebar[data-variant='inset'], > .sw-site-header > .sw-sidebar[data-variant='inset']) {
+    @apply bg-sidebar;
+  }
+
+  .sw-sidebar-provider:has(> .sw-sidebar[data-variant='inset'], > .sw-site-header > .sw-sidebar[data-variant='inset']) > .sw-sidebar-inset {
+    @apply duration-200 ease-linear md:rounded-xl md:shadow-sm;
+  }
+
+  /*
+    The sidebar's content parts, after shadcn's nova style. The current entry
+    ([aria-current]) and a hovered one take the accent; the focus ring is the sidebar's. A badge follows the
+    colour of the button it describes.
+  */
+  .sw-sidebar-header,
+  .sw-sidebar-footer {
+    @apply gap-2 p-2;
+  }
+
+  /*
+    Firefox makes the content a tab stop of its own when it scrolls (so do other browsers when nothing in it can take
+    the focus): an outline inside its edge shows it has the focus.
+  */
+  .sw-sidebar-content {
+    @apply gap-0 focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-sidebar-ring;
+  }
+
+  .sw-sidebar-separator {
+    @apply mx-2 bg-sidebar-border;
+  }
+
+  .sw-sidebar-group {
+    @apply p-2;
+  }
+
+  .sw-sidebar-group-label {
+    @apply h-8 rounded-md px-2 text-xs font-medium text-sidebar-foreground ring-sidebar-ring focus-visible:ring-2
+      [&>svg:not([class*='size-'],[data-icon-size])]:size-4;
+  }
+
+  /* The label of a collapsible group opens and closes it. */
+  summary.sw-sidebar-group-label {
+    @apply hover:bg-sidebar-accent hover:text-sidebar-accent-foreground;
+  }
+
+  .sw-sidebar-group-content {
+    @apply text-sm;
+  }
+
+  .sw-sidebar-menu {
+    @apply gap-0;
+  }
+
+  .sw-sidebar-menu-button:not([data-variant]) {
+    @apply bg-transparent;
+  }
+
+  .sw-sidebar-menu-button[data-variant='outline'] {
+    @apply bg-background hover:bg-sidebar-accent hover:text-sidebar-accent-foreground
+      shadow-[0_0_0_1px_var(--sidebar-border)] hover:shadow-[0_0_0_1px_var(--sidebar-accent)];
+  }
+
+  /* After the variants, so hover and the current entry win over their background. */
+  .sw-sidebar-menu-button {
+    @apply gap-2 rounded-md p-2 text-sidebar-foreground ring-sidebar-ring
+      hover:bg-sidebar-accent hover:text-sidebar-accent-foreground
+      active:bg-sidebar-accent active:text-sidebar-accent-foreground focus-visible:ring-2
+      [&_svg:not([class*='size-'],[data-icon-size])]:size-4;
+  }
+
+  .sw-sidebar-menu-button:is([aria-current='page'], [aria-current='true']) {
+    @apply bg-sidebar-accent font-medium text-sidebar-accent-foreground;
+  }
+
+  /* A menu button or action whose dropdown menu is open. */
+  .sw-sidebar-menu-button[aria-expanded='true'],
+  .sw-sidebar-menu-action[aria-expanded='true'] {
+    @apply bg-sidebar-accent text-sidebar-accent-foreground;
+  }
+
+  .sw-sidebar-menu-button:not([data-size]) {
+    @apply h-8 text-sm;
+  }
+
+  .sw-sidebar-menu-button[data-size='sm'] {
+    @apply h-7 text-xs;
+  }
+
+  .sw-sidebar-menu-button[data-size='lg'] {
+    @apply h-12 text-sm;
+  }
+
+  .sw-sidebar-menu-button-label > small {
+    @apply text-xs;
+  }
+
+  .sw-sidebar-group-action {
+    @apply end-3 top-3 w-6 rounded-md p-0 text-sidebar-foreground ring-sidebar-ring
+      hover:bg-sidebar-accent hover:text-sidebar-accent-foreground focus-visible:ring-2
+      [&>svg:not([class*='size-'],[data-icon-size])]:size-4;
+  }
+
+  .sw-sidebar-menu-action {
+    @apply end-1 top-1 w-6 rounded-md p-0 text-sidebar-foreground ring-sidebar-ring
+      hover:bg-sidebar-accent hover:text-sidebar-accent-foreground focus-visible:ring-2
+      [&>svg:not([class*='size-'],[data-icon-size])]:size-4;
+  }
+
+  .sw-sidebar-menu-badge {
+    @apply end-1 top-1.5 h-5 min-w-5 rounded-md px-1 text-xs font-medium text-sidebar-foreground;
+  }
+
+  .sw-sidebar-menu-button[data-size='sm'] ~ .sw-sidebar-menu-badge {
+    @apply top-1;
+  }
+
+  .sw-sidebar-menu-button[data-size='lg'] ~ .sw-sidebar-menu-badge {
+    @apply top-3.5;
+  }
+
+  /* 24px at every width (WCAG 2.2's target size; shadcn's 20px is flagged by axe once shown), centred on the button. */
+  .sw-sidebar-menu-button[data-size='sm'] ~ .sw-sidebar-menu-action {
+    @apply top-0.5;
+  }
+
+  .sw-sidebar-menu-button[data-size='lg'] ~ .sw-sidebar-menu-action {
+    @apply top-3;
+  }
+
+  .sw-sidebar-menu-button:is(:hover, [aria-current='page'], [aria-current='true'], [aria-expanded='true']) ~ :is(.sw-sidebar-menu-action, .sw-sidebar-menu-badge) {
+    @apply text-sidebar-accent-foreground;
+  }
+
+  /*
+    A sub-menu, after shadcn's nova style: indented along a line from the middle of the icons above it. Its buttons
+    look like the menu's, a little lower.
+  */
+  .sw-sidebar-menu-sub {
+    @apply mx-3.5 gap-1 border-s border-sidebar-border px-2.5 py-0.5;
+  }
+
+  .sw-sidebar-menu-sub-button {
+    @apply h-7 gap-2 rounded-md px-2 text-sidebar-foreground ring-sidebar-ring
+      hover:bg-sidebar-accent hover:text-sidebar-accent-foreground
+      active:bg-sidebar-accent active:text-sidebar-accent-foreground focus-visible:ring-2
+      [&>svg]:text-sidebar-accent-foreground [&>svg:not([class*='size-'],[data-icon-size])]:size-4;
+  }
+
+  .sw-sidebar-menu-sub-button:is([aria-current='page'], [aria-current='true']) {
+    @apply bg-sidebar-accent text-sidebar-accent-foreground;
+  }
+
+  .sw-sidebar-menu-sub-button:not([data-size]) {
+    @apply text-sm;
+  }
+
+  .sw-sidebar-menu-sub-button[data-size='sm'] {
+    @apply text-xs;
+  }
+
+  /*
+    Collapsed to icons (desktop only), after shadcn's nova style: every menu button is a square as large as the
+    default height around its icon (the structure hides the label); a large one loses its padding, so a logo of
+    that size fills it. Group
+    labels move up out of view (they still name their groups). A collapsible item whose hidden sub-menu holds the
+    current page shows it on its icon. Width, padding and the label's move follow the sidebar only without reduced
+    motion.
+  */
+  @media (width >= 48rem) {
+    .sw-sidebar-provider[data-state='collapsed'] > .sw-sidebar[data-collapsible='icon'] .sw-sidebar-menu-button {
+      @media (scripting: enabled) {
+        @apply size-8 p-2;
+      }
+    }
+
+    .sw-sidebar-provider[data-state='collapsed'] > .sw-sidebar[data-collapsible='icon'] .sw-sidebar-menu-button[data-size='lg'] {
+      @media (scripting: enabled) {
+        @apply p-0;
+      }
+    }
+
+    .sw-sidebar-provider[data-state='collapsed'] > .sw-sidebar[data-collapsible='icon'] .sw-sidebar-group-label {
+      @media (scripting: enabled) {
+        @apply -mt-8 opacity-0;
+      }
+    }
+
+    .sw-sidebar-provider[data-state='collapsed'] > .sw-sidebar[data-collapsible='icon']
+      .sw-sidebar-menu-collapsible:has(.sw-sidebar-menu-sub-button:is([aria-current='page'], [aria-current='true'])) > .sw-sidebar-menu-button,
+    .sw-sidebar-provider[data-state='collapsed'] > .sw-sidebar[data-collapsible='icon']
+      .sw-sidebar-menu-item:has(> .sw-sidebar-menu-sub-collapsible .sw-sidebar-menu-sub-button:is([aria-current='page'], [aria-current='true'])) > .sw-sidebar-menu-button {
+      @media (scripting: enabled) {
+        @apply bg-sidebar-accent font-medium text-sidebar-accent-foreground;
+      }
+    }
+  }
+
+  @media (width >= 48rem) and (prefers-reduced-motion: no-preference) {
+    .sw-sidebar[data-collapsible='icon'] .sw-sidebar-menu-button {
+      @apply transition-[width,height,padding] duration-200 ease-linear;
+    }
+
+    .sw-sidebar[data-collapsible='icon'] .sw-sidebar-group-label {
+      @apply transition-[margin,opacity] duration-200 ease-linear;
+    }
+  }
+
+  /*
+    Group actions are 24px on every screen (WCAG 2.2's target size; shadcn's 20px with a larger pseudo-element hit
+    area does not count). On a desktop they stand alone beside the label, with room around them.
+  */
+  @media (width < 48rem) {
+    .sw-sidebar-group-action {
+      @apply top-3 w-6;
+    }
+  }
+}
+
+/* User-menu identity, adapted from Shadleaf (Apache-2.0, see NOTICE). */
+@layer components {
+  .sw-dropdown-menu-label.sw-user-menu-label {
+    @apply gap-2 px-1 py-1.5 text-sm font-normal leading-tight text-popover-foreground;
+  }
+
+  .sw-user-menu-name {
+    @apply font-medium;
+  }
+
+  .sw-user-menu-detail {
+    @apply text-xs;
+  }
+
+  .sw-button.sw-user-menu-trigger {
+    @apply rounded-full;
+  }
+
+}
+
+/* Disclosure identity, adapted from Shadleaf (Apache-2.0, see NOTICE). */
+@layer components {
+  /* Accordion. The height animation's speed (components/accordion.css) is --sw-accordion-duration. */
+  .sw-accordion-item {
+    @apply border-border not-last:border-b;
+    --sw-accordion-duration: 200ms;
+  }
+
+  .sw-accordion-trigger {
+    @apply rounded-lg py-2.5 text-sm font-medium hover:underline focus-visible:border-ring
+      focus-visible:ring-3 focus-visible:ring-ring/50;
+  }
+
+  .sw-accordion-trigger-icon {
+    @apply size-4 text-muted-foreground;
+  }
+
+  .sw-accordion-content {
+    @apply pt-0 pb-2.5 text-sm [&_a]:underline [&_a]:underline-offset-3 [&_a:hover]:text-foreground
+      [&_p:not(:last-child)]:mb-4;
+  }
+
+  /* Collapsible. A trigger drawn as a button (.sw-button) gets the rest from the button's rules. */
+  .sw-collapsible-trigger {
+    @apply rounded-lg focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50;
+  }
+
+  /* shadcn's examples put gap-2 between the trigger and the content. */
+  .sw-collapsible-content {
+    @apply mt-2;
+  }
+
+  .sw-collapsible-trigger:not(.sw-button) {
+    @apply text-sm font-medium;
+  }
+
+  /*
+    Tabs. The inactive tabs' text is mixed from the foreground, as in shadcn, and the active one raised on the muted
+    track; in the line variant a bar in the foreground colour marks it.
+  */
+  .sw-tabs {
+    @apply gap-2;
+  }
+
+  .sw-tabs-list {
+    @apply rounded-lg p-[3px] text-muted-foreground;
+  }
+
+  .sw-tabs:not([data-orientation]) > .sw-tabs-list {
+    @apply h-8;
+  }
+
+  .sw-tabs-list:not([data-variant]) {
+    @apply bg-muted;
+  }
+
+  .sw-tabs-list[data-variant='line'] {
+    @apply gap-1 rounded-none bg-transparent;
+  }
+
+  .sw-tabs-trigger {
+    @apply gap-1.5 rounded-md border border-transparent px-1.5 py-0.5
+      text-sm font-medium text-muted-legible hover:text-foreground dark:text-muted-legible dark:hover:text-foreground
+      focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50 focus-visible:outline-1 focus-visible:outline-ring motion-safe:transition-all
+      [&_svg:not([class*='size-'],[data-icon-size])]:size-4;
+  }
+
+  .sw-tabs:not([data-orientation]) > .sw-tabs-list > .sw-tabs-trigger {
+    @apply h-[calc(100%-1px)];
+  }
+
+  .sw-tabs-trigger:has(> svg:first-child) {
+    @apply ps-1;
+  }
+
+  .sw-tabs-trigger:has(> svg:last-child) {
+    @apply pe-1;
+  }
+
+  .sw-tabs-list:not([data-variant]) > .sw-tabs-trigger[aria-selected='true'] {
+    @apply bg-background text-foreground shadow-sm dark:border-input dark:bg-input/30 dark:text-foreground;
+  }
+
+  .sw-tabs-list[data-variant='line'] > .sw-tabs-trigger {
+    @apply after:bg-foreground;
+  }
+
+  .sw-tabs-list[data-variant='line'] > .sw-tabs-trigger[aria-selected='true'] {
+    @apply text-foreground;
+  }
+
+  /* The panel takes the focus after the tabs (tabindex="0"). */
+  .sw-tabs-content {
+    @apply rounded-md text-sm focus-visible:ring-[3px] focus-visible:ring-ring/50;
+  }
+
+}
+
+/* A summary's label can wrap; keep the skin's button minimum height instead of clipping it. */
+@layer components {
+  .sw-collapsible-trigger.sw-button:not([data-size='icon']) { @apply h-auto; }
+  .sw-collapsible-trigger.sw-button:not([data-size]) { @apply min-h-8; }
+  .sw-collapsible-trigger.sw-button[data-size='sm'] { @apply min-h-7; }
+  .sw-collapsible-trigger.sw-button[data-size='lg'] { @apply min-h-9; }
+}
+
+/* Attachment display, adapted from Shadleaf (Apache-2.0; see NOTICE). */
+@layer components {
+  .sw-attachment {
+    @apply rounded-xl border border-border bg-card text-card-foreground;
+  }
+
+  .sw-attachment:not([data-width]) {
+    @apply w-fit;
+  }
+
+  .sw-attachment:not([data-state]),
+  .sw-attachment[data-state='uploading'],
+  .sw-attachment[data-state='processing'] {
+    @apply border-solid;
+  }
+
+  .sw-attachment[data-state='idle'] {
+    @apply border-dashed;
+  }
+
+  .sw-attachment[data-state='error'] {
+    @apply border-destructive/30;
+  }
+
+  .sw-attachment:has(> .sw-attachment-trigger):hover {
+    @apply bg-muted/50;
+  }
+
+  .sw-attachment:has(> .sw-attachment-trigger:focus-visible) {
+    @apply border-ring;
+  }
+
+  .sw-attachment-trigger:focus-visible {
+    @apply ring-[3px] ring-ring/50;
+  }
+
+  .sw-attachment:not([data-orientation]) {
+    @apply min-w-40;
+  }
+
+  .sw-attachment[data-orientation='vertical']:not([data-width]) {
+    @apply w-24;
+  }
+
+  .sw-attachment[data-orientation='vertical']:not([data-width]):has(> .sw-attachment-content) {
+    @apply w-30;
+  }
+
+  .sw-attachment:not([data-size]) {
+    @apply gap-2 text-sm;
+  }
+
+  .sw-attachment:not([data-size]):has(> .sw-attachment-media) {
+    @apply p-2;
+  }
+
+  .sw-attachment:not([data-size]):has(> .sw-attachment-content) {
+    @apply px-2.5 py-2;
+  }
+
+  .sw-attachment[data-size='sm'] {
+    @apply gap-2.5 text-xs;
+  }
+
+  .sw-attachment[data-size='sm']:has(> .sw-attachment-media) {
+    @apply p-1.5;
+  }
+
+  .sw-attachment[data-size='sm']:has(> .sw-attachment-content) {
+    @apply px-2 py-1.5;
+  }
+
+  .sw-attachment[data-size='xs'] {
+    @apply gap-1.5 rounded-lg text-xs;
+  }
+
+  .sw-attachment[data-size='xs']:has(> .sw-attachment-media) {
+    @apply p-1;
+  }
+
+  .sw-attachment[data-size='xs']:has(> .sw-attachment-content) {
+    @apply px-1.5 py-1;
+  }
+
+  .sw-attachment-media {
+    @apply w-10 rounded-lg bg-muted text-foreground;
+  }
+
+  .sw-attachment-media:not([data-variant]) svg:not([class*='size-'], [data-icon-size]) {
+    @apply size-4;
+  }
+
+  .sw-attachment[data-size='sm'] > .sw-attachment-media {
+    @apply w-8;
+  }
+
+  .sw-attachment[data-size='xs'] > .sw-attachment-media {
+    @apply w-7 rounded-md;
+  }
+
+  .sw-attachment[data-size='xs'] > .sw-attachment-media:not([data-variant]) svg:not([class*='size-'], [data-icon-size]) {
+    @apply size-3.5;
+  }
+
+  .sw-attachment[data-orientation='vertical'] > .sw-attachment-media {
+    @apply w-full;
+  }
+
+  .sw-attachment[data-orientation='vertical'] > .sw-attachment-media:not([data-variant]) svg:not([class*='size-'], [data-icon-size]) {
+    @apply size-6;
+  }
+
+  .sw-attachment[data-state='error'] > .sw-attachment-media {
+    @apply bg-destructive/10 text-destructive-legible;
+  }
+
+  .sw-attachment[data-state='uploading'] > .sw-attachment-media[data-variant='image'],
+  .sw-attachment[data-state='processing'] > .sw-attachment-media[data-variant='image'],
+  .sw-attachment[data-state='error'] > .sw-attachment-media[data-variant='image'] {
+    @apply opacity-60;
+  }
+
+  .sw-attachment-content {
+    @apply leading-tight;
+  }
+
+  .sw-attachment[data-orientation='vertical'] > .sw-attachment-content {
+    @apply px-1;
+  }
+
+  .sw-attachment-title {
+    @apply font-medium;
+  }
+
+  .sw-attachment-description {
+    @apply mt-0.5 text-xs text-muted-foreground;
+  }
+
+  .sw-attachment:has(> .sw-attachment-trigger):hover > .sw-attachment-content > .sw-attachment-description {
+    @apply text-muted-legible;
+  }
+
+  .sw-attachment[data-state='error'] > .sw-attachment-content > .sw-attachment-description {
+    @apply text-destructive-legible;
+  }
+
+  .sw-attachment-group {
+    @apply rounded-lg;
+  }
+
+  .sw-attachment-group:not([data-layout]) {
+    @apply gap-3 scroll-px-1 py-1;
+  }
+
+  .sw-attachment-group[data-layout='grid'] {
+    @apply grid-cols-[repeat(auto-fill,minmax(min(100%,8rem),1fr))] gap-3;
+  }
+
+  .sw-attachment-group:focus-visible {
+    @apply ring-[3px] ring-ring/50;
+  }
+
+
+  .sw-attachment { --sw-attachment-ring-width: 3px; }
+  .sw-attachment-action.sw-button[data-size='icon'] { @apply size-6 p-0; }
+  .sw-attachment-action.sw-button[data-size='icon'] svg { @apply size-3.5; }
+}
+
+@layer components {
+  .sw-attachment > .sw-attachment-trigger.sw-button { width:auto; height:auto; min-width:0; padding:0; border:0; background:transparent; box-shadow:none; }
+  .sw-attachment > .sw-attachment-trigger.sw-button:focus-visible { box-shadow:0 0 0 var(--sw-attachment-ring-width) color-mix(in oklch, var(--ring) 50%, transparent); }
+}
+
+/* Table/pagination, adapted from Shadleaf (Apache-2.0; see NOTICE). */
+@layer components {
+  .sw-table {
+    @apply text-sm;
+  }
+
+  .sw-table > :is(thead, tbody, tfoot) > tr {
+    @apply border-b border-border;
+  }
+
+  .sw-table > tbody > tr {
+    @apply hover:bg-muted/50 motion-safe:transition-colors;
+  }
+
+  /* A selected row, as shadcn/ui's data-state=selected: one whose first cell holds a checked checkbox. */
+  .sw-table > tbody > tr:has(> :first-child .sw-checkbox:checked) {
+    @apply bg-muted;
+  }
+
+  .sw-table > tbody > tr:last-child,
+  .sw-table > tfoot > tr:last-child {
+    @apply border-b-0;
+  }
+
+  .sw-table > tfoot {
+    @apply border-t border-border bg-muted/50 font-medium;
+  }
+
+  .sw-table > :is(thead, tbody, tfoot) > tr > th {
+    @apply h-10 px-2 font-medium text-foreground;
+  }
+
+  .sw-table > :is(thead, tbody, tfoot) > tr > td {
+    @apply p-2;
+  }
+
+  .sw-table > :is(thead, tbody, tfoot) > tr > :is(th, td):has(> .sw-checkbox-wrapper) {
+    @apply pe-0;
+  }
+
+  .sw-table > caption {
+    @apply mt-4 text-sm text-muted-foreground;
+  }
+
+  /*
+    Pinned first column (sticky-first-column): the cells hide what scrolls under them with the table's background
+    (--sw-table-bg, --background unless the table sits on something else, such as a card), and a gradient carries the
+    tint of the row's hover, selected and foot state. The edge fades in with the container's scroll (table.css).
+  */
+  .sw-table[data-sticky='first-column'] {
+    --sw-table-tint: transparent;
+  }
+
+  .sw-table[data-sticky='first-column'] > tbody > tr:has(> :first-child .sw-checkbox:checked) {
+    --sw-table-tint: var(--muted);
+  }
+
+  .sw-table[data-sticky='first-column'] > tfoot > tr {
+    --sw-table-tint: color-mix(in oklab, var(--muted) 50%, transparent);
+  }
+
+  @media (hover: hover) {
+    .sw-table[data-sticky='first-column'] > tbody > tr:hover:not(:has(> :first-child .sw-checkbox:checked)) {
+      --sw-table-tint: color-mix(in oklab, var(--muted) 50%, transparent);
+    }
+  }
+
+  .sw-table[data-sticky='first-column'] > :is(thead, tbody, tfoot) > tr > :is(th, td):first-child {
+    background-color: var(--sw-table-bg, var(--background));
+    background-image: linear-gradient(var(--sw-table-tint), var(--sw-table-tint));
+  }
+
+  .sw-table[data-sticky='first-column'] > :is(thead, tbody, tfoot) > tr > :is(th, td):first-child::after {
+    border-inline-end: 1px solid var(--border);
+  }
+
+  /* Column groups: a line on the start edge of every colgroup after the first, through every row (table.css). */
+  .sw-table > colgroup + colgroup {
+    border-inline-start: 1px solid var(--border);
+  }
+
+  .sw-table-sort {
+    @apply -ms-2.5;
+  }
+
+  .sw-table-head[data-align='center'] > .sw-table-sort {
+    @apply ms-0;
+  }
+
+  .sw-table-head[data-align='end'] > .sw-table-sort {
+    @apply ms-0 -me-2.5;
+  }
+
+  .sw-table > tbody > tr.sw-table-empty > td {
+    @apply h-24;
+  }
+
+  /*
+    Compact table (size sm): smaller cells and text, for dense figures and print. The sort link is an xs
+    button there (table-head.html), so its offset follows that button's padding.
+  */
+  .sw-table[data-size='sm'] {
+    @apply text-xs;
+  }
+
+  .sw-table[data-size='sm'] > :is(thead, tbody, tfoot) > tr > th {
+    @apply h-8 px-2;
+  }
+
+  .sw-table[data-size='sm'] > :is(thead, tbody, tfoot) > tr > td {
+    @apply px-2 py-1;
+  }
+
+  .sw-table[data-size='sm'] > :is(thead, tbody, tfoot) > tr > :is(th, td):has(> .sw-checkbox-wrapper) {
+    @apply pe-0;
+  }
+
+  .sw-table[data-size='sm'] > caption {
+    @apply mt-2 text-xs;
+  }
+
+  .sw-table[data-size='sm'] > :is(thead, tbody, tfoot) > tr > .sw-table-head > .sw-table-sort {
+    @apply -ms-2;
+  }
+
+  .sw-table[data-size='sm'] > :is(thead, tbody, tfoot) > tr > .sw-table-head[data-align='center'] > .sw-table-sort {
+    @apply ms-0;
+  }
+
+  .sw-table[data-size='sm'] > :is(thead, tbody, tfoot) > tr > .sw-table-head[data-align='end'] > .sw-table-sort {
+    @apply ms-0 -me-2;
+  }
+
+  .sw-table[data-size='sm'] > tbody > tr.sw-table-empty > td {
+    @apply h-16;
+  }
+
+  /*
+    Pagination. The links are ghost buttons, the current page an outline one (.sw-button rules). Previous and Next keep
+    their own padding on the chevron's side, as shadcn/ui's.
+  */
+  .sw-pagination-content {
+    @apply gap-0.5;
+  }
+
+  .sw-pagination-ellipsis {
+    @apply size-8;
+  }
+
+  .sw-pagination-ellipsis > svg:not([class*='size-'], [data-icon-size]) {
+    @apply size-4;
+  }
+
+  .sw-button.sw-pagination-previous:has(> [data-icon]) {
+    @apply ps-1.5;
+  }
+
+  .sw-button.sw-pagination-next:has(> [data-icon]) {
+    @apply pe-1.5;
+  }
+
+  .sw-pagination-summary,
+  .sw-table-selection-count {
+    @apply text-sm text-muted-foreground;
+  }
+
+  .sw-pagination-size {
+    @apply gap-2;
+  }
+
+  .sw-pagination-size-label {
+    @apply text-sm font-medium;
+  }
+
+
+}
+
+@layer components {
+  .sw-table-toolbar { @apply mb-4 gap-3; }
+  .sw-table-bulk-actions { @apply mb-3 gap-2; }
+  .sw-table-footer { @apply mt-4 gap-4; }
+  .sw-table-footer-controls { @apply gap-4; }
+  .sw-table > :is(thead, tbody, tfoot) > tr > .sw-table-select { @apply w-10 pe-0; }
+  .sw-table[data-size='sm'] .sw-table-sort.sw-button { @apply h-6 px-2 text-xs; }
+}
+
+@layer components { .sw-table-select .sw-checkbox-wrapper { @apply p-1; } }
+
+/* Custom select: Shadleaf identity, Apache-2.0. */
+@layer components {
+  .sw-select {
+    @apply gap-1.5 rounded-lg border border-input bg-transparent ps-2.5 pe-8 text-sm
+      motion-safe:transition-colors
+      focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50
+      aria-invalid:border-destructive aria-invalid:ring-3 aria-invalid:ring-destructive/20
+      disabled:bg-input/50 dark:disabled:bg-input/80 dark:bg-input/30 dark:hover:bg-input/50
+      dark:aria-invalid:border-destructive/50 dark:aria-invalid:ring-destructive/40
+      [&_:is(selectedcontent,.sw-select-value)]:gap-1.5
+      [&_svg:not([class*='size-'],[data-icon-size])]:size-4;
+  }
+
+  .sw-select-wrapper:not([data-size]) > .sw-select,
+  .sw-select-wrapper[data-size='default'] > .sw-select {
+    @apply h-8;
+  }
+
+  .sw-select-wrapper[data-size='sm'] > .sw-select {
+    @apply h-7 rounded-[min(--theme(--radius-md),10px)];
+  }
+
+  .sw-select:has(> option[data-placeholder]:checked),
+  .sw-select[data-placeholder] {
+    @apply text-muted-foreground;
+  }
+
+  .sw-select-icon {
+    @apply text-muted-foreground;
+  }
+
+  .sw-select-content {
+    @apply rounded-lg bg-popover p-1 text-popover-foreground shadow-md ring-1 ring-foreground/10 duration-100;
+  }
+
+  /* The customizable select's list. A rule of its own: a browser without it drops a rule that names it. */
+  .sw-select::picker(select) {
+    @apply rounded-lg bg-popover p-1 text-popover-foreground shadow-md ring-1
+      ring-foreground/10 duration-100;
+  }
+
+  .sw-select-content,
+  .sw-select {
+    --sw-popup-offset: .25rem;
+    --sw-popup-slide: .5rem;
+  }
+
+  .sw-select-item {
+    @apply gap-1.5 rounded-md py-1 ps-1.5 pe-8 text-sm
+      hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground data-active:bg-accent data-active:text-accent-foreground;
+  }
+
+  .sw-select-item svg:not([class*='size-'], [data-icon-size]) {
+    @apply size-4;
+  }
+
+  .sw-select-item:focus-visible,
+  .sw-select-wrapper:has(> .sw-select:focus-visible) .sw-select-item[data-active] {
+    @apply ring-[3px] ring-ring/50 ring-inset;
+  }
+
+  .sw-select-item-indicator {
+    @apply end-2;
+  }
+
+  .sw-select-group,
+  .sw-select-label {
+    @apply text-xs text-muted-foreground;
+  }
+
+  .sw-select-label {
+    @apply px-1.5 py-1;
+  }
+
+  .sw-select-group > .sw-select-item {
+    @apply text-sm text-popover-foreground;
+  }
+
+  .sw-select-separator {
+    @apply -mx-1 my-1 bg-border;
+  }
+
+
+}
+
+/* Combobox identity adapted from Shadleaf (Apache-2.0). */
+@layer components {
+  .sw-combobox-select {
+    @apply rounded-lg border border-input bg-transparent py-1 ps-2.5
+      pe-8 text-sm motion-safe:transition-colors focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50
+      aria-invalid:border-destructive aria-invalid:ring-3 aria-invalid:ring-destructive/20 dark:bg-input/30 dark:hover:bg-input/50 dark:aria-invalid:border-destructive/50
+      dark:aria-invalid:ring-destructive/40 dark:disabled:bg-input/80 disabled:bg-input/50;
+  }
+
+  .sw-combobox-select[multiple] {
+    @apply pe-2.5;
+  }
+
+  .sw-combobox-select:not([multiple]) {
+    @apply h-8;
+  }
+
+  .sw-combobox-icon {
+    @apply text-muted-foreground;
+  }
+
+  .sw-combobox-control {
+    @apply min-h-8 rounded-lg border border-input bg-transparent px-2.5
+      py-1 text-base motion-safe:transition-colors dark:bg-input/30 md:text-sm;
+  }
+
+  .sw-combobox-control:has(> .sw-combobox-input[aria-invalid='true']) {
+    @apply border-destructive ring-3 ring-destructive/20 dark:border-destructive/50 dark:ring-destructive/40;
+  }
+
+  .sw-combobox-control:has(> .sw-combobox-input:focus-visible) {
+    @apply border-ring ring-3 ring-ring/50;
+  }
+
+  .sw-combobox-control:has(> .sw-combobox-input:disabled) {
+    @apply cursor-not-allowed bg-input/50 dark:bg-input/80;
+  }
+
+  .sw-combobox-control:has(> .sw-combobox-input[readonly]) {
+    @apply bg-muted;
+  }
+
+  .sw-combobox-input {
+    @apply placeholder:text-muted-foreground;
+  }
+
+  .sw-combobox[data-multiple] > .sw-combobox-control {
+    @apply gap-1 py-1;
+  }
+
+  .sw-combobox[data-multiple] > .sw-combobox-control:has(> .sw-combobox-chip) {
+    @apply ps-1;
+  }
+
+  .sw-combobox-clear,
+  .sw-combobox-trigger {
+    @apply rounded-[calc(var(--radius)-3px)] -me-1.5 text-muted-foreground hover:bg-muted hover:text-foreground;
+  }
+
+  .sw-combobox-clear:focus-visible,
+  .sw-combobox-trigger:focus-visible {
+    @apply ring-3 ring-ring/50;
+  }
+
+  .sw-combobox-clear svg:not([class*='size-'], [data-icon-size]),
+  .sw-combobox-trigger svg:not([class*='size-'], [data-icon-size]) {
+    @apply size-4;
+  }
+
+  .sw-combobox-chip {
+    @apply h-5.25 gap-1 rounded-sm bg-muted px-1.5 text-xs
+      font-medium text-foreground has-[>.sw-combobox-chip-remove]:pe-0;
+  }
+
+  .sw-combobox-chip-remove {
+    @apply -ms-1 rounded-sm size-5 opacity-50 hover:opacity-100 focus-visible:opacity-100 focus-visible:ring-2
+      focus-visible:ring-ring/50;
+  }
+
+  .sw-combobox-chip-remove svg:not([class*='size-'], [data-icon-size]) {
+    @apply size-3.5;
+  }
+
+  .sw-combobox-empty {
+    @apply py-2 text-sm text-muted-foreground;
+  }
+
+
+  .sw-combobox-content {
+    @apply rounded-lg bg-popover p-1 text-popover-foreground shadow-md ring-1 ring-foreground/10 duration-100;
+  }
+
+  .sw-combobox-content {
+    --sw-popup-offset: .25rem;
+    --sw-popup-slide: .5rem;
+  }
+
+  .sw-combobox-item {
+    @apply gap-1.5 rounded-md py-1 ps-1.5 pe-8 text-sm
+      hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground data-active:bg-accent data-active:text-accent-foreground;
+  }
+
+  .sw-combobox-item svg:not([class*='size-'], [data-icon-size]) {
+    @apply size-4;
+  }
+
+  .sw-combobox-item-indicator {
+    @apply end-2;
+  }
+
+  .sw-combobox-label {
+    @apply text-xs text-muted-foreground px-1.5 py-1;
+  }
+
+  .sw-combobox-label {
+    @apply px-1.5 py-1;
+  }
+
+  .sw-combobox-separator {
+    @apply -mx-1 my-1 bg-border;
+  }
+  .sw-combobox:has(.sw-combobox-input:focus-visible) .sw-combobox-item[data-active] { @apply ring-3 ring-ring/50 ring-inset; }
+
+}
+
+/* Calendar/date picker identity from Shadleaf (Apache-2.0). */
+@layer components {
+  .sw-calendar {
+    @apply bg-background p-2;
+    --sw-cell-size: 1.75rem;
+    --sw-cell-radius: calc(var(--radius) - 2px);
+  }
+
+  .sw-calendar-nav-button {
+    @apply rounded-(--sw-cell-radius) hover:bg-muted hover:text-foreground dark:hover:bg-muted/50 focus-visible:ring-[3px] focus-visible:ring-ring/50;
+  }
+
+  .sw-calendar-caption,
+  .sw-calendar-dropdowns {
+    @apply text-sm font-medium;
+  }
+
+  .sw-calendar-dropdown {
+    @apply border border-input;
+  }
+
+  .sw-calendar-dropdown:has(> .sw-calendar-select:focus-visible) {
+    @apply border-ring ring-[3px] ring-ring/50;
+  }
+
+  .sw-calendar-dropdown-label {
+    @apply h-6 pe-1 ps-1.5;
+  }
+
+  .sw-calendar-dropdown-label > svg {
+    @apply text-muted-foreground;
+  }
+
+  .sw-calendar-weekday,
+  .sw-calendar-week-number {
+    @apply text-[0.8rem] font-normal text-muted-foreground;
+  }
+
+  .sw-calendar-day-button {
+    @apply text-sm font-normal hover:bg-muted hover:text-foreground focus-visible:ring-[3px] focus-visible:ring-ring/50;
+  }
+
+  .sw-calendar-day[data-today]:not([data-selected], [data-range-start], [data-range-end]),
+  .sw-calendar-day[data-range-start],
+  .sw-calendar-day[data-range-end] {
+    @apply bg-muted text-foreground after:bg-muted;
+  }
+
+  .sw-calendar-day-button[data-outside] {
+    @apply text-muted-foreground;
+  }
+
+  .sw-calendar-day-button[data-outside]:is([data-today], [data-range-middle], :hover) {
+    @apply text-muted-legible;
+  }
+
+  .sw-calendar-day-button[data-range-middle] {
+    @apply bg-muted text-foreground;
+  }
+
+  .sw-calendar-day-button[data-selected]:not([data-range-middle]) {
+    @apply bg-primary text-primary-foreground hover:bg-primary hover:text-primary-foreground;
+  }
+
+  .sw-calendar-day-button[data-disabled],
+  .sw-calendar-day-button:disabled {
+    @apply opacity-50 forced-colors:text-[GrayText] forced-colors:opacity-100;
+  }
+
+  /*
+    Date picker, as shadcn's example: the outline button in the body's weight, its text muted while no date is chosen
+    (the foreground, as for any outline button, on the hover and open backgrounds, where muted text is under 4.5:1);
+    the popover fits the calendar, which brings its own padding.
+  */
+  .sw-button.sw-date-picker-trigger {
+    @apply font-normal;
+  }
+
+  .sw-button.sw-date-picker-trigger[data-empty] {
+    @apply text-muted-foreground hover:text-foreground aria-expanded:text-foreground;
+  }
+
+  .sw-popover-content.sw-date-picker-content {
+    @apply w-auto p-0;
+  }
+
+
+}
+
+@media(width < 22rem) { @layer components { .sw-calendar { --sw-cell-size: 1.75rem; } } }
+
+/* Month view — adapted from Shadleaf. */
+@layer components {
+  .sw-month-view {
+    --sw-cell-size: 1.75rem;
+    --sw-cell-radius: calc(var(--radius) - 2px);
+    --sw-day-height: 4.0rem;
+    --sw-day-radius: calc(var(--radius) - 2px);
+  }
+
+  @media (width >= 48rem) {
+    .sw-month-view {
+      --sw-day-height: 6.0rem;
+    }
+  }
+
+  .sw-month-view-nav-button {
+    @apply rounded-(--sw-cell-radius) hover:bg-muted hover:text-foreground dark:hover:bg-muted/50 focus-visible:ring-[3px] focus-visible:ring-ring/50;
+  }
+
+  /* Month view navigation: nav-size is the size of an icon button. */
+  .sw-month-view:not([data-nav-size]) {
+    --sw-nav-size: var(--sw-cell-size);
+  }
+
+  .sw-month-view[data-nav-size='icon-xs'] {
+    --sw-nav-size: 1.5rem;
+  }
+
+  .sw-month-view[data-nav-size='icon-sm'] {
+    --sw-nav-size: 1.75rem;
+  }
+
+  .sw-month-view[data-nav-size='icon'] {
+    --sw-nav-size: 2rem;
+  }
+
+  .sw-month-view[data-nav-size='icon-lg'] {
+    --sw-nav-size: 2.25rem;
+  }
+
+  .sw-month-view[data-nav-size='icon-xs'] > .sw-month-view-nav > .sw-month-view-nav-button svg {
+    @apply size-3;
+  }
+
+  .sw-month-view-caption {
+    @apply text-sm font-medium;
+  }
+
+  .sw-month-view-weekday,
+  .sw-month-view-week-number {
+    @apply text-[0.8rem] font-normal text-muted-foreground;
+  }
+
+  .sw-month-view-day-link,
+  .sw-month-view-day-body {
+    @apply border border-border text-sm font-normal text-foreground;
+  }
+
+  .sw-month-view-day-link {
+    @apply hover:bg-muted dark:hover:bg-muted/50 focus-visible:ring-[3px] focus-visible:ring-ring/50;
+  }
+
+  .sw-month-view-day[data-outside] .sw-month-view-day-number {
+    @apply text-muted-foreground;
+  }
+
+  .sw-month-view-day[data-outside] > .sw-month-view-day-link:hover .sw-month-view-day-number {
+    @apply text-muted-legible;
+  }
+
+  .sw-month-view-day[data-today] .sw-month-view-day-number {
+    @apply bg-primary font-medium text-primary-foreground;
+  }
+
+}
+
+/* Chart tooltip identity — adapted from Shadleaf. */
+@layer components {
+ .sw-chart-tooltip-content { @apply rounded-lg border border-border/50 bg-background px-2.5 py-1.5 text-xs shadow-xl; }
+ .sw-chart-plot:focus-visible { @apply outline-[3px] outline-offset-2 outline-solid outline-ring/50; }
+ .sw-chart-legend-indicator,.sw-chart-tooltip-indicator { @apply rounded-[2px]; }
+}
+
+/* Nova disabled input-group surfaces. */
+@layer components {
+.sw-input-group:has(> .sw-input-group-input:disabled),
+  .sw-input-group:has(> .sw-input-group-textarea:disabled) { @apply bg-input/50 dark:bg-input/80; }
+  .sw-toggle-group { @apply rounded-lg; }
+}

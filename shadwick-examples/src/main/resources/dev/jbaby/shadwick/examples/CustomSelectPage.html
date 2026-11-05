@@ -1,0 +1,34 @@
+<wicket:extend xmlns:wicket="http://wicket.apache.org">
+<div><h1 class="ex-title">Custom select</h1>
+<p class="ex-lead">A polished single-choice picker. Real select values, grouped choices and icons, with native fallback and Wicket validation.</p></div>
+<div class="ex-forms">
+<section class="ex-section"><h2>Normal submission</h2>
+<form wicket:id="form" class="ex-form" aria-label="Normal workspace" novalidate>
+<div wicket:id="workspace"></div>
+<div class="ex-row"><button wicket:id="save" type="submit">Save workspace</button><button type="reset" class="sw-button" data-variant="outline">Reset</button></div>
+<p wicket:id="saved" class="ex-muted" role="status"></p></form></section>
+<section class="ex-section"><h2>Ajax validation</h2>
+<form wicket:id="ajaxForm" class="ex-form" aria-label="Ajax workspace" novalidate>
+<div wicket:id="workspace"></div>
+<div class="ex-row"><button wicket:id="save" type="submit">Save workspace</button><button type="reset" class="sw-button" data-variant="outline">Reset</button></div>
+<p wicket:id="saved" class="ex-muted" role="status"></p></form></section>
+</div>
+<section class="ex-section"><h2>Live choices · small size</h2>
+<p class="ex-muted">Changes update the server immediately. Refresh replaces the field and removes or restores Operations.</p>
+<form wicket:id="liveForm" class="ex-form" aria-label="Live workspace"><div wicket:id="workspace"></div>
+<div class="ex-row"><a wicket:id="refresh">Refresh choices</a><button type="reset" class="sw-button" data-variant="outline">Reset</button></div>
+<p wicket:id="current" class="ex-muted" role="status"></p></form></section>
+<section class="ex-section"><h2>Managed and longer lists</h2><div class="ex-form"><div wicket:id="managed"></div><div wicket:id="region"></div></div></section>
+<section class="ex-section"><h2>Inside overlays</h2><div class="ex-row">
+<button type="button" class="sw-button" data-variant="outline" commandfor="select-dialog" command="show-modal">Open select dialog</button>
+<button type="button" class="sw-button" data-variant="outline" popovertarget="select-popover" aria-expanded="false" aria-haspopup="dialog">Open select popover</button>
+</div></section>
+<dialog id="select-dialog" class="sw-dialog" aria-labelledby="select-dialog-title" closedby="any"><div class="sw-dialog-form">
+<div class="sw-dialog-header"><h2 class="sw-dialog-title" id="select-dialog-title">Choose a workspace</h2><p class="sw-dialog-description">Escape dismisses the picker first.</p></div>
+<div wicket:id="dialogWorkspace"></div>
+<div class="sw-dialog-footer"><button type="button" class="sw-button" commandfor="select-dialog" command="close">Close dialog</button></div>
+</div></dialog>
+<div id="select-popover" class="sw-popover-content" data-side="bottom" data-align="start" popover="auto" role="dialog" tabindex="-1" aria-labelledby="select-popover-title">
+<h2 class="sw-popover-title" id="select-popover-title">Switch workspace</h2><div wicket:id="popoverWorkspace"></div>
+</div>
+</wicket:extend>

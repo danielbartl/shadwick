@@ -7,27 +7,40 @@ It includes markup structure, CSS and JavaScript adapted from third-party projec
 
 - Shadleaf (https://github.com/wimdeblauwe/shadleaf), shadcn/ui for Thymeleaf.
   Licensed under the Apache License, Version 2.0.
-  Shadwick's tokens, component structure CSS and skins (vega, lyra) are adapted
-  from Shadleaf's, as are the native popup, menu and toast interactions.
+  Shadwick's tokens, component structure CSS and skins (vega, lyra, nova) are adapted
+  from Shadleaf's, as are the native popup, menu, toast and custom select, combobox, calendar and date picker interactions.
+  Month-view markup and skin rules, and chart tooltip/legend structure and skins,
+  are also adapted from Shadleaf. The native SVG chart API and rendering patterns
+  follow Wicket Oat (MIT).
   Shadwick is inspired by Shadleaf; it is not affiliated with
   or endorsed by it.
+
+- Apache Wicket (https://wicket.apache.org/).
+  Wicket Extensions, Copyright 2006-2026 Apache Software Foundation.
+  This product includes software developed at The Apache Software Foundation
+  (http://www.apache.org/). The native DataTable markup is adapted from Apache
+  Wicket, licensed under the Apache License, Version 2.0.
+
+- Wicket Oat (https://github.com/danielbartl/wicket-oat).
+  Copyright (c) 2026 Daniel Bartl. Licensed under the MIT License.
+  The native SVG chart API and rendering patterns are adapted from Wicket Oat.
 
 - shadcn/ui (https://ui.shadcn.com), Copyright (c) 2023 shadcn.
   Licensed under the MIT License.
   The design tokens (names and the neutral theme's values), the component
-  anatomy and the vega and lyra styles come from shadcn/ui.
+  anatomy and the vega, lyra and nova styles come from shadcn/ui.
 
 - Basecoat (https://basecoatui.com), Copyright (c) 2025 Ronan Berder.
   Licensed under the MIT License.
   Shadleaf's skins, from which Shadwick's are adapted, follow Basecoat's
-  vega and lyra styles.
+  vega, lyra and nova styles.
 
 - Lucide (https://lucide.dev), Copyright (c) Lucide Contributors.
   Licensed under the ISC License.
   The bundled inline SVG icons (including the dialog close icon and spinner)
   are Lucide's, adapted through Wicket Oat.
 
-The MIT License (shadcn/ui, Basecoat):
+The MIT License (shadcn/ui, Basecoat, Wicket Oat):
 
   Permission is hereby granted, free of charge, to any person obtaining a copy
   of this software and associated documentation files (the "Software"), to deal

@@ -1,0 +1,14 @@
+<wicket:extend xmlns:wicket="http://wicket.apache.org">
+<div wicket:id="provider" class="ex-sidebar-demo">
+  <nav wicket:id="sidebar"></nav>
+  <div wicket:id="inset">
+    <header wicket:id="header"><button wicket:id="trigger"></button><span wicket:id="workspace" class="ex-muted"></span><div wicket:id="end"><div wicket:id="user"></div></div></header>
+    <div class="ex-sidebar-body">
+      <p class="ex-sidebar-eyebrow">A FAMILIAR FACE</p><h1 class="ex-title">User menu</h1><p class="ex-lead">Your account, wherever you feel at home.</p>
+      <section class="ex-sidebar-panel" aria-labelledby="account-places"><h2 id="account-places">One account. Two places.</h2><p>Open the avatar in the header, or your name at the foot of the sidebar. Both menus share the same account model, ordinary page links and a native Sign out form.</p><p wicket:id="status" role="status" class="ex-muted"></p><div class="ex-row"><button wicket:id="rename"></button><button wicket:id="picture"></button><button wicket:id="initials"></button></div></section>
+      <section class="ex-sidebar-panel" aria-labelledby="account-states"><h2 id="account-states">A welcome for every visitor</h2><p>Switch to an anonymous visitor to see the Sign in link. Follow it to the demo entry page, then return to the workspace. This example keeps a demo identity in your session; it collects no credentials.</p><div class="ex-row"><button wicket:id="anonymous"></button><button wicket:id="restore"></button></div></section>
+      <section class="ex-sidebar-panel" aria-labelledby="account-keyboard"><h2 id="account-keyboard">Right at your fingertips</h2><p>Focus an account button and press Arrow Up to jump to Sign out, or Arrow Down to start with My account. The menu supports typeahead, Home, End, Tab and Escape.</p><p>Collapse the sidebar to icons to see initials and a name hint. On a phone, Escape closes the account menu first, then the navigation panel.</p></section>
+    </div>
+  </div>
+</div>
+</wicket:extend>

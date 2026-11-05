@@ -1,0 +1,14 @@
+<wicket:panel xmlns:wicket="http://wicket.apache.org">
+  <div wicket:id="dropdown" class="sw-user-menu-dropdown">
+    <button wicket:id="trigger" type="button" class="sw-user-menu-trigger"><span wicket:id="avatar" class="sw-user-menu-avatar"></span><span class="sw-sidebar-menu-button-label sw-user-menu-text"><strong wicket:id="name" class="sw-user-menu-name"></strong><small wicket:id="triggerDetail" class="sw-user-menu-detail"></small></span><svg class="sw-user-menu-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="m7 9 5-5 5 5M7 15l5 5 5-5"/></svg></button>
+    <div wicket:id="menu" class="sw-user-menu-content">
+      <div class="sw-dropdown-menu-label sw-user-menu-label"><span wicket:id="menuAvatar" class="sw-user-menu-avatar"></span><span class="sw-user-menu-text"><span wicket:id="menuName" class="sw-user-menu-name"></span><span wicket:id="detail" class="sw-user-menu-detail"></span></span></div>
+      <div class="sw-dropdown-menu-separator" role="separator"></div>
+      <wicket:container wicket:id="links"><a wicket:id="link"><svg wicket:id="icon"></svg><span wicket:id="label" class="sw-dropdown-menu-text"></span></a></wicket:container>
+      <div wicket:id="linksEnd" class="sw-dropdown-menu-separator" role="separator"></div>
+      <button wicket:id="signOutButton" type="submit"><svg wicket:id="icon"></svg><span wicket:id="label" class="sw-dropdown-menu-text"></span></button>
+    </div>
+  </div>
+  <form wicket:id="signOut" method="post" hidden></form>
+  <a wicket:id="signIn" class="sw-user-menu-sign-in"><svg wicket:id="signInIcon"></svg><span wicket:id="signInLabel" class="sw-sidebar-menu-button-label"></span></a>
+</wicket:panel>
