@@ -35,6 +35,7 @@ public class SwSheet extends SwDialog {
 
     @Override protected Duration getCloseTransition() { return Duration.ofMillis(250); }
 
+    @Override public SwSheet setBusyIndicator(boolean enabled) { super.setBusyIndicator(enabled); return this; }
     @Override public SwSheet setContent(Component content) { super.setContent(content); return this; }
     @Override public SwSheet setTitle(String title) { super.setTitle(title); return this; }
     @Override public SwSheet setTitle(IModel<String> title) { super.setTitle(title); return this; }

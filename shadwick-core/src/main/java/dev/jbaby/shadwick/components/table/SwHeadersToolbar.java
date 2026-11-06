@@ -25,6 +25,7 @@ public class SwHeadersToolbar<S> extends AbstractToolbar {
         add(new ListView<IColumn<T, S>>("headers", (IModel<List<IColumn<T, S>>>) () -> List.copyOf(table.getColumns())) {
             @Override protected void populateItem(ListItem<IColumn<T, S>> item) {
                 var column = item.getModelObject();
+                configureHeader(item, item.getIndex());
                 item.add(AttributeModifier.replace("scope", column.getHeaderColspan() > 1 ? "colgroup" : "col"));
                 item.add(AttributeModifier.append("class", "sw-table-head"));
                 if (column instanceof IStyledColumn<?, ?> styled && styled.getCssClass() != null) {
@@ -46,6 +47,8 @@ public class SwHeadersToolbar<S> extends AbstractToolbar {
             }
         });
     }
+    /** Custom per-column header attributes, e.g. visibility. */
+    protected void configureHeader(org.apache.wicket.Component header, int index) {}
     /** Return a real page URL to use native navigation, or null for an Ajax fallback callback. */
     protected CharSequence sortUrl(S property, SortOrder next) { return null; }
     protected void onSortChanged(Optional<AjaxRequestTarget> target) { target.ifPresent(t -> t.add(getTable())); }

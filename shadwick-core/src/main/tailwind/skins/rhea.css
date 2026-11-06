@@ -1696,7 +1696,7 @@
     --sw-table-tint: transparent;
   }
 
-  .sw-table[data-sticky='first-column'] > tbody > tr:has(> :first-child .sw-checkbox:checked) {
+  .sw-table[data-sticky='first-column'] > tbody > tr:has(> :is(:first-child:not([hidden]), [data-sw-first-column]) .sw-checkbox:checked) {
     --sw-table-tint: var(--muted);
   }
 
@@ -1705,17 +1705,17 @@
   }
 
   @media (hover: hover) {
-    .sw-table[data-sticky='first-column'] > tbody > tr:hover:not(:has(> :first-child .sw-checkbox:checked)) {
+    .sw-table[data-sticky='first-column'] > tbody > tr:hover:not(:has(> :is(:first-child:not([hidden]), [data-sw-first-column]) .sw-checkbox:checked)) {
       --sw-table-tint: color-mix(in oklab, var(--muted) 50%, transparent);
     }
   }
 
-  .sw-table[data-sticky='first-column'] > :is(thead, tbody, tfoot) > tr > :is(th, td):first-child {
+  .sw-table[data-sticky='first-column'] > :is(thead, tbody, tfoot) > tr > :is(th, td):is(:first-child:not([hidden]), [data-sw-first-column]) {
     background-color: var(--sw-table-bg, var(--background));
     background-image: linear-gradient(var(--sw-table-tint), var(--sw-table-tint));
   }
 
-  .sw-table[data-sticky='first-column'] > :is(thead, tbody, tfoot) > tr > :is(th, td):first-child::after {
+  .sw-table[data-sticky='first-column'] > :is(thead, tbody, tfoot) > tr > :is(th, td):is(:first-child:not([hidden]), [data-sw-first-column])::after {
     border-inline-end: 1px solid var(--border);
   }
 
@@ -2203,4 +2203,19 @@
 @layer components {
   .sw-button.sw-breadcrumb-ellipsis-trigger { @apply size-7 p-0; }
   .sw-combobox:has(.sw-combobox-input:focus-visible) .sw-combobox-item[data-active] { @apply ring-[3px] ring-ring/50 ring-inset; }
+}
+
+/* Progress, meter and rating identity, on the shared native/SVG structure. */
+@layer components {
+  .sw-progress, .sw-meter { @apply h-1.5 rounded-full bg-primary/10 shadow-inner; }
+  .sw-radial-progress { @apply size-14 text-xs font-medium; }
+  .sw-rating, .sw-rating-input { @apply gap-0.5; }
+  .sw-rating-option { @apply rounded-lg min-h-8 min-w-8; }
+}
+
+@layer components {
+  .sw-table-row-details > td { background-color: color-mix(in oklab, var(--muted) 40%, transparent); }
+  .sw-table-empty-value { color: var(--muted-foreground); }
+  .sw-table-editable[aria-disabled='true'] { text-decoration: none; }
+  .sw-table-editable { text-decoration-line: underline; text-decoration-style: dotted; text-underline-offset: .25em; }
 }

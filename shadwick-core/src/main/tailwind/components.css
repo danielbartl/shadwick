@@ -57,3 +57,6 @@
 @import "./components/month-view.css";
 
 @import "./components/chart.css";
+
+@import "./components/progress.css";
+@import "./components/rating.css";

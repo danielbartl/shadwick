@@ -15,9 +15,26 @@ Maven dependency and is done: no Node, no Tailwind, no CSS build on their side.
 
 ## Resume point — 2026-11-06
 
-**Next implementation group: full component documentation and a hosted interactive showcase.**
+**Publication checkpoint: busy/value controls and advanced tables.**
+The user requested committing and pushing all accumulated work and publishing the updated landing page.
+This checkpoint includes busy Ajax buttons, progress bars/rings, native meters, rating display/input,
+CSV export, column choices, lazy expandable details and validated inline editing. The `/status-controls`
+and `/advanced-tables` examples, nine-language messages, README, NOTICE and landing catalog are included.
+No new dependency was added. Use `git log -1 --oneline` and the Website workflow to identify the source
+revision and deployment result; 0d4a69a is the previous published internationalization checkpoint.
+
+CSV includes all filtered rows in provider sort order, including hidden exportable columns. Visibility is
+presentation, not authorization. Structural columns and at least one named data column remain visible.
+Inline forms stage drafts, recheck edit predicates and reject stale values. Application callbacks own
+persistence, authorization and database concurrency. Native standalone forms work; nested forms need Ajax.
+Editors retain server-side validation while their row remains visible. Stable `setRowKey` IDs let fresh
+provider models replace old delegates; paging/filtering a row away discards its editor. Details retain keys.
+The final component verification and implementation decisions remain recorded at the end of this file.
+Next roadmap group: full component documentation and a hosted interactive Wicket showcase, then agent
+skill/llms.txt and release preparation/Maven Central. Further Oat families/chart variants remain scoped follow-ups.
+
 The library ships English plus German, Spanish, French, Italian, Japanese, Dutch, Portuguese and Croatian
-built-in messages through Wicket's resource lookup: 248 translated core bundles across eight non-English
+built-in messages through Wicket's resource lookup: 280 translated core bundles across eight non-English
 languages. The standard examples have a native language picker; /internationalization?lang=hr-HR and
 /internationalization?lang=ja exercise controls, Ajax and native fallbacks. README covers locale selection
 and page/application overrides. Internationalization and Croatian are included in the publication
@@ -25,7 +42,8 @@ checkpoint below; use git log and the Website workflow for the source and deploy
 Maia, Mira, Luma, Rhea, Sera and Sketch join Vega, Lyra and Nova, including standalone/embedded bundles
 and selectors. All nine skins are included in this publication checkpoint; use `git log -1 --oneline`
 and the Website workflow for the current source/deployed revision.
-All main component families now have implementations. Review the recorded variant gaps before
+All main Shadleaf component families now have implementations. Wicket Oat has a broader catalog;
+its remaining gaps are recorded below. Review the recorded variant gaps before
 claiming full Shadleaf parity. Maven Central publication is still future work.
 Read Wicket Oat's corresponding APIs/tests and Shadleaf's markup/CSS/runtime first. Native
 select/date fields, custom single select, searchable single/multiple combobox and calendar/date
@@ -38,7 +56,25 @@ collapsible, attachment displays, data tables/pagination, custom select, combobo
 picker, month view and charts are included in this publication checkpoint, with verification
 records below. Attachment displays complement the completed upload controls.
 
-Current publication checkpoint — internationalization, 2026-11-06:
+Current publication checkpoint — controls and advanced tables, 2026-11-06:
+
+- Includes all locally completed busy/progress/meter/rating and advanced-table work. Landing catalog
+  copy highlights CSV, column choices, expandable details, inline edits, progress, meters and ratings.
+  Detailed runnable behavior is linked through README and the local Wicket showcase; the interactive
+  hosted showcase remains future work. Maven Central publication is also pending.
+- Final local JVM verification: 750 core and 62 example tests (812 total). New advanced-table browser
+  checks passed 72 cases across all nine skins/light-dark; existing table checks passed 144 cases, with
+  54 relevant geometry rechecks after the mobile refinement. Final model serialization is covered by
+  the JVM suite. Earlier busy-control checks and exact validation scope remain in the records below.
+- Chromium/Firefox checks include desktop/390px/320px screenshots and axe audits, nine message locales
+  and native fallbacks. Landing screenshot/axe/console/overflow checks passed all 18 cases across three
+  widths and Vega/Sera/Sketch. Site build/check passes 166 references and 105 unique IDs.
+- GitHub Pages deploys main through .github/workflows/pages.yml. Landing:
+  https://danielbartl.github.io/shadwick/ . The Website workflow records deployment outcome and revision.
+- Prior baseline 0d4a69a had successful Website and Build workflows, including Java 17/25 and browser checks.
+- Next: documentation and hosted showcase, followed by agent guidance and release preparation.
+
+Previous publication checkpoint — internationalization, 2026-11-06:
 
 - User requested committing/pushing internationalization, Croatian and the landing update. This checkpoint
   includes all nine languages, translated native/enhanced controls, application override support, the
@@ -460,7 +496,11 @@ wicket-extensions dependency was added after the user asked to continue with the
 9. **Visual breadth** (complete locally): all nine skins — Vega, Lyra, Nova, Maia, Mira, Luma, Rhea, Sera and Sketch.
 10. **Internationalization** (complete locally): English plus eight translated built-in message sets,
     locale-aware fallbacks and overrides, showcase language selection and Ajax/native verification.
-11. **Documentation and distribution** (next): full component docs and a hosted interactive showcase,
+11. **Additional Wicket Oat controls** (implemented locally): busy buttons, linear/radial progress,
+    meters, star-rating display and editable rating fields, plus advanced tables (CSV export, column
+    chooser, expandable row details and inline edits). Other confirmed gaps include forms, workflows,
+    layouts, trees/CRUD, messaging, async content and extra chart types. Scope these deliberately.
+12. **Documentation and distribution:** full component docs and a hosted interactive showcase,
     then agent guidance/llms.txt and a Maven Central release.
 
 Chart variant follow-ups: forecast joins, arbitrary per-series light/dark colors, natural splines
@@ -509,6 +549,26 @@ documentation and a hosted interactive showcase, then tooling and release prepar
 - Record every decision under Conventions as soon as it is made.
 
 ## Conventions
+
+### Busy buttons and progress/meter/rating controls (2026-11-06)
+
+- User selected the first proposed component group: busy Ajax buttons, linear/radial progress,
+  native meters, rating display and rating input. Advanced table features remain a later decision.
+- Match Wicket Oat constructors/models and setBusyIndicator API; use component-specific shadcn
+  styling and all nine skins. No new library/runtime dependency. Native progress/meter semantics,
+  SVG for radial progress and display stars, native radio inputs for the rating field.
+- Busy handling is opt-in, installed once through Shadwick.install and Ajax request listeners.
+  Mark before queueing, reject repeated activation, restore on success/error/cancel, preserve focus
+  and original attributes. Do not disable native submit controls before Wicket serializes the form.
+  Use a separate external runtime, no inline handlers/styles, and a localized loading message.
+- Clamp finite progress/rating values to their bounds; reject nonfinite numbers and invalid maxima.
+  Null progress is indeterminate; null meter uses the native minimum (meters are never indeterminate).
+  Read dynamic numeric models once per render. Preserve native min/max/low/high/optimum for meters.
+- Ship every new built-in message in all nine languages. New pages cover normal/Ajax validation,
+  replacement, failure/cancel handling, native no-script operation, RTL, reduced motion and forced colors.
+- References read: Oat AjaxBusyBehavior/install hook, Progress/Meter/RadialProgress/Rating/RatingField
+  and tests; Shadleaf button loading structure/docs; existing shadcn tokens/skin geometry and field anatomy.
+
 
 ### Internationalization (2026-11-06)
 
@@ -2218,3 +2278,140 @@ documentation and a hosted interactive showcase, then tooling and release prepar
   Do not describe this as a complete full-catalog run. Log: /tmp/shadwick-publish-ci-repair2.log.
 - Landing previews are generated from the rebuilt CSS/JS with content hashes. Site check now counts
   166 internal references and 105 unique IDs. Browser script: /tmp/shadwick-i18n-publish-site.cjs.
+
+
+## Busy buttons and progress/meter/rating handoff (2026-11-06)
+
+- User selected busy buttons and progress/meter/rating controls as the first additional Oat group;
+  decide the next group afterwards. Implemented AjaxBusyBehavior, SwProgress, SwRadialProgress,
+  SwMeter, SwRating and SwRatingField, with optional ProgressBehavior/MeterBehavior and facade methods.
+  Busy setters are fluent on SwButton, SwSubmitButton, SwDialog, SwSheet and SwConfirmDialog.
+- Shadwick.install adds one Ajax lifecycle listener, even if called twice. The opt-in busy runtime
+  marks before queueing, preserves original aria attributes/focus and blocks repeated activation.
+  It clears on success, cancellation and transport errors, respects replacement nodes, and resets
+  after persisted pageshow. Native submitters remain enabled while serialized; their loading label
+  is a sibling status indicator. Icon buttons replace their leading SVG with the spinner temporarily.
+- busy.js can initialize the shared namespace before shadwick.js. The core now guards its own
+  _coreInstalled flag so form feedback/dialogs still initialize and repeated core loads stay harmless.
+  Browser form validation exposed this ordering case; the final checks cover it with strict CSP.
+- Progress and meter are native elements, with finite model values, clamping and validated bounds.
+  Null progress is indeterminate; a null meter is its minimum. Meter quality matches native threshold
+  bands. Radial progress uses SVG attributes with no inline styles, localized percentage/optional
+  escaped text, clamped accessible values, no zero-value dot and a reduced-motion-aware unknown state.
+  Percentage truncation uses decimal arithmetic (29% remains 29%, avoiding binary rounding errors).
+- Read-only ratings round to half-stars and distinguish null from zero. Editable ratings are native
+  radios in the standard fieldset, bound to Integer with maximum 1..10, normal/Ajax validation and
+  disabled support. Empty stars have SVG outlines, selected/hovered stars fill; focus and shapes
+  remain clear in forced colors, and display half-stars mirror in RTL. Labels are resource text
+  escaped inside fixed trusted SVG/span markup. A malicious page-resource label is regression-tested.
+- Wicket's optional RadioChoice maps unknown IDs to null; the rating field rejects those IDs through
+  convertChoiceIdToChoice so forged values cannot clear/overwrite an existing model. Native posted
+  values are 1..max, not choice indices. Required, compound-property and disabled submissions are tested.
+- Added AjaxBusyBehavior.loading, SwRating.label/none and SwRatingField.stars/unavailable in all nine
+  languages. There are now 34 English bundle scopes and 272 translated core bundles. Rating radio
+  names use neutral count wording, including Croatian, avoiding singular/plural-template mismatches.
+- /status-controls shows linear/radial known/unknown progress, native meter bands, read-only ratings,
+  editable/disabled ratings, normal/Ajax/native-input submitters, plain-link busy feedback, cancellation,
+  Ajax replacement, icon-only controls and dialog confirmation. Demo handlers pause 400 ms to show busy
+  feedback. The standard navigation and homepage link to it; skin/mode/locale controls remain available.
+- Final ./mvnw -B verify passed: 730 core and 61 example-page tests. Logs:
+  /tmp/shadwick-controls-verify6.log. Includes finite/clamped/invalid values, meter bands, model detachment,
+  dynamic snapshots, exact percentages, locale/placeholder bundles, escaping and native field validation.
+- Final main browser run passed 99 focused cases across all nine skins/light-dark and nine locales:
+  duplicate activation, Ajax replacement, cancelled precondition, intentional network failure/recovery,
+  native submitter serialization, validation/keyboard operation, dialog confirmation, native no-script
+  forms, dynamic values, RTL half-stars, forced colors and reduced motion. Log:
+  /tmp/shadwick-controls-browser4.log. A subsequent icon-only busy addition passed all 18 skin/mode
+  rechecks in /tmp/shadwick-controls-icon-browser.log. Full catalog browser CI was not rerun locally.
+- Twelve additional Chromium/Firefox visual/axe checks passed in Vega/Sera/Sketch, desktop/light and
+  390px/dark, using hr-HR and real native-input Ajax submission. Busy states were held and captured in
+  both browsers. Desktop Chromium, mobile Firefox and held-busy Firefox screenshots were inspected.
+  Script/log: /tmp/shadwick-controls-visual.cjs and .log; screenshots /tmp/shadwick-controls-*.png.
+- README documents APIs, bounds/unknown semantics, native markup and busy lifecycle. NOTICE credits Oat
+  controls/lifecycle. Landing catalog copy includes progress/meters/ratings; site build/check passed
+  166 references and 105 unique IDs. Generated site output stays ignored. No dependency was added.
+- No commit/push/publication requested for this group. All changes remain local on top of published
+  0d4a69a. Suggested next component group: advanced tables (CSV, column chooser, expandable row details,
+  inline edits); docs/hosted showcase, agent skill/llms.txt and Maven Central remain separate roadmap work.
+- Final landing browser checks also passed six Chromium/Firefox cases at 1440/390/320 px, covering
+  axe, console errors and overflow with the rebuilt assets. Log: /tmp/shadwick-controls-site-browser.log.
+  Both temporary preview servers were stopped. Working tree remains intentionally uncommitted.
+
+### Advanced table features — local implementation, 2026-11-06
+
+- User selected the next Wicket Oat group: CSV export, column chooser, expandable row details and
+  inline edits. The earlier busy/progress/meter/rating changes remain intact and uncommitted.
+  No dependency was added. References: /tmp/shadwick-parity-wicket-oat at 76562314a52eb37b517321632cfb6ef2f5187781
+  and /tmp/shadwick-parity-shadleaf at ac2998704d3ed9590266ffca49bcc6455c70a025.
+  Shadleaf's table docs explicitly leave visibility/details/editable cells to consumers; Java/API
+  patterns follow Oat, with Shadwick's existing table, button, field and native-menu styles.
+- SwDataTable.setColumnChooser/setColumnVisible/isColumnVisible/getVisibleColumnCount control named
+  data columns. Structural selection/details/actions columns remain visible, and the last named data
+  column cannot be hidden. Headers/cells share hidden state; empty/detail colspans follow it. Custom
+  toolbar and tools coexist. Grouped/spanning headers reject visibility operations rather than render
+  inconsistent geometry. The original column list and sort/selection/page state remain intact.
+- setCsvExport adds a native attachment link. SwCsvExport streams all filtered rows in provider sort
+  order, including hidden named IExportableColumns; it excludes structural columns and unfinished drafts.
+  UTF-8 BOM, CRLF, quoting, formula-text neutralization (including leading whitespace/controls), raw
+  numeric/boolean/Java-time values and application converters are covered. Fetches are bounded to 500
+  rows. Value/row/provider models detach on failures, response streams stay open, filenames reject
+  paths/control characters, and downloads have zero cache duration. Providers own export consistency
+  and authorization; hiding a column is only presentation.
+- SwRowDetailsColumn supports lazy factories with DETAILS_ID, expansion by row equality or stable keys,
+  row names and rechecked expandable predicates. Native/Ajax disclosure links expose aria-expanded/
+  controls and restore focus. Markup keeps real sibling tr elements inside a single tbody, with Wicket
+  containers stripped; there are no invalid wrapping divs. A table accepts one details column.
+- SwEditableColumn uses a separate draft with typed conversion, required/range/custom validators,
+  rechecked edit predicates and an equality conflict check against the original value. Save callbacks
+  run after the setter; exceptions restore the in-memory value and propagate. Applications still own
+  authorization, transactions and database concurrency. onSave's target is null on native submissions.
+  Enter saves; Escape/cancel discard drafts and restore focus. First inline errors have linked ARIA
+  state and are excluded from page/toast duplicates through ShowsErrorsInline/NotShownInlineFilter.
+- Wicket normally recreates rows on a full render, losing native editors. Editable tables now reuse
+  visible rows by identity with forwarding models that adopt fresh provider delegates. setRowKey takes
+  stable unique serializable keys; default row equality releases entity references on detach. The
+  page-serialization regression uses a non-serializable entity behind a detachable model, restores an
+  open editor and submits it successfully. Paging/filtering a row away discards its unfinished editor;
+  browser input not posted to the server can reset during unrelated replacements. Nested cell forms
+  scope validation/default buttons to the cell and require JavaScript, as documented.
+- Shared layout rules and all nine skin identities cover editing/details. Sticky columns follow the
+  first visible cell. Screenshot review corrected narrow tables: details stay within the visible
+  scrolling area through container units/sticky positioning, and focus restoration scrolls the input
+  fully into view. Fields/errors remain readable at 320px. Native menus retain the existing popup
+  runtime; their transitions must settle before screenshot capture.
+- New built-in table/edit messages ship in all nine languages; translated core bundle total is now
+  280. /advanced-tables demonstrates filtering, paging, selection, locked projects, editable estimates,
+  lazy project briefs, column choices and filtered CSV downloads. Standard nav/home, README, NOTICE,
+  landing catalog and site README were updated locally. The static studio remains a transient preview.
+- Final JVM verify passed 750 core and 62 example-page tests (812 total), including 20 advanced-table
+  cases. Log: /tmp/shadwick-advanced-verify4.log. Earlier intermediate runs exposed and fixed native row
+  recreation; the final serialization checks pass in /tmp/shadwick-advanced-serialization2.log.
+- Advanced browser checks passed all 72 cases across nine skins/light-dark, including keyboard edits,
+  inline validation, locked rows, details, chooser/selection, full/filtered CSV, native no-script paths,
+  mobile overflow and explicit input/details geometry assertions. Log: /tmp/shadwick-advanced-browser2.log.
+  Existing table browser checks passed 144 cases before the mobile refinement; the relevant sticky,
+  nested/grouped, RTL, print and embedded layouts passed all 54 rechecks after it. Logs:
+  /tmp/shadwick-advanced-table-regressions.log and /tmp/shadwick-advanced-geometry-regressions.log.
+- Chromium/Firefox visual/axe checks passed 18 desktop/390px/320px cases in Vega/Sera/Sketch with Croatian,
+  plus nine locale checks and two Firefox native cases (29 total). Script/log:
+  /tmp/shadwick-advanced-visual.cjs and /tmp/shadwick-advanced-visual2.log. Screenshots:
+  /tmp/shadwick-advanced-{chromium,firefox}-{vega,sera,sketch}-{1440,390,320}.png plus chooser variants.
+  Corrected desktop Chromium, 320px Firefox Sketch and settled Firefox Sera chooser images were inspected.
+  These UI/browser runs preceded only the final model-detachment/serialization refinement, which is
+  covered by the final JVM suite; there is no full catalog browser-green claim for this working tree.
+- Landing build/check passed 166 internal references and 105 IDs. Eighteen Chromium/Firefox screenshot/
+  axe/console/overflow checks passed across three widths and Vega/Sera/Sketch. Log:
+  /tmp/shadwick-advanced-site.log. Generated dist remains ignored. Temporary previews and the initial
+  failed smoke-check browser process were stopped. No commit/push/publication requested for this group;
+  published baseline remains 0d4a69a. Docs/hosted showcase, agent guidance/llms.txt and Maven Central
+  remain on the roadmap, alongside deliberately scoped broader Oat families and chart variants.
+
+### Publication request — controls and advanced tables, 2026-11-06
+
+- User selected the next checkpoint: commit/push all accumulated changes and publish the updated
+  landing page. This supersedes the earlier groups' local/uncommitted status statements.
+- The checkpoint includes code, resources/translations, tests, examples, README/NOTICE, landing copy
+  and this roadmap. Generated build/site output stays ignored. Existing final JVM and browser results
+  are recorded above; publication runs fresh CI through the Build and Website workflows on main.
+- Live URL: https://danielbartl.github.io/shadwick/ . Use the Website run's source SHA and deployment
+  result, and `git log`, for the exact checkpoint rather than hard-coding the commit inside itself.

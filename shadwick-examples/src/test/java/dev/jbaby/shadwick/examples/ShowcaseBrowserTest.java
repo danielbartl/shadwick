@@ -50,7 +50,7 @@ class ShowcaseBrowserTest {
     // WCAG 2.2 A and AA, as axe-core tags its rules
     private static final List<String> WCAG = List.of("wcag2a", "wcag2aa", "wcag21a", "wcag21aa", "wcag22aa");
 
-    private static final List<String> PAGES = List.of("", "internationalization", "buttons", "form", "inputs", "choices", "selections", "custom-select", "combobox", "calendar", "month-view", "charts", "dates", "groups", "uploads", "dialog", "overlays", "popups", "menus", "toasts", "shell", "sidebar", "user-menu", "demo-sign-in", "theme", "layouts", "header-layout", "disclosure", "attachments", "data", "invoice", "tables", "pagination", "display", "feedback");
+    private static final List<String> PAGES = List.of("", "internationalization", "status-controls", "advanced-tables", "buttons", "form", "inputs", "choices", "selections", "custom-select", "combobox", "calendar", "month-view", "charts", "dates", "groups", "uploads", "dialog", "overlays", "popups", "menus", "toasts", "shell", "sidebar", "user-menu", "demo-sign-in", "theme", "layouts", "header-layout", "disclosure", "attachments", "data", "invoice", "tables", "pagination", "display", "feedback");
     private static final List<String> SKINS = browserSkins();
 
     private static List<String> browserSkins() {
@@ -157,6 +157,137 @@ class ShowcaseBrowserTest {
             }
             assertThat(errors).as("console errors on " + where).containsExactlyInAnyOrderElementsOf(expectedErrors);
         }
+    }
+
+    @ParameterizedTest(name = "busy controls, {0}, {1}")
+    @MethodSource("everySkinAndMode")
+    void busyActionsDropDuplicatesRecoverAndSurviveReplacement(String skin, String mode) {
+        check("status-controls", skin, mode, tab -> {
+            var pending = new java.util.concurrent.atomic.AtomicReference<com.microsoft.playwright.Route>();
+            var requests = new java.util.concurrent.atomic.AtomicInteger();
+            tab.route("**/*", route -> {
+                if ("true".equalsIgnoreCase(route.request().headers().get("wicket-ajax"))) {
+                    if (requests.incrementAndGet() == 1) pending.set(route); else route.resume();
+                } else route.resume();
+            });
+            Locator button = tab.locator("#busy-action"); button.click(); tab.waitForCondition(() -> pending.get() != null);
+            assertThat(button).hasAttribute("aria-busy", "true"); assertThat(button).isFocused();
+            assertThat(button.locator(".sw-busy-spinner")).isVisible();
+            button.evaluate("n=>{n.click();n.click();n.click()}"); pending.get().resume();
+            assertThat(tab.getByRole(AriaRole.STATUS).first()).hasText("Completed requests: 1");
+            assertThat(button).not().hasAttribute("aria-busy", "true"); assertThat(button.locator(".sw-busy-indicator")).hasCount(0);
+            assertThat(button).isFocused();
+            tab.locator("#busy-replace").click(); assertThat(tab.locator("#busy-replace")).not().hasAttribute("aria-busy", "true");
+            tab.locator("#busy-link").click(); assertThat(tab.getByRole(AriaRole.STATUS).first()).hasText("Completed requests: 2");
+            assertThat(tab.locator("#busy-link")).not().hasAttribute("aria-disabled", "true");
+            var iconPending = new java.util.concurrent.atomic.AtomicReference<com.microsoft.playwright.Route>();
+            tab.route("**/*", route -> {
+                if ("true".equalsIgnoreCase(route.request().headers().get("wicket-ajax"))) iconPending.set(route); else route.resume();
+            });
+            Locator icon = tab.locator("#busy-icon"); icon.click(); tab.waitForCondition(() -> iconPending.get() != null);
+            assertThat(icon.locator(".sw-busy-spinner")).isVisible(); assertThat(icon.locator("svg")).isHidden();
+            iconPending.get().resume(); assertThat(tab.getByRole(AriaRole.STATUS).first()).hasText("Completed requests: 3");
+            assertThat(icon.locator("svg")).isVisible();
+        });
+    }
+
+    @ParameterizedTest(name = "busy cancellation/error, {0}, {1}")
+    @MethodSource("everySkinAndMode")
+    void busyControlsRestoreAfterCancelledPreconditionsAndTransportFailure(String skin, String mode) {
+        check("status-controls", skin, mode, new Browser.NewContextOptions(), tab -> {
+            tab.locator("#busy-cancel").click(); assertThat(tab.locator("#busy-cancel")).not().hasAttribute("aria-busy", "true");
+            var abort = new java.util.concurrent.atomic.AtomicBoolean(true);
+            tab.route("**/*", route -> {
+                if ("true".equalsIgnoreCase(route.request().headers().get("wicket-ajax")) && abort.getAndSet(false)) route.abort(); else route.resume();
+            });
+            tab.locator("#busy-action").click();
+            assertThat(tab.locator("#busy-action")).not().hasAttribute("aria-busy", "true");
+            tab.locator("#busy-action").click(); assertThat(tab.getByRole(AriaRole.STATUS).first()).hasText("Completed requests: 1");
+        }, List.of("Failed to load resource: net::ERR_FAILED"));
+    }
+
+    @ParameterizedTest(name = "rating validation/submission, {0}, {1}")
+    @MethodSource("everySkinAndMode")
+    void ratingValidationKeyboardAndNativeSubmittersWorkWithBusyFeedback(String skin, String mode) {
+        check("status-controls", skin, mode, tab -> {
+            Locator form = tab.getByRole(AriaRole.FORM, new Page.GetByRoleOptions().setName("Rating form"));
+            Locator save = form.getByRole(AriaRole.BUTTON, new Locator.GetByRoleOptions().setName("Save rating with Ajax"));
+            save.click(); assertThat(save).not().hasAttribute("aria-busy", "true");
+            assertThat(form.locator(".sw-field-error").first()).containsText("required");
+            form.getByLabel("Your name", new Locator.GetByLabelOptions().setExact(true)).fill("Ada");
+            Locator group = form.getByRole(AriaRole.RADIOGROUP, new Locator.GetByRoleOptions().setName("Your rating"));
+            Locator first = group.getByRole(AriaRole.RADIO).first(); first.focus(); first.press("ArrowRight");
+            assertThat(group.getByRole(AriaRole.RADIO).nth(1)).isChecked();
+            save.focus(); save.press("Enter"); assertThat(form.getByRole(AriaRole.STATUS).last()).hasText("Saved Ada: 2 stars.");
+            assertThat(form.locator(".sw-field-error").first()).isEmpty();
+            group.locator("label").nth(3).click();
+            form.getByRole(AriaRole.BUTTON, new Locator.GetByRoleOptions().setName("Save with input")).click();
+            assertThat(form.getByRole(AriaRole.STATUS).last()).hasText("Saved Ada: 4 stars.");
+            assertThat(form.locator(".sw-busy-indicator")).hasCount(0);
+            tab.getByRole(AriaRole.BUTTON, new Page.GetByRoleOptions().setName("Open busy dialog")).click();
+            Locator dialog = tab.getByRole(AriaRole.DIALOG, new Page.GetByRoleOptions().setName("Confirm server action"));
+            dialog.getByRole(AriaRole.BUTTON, new Locator.GetByRoleOptions().setName("Confirm").setExact(true)).click();
+            assertThat(dialog).isHidden(); assertThat(tab.getByRole(AriaRole.STATUS).first()).hasText("Completed requests: 1");
+        });
+    }
+
+    @ParameterizedTest(name = "value controls responsive/RTL, {0}, {1}")
+    @MethodSource("everySkinAndMode")
+    void valueControlsRefreshAndKeepAccessibleValuesInRtlForcedColorsAndReducedMotion(String skin, String mode) {
+        check("status-controls", skin, mode, new Browser.NewContextOptions().setViewportSize(390, 850)
+                .setReducedMotion(com.microsoft.playwright.options.ReducedMotion.REDUCE), tab -> {
+            tab.locator("html").evaluate("n=>n.dir='rtl'");
+            assertThat(tab.getByRole(AriaRole.PROGRESSBAR, new Page.GetByRoleOptions().setName("Profile completion"))).hasAttribute("aria-valuenow", "25");
+            tab.getByRole(AriaRole.BUTTON, new Page.GetByRoleOptions().setName("Advance work")).click();
+            assertThat(tab.getByRole(AriaRole.PROGRESSBAR, new Page.GetByRoleOptions().setName("Profile completion"))).hasAttribute("aria-valuenow", "50");
+            assertThat((Double) tab.locator("progress").first().evaluate("n=>n.position")).isEqualTo(.5);
+            assertThat(tab.locator(".sw-rating").first()).hasAttribute("aria-label", "4.5 out of 5 stars");
+            assertThat(tab.locator(".sw-rating [data-fill=half]").first().locator(".sw-rating-fill")).hasCSS("clip-path", "inset(0px 0px 0px 50%)");
+            tab.emulateMedia(new Page.EmulateMediaOptions().setForcedColors(ForcedColors.ACTIVE));
+            assertThat(tab.locator("progress").first()).hasCSS("appearance", "auto");
+            Locator stars = tab.getByRole(AriaRole.RADIOGROUP, new Page.GetByRoleOptions().setName("Your rating"));
+            stars.getByRole(AriaRole.RADIO).first().focus(); stars.getByRole(AriaRole.RADIO).first().press("Space");
+            assertThat(stars.locator("label").first()).hasCSS("outline-style", "solid");
+            assertThat(stars.locator("label").first().locator(".sw-rating-fill")).isVisible();
+            assertThat(stars.locator("label").nth(1).locator(".sw-rating-fill")).isHidden();
+            tab.emulateMedia(new Page.EmulateMediaOptions().setForcedColors(ForcedColors.NONE));
+            assertThat((Integer) tab.evaluate("document.documentElement.scrollWidth-innerWidth")).isLessThanOrEqualTo(1);
+        });
+    }
+
+    @ParameterizedTest(name = "native rating without script, {0}, {1}")
+    @MethodSource("everySkinAndMode")
+    void ratingsAndMeasurementsRemainUsableWithoutScript(String skin, String mode) {
+        check("status-controls", skin, mode, new Browser.NewContextOptions().setJavaScriptEnabled(false).setViewportSize(390, 850), tab -> {
+            Locator form = tab.getByRole(AriaRole.FORM, new Page.GetByRoleOptions().setName("Rating form"));
+            form.getByLabel("Your name", new Locator.GetByLabelOptions().setExact(true)).fill("Grace");
+            form.getByRole(AriaRole.RADIOGROUP, new Locator.GetByRoleOptions().setName("Your rating")).locator("label").nth(4).click();
+            form.getByRole(AriaRole.BUTTON, new Locator.GetByRoleOptions().setName("Save rating").setExact(true)).click();
+            assertThat(form.getByRole(AriaRole.STATUS).last()).hasText("Saved Grace: 5 stars.");
+            assertThat(tab.locator("progress").first()).isVisible(); assertThat(tab.locator("meter").first()).isVisible();
+        });
+    }
+
+    @ParameterizedTest(name = "status control messages in {0}")
+    @CsvSource({"en,Loading,4.5 out of 5 stars,Stars: 1", "de,Wird geladen,'4,5 von 5 Sternen',Sterne: 1",
+            "es,Cargando,'4,5 de 5 estrellas',Estrellas: 1", "fr,Chargement,'4,5 sur 5 étoiles',Étoiles : 1",
+            "it,Caricamento,'4,5 su 5 stelle',Stelle: 1", "ja,読み込み中,5 つ星のうち 4.5,星の数：1",
+            "nl,Laden,'4,5 van 5 sterren',Sterren: 1", "pt,Carregando,'4,5 de 5 estrelas',Estrelas: 1",
+            "hr-HR,Učitavanje,'4,5 od 5 zvjezdica',Broj zvjezdica: 1"})
+    void statusControlMessagesFollowTheLocale(String language, String loading, String rating, String star) {
+        check("status-controls", "sketch", "dark", new Browser.NewContextOptions().setViewportSize(390, 850), tab -> {
+            tab.navigate(url("status-controls", "sketch", "dark") + "&lang=" + language);
+            assertThat(tab.locator(".sw-rating").first()).hasAttribute("aria-label", rating);
+            assertThat(tab.getByRole(AriaRole.RADIOGROUP, new Page.GetByRoleOptions().setName("Your rating"))
+                    .getByRole(AriaRole.RADIO).first()).hasAccessibleName(star);
+            var pending = new java.util.concurrent.atomic.AtomicReference<com.microsoft.playwright.Route>();
+            tab.route("**/*", route -> {
+                if ("true".equalsIgnoreCase(route.request().headers().get("wicket-ajax"))) pending.set(route); else route.resume();
+            });
+            tab.locator("#busy-action").click(); tab.waitForCondition(() -> pending.get() != null);
+            assertThat(tab.locator("#busy-action .sw-busy-label")).hasText(loading);
+            pending.get().resume(); assertThat(tab.locator("#busy-action")).not().hasAttribute("aria-busy", "true");
+        });
     }
 
     @ParameterizedTest(name = "library controls in {0}")
@@ -2686,6 +2817,87 @@ class ShowcaseBrowserTest {
                 assertThat(tab.locator("#status-attachment")).containsText("Upload failed");
             });
         } finally { settings.setBundle(dev.jbaby.shadwick.Bundle.STANDALONE); }
+    }
+
+    @ParameterizedTest @MethodSource("everySkinAndMode")
+    void advancedTableDraftsValidateCancelAndSaveWithKeyboard(String skin, String mode) {
+        check("advanced-tables", skin, mode, tab -> {
+            Locator row = tab.locator(".sw-table > tbody > tr:not(.sw-table-row-details)").filter(new Locator.FilterOptions().setHasText("Customer portal"));
+            row.locator(".sw-table-details-button").click();
+            assertThat(row.locator(".sw-table-details-button")).hasAttribute("aria-expanded", "true");
+            assertThat(tab.locator(".ex-work-details")).containsText("TASK-1001");
+            assertThat(tab.locator(".sw-table-row-details:visible > td")).hasAttribute("colspan", "7");
+            row.locator(".sw-table-editable").click();
+            Locator input = row.locator("input.sw-input"); assertThat(input).isFocused(); input.fill("0");
+            row.getByRole(AriaRole.BUTTON, new Locator.GetByRoleOptions().setName("Save").setExact(true)).click();
+            assertThat(input).hasAttribute("aria-invalid", "true"); assertThat(row.locator(".sw-field-error")).containsText("between 1 and 80");
+            input.press("Escape"); assertThat(row.locator(".sw-table-editable")).hasText("8"); assertThat(row.locator(".sw-table-editable")).isFocused();
+            row.locator(".sw-table-editable").press("Enter"); input.fill("13"); input.press("Enter");
+            assertThat(tab.getByRole(AriaRole.STATUS)).hasText("Saved 13 hours for Customer portal.");
+            assertThat(row.locator(".sw-table-editable")).hasText("13"); assertThat(row.locator(".sw-table-editable")).isFocused();
+            assertThat(tab.locator(".sw-table > tbody > tr:not(.sw-table-row-details)").filter(new Locator.FilterOptions().setHasText("Autumn release")).locator(".sw-table-editable")).hasAttribute("aria-disabled", "true");
+        });
+    }
+
+    @ParameterizedTest @MethodSource("everySkinAndMode")
+    void advancedTableChooserSelectionAndFilteredCsvWorkTogether(String skin, String mode) {
+        check("advanced-tables", skin, mode, tab -> {
+            tab.getByRole(AriaRole.CHECKBOX, new Page.GetByRoleOptions().setName("Select Customer portal").setExact(true)).check();
+            tab.getByRole(AriaRole.BUTTON, new Page.GetByRoleOptions().setName("Columns").setExact(true)).click();
+            tab.getByRole(AriaRole.MENUITEMCHECKBOX, new Page.GetByRoleOptions().setName("Owner").setExact(true)).click();
+            assertThat(tab.locator(".sw-table th:visible")).hasCount(6);
+            assertThat(tab.getByRole(AriaRole.CHECKBOX, new Page.GetByRoleOptions().setName("Select Customer portal").setExact(true))).isChecked();
+            assertThat(tab.getByRole(AriaRole.BUTTON, new Page.GetByRoleOptions().setName("Columns").setExact(true))).isFocused();
+            var export = tab.getByRole(AriaRole.LINK, new Page.GetByRoleOptions().setName("Export CSV").setExact(true));
+            var download = tab.waitForDownload(export::click); assertThat(download.suggestedFilename()).isEqualTo("shadwick-work.csv");
+            try {
+                String csv = java.nio.file.Files.readString(download.path());
+                assertThat(csv).startsWith("\ufeffProject,Hours,Status,Owner,Due\r\n").contains("Customer portal,8,In progress,Maya Chen,2026-11-09\r\n");
+                assertThat(csv.lines().count()).isEqualTo(10);
+            } catch (java.io.IOException failure) { throw new java.io.UncheckedIOException(failure); }
+            tab.getByLabel("Find a project", new Page.GetByLabelOptions().setExact(true)).fill("Maya");
+            tab.getByRole(AriaRole.BUTTON, new Page.GetByRoleOptions().setName("Filter").setExact(true)).click();
+            assertThat(tab.locator(".sw-table-toolbar")).hasText("2 projects in view");
+            download = tab.waitForDownload(export::click);
+            try { assertThat(java.nio.file.Files.readString(download.path()).lines().count()).isEqualTo(3); }
+            catch (java.io.IOException failure) { throw new java.io.UncheckedIOException(failure); }
+        });
+    }
+
+    @ParameterizedTest @MethodSource("everySkinAndMode")
+    void advancedTableNativeDetailsEditingAndColumnChoicesWorkWithoutScript(String skin, String mode) {
+        check("advanced-tables", skin, mode, new Browser.NewContextOptions().setJavaScriptEnabled(false), tab -> {
+            Locator row = tab.locator(".sw-table > tbody > tr:not(.sw-table-row-details)").filter(new Locator.FilterOptions().setHasText("Customer portal"));
+            row.locator(".sw-table-details-button").click(); assertThat(tab.locator(".ex-work-details")).containsText("TASK-1001");
+            row.locator(".sw-table-editable").click(); row.locator("input.sw-input").fill("0");
+            row.getByRole(AriaRole.BUTTON, new Locator.GetByRoleOptions().setName("Save").setExact(true)).click();
+            assertThat(row.locator("input.sw-input")).hasAttribute("aria-invalid", "true");
+            row.locator("input.sw-input").fill("9"); row.getByRole(AriaRole.BUTTON, new Locator.GetByRoleOptions().setName("Save").setExact(true)).click();
+            assertThat(row.locator(".sw-table-editable")).hasText("9");
+            tab.getByRole(AriaRole.BUTTON, new Page.GetByRoleOptions().setName("Columns").setExact(true)).click();
+            tab.getByRole(AriaRole.MENUITEMCHECKBOX, new Page.GetByRoleOptions().setName("Due").setExact(true)).click();
+            assertThat(tab.locator(".sw-table th:visible")).hasCount(6);
+        });
+    }
+
+    @ParameterizedTest @MethodSource("everySkinAndMode")
+    void advancedTableMobileLayoutAndEditingHaveNoPageOverflow(String skin, String mode) {
+        check("advanced-tables", skin, mode, new Browser.NewContextOptions().setViewportSize(390, 900), tab -> {
+            tab.getByRole(AriaRole.LINK, new Page.GetByRoleOptions().setName("Show details for Customer portal").setExact(true)).click();
+            Locator row=tab.locator(".sw-table > tbody > tr:not(.sw-table-row-details)").filter(new Locator.FilterOptions().setHasText("Customer portal"));
+            row.locator(".sw-table-editable").click(); row.locator("input.sw-input").fill("bad");
+            row.getByRole(AriaRole.BUTTON, new Locator.GetByRoleOptions().setName("Save").setExact(true)).click();
+            assertThat(row.locator("input.sw-input")).hasAttribute("aria-invalid", "true");
+            assertThat(tab.evaluate("document.documentElement.scrollWidth <= innerWidth + 1")).isEqualTo(true);
+            assertThat(tab.locator(".sw-table-container").evaluate("n => n.scrollWidth > n.clientWidth")).isEqualTo(true);
+            var viewport=tab.locator(".sw-table-container").boundingBox();
+            var input=row.locator("input.sw-input").boundingBox();
+            assertThat(input.x).isGreaterThanOrEqualTo(viewport.x - 1);
+            assertThat(input.x + input.width).isLessThanOrEqualTo(viewport.x + viewport.width + 1);
+            var details=tab.locator(".ex-work-details").boundingBox();
+            assertThat(details.x).isGreaterThanOrEqualTo(viewport.x - 1);
+            assertThat(details.x + details.width).isLessThanOrEqualTo(viewport.x + viewport.width + 1);
+        });
     }
 
     @ParameterizedTest @MethodSource("everySkinAndMode")

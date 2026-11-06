@@ -70,6 +70,10 @@ public final class Shadwick {
      * @return the application's {@link ShadwickSettings}, to choose the skin
      */
     public static ShadwickSettings install(WebApplication app) {
+        boolean busyListenerAdded = false;
+        for (AjaxRequestTarget.IListener listener : app.getAjaxRequestTargetListeners())
+            busyListenerAdded |= listener instanceof dev.jbaby.shadwick.behaviors.AjaxBusyBehavior.Listener;
+        if (!busyListenerAdded) app.getAjaxRequestTargetListeners().add(new dev.jbaby.shadwick.behaviors.AjaxBusyBehavior.Listener());
         // Add the stylesheet to every page, unless the application opted out
         app.getHeaderContributorListeners().add(response -> {
             if (ShadwickSettings.get(app).isAddResources()) {

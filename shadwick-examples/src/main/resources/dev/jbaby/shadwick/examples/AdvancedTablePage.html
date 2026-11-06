@@ -1,0 +1,10 @@
+<wicket:extend xmlns:wicket="http://wicket.apache.org">
+<div><p class="ex-sidebar-eyebrow">ROOM FOR THE DETAILS</p><h1 class="ex-title">A working list. A clearer day.</h1><p class="ex-lead">Make the table your own. Keep the useful columns, look a little closer, and adjust an estimate without losing your place.</p></div>
+<section class="ex-i18n-card" aria-labelledby="work-title">
+<div class="ex-data-heading"><div><h2 id="work-title">Project work</h2><p class="ex-muted">Nine projects. One shared view of what comes next.</p></div>
+<form wicket:id="filter" class="ex-work-search" role="search" aria-label="Filter project work"><label for="work-query">Find a project</label><input wicket:id="query" id="work-query" class="sw-input" type="search" placeholder="Project, owner or status"/><button wicket:id="apply" type="submit">Filter</button></form></div>
+<p wicket:id="receipt" role="status" class="ex-muted"></p><div wicket:id="work"></div>
+</section>
+<div class="ex-advanced-notes"><section><h2>Keep the useful parts.</h2><p>Choose the columns you need. Details and selection stay within reach. Open a row to see its brief, owner and editing status.</p></section><section><h2>Change one small thing.</h2><p>Select an hours estimate to edit it. Enter saves; Escape cancels. Estimates accept 1 to 80 hours. Approved work stays read only.</p></section><section><h2>Take your work with you.</h2><p>The CSV contains every matching project in the current sort order, including columns you have hidden. Your draft stays in the editor until you save.</p></section></div>
+<noscript><p class="ex-muted">Filtering, column choices, sorting, paging, details, editing and CSV downloads also work without JavaScript.</p></noscript>
+</wicket:extend>

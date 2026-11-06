@@ -6,10 +6,15 @@
  */
 (function () {
     'use strict';
-    if (window.Shadwick) {
-        return;
-    }
-    var Shadwick = window.Shadwick = {};
+    var Shadwick = window.Shadwick = window.Shadwick || {};
+    if (Shadwick._coreInstalled) return;
+    Shadwick._coreInstalled = true;
+
+    // Wicket restores focus after replacing an editor. Keep its input fully visible in a scrolled table.
+    document.addEventListener('focusin', function (event) {
+        if (event.target instanceof Element && event.target.matches('[data-sw-table-editor] input'))
+            event.target.scrollIntoView({block: 'nearest', inline: 'nearest'});
+    });
 
     // Input-group addon focus, adapted from Shadleaf (Apache-2.0, see NOTICE).
     // Delegation also covers groups inserted or replaced over Ajax.
@@ -512,6 +517,11 @@
     document.addEventListener('keydown', function (event) {
         touchInteraction = false;
         if (event.key !== 'Escape') { menuKeys(event); return; }
+        var cellEditor = event.target instanceof Element ? event.target.closest('[data-sw-table-editor]') : null;
+        if (cellEditor) {
+            var cancelEdit = cellEditor.querySelector('[data-sw-table-cancel]');
+            if (cancelEdit) { event.preventDefault(); event.stopImmediatePropagation(); cancelEdit.click(); return; }
+        }
         if (activeTooltip && activeTooltip.tip.matches(':popover-open')) {
             event.preventDefault(); event.stopImmediatePropagation();
             activeTooltip.dismissed = true; hideTooltip(activeTooltip);

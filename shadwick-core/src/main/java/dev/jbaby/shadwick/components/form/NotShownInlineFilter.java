@@ -5,7 +5,7 @@ import org.apache.wicket.feedback.FeedbackMessage;
 import org.apache.wicket.feedback.IFeedbackMessageFilter;
 
 /**
- * Accepts the feedback messages that Shadwick form fields don't already show inline. Each
+ * Accepts feedback that Shadwick form fields and {@link ShowsErrorsInline} components don't already show inline. Each
  * {@link BaseSwField} shows the first error reported by its wrapped form component, so
  * a page-level feedback panel or toast would only repeat it; the wrapped field owns that message. Used by default by
  * {@code SwFeedbackPanel} and {@code FeedbackToastsBehavior}.
@@ -25,6 +25,8 @@ public class NotShownInlineFilter implements IFeedbackMessageFilter {
         if (field != null && field.getInput() == reporter) {
             return false;
         }
+        for (Component parent = reporter.getParent(); parent != null; parent = parent.getParent())
+            if (parent instanceof ShowsErrorsInline inline && inline.showsErrorsOf(reporter)) return false;
         return true;
     }
 }

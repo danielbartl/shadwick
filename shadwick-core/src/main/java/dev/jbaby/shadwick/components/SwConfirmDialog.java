@@ -76,6 +76,7 @@ public class SwConfirmDialog extends SwDialog {
         super.onClose(target);
     }
 
+    @Override public SwConfirmDialog setBusyIndicator(boolean enabled) { super.setBusyIndicator(enabled); return this; }
     @Override public SwConfirmDialog setContent(Component content) { super.setContent(content); return this; }
     @Override public SwConfirmDialog setTitle(String title) { super.setTitle(title); return this; }
     @Override public SwConfirmDialog setTitle(IModel<String> title) { super.setTitle(title); return this; }

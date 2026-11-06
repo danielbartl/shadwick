@@ -1443,7 +1443,7 @@
     --sw-table-tint: transparent;
   }
 
-  .sw-table[data-sticky='first-column'] > tbody > tr:has(> :first-child .sw-checkbox:checked) {
+  .sw-table[data-sticky='first-column'] > tbody > tr:has(> :is(:first-child:not([hidden]), [data-sw-first-column]) .sw-checkbox:checked) {
     --sw-table-tint: var(--muted);
   }
 
@@ -1452,17 +1452,17 @@
   }
 
   @media (hover: hover) {
-    .sw-table[data-sticky='first-column'] > tbody > tr:hover:not(:has(> :first-child .sw-checkbox:checked)) {
+    .sw-table[data-sticky='first-column'] > tbody > tr:hover:not(:has(> :is(:first-child:not([hidden]), [data-sw-first-column]) .sw-checkbox:checked)) {
       --sw-table-tint: color-mix(in oklab, var(--muted) 50%, transparent);
     }
   }
 
-  .sw-table[data-sticky='first-column'] > :is(thead, tbody, tfoot) > tr > :is(th, td):first-child {
+  .sw-table[data-sticky='first-column'] > :is(thead, tbody, tfoot) > tr > :is(th, td):is(:first-child:not([hidden]), [data-sw-first-column]) {
     background-color: var(--sw-table-bg, var(--background));
     background-image: linear-gradient(var(--sw-table-tint), var(--sw-table-tint));
   }
 
-  .sw-table[data-sticky='first-column'] > :is(thead, tbody, tfoot) > tr > :is(th, td):first-child::after {
+  .sw-table[data-sticky='first-column'] > :is(thead, tbody, tfoot) > tr > :is(th, td):is(:first-child:not([hidden]), [data-sw-first-column])::after {
     border-inline-end: 1px solid var(--border);
   }
 
@@ -1961,4 +1961,19 @@
  .sw-chart-tooltip-content { @apply rounded-lg border border-border/50 bg-background px-2.5 py-1.5 text-xs shadow-xl; }
  .sw-chart-plot:focus-visible { @apply outline-[3px] outline-offset-2 outline-solid outline-ring/50; }
  .sw-chart-legend-indicator,.sw-chart-tooltip-indicator { @apply rounded-[2px]; }
+}
+
+/* Progress, meter and rating identity, on the shared native/SVG structure. */
+@layer components {
+  .sw-progress, .sw-meter { @apply h-2 rounded-full bg-primary/15; }
+  .sw-radial-progress { @apply size-16 text-sm font-medium; }
+  .sw-rating, .sw-rating-input { @apply gap-0.5; }
+  .sw-rating-option { @apply rounded-md min-h-8 min-w-8; }
+}
+
+@layer components {
+  .sw-table-row-details > td { background-color: color-mix(in oklab, var(--muted) 40%, transparent); }
+  .sw-table-empty-value { color: var(--muted-foreground); }
+  .sw-table-editable[aria-disabled='true'] { text-decoration: none; }
+  .sw-table-editable { text-decoration-line: underline; text-decoration-style: dotted; text-underline-offset: .25em; }
 }

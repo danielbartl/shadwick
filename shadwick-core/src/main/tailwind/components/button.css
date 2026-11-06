@@ -11,3 +11,15 @@
       [&_svg]:pointer-events-none [&_svg]:shrink-0;
   }
 }
+
+/* The Ajax runtime inserts a decorative spinner and localized loading text without changing the control's body. */
+@layer components {
+  .sw-busy-indicator { @apply inline-flex shrink-0 items-center gap-2; }
+  .sw-busy-spinner { @apply inline-block size-4 shrink-0 rounded-full border-2 border-current border-t-transparent animate-spin motion-reduce:[animation-duration:2.5s]; }
+  .sw-busy-label { @apply sr-only; }
+  .sw-busy-input-indicator { @apply ms-2; }
+  .sw-busy-input-indicator > .sw-busy-label { @apply not-sr-only text-sm; }
+  .sw-button[data-sw-busy='true'] > [data-icon='inline-start'],
+  .sw-button[data-sw-busy='true'] > svg:not([data-icon='inline-end']) { display:none; }
+  @media (forced-colors: active) { .sw-busy-spinner { forced-color-adjust:none; color:CanvasText; } }
+}

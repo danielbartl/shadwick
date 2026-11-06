@@ -1,6 +1,9 @@
 package dev.jbaby.shadwick;
 
 import dev.jbaby.shadwick.behaviors.ButtonBehavior;
+import dev.jbaby.shadwick.behaviors.AjaxBusyBehavior;
+import dev.jbaby.shadwick.behaviors.ProgressBehavior;
+import dev.jbaby.shadwick.behaviors.MeterBehavior;
 import dev.jbaby.shadwick.behaviors.BreadcrumbBehavior;
 import dev.jbaby.shadwick.behaviors.SiteHeaderBehavior;
 import dev.jbaby.shadwick.behaviors.SkipLinkBehavior;
@@ -77,6 +80,10 @@ public final class Sw {
         public static ButtonBehavior button() {
             return new ButtonBehavior();
         }
+
+        public static AjaxBusyBehavior ajaxBusy() { return new AjaxBusyBehavior(); }
+        public static ProgressBehavior progress() { return new ProgressBehavior(); }
+        public static MeterBehavior meter() { return new MeterBehavior(); }
 
         public static ButtonBehavior button(ButtonBehavior.Variant variant) {
             return new ButtonBehavior(variant);

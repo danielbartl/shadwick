@@ -111,3 +111,10 @@ showcase has a language picker and a dedicated `/internationalization` page. A l
 catalog names all nine languages, including Croatian, and links to the locale setup/override guide.
 Full documentation and a hosted
 interactive showcase are next; Maven Central remains pending.
+
+The display catalog includes progress bars/rings, native meters, star ratings and busy Ajax buttons.
+The runnable Wicket `/status-controls` page exercises these APIs; the static studio remains a local preview.
+
+The table catalog copy now includes inline edits, lazy row details, column choices and CSV exports.
+The runnable `/advanced-tables` example demonstrates server-side behavior; the static invoice preview
+continues to use transient sample interactions.

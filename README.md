@@ -12,8 +12,8 @@ markup and CSS. It is not affiliated with or endorsed by Shadleaf or shadcn/ui. 
 renaming `Oat` to `Sw`.
 
 > **Status: Forms, overlays, app shell, disclosures, attachment displays and data tables implemented.** Buttons, native input fields, custom selects, comboboxes, calendars/date pickers, month views, SVG charts, choices, toggles,
-> input groups, dialogs, menus, toasts, layouts, tabs, accordions, collapsibles, attachment cards/galleries, sortable data tables, pagination, display components and feedback,
-> in nine skins (vega, lyra, nova, maia, mira, luma, rhea, sera, sketch), light and dark. Standalone and embedded CSS bundles. Built-in messages in nine languages.
+> input groups, dialogs, menus, toasts, layouts, tabs, accordions, collapsibles, attachment cards/galleries, sortable/editable data tables with CSV export, row details and column choices, pagination, display components and feedback,
+> in nine skins (vega, lyra, nova, maia, mira, luma, rhea, sera, sketch), light and dark. Standalone and embedded CSS bundles. Busy buttons, progress/meter controls and star ratings. Built-in messages in nine languages.
 > Not yet on Maven Central.
 
 ## Getting started
@@ -152,6 +152,76 @@ add(new BookmarkablePageLink<>("home", HomePage.class)
 Variants: `DEFAULT`, `SECONDARY`, `OUTLINE`, `GHOST`, `DESTRUCTIVE`, `LINK`. Sizes: `DEFAULT`, `SMALL`, `LARGE`,
 `ICON`. An icon-only button needs an `aria-label`: in development mode, a button without an accessible name fails
 to render with a message saying how to fix it, and in deployment it is logged.
+
+### Busy Ajax controls
+
+Opt in to a spinner, localized loading text and repeated-activation protection while a request runs:
+
+```java
+add(SwButton.onClick("run", "Run report", target -> runReport()).setBusyIndicator(true));
+form.add(SwSubmitButton.onSubmit("save", "Save", target -> save()).setBusyIndicator(true));
+dialog.setBusyIndicator(true); // also available on sheets and confirmation dialogs
+
+// Ordinary Wicket Ajax links/buttons and AjaxEventBehavior controls:
+link.add(Sw.Behaviors.ajaxBusy());
+```
+
+Requires `Shadwick.install(this)`. Busy handling starts before queueing and restores the control after success,
+validation failure, transport failure or a cancelled precondition. Labels and keyboard focus are preserved; Ajax
+replacement leaves the new element's state intact. Native submit controls stay enabled for Wicket's form
+serialization while `aria-busy`/`aria-disabled` describe the temporary state. Input submitters get an adjacent
+loading indicator. No inline styles/handlers or new CSP allowances are required.
+
+`setBusyIndicator(false)` removes the behavior. Override `AjaxBusyBehavior.loading` through normal Wicket
+resources. The guard covers repeated activation of that control; application-level idempotency remains the
+application's responsibility.
+
+### Progress, meters and ratings
+
+```java
+// Task progress: default maximum 100; a null model value is indeterminate.
+add(new SwProgress("work", completedModel).setLabel("Import progress"));
+add(new SwRadialProgress("profile", completedModel).setLabel("Profile completion"));
+
+// A known measurement: default bounds 0–1, or set your own bounds and thresholds.
+add(new SwMeter("storage", storageModel).setMax(100).setLow(60).setHigh(85).setOptimum(20)
+        .setLabel("Storage used"));
+
+// Read-only ratings round to half a star. Null means not rated; zero is a zero-star rating.
+add(new SwRating("average", Model.of(4.3))); // displays 4½ stars
+
+// Whole-star input, with the standard field label, description and inline feedback.
+form.add(new SwRatingField("rating", "Your rating", ratingModel).setRequired(true));
+```
+
+```html
+<progress wicket:id="work"></progress>
+<div wicket:id="profile"></div>
+<meter wicket:id="storage"></meter>
+<span wicket:id="average"></span>
+<div wicket:id="rating"></div>
+```
+
+`SwProgress` and `SwRadialProgress` accept `(id, valueModel, maxModel)`. Native progress/meter elements need a
+name: use `setLabel(...)`, `aria-label`, `aria-labelledby` or a native associated label. `Sw.Behaviors.progress()`
+and `Sw.Behaviors.meter()` style caller-owned native markup, preserving its values/bounds. Native progress can
+use `ProgressBehavior.Variant.DEFAULT`, `SECONDARY` or `DESTRUCTIVE`; radial progress has its own equivalent
+`SwRadialProgress.Variant` and a model-based `setText(...)` for center text such as "3/5".
+
+Meters represent measurements, not an unknown amount of work. They use native `min`, `max`, `low`, `high` and
+`optimum` semantics, with matching optimum/suboptimum/critical styling. The full model constructor follows
+Wicket Oat: `(id, value, min, max, low, high, optimum)`. A null meter reading uses the minimum. Finite readings
+are clamped to their bounds; nonfinite numbers, invalid bounds and inconsistent meter thresholds fail clearly.
+Numeric HTML/SVG attributes keep machine formatting; the radial percentage and rating announcements follow the locale.
+
+Both rating components support `setMax(1..10)`. `SwRatingField` binds `Integer`, uses native radios and supports
+normal/Ajax forms, `CompoundPropertyModel`, required/disabled states and choice update behaviors through
+`getInput()`. Its child path is `rating:input`; submitted values are the star numbers (`1`–`max`). Unknown values
+are rejected without updating the model. Radios support the browser's keyboard navigation and still work without
+JavaScript. The display rating uses SVG outlines and mirrors half-stars in RTL.
+
+All nine skins, forced-color modes and reduced motion are supported. The runnable `/status-controls` example
+covers measurements, busy controls, native input submitters, dialog confirmation and normal/Ajax rating forms.
 
 ### Form fields
 
@@ -1465,8 +1535,83 @@ selection model. Selection changes bubble a `SwSelectionColumn.SelectionChanged`
 bulk bar's count is not a live region, avoiding duplicate checkbox announcements. Live selection, row-action
 callbacks and modal CRUD need JavaScript; native table links, filters and pagination remain usable without it.
 
-Wicket Oat's CSV export, column chooser, expandable-row and inline-edit APIs remain later enhancements. Modal CRUD
-and ordinary custom columns are available in this group.
+### Advanced tables
+
+`SwDataTable` adds column choices and a native CSV download beside your custom toolbar:
+
+```java
+table.setColumnChooser(true)
+        .setColumnVisible(4, false)
+        .setCsvExport("projects.csv")
+        .setRowKey(Project::getId);
+```
+
+Indices refer to the original column list. The chooser offers named `AbstractColumn`/`IExportableColumn` columns;
+selection, details and action columns stay visible, as does at least one named data column. Column visibility
+requires simple headers without row/column spans. Empty and expanded rows span the visible columns.
+Visibility is presentation, not access control: providers and column definitions must exclude unauthorized data.
+
+CSV exports **all filtered rows in the provider's current sort order**, including hidden exportable columns,
+not just the current page or selection. Columns implement Wicket's `IExportableColumn` and have a nonblank display
+model; `LambdaColumn` and Shadwick's formatted/inline-edit columns already do. Structural columns are excluded.
+The response is an uncached attachment: UTF-8 with a BOM, CRLF records and RFC 4180 quoting. Numbers, booleans
+and Java time values retain machine-readable forms; other values use application converters. Formula-like text
+is prefixed with an apostrophe, including formulas after leading whitespace. Providers fetch up to 500 rows per
+batch, and value/row/provider models detach even when conversion or writing fails. `SwCsvExport.write(...)` also
+supports application-owned streams; it flushes but never closes them. For consistent exports during concurrent
+writes, supply a provider with appropriate snapshot/transaction behavior. `setCsvExport(null)` disables the link.
+
+Add a lazy details column with an application-owned expansion model:
+
+```java
+var details = new SwRowDetailsColumn<Project, String>(
+        (id, row) -> new ProjectDetailsPanel(id, row), expandedProjectIds, Project::getId)
+        .setRowLabel(Project::getName)
+        .setExpandableWhen(Project::canViewDetails);
+columns.add(0, details);
+```
+
+The factory receives `SwRowDetailsColumn.DETAILS_ID` and a detachable row model. It runs only when an expanded
+row is rendered, and its component must use the supplied ID. Use a panel/fragment for content that needs its own
+markup. Keys preserve expansion across sorting and paging; without a key function, expansion uses row equality.
+`getExpanded()`, `isExpanded(row)` and `setExpanded(row, boolean)` expose the state. A table supports one details
+column. Native fallback links expose `aria-expanded`, `aria-controls` and translated names. The optional predicate
+is checked again when activating a row; the provider still owns authorization.
+
+Inline edits use a separate draft, standard Wicket converters and validators:
+
+```java
+columns.add(new SwEditableColumn<Project, String, Integer>(Model.of("Hours"), "hours",
+        Project::getHours, Project::setHours)
+        .setType(Integer.class)
+        .setRequired(true)
+        .addValidator(RangeValidator.range(1, 80))
+        .setEditableWhen(project -> !project.isApproved())
+        .setOnSave((target, project) -> {
+            projects.save(project); // application-owned authorization and transaction
+            if (target != null) target.add(totals);
+        }));
+```
+
+Text is the default; supply `setType(...)` for numeric or other typed values. Invalid input remains in the editor,
+with linked inline feedback that page feedback/toasts do not repeat. Save or Enter validates and commits once;
+Cancel or Escape discards the draft and returns focus to the cell. Edit predicates are checked on opening and
+saving. A value changed elsewhere while editing produces a conflict error rather than overwriting it; cancel
+and reopen to load the new value. Applications must still implement database concurrency checks and transactions.
+If the setter/save callback throws, the in-memory value is restored and the exception propagates.
+
+With editable columns, rows retain their editors and server-side validation state while the same row remains
+visible during a table render. Set `table.setRowKey(...)` to stable unique serializable IDs when providers reload entities;
+the default uses row equality and releases those references on detach. Explicit IDs also avoid reloading old row
+models just to compare identity. Retained cells receive fresh provider models. Paging/filtering a row out of the
+view discards its unfinished editor. Browser text not submitted to the server may reset during unrelated Ajax
+replacement. Bookmarkable navigation constructs a new page, so it also discards editor/chooser/expansion state
+unless your application persists that state.
+
+Details, column choices, standalone inline forms and CSV downloads have native fallbacks. A save callback's
+target is **null** on a native submit. Inline forms nested in an outer Wicket form require JavaScript and use
+`NestedFormButtonBehavior` plus a default button to scope Enter to the cell. Selection and bulk actions continue
+to use Ajax. The `/advanced-tables` showcase combines these APIs with filters, locked rows and pagination.
 
 ### Bookmarkable table state
 
@@ -1545,7 +1690,7 @@ attach link behaviors to raw Wicket links, which already handle native hrefs. `S
 factory facade. For a list without a total count, compose Previous/Next yourself with this generic API rather than
 inventing a page count for `IPageable`.
 
-The `/tables`, `/data`, `/invoice` and `/pagination` showcases cover native/nested/grouped tables, compact and pinned
+The `/tables`, `/data`, `/advanced-tables`, `/invoice` and `/pagination` showcases cover native/nested/grouped tables, compact and pinned
 columns, stateful/bookmarkable navigation, row CRUD, selection and independent pagers. The landing studio uses the
 actual embedded table/pagination CSS with transient browser-only sample interactions; Wicket owns data operations
 in a consuming application.

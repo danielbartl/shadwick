@@ -267,6 +267,14 @@ public class SwDialog extends Panel {
     protected void onConfirm(AjaxRequestTarget target) {
     }
 
+    /** Show busy feedback and ignore repeated confirmation while its Ajax request is running. */
+    public SwDialog setBusyIndicator(boolean enabled) {
+        if (enabled && confirm.getBehaviors(dev.jbaby.shadwick.behaviors.AjaxBusyBehavior.class).isEmpty())
+            confirm.add(new dev.jbaby.shadwick.behaviors.AjaxBusyBehavior());
+        else if (!enabled) confirm.getBehaviors(dev.jbaby.shadwick.behaviors.AjaxBusyBehavior.class).forEach(confirm::remove);
+        return this;
+    }
+
     /** Subclass hook for the confirm button's Ajax options. */
     protected void updateConfirmAjaxAttributes(AjaxRequestAttributes attributes) {
     }

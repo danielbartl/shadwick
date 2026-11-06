@@ -1,0 +1,44 @@
+/* Native progress/meter and SVG radial progress. API follows Wicket Oat; appearance uses shadcn tokens. */
+@layer components {
+  .sw-progress, .sw-meter { @apply block w-full overflow-hidden border-0; appearance:none; }
+  .sw-progress { color:var(--primary); }
+  .sw-progress[data-variant='secondary'], .sw-radial-progress[data-variant='secondary'] { color:var(--muted-foreground); }
+  .sw-progress[data-variant='destructive'], .sw-radial-progress[data-variant='destructive'] { color:var(--destructive); }
+  .sw-progress::-webkit-progress-bar { background:transparent; border-radius:inherit; }
+  .sw-progress::-webkit-progress-value { background:currentColor; border-radius:inherit; }
+  .sw-progress::-moz-progress-bar { background:currentColor; border-radius:inherit; }
+  .sw-progress:indeterminate {
+    background-image:linear-gradient(90deg, transparent 0 25%, currentColor 25% 50%, transparent 50% 100%);
+    background-size:200% 100%; animation:sw-progress-unknown 1.5s linear infinite;
+  }
+  .sw-progress:indeterminate::-webkit-progress-value { background:transparent; }
+  .sw-progress:indeterminate::-moz-progress-bar { background:transparent; }
+  .sw-meter { --sw-meter-fill:var(--primary); }
+  .sw-meter[data-state='suboptimum'] { --sw-meter-fill:#b45309; }
+  .dark .sw-meter[data-state='suboptimum'] { --sw-meter-fill:#fbbf24; }
+  .sw-meter[data-state='critical'] { --sw-meter-fill:var(--destructive); }
+  .sw-meter::-webkit-meter-bar { background:transparent; border:0; border-radius:inherit; height:100%; }
+  .sw-meter::-webkit-meter-optimum-value,
+  .sw-meter::-webkit-meter-suboptimum-value,
+  .sw-meter::-webkit-meter-even-less-good-value { background:var(--sw-meter-fill); border-radius:inherit; }
+  .sw-meter::-moz-meter-bar { background:var(--sw-meter-fill); border-radius:inherit; }
+  .sw-radial-progress { @apply inline-grid shrink-0 place-items-center align-middle; color:var(--primary); }
+  .sw-radial-progress svg { grid-area:1/1; width:100%; height:100%; transform:rotate(-90deg); }
+  .sw-radial-progress circle { fill:none; stroke-width:6; }
+  .sw-radial-progress-track { stroke:var(--border); }
+  .sw-radial-progress-value { stroke:currentColor; stroke-linecap:round; }
+  .sw-radial-progress-text { grid-area:1/1; color:var(--foreground); }
+  .sw-radial-progress[data-indeterminate='true'] svg { animation:sw-ring-unknown 1.5s linear infinite; }
+  .sw-radial-progress[data-indeterminate='true'] .sw-radial-progress-track { stroke:currentColor; stroke-dasharray:40 130; }
+  @media (prefers-reduced-motion: reduce) {
+    .sw-progress:indeterminate, .sw-radial-progress[data-indeterminate='true'] svg { animation:none; }
+  }
+  @media (forced-colors: active) {
+    .sw-progress, .sw-meter { appearance:auto; forced-color-adjust:auto; }
+    .sw-radial-progress { color:Highlight; }
+    .sw-radial-progress-track { stroke:CanvasText; }
+    .sw-radial-progress-value { stroke:Highlight; }
+  }
+}
+@keyframes sw-progress-unknown { from { background-position:100% 0; } to { background-position:-100% 0; } }
+@keyframes sw-ring-unknown { to { transform:rotate(270deg); } }

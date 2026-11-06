@@ -69,13 +69,13 @@
     sticky-first-column: the first cell of every row sticks to the inline start (logical, so RTL works). The skins give
     it a background; its ::after is the edge, which shows only after the container has scrolled.
   */
-  .sw-table[data-sticky='first-column'] > :is(thead, tbody, tfoot) > tr > :is(th, td):first-child {
+  .sw-table[data-sticky='first-column'] > :is(thead, tbody, tfoot) > tr > :is(th, td):is(:first-child:not([hidden]), [data-sw-first-column]) {
     position: sticky;
     inset-inline-start: 0;
     z-index: 1;
   }
 
-  .sw-table[data-sticky='first-column'] > :is(thead, tbody, tfoot) > tr > :is(th, td):first-child::after {
+  .sw-table[data-sticky='first-column'] > :is(thead, tbody, tfoot) > tr > :is(th, td):is(:first-child:not([hidden]), [data-sw-first-column])::after {
     content: '';
     position: absolute;
     inset-block: 0;
@@ -89,7 +89,7 @@
     group starts at the second column, that line runs along the pinned edge: the edge moves onto it, so the two are
     one line, and the pinned cell covers the group line once it scrolls under.
   */
-  .sw-table[data-sticky='first-column']:has(> colgroup + colgroup) > :is(thead, tbody, tfoot) > tr > :is(th, td):first-child::after {
+  .sw-table[data-sticky='first-column']:has(> colgroup + colgroup) > :is(thead, tbody, tfoot) > tr > :is(th, td):is(:first-child:not([hidden]), [data-sw-first-column])::after {
     inset-inline-end: -1px;
   }
 
@@ -104,18 +104,18 @@
 
   /* Nothing scrolls on paper: the column stays in the flow and has no edge. */
   @media print {
-    .sw-table[data-sticky='first-column'] > :is(thead, tbody, tfoot) > tr > :is(th, td):first-child {
+    .sw-table[data-sticky='first-column'] > :is(thead, tbody, tfoot) > tr > :is(th, td):is(:first-child:not([hidden]), [data-sw-first-column]) {
       position: static;
     }
 
-    .sw-table[data-sticky='first-column'] > :is(thead, tbody, tfoot) > tr > :is(th, td):first-child::after {
+    .sw-table[data-sticky='first-column'] > :is(thead, tbody, tfoot) > tr > :is(th, td):is(:first-child:not([hidden]), [data-sw-first-column])::after {
       display: none;
     }
   }
 }
 
 @layer components {
-  .sw-table-container { min-width: 0; }
+  .sw-table-container { min-width: 0; container-type: inline-size; }
   .sw-table > :is(thead, tbody, tfoot) > tr > .sw-table-align-end { text-align: end; }
   .sw-table > :is(thead, tbody, tfoot) > tr > .sw-table-align-center { text-align: center; }
   .sw-table-column-label { @apply sr-only; }
@@ -131,4 +131,28 @@
   .sw-table-actions .sw-dropdown { @apply inline-block; }
   .sw-table-actions .sw-dropdown-menu-trigger > svg { display:none; }
   .sw-table-actions .sw-dropdown-menu-trigger { @apply align-middle; }
+}
+
+@layer components {
+  .sw-table-bar, .sw-table-tools, .sw-table-edit-controls { @apply flex flex-wrap items-center gap-2; }
+  .sw-table-bar { @apply justify-between; }
+  .sw-table-tools { margin-inline-start: auto; }
+  .sw-table-bar:has(.sw-table-tools), .sw-table-bar:has(.sw-table-toolbar:not([hidden])) { margin-block-end: 1rem; }
+  .sw-table-column-hidden { display: none !important; }
+  .sw-table-details-toggle { width: 3rem; }
+  .sw-table-details-button[aria-expanded='true'] > svg { transform: rotate(90deg); }
+  :dir(rtl) .sw-table-details-button > svg { transform: rotate(180deg); }
+  :dir(rtl) .sw-table-details-button[aria-expanded='true'] > svg { transform: rotate(90deg); }
+  .sw-table-editable { max-width: 100%; white-space: normal; text-align: start; }
+  .sw-table-edit-controls { flex-wrap: nowrap; }
+  .sw-table-editing .sw-input { width: 9rem; min-width: 5rem; }
+  .sw-table-editing .sw-field-error { display: block; max-width: min(22rem, calc(100cqi - 2rem)); white-space: normal; margin-block-start: .375rem; }
+  .sw-table > tbody > tr.sw-table-row-details > td { white-space: normal; }
+  .sw-table-row-details > td > div {
+    position: sticky;
+    inset-inline-start: 1rem;
+    max-inline-size: calc(100cqi - 2rem);
+  }
+  .sw-table[data-sticky='first-column'] > tbody > tr.sw-table-row-details > td { position: static; }
+  .sw-table[data-sticky='first-column'] > tbody > tr.sw-table-row-details > td::after { display: none; }
 }

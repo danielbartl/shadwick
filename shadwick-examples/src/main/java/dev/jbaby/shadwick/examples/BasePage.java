@@ -81,9 +81,11 @@ public abstract class BasePage extends WebPage {
         add(navLink("navDisclosure", DisclosurePage.class));
         add(navLink("navAttachments", AttachmentPage.class));
         add(navLink("navData", DataTablePage.class));
+        add(navLink("navAdvancedTables", AdvancedTablePage.class));
         add(navLink("navTables", TablePage.class));
         add(navLink("navPagination", PaginationPage.class));
         add(navLink("navDisplay", DisplayPage.class));
+        add(navLink("navStatusControls", StatusControlsPage.class));
         add(navLink("navFeedback", FeedbackPage.class));
         add(navLink("navInternationalization", InternationalizationPage.class));
 

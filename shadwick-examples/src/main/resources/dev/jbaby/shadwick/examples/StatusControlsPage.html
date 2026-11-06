@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html xmlns:wicket="http://wicket.apache.org"><wicket:extend>
+    <div><h1 class="ex-title">A little progress, clearly shown.</h1><p class="ex-lead">Native measurements, star ratings and buttons that show when work is happening.</p></div>
+    <section class="ex-i18n-card" aria-labelledby="status-progress-title">
+        <h2 id="status-progress-title">Progress and measurements</h2>
+        <div wicket:id="values" class="ex-status-values">
+            <div><p>Project progress <span wicket:id="completed"></span></p><progress wicket:id="progress"></progress><p>Preparing files</p><progress wicket:id="unknown"></progress></div>
+            <div class="ex-row"><div wicket:id="ring"></div><div wicket:id="unknownRing"></div></div>
+            <div><p>Storage used: 45%</p><meter wicket:id="storage"></meter><p>Nearing capacity: 75%</p><meter wicket:id="warning"></meter><p>Nearly full: 95%</p><meter wicket:id="critical"></meter></div>
+        </div>
+        <button wicket:id="advance" type="button"></button>
+    </section>
+    <section class="ex-i18n-card" aria-labelledby="status-busy-title">
+        <h2 id="status-busy-title">A clear moment of waiting</h2>
+        <p class="ex-muted">These actions simulate a short server request. Busy controls keep their labels and focus, ignore repeated activation and recover when the request finishes.</p>
+        <div class="ex-row"><button wicket:id="busy"></button><button wicket:id="replace"></button><button wicket:id="iconBusy" aria-label="Refresh work"><svg wicket:id="refreshIcon"></svg></button><a wicket:id="busyLink">Run linked action</a><button wicket:id="cancel"></button><div wicket:id="dialog"></div></div>
+        <p wicket:id="busyStatus" role="status"></p>
+    </section>
+    <section class="ex-i18n-card" aria-labelledby="status-ratings-title">
+        <h2 id="status-ratings-title">Every star counts</h2>
+        <div class="ex-row"><span wicket:id="rating"></span><span wicket:id="unrated"></span><span wicket:id="tenStars"></span></div>
+        <form wicket:id="form" class="ex-status-form" novalidate aria-label="Rating form">
+            <div wicket:id="name"></div><div wicket:id="rating"></div><div wicket:id="disabled"></div>
+            <div class="ex-row"><button wicket:id="normal" type="submit">Save rating</button><button wicket:id="ajax"></button><input wicket:id="native" type="submit"></div>
+            <p wicket:id="receipt" role="status"></p>
+        </form>
+    </section>
+</wicket:extend></html>

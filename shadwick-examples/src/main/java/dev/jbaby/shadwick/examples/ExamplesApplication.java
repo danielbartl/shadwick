@@ -43,11 +43,13 @@ public class ExamplesApplication extends WebApplication {
         mountPage("/disclosure", DisclosurePage.class);
         mountPage("/attachments", AttachmentPage.class);
         mountPage("/data", DataTablePage.class);
+        mountPage("/advanced-tables", AdvancedTablePage.class);
         mountPage("/tables", TablePage.class);
         mountPage("/pagination", PaginationPage.class);
         mountPage("/invoice", InvoicePage.class);
         mountPage("/demo-sign-in", UserSignInPage.class);
         mountPage("/display", DisplayPage.class);
+        mountPage("/status-controls", StatusControlsPage.class);
         mountPage("/feedback", FeedbackPage.class);
         mountPage("/internationalization", InternationalizationPage.class);
 

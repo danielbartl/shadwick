@@ -33,9 +33,11 @@ public class HomePage extends BasePage {
         add(new BookmarkablePageLink<>("disclosureLink", DisclosurePage.class));
         add(new BookmarkablePageLink<>("attachmentLink", AttachmentPage.class));
         add(new BookmarkablePageLink<>("dataLink", DataTablePage.class));
+        add(new BookmarkablePageLink<>("advancedTablesLink", AdvancedTablePage.class));
         add(new BookmarkablePageLink<>("tableLink", TablePage.class));
         add(new BookmarkablePageLink<>("paginationLink", PaginationPage.class));
         add(new BookmarkablePageLink<>("displayLink", DisplayPage.class));
+        add(new BookmarkablePageLink<>("statusControlsLink", StatusControlsPage.class));
         add(new BookmarkablePageLink<>("feedbackLink", FeedbackPage.class));
         add(new BookmarkablePageLink<>("internationalizationLink", InternationalizationPage.class));
     }

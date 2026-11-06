@@ -1,0 +1,29 @@
+/* Stars are vector shapes; editable ratings retain native radios, names and keyboard behavior. */
+@layer components {
+  .sw-rating { @apply inline-flex items-center align-middle; color:var(--primary); }
+  .sw-rating > span { @apply inline-flex; }
+  .sw-rating svg { width:var(--sw-rating-size,1.125rem); height:var(--sw-rating-size,1.125rem); }
+  .sw-rating-outline { fill:none; stroke:currentColor; stroke-width:1.5; stroke-linejoin:round; }
+  .sw-rating-fill { fill:currentColor; }
+  .sw-rating [data-fill='empty'] .sw-rating-fill { display:none; }
+  .sw-rating [data-fill='half'] .sw-rating-fill { clip-path:inset(0 50% 0 0); }
+  .sw-rating:dir(rtl) [data-fill='half'] .sw-rating-fill { clip-path:inset(0 0 0 50%); }
+  .sw-rating-input { @apply flex flex-wrap items-center; color:var(--primary); }
+  .sw-rating-option { @apply relative inline-flex cursor-pointer items-center justify-center; }
+  .sw-rating-radio, .sw-rating-text { @apply sr-only; }
+  .sw-rating-option svg { width:var(--sw-rating-size,1.125rem); height:var(--sw-rating-size,1.125rem); pointer-events:none; }
+  .sw-rating-option .sw-rating-fill { display:none; }
+  .sw-rating-option:has(input:checked) .sw-rating-fill,
+  .sw-rating-option:has(~ .sw-rating-option input:checked) .sw-rating-fill { display:inline; }
+  .sw-rating-input:has(.sw-rating-option:hover) .sw-rating-option .sw-rating-fill { display:none; }
+  .sw-rating-input .sw-rating-option:hover .sw-rating-fill,
+  .sw-rating-input .sw-rating-option:has(~ .sw-rating-option:hover) .sw-rating-fill { display:inline; }
+  .sw-rating-option:has(input:focus-visible) { outline:2px solid var(--ring); outline-offset:2px; }
+  .sw-rating-option:has(input:disabled) { @apply cursor-not-allowed opacity-50; pointer-events:none; }
+  .sw-rating-input:has(input[aria-invalid='true']) { outline:1px solid var(--destructive); outline-offset:3px; }
+  @media (forced-colors: active) {
+    .sw-rating, .sw-rating-input { color:CanvasText; }
+    .sw-rating-fill, .sw-rating-outline { forced-color-adjust:none; }
+    .sw-rating-option:has(input:focus-visible) { outline-color:Highlight; }
+  }
+}

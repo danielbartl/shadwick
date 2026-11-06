@@ -55,6 +55,14 @@ public class SwSubmitButton extends AjaxButton {
         return this;
     }
 
+    /** Show busy feedback through validation and submission; restore it after success or failure. */
+    public SwSubmitButton setBusyIndicator(boolean enabled) {
+        if (enabled && getBehaviors(dev.jbaby.shadwick.behaviors.AjaxBusyBehavior.class).isEmpty())
+            add(new dev.jbaby.shadwick.behaviors.AjaxBusyBehavior());
+        else if (!enabled) getBehaviors(dev.jbaby.shadwick.behaviors.AjaxBusyBehavior.class).forEach(this::remove);
+        return this;
+    }
+
     /**
      * The button's size; {@link ButtonBehavior.Size#ICON} is square, for a single icon. Name an icon button for
      * screen readers with an {@code aria-label}.

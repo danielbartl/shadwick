@@ -40,6 +40,14 @@ public abstract class SwButton extends AjaxLink<Void> {
         return this;
     }
 
+    /** Show busy feedback and ignore repeated activation until this Ajax request finishes. */
+    public SwButton setBusyIndicator(boolean enabled) {
+        if (enabled && getBehaviors(dev.jbaby.shadwick.behaviors.AjaxBusyBehavior.class).isEmpty())
+            add(new dev.jbaby.shadwick.behaviors.AjaxBusyBehavior());
+        else if (!enabled) getBehaviors(dev.jbaby.shadwick.behaviors.AjaxBusyBehavior.class).forEach(this::remove);
+        return this;
+    }
+
     /**
      * The button's size; {@link ButtonBehavior.Size#ICON} is square, for a single icon. Name an icon button for
      * screen readers with an {@code aria-label}.
