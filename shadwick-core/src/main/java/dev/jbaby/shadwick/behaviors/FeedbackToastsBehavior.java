@@ -3,6 +3,7 @@ package dev.jbaby.shadwick.behaviors;
 import dev.jbaby.shadwick.components.SwFeedbackPanel;
 import dev.jbaby.shadwick.components.form.NotShownInlineFilter;
 import dev.jbaby.shadwick.Shadwick;
+import dev.jbaby.shadwick.util.LocalizedText;
 import org.apache.wicket.markup.head.JavaScriptHeaderItem;
 import com.github.openjson.JSONObject;
 import org.apache.wicket.Component;
@@ -95,17 +96,21 @@ public class FeedbackToastsBehavior extends Behavior {
         messages.sort(Comparator.comparingInt(FeedbackMessage::getLevel));
         StringBuilder script = new StringBuilder();
         String closeLabel = null;
+        String regionLabel = null;
         for (FeedbackMessage message : messages) {
             if (closeLabel == null) {
                 String key = "FeedbackToastsBehavior.close";
                 String fallback = new ComponentStringResourceLoader().loadStringResource(FeedbackToastsBehavior.class,
                         key, component.getLocale(), component.getStyle(), component.getVariation());
                 closeLabel = component.getString(key, null, fallback);
+                regionLabel = LocalizedText.get(component, FeedbackToastsBehavior.class,
+                        "FeedbackToastsBehavior.label", "Notifications (Alt+T)");
             }
             message.markRendered();
             script.append("Shadwick.toast(").append(quote(String.valueOf(message.getMessage())))
                     .append(',').append(quote(message.getLevelAsString().toLowerCase(java.util.Locale.ROOT)))
                     .append(',').append(quote(closeLabel))
+                    .append(',').append(quote(regionLabel))
                     .append(");");
         }
         return script.toString();

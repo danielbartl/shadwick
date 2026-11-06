@@ -1107,6 +1107,48 @@ body {
   color:#7f9273
 }
 
+.language-note {
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  flex-wrap:wrap;
+  gap:24px 40px;
+  margin-top:32px;
+  padding:28px;
+  border:1px solid var(--line);
+  border-radius:12px;
+  background:#eef2e5
+}
+
+.language-note>div {
+  flex:1 1 320px;
+  min-width:0
+}
+
+.language-note .eyebrow {
+  margin-bottom:10px
+}
+
+.language-note h3 {
+  font-size:23px;
+  line-height:1.25;
+  letter-spacing:-.7px;
+  font-weight:500
+}
+
+.language-note p {
+  max-width:600px;
+  margin-top:12px;
+  color:#52614f;
+  font-size:12px;
+  line-height:1.9
+}
+
+.language-note .action {
+  max-width:100%;
+  white-space:normal
+}
+
 .getting-started {
   background:#eef2e5;
   border:1px solid #dce5cf;

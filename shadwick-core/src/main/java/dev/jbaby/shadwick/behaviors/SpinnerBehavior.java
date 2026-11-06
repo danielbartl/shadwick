@@ -5,6 +5,8 @@ import org.apache.wicket.markup.ComponentTag;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
 import java.util.Objects;
+import dev.jbaby.shadwick.components.SwSpinner;
+import dev.jbaby.shadwick.util.LocalizedText;
 
 /** Styles an icon or an existing element as a loading status. Its name defaults to the localized Loading label. */
 public class SpinnerBehavior extends StyledBehavior {
@@ -21,7 +23,7 @@ public class SpinnerBehavior extends StyledBehavior {
         tag.put("role", "status");
         tag.remove("aria-hidden");
         if (tag.getAttribute("aria-label") == null) {
-            tag.put("aria-label", component.getString("SwSpinner.loading", null, "Loading"));
+            tag.put("aria-label", LocalizedText.get(component, SwSpinner.class, "SwSpinner.loading", "Loading"));
         }
         Size size = sizeModel.getObject();
         if (size == null || size == Size.DEFAULT) { tag.remove("data-size"); }

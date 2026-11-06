@@ -15,7 +15,13 @@ Maven dependency and is done: no Node, no Tailwind, no CSS build on their side.
 
 ## Resume point — 2026-11-06
 
-**Next implementation group: internationalization — translated built-in component messages.**
+**Next implementation group: full component documentation and a hosted interactive showcase.**
+The library ships English plus German, Spanish, French, Italian, Japanese, Dutch, Portuguese and Croatian
+built-in messages through Wicket's resource lookup: 248 translated core bundles across eight non-English
+languages. The standard examples have a native language picker; /internationalization?lang=hr-HR and
+/internationalization?lang=ja exercise controls, Ajax and native fallbacks. README covers locale selection
+and page/application overrides. Internationalization and Croatian are included in the publication
+checkpoint below; use git log and the Website workflow for the source and deployment revision.
 Maia, Mira, Luma, Rhea, Sera and Sketch join Vega, Lyra and Nova, including standalone/embedded bundles
 and selectors. All nine skins are included in this publication checkpoint; use `git log -1 --oneline`
 and the Website workflow for the current source/deployed revision.
@@ -32,7 +38,29 @@ collapsible, attachment displays, data tables/pagination, custom select, combobo
 picker, month view and charts are included in this publication checkpoint, with verification
 records below. Attachment displays complement the completed upload controls.
 
-Current publication checkpoint — 2026-11-06:
+Current publication checkpoint — internationalization, 2026-11-06:
+
+- User requested committing/pushing internationalization, Croatian and the landing update. This checkpoint
+  includes all nine languages, translated native/enhanced controls, application override support, the
+  showcase language picker and example, documentation and the landing's explicit nine-language panel.
+- The landing remains English and names English, German, Spanish, French, Italian, Japanese, Dutch,
+  Portuguese and Croatian. Its new catalog panel links directly to README internationalization setup.
+  Desktop/390px/320px Chromium and Firefox screenshot/axe checks passed. The panel's body text contrast
+  was corrected before publication. Site build/check: 166 references and 105 unique IDs.
+- JVM verification passed 696 core and 60 showcase tests; Croatian/i18n focused browser checks passed
+  26 Chromium cases plus four Croatian Chromium/Firefox visual audits. Earlier initial-i18n checks and
+  their scope are recorded below; no full nine-skin browser-green claim is inferred from focused checks.
+- The previous b6edbd6 Build workflow had failed 16 of 3312 browser cases. Its publication follow-up
+  fixes missing explicit inset-header styling in Maia/Mira/Luma/Rhea/Sera/Sketch, makes the sidebar
+  provider shrink inside grid layouts (Sera long-name RTL overflow), and checks each RTL switch
+  background layer rather than assuming every skin uses a single image. All 54 targeted cases across
+  nine skins/light-dark passed; log: /tmp/shadwick-publish-ci-repair2.log.
+- GitHub Pages builds/deploys main through .github/workflows/pages.yml. The workflow run records
+  the final source revision and deployment result. Landing: https://danielbartl.github.io/shadwick/ .
+- Next: full component documentation and a hosted interactive showcase, then agent skill/llms.txt,
+  release preparation and Maven Central. Chart variant follow-ups remain in Later phases.
+
+Previous publication checkpoint — all nine skins, 2026-11-06:
 
 - The user requested committing/pushing all six remaining skins and updating the landing page.
   This checkpoint includes all nine skin identities, standalone/embedded entries, Sketch's
@@ -47,7 +75,7 @@ Current publication checkpoint — 2026-11-06:
 - Static site checks pass 165 references and 104 IDs, including all nine skin assets and the
   font files/license. Site output remains generated and ignored. GitHub Pages deploys through
   .github/workflows/pages.yml; its run records the deployment result and source revision.
-- Next: built-in translations, then full docs/showcase, agent guidance and Maven Central.
+- At this publication, translations were next; the subsequent local group is recorded above.
 
 Previous publication checkpoint — 2026-11-05:
 
@@ -103,7 +131,7 @@ The roadmap below includes the latest Shadleaf parity review. In particular, exp
 include tabs/accordion/collapsible and attachment displays, which the earlier roadmap
 omitted. Native selects/date fields, file upload and attachment displays are complete;
 month view and charts now complete the main catalog at the family level. Remaining work includes
-translations, documentation/tooling, release preparation and variant-level gaps.
+documentation/tooling, release preparation and variant-level gaps. Internationalization is now implemented locally.
 
 ## Two references, two roles
 
@@ -430,8 +458,10 @@ wicket-extensions dependency was added after the user asked to continue with the
    with server-side search, calendar/date picker, month view and SVG charts are implemented.
    Charts cover bars/lines/areas, composed and stacked series, axes/grid, legends, tooltips and native data tables.
 9. **Visual breadth** (complete locally): all nine skins — Vega, Lyra, Nova, Maia, Mira, Luma, Rhea, Sera and Sketch.
-10. **Internationalization, docs and distribution:** built-in translations, full component docs,
-    interactive showcase, agent guidance/llms.txt, then a Maven Central release.
+10. **Internationalization** (complete locally): English plus eight translated built-in message sets,
+    locale-aware fallbacks and overrides, showcase language selection and Ajax/native verification.
+11. **Documentation and distribution** (next): full component docs and a hosted interactive showcase,
+    then agent guidance/llms.txt and a Maven Central release.
 
 Chart variant follow-ups: forecast joins, arbitrary per-series light/dark colors, natural splines
 and per-corner bar radii. Native SVG is an intentional alternative to Shadleaf’s Recharts runtime.
@@ -439,7 +469,7 @@ and per-corner bar radii. Native SVG is an intentional alternative to Shadleaf�
 For broader Shadleaf parity after/alongside these groups:
 
 - All nine skins now have implementations, with shared light/dark token support.
-- Translated built-in component messages (currently English).
+- Built-in messages now ship in nine languages; additional languages can use application resource bundles.
 - Full component documentation and interactive showcase site, beyond the landing page
   and runnable Wicket examples already available.
 - Agent skill + llms.txt and a Maven Central release.
@@ -465,8 +495,8 @@ SwDatePicker/SwDateRangePicker cover native date-backed grids and popups, with n
 validation in /calendar and working landing previews. SwMonthView provides a native agenda with
 custom day slots, links and independent months in /month-view. SwChart/ChartSeries provide native
 SVG bars/lines/areas, mixed/stacked series, keyboard tooltips and exact data in /charts.
-The landing previews both. All nine skins are implemented locally. Next: translations, then
-documentation, tooling and release preparation.
+The landing previews both. All nine skins and internationalization are implemented locally. Next:
+documentation and a hosted interactive showcase, then tooling and release preparation.
 
 ## Working agreements
 
@@ -479,6 +509,30 @@ documentation, tooling and release preparation.
 - Record every decision under Conventions as soon as it is made.
 
 ## Conventions
+
+### Internationalization (2026-11-06)
+
+- Use Wicket's existing component/page/application resource lookup and session/component locale.
+  Ship class-scoped _de/_es/_fr/_it/_ja/_nl/_pt/_hr.utf8.properties. Follow Wicket Oat's
+  UTF-8 naming and original seven-language set, extended with Croatian at the user's request. English base bundles remain the fallback; regional locales
+  inherit their language. No global locale, custom message source or new dependency.
+- Translate built-in controls, labels and validation, including JS messages emitted in data
+  attributes. Application-provided titles, row actions, field labels and demo prose stay owned
+  by the application. Preserve all {0} and ${variable} placeholders and literal date wire formats.
+- Behaviors on caller-owned markup and table parts use LocalizedText to find the correct
+  library bundle as fallback while retaining page overrides and any configured application loaders.
+  Preserve Wicket loader order: a global application override can explicitly prepend
+  ClassStringResourceLoader(App.class), following Oat; do not silently install a new loader. Calendar locale
+  overrides continue to control date formatting; message lookup follows the component locale.
+- Default combobox placeholders are resolved during rendering for both native and enhanced
+  fields; explicit empty/null/custom placeholder models keep their existing meaning. Data-table
+  names and default action headings are also resources. Feedback toast regions and close
+  controls are localized without changing persistent timing or legacy severity styling.
+- The Wicket showcase includes locale selection and a dedicated internationalization example.
+  The static marketing site stays English; document the shipped languages and next roadmap task.
+- References read: Wicket Oat's TranslationsTest, OatHtml/OatHtmlTest and UTF-8 bundles;
+  Shadleaf's MessageSource, message bundles and placeholder/override tests; Wicket 10.11.0
+  ComponentStringResourceLoader source. Shadleaf's Spring message source is not used in Wicket.
 
 ### Remaining skins (2026-11-06)
 
@@ -2073,3 +2127,94 @@ documentation, tooling and release preparation.
   The implementation initially remained local; the user subsequently requested commit, push
   and landing publication, recorded in the current checkpoint above. Next: translations, then
   docs/tooling/release.
+
+
+## Phase 10 — internationalization (2026-11-06, implemented locally)
+
+- Added 217 UTF-8 bundles across all 31 existing message scopes: German, Spanish, French,
+  Italian, Japanese, Dutch and Portuguese, plus the English base bundles. Key/placeholder parity,
+  packaged resources, regional/unsupported-language fallbacks and component locale overrides are tested.
+- Resource lookup follows Wicket's normal page/component hierarchy. An application can explicitly
+  prioritize its own ClassStringResourceLoader; the library does not change loader order. Behavior-only
+  markup uses a class-scoped fallback. Calendar locale overrides still affect date presentation only.
+- Default combobox search placeholders now resolve on render for both enhanced and native fields.
+  Explicit custom/empty/null values retain their meaning. Data-table names and action headings are
+  resources; feedback toast dismiss/region labels are localized through the backward-compatible
+  fourth legacy toast argument, retaining severity, safe text rendering and persistent timing.
+- The standard showcase header has a native POST language picker, stable language-tag option values,
+  localized labels and a locale-derived html lang. Skin/mode links preserve current page parameters.
+  /internationalization demonstrates localized fields, calendars, dialogs, theme menus, notifications,
+  uploads and table pagination. The theme control targets its own preview without changing reference mode.
+  Application prose, titles, field labels, choices and actions remain application-owned.
+- Browser audits caught pagination visible/accessibility-name mismatches in de/fr/it/ja/pt. Corrected
+  translations now include the visible labels; all seven language audits pass. No accessibility rule
+  was disabled. Regional locale tags are recommended for country-specific week/date/number conventions.
+- Final ./mvnw -B verify passed: 691 core tests and 59 showcase-page tests. TranslationsTest has
+  30 cases, including UTF-8 native date errors in all seven languages, page/application overrides,
+  locale changes before Ajax replacement and translated full-render/Ajax feedback toasts. Existing
+  pagination tests also cover German grouping and Japanese reordered range/page message arguments.
+- Focused Chromium browser run passed 19 cases: all seven translated language controls with Ajax and
+  dialog audits; Japanese mobile uploads, both toast APIs and pagination in Vega/Sera/Sketch light/dark;
+  native language switching and combobox fallback without JavaScript in the same six skin/mode cases.
+  Log: /tmp/shadwick-i18n-browser2.log. This is focused verification, not a full nine-skin suite run.
+- Additional script passed 78 checks: 20 desktop/mobile screenshot+axe audits (Chromium Vega/Sera/Sketch,
+  Firefox Vega/Sketch, German light and Japanese dark); 56 page/locale audits (seven languages across
+  dates, uploads, data, user-menu, layouts, month-view, charts and custom-select); two landing widths.
+  Checks include console errors and document overflow. Script/log: /tmp/shadwick-i18n-visual.cjs and
+  /tmp/shadwick-i18n-visual.log; screenshots /tmp/shadwick-i18n-*.png. German/Japanese desktop/mobile
+  screenshots and the narrow picker/header were visually inspected. WebKit remains unavailable locally.
+- README documents shipped languages, locale selection, document language, browser-native field chrome,
+  explicit overrides, resource-loader configuration and extending languages. NOTICE credits reused Oat
+  translation strings. Static landing copy links to the new internationalization documentation while
+  remaining English. Site build/check passed: 165 internal references and 104 unique IDs.
+- No dependency was added. No commit/push/publication requested for this group. All changes remain
+  local on top of published b6edbd6. Next: full component documentation and a hosted interactive
+  showcase, then agent skill/llms.txt, release preparation and Maven Central. Chart variant follow-ups
+  remain recorded in Later phases. Temporary preview servers were stopped at handoff.
+
+### Croatian extension (2026-11-06)
+
+- User requested Croatian after the initial internationalization group. Added all 31 _hr.utf8.properties
+  core bundles, covering the same 83 distinct messages as English. There are now 248 translated core
+  bundles and nine languages including English. No new dependency, loader, component API or JS change.
+- Croatian uses hr; regional hr-HR falls back to these messages while retaining Croatia's formatting
+  and week rules. Keep all ${variable}/{0} placeholders. Count messages use neutral wording (for example,
+  Broj rezultata: {0}) so one template works without incorrect Croatian noun inflections.
+- The picker includes hrvatski with localized Jezik/Primijeni labels. Existing language order is preserved
+  by appending hr. Showcase introduction, home link, README, landing copy/site README and current roadmap
+  list nine languages. README includes a Locale.forLanguageTag("hr-HR") setup example.
+- JVM verification passed: 696 core and 60 showcase tests. Coverage includes Croatian dialog defaults,
+  hr-HR fallback, UTF-8 date conversion errors/ISO formats, all keys/placeholders/packaged resources,
+  localized table headings and Ajax refresh; Croatian regional range/page/empty summaries are tested.
+  Log: /tmp/shadwick-croatian-verify2.log.
+- Focused Chromium browser verification passed 26 cases: eight translated language control/Ajax/dialog
+  audits; six Croatian mobile cases in Vega/Sera/Sketch light/dark with accented filenames, upload counts,
+  direct/feedback notifications and pagination; twelve no-script Japanese/Croatian language changes and
+  native combobox fallbacks in the same skins/modes. Log: /tmp/shadwick-croatian-browser.log.
+- Four additional Croatian screenshot/axe checks passed in Chromium and Firefox: Sera desktop/light and
+  Sketch mobile/dark, including accents, hrvatski/Jezik, Monday-first hr-HR weeks, console errors and
+  document overflow. Visually inspected desktop Chromium and mobile Firefox screenshots. Script/log:
+  /tmp/shadwick-croatian-visual.cjs and .log; screenshots /tmp/shadwick-croatian-{browser}-{width}.png.
+- Site build/check passed: 165 internal references and 104 unique IDs. The temporary showcase server was
+  stopped. All internationalization work, including Croatian, remains local/uncommitted on b6edbd6;
+  no commit, push or publication was requested. Next roadmap group remains documentation/hosted showcase.
+
+
+### Internationalization publication follow-up (2026-11-06)
+
+- User authorized committing/pushing all internationalization and Croatian work and updating the landing.
+  This supersedes the earlier local-only handoff notes. The current publication checkpoint is at the top.
+- The landing has a responsive language panel under the catalog naming all nine languages and linking
+  to README's internationalization section. Body contrast was strengthened after axe caught the initial
+  color. Six Chromium/Firefox checks passed at 1440/390/320 px; desktop and narrow screenshots inspected.
+- Checked previous Build run 42203649638: Java 17/25 passed; browser suite failed 16 of 3312 cases.
+  Missing data-inset selectors in the six newest skins caused twelve inset-header failures; restored
+  the same explicit contract as Vega/Lyra/Nova. Sera's provider retained a grid item's min-content width
+  after long account names/RTL/forced colors; min-w-0 on the shared sidebar provider fixes the overflow
+  without clipping content. Sketch uses five switch background layers; the RTL assertion now waits
+  for every layer's expected position instead of comparing the computed list to a scalar string.
+- All 54 related browser cases passed across nine skins and both modes. Existing accessibility,
+  forced-color, focus, RTL and overflow checks remain enabled. No new dependency or browser threshold.
+  Do not describe this as a complete full-catalog run. Log: /tmp/shadwick-publish-ci-repair2.log.
+- Landing previews are generated from the rebuilt CSS/JS with content hashes. Site check now counts
+  166 internal references and 105 unique IDs. Browser script: /tmp/shadwick-i18n-publish-site.cjs.

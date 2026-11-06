@@ -37,6 +37,7 @@ public class HomePage extends BasePage {
         add(new BookmarkablePageLink<>("paginationLink", PaginationPage.class));
         add(new BookmarkablePageLink<>("displayLink", DisplayPage.class));
         add(new BookmarkablePageLink<>("feedbackLink", FeedbackPage.class));
+        add(new BookmarkablePageLink<>("internationalizationLink", InternationalizationPage.class));
     }
 
     @Override

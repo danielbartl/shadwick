@@ -43,7 +43,7 @@ public class SwDataTable<T, S> extends Panel implements IPageableItems {
     private final SwPagingNavigator navigator;
     private final SwPaginationSize pageSize;
     private final List<BulkAction<T>> bulkActions = new ArrayList<>();
-    private IModel<String> label = Model.of("Records");
+    private IModel<String> label = new StringResourceModel("SwDataTable.label", this).setDefaultValue("Records");
     private TableQuery query;
     private SerializableFunction<S, String> sortKey = property -> property.toString();
     private long maximumPageSize;

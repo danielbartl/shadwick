@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html xmlns:wicket="http://wicket.apache.org"><wicket:extend>
+    <div lang="en">
+        <h1>At home in your language.</h1>
+        <p class="ex-lead">English, German, Spanish, French, Italian, Japanese, Dutch, Portuguese and Croatian. Choose a language above to try the library’s translated controls.</p>
+        <p class="ex-muted">Current Wicket locale: <code wicket:id="locale">en</code>. Page copy, field labels and application messages are supplied by the application. Built-in labels and validation follow the Wicket locale.</p>
+    </div>
+    <div class="ex-i18n-grid">
+        <section class="ex-i18n-card" aria-labelledby="i18n-fields">
+            <h2 id="i18n-fields" lang="en">Forms that speak your language</h2>
+            <p class="ex-muted" lang="en">Search, clear choices, open the date picker or select a .txt file. Refresh the fields to check Ajax initialization.</p>
+            <form wicket:id="form" novalidate>
+                <div wicket:id="city"></div>
+                <div wicket:id="destinations"></div>
+                <div wicket:id="date"></div>
+                <div wicket:id="nativeDate"></div>
+                <div wicket:id="files"></div>
+                <div class="ex-row" lang="en"><button wicket:id="save"></button><button wicket:id="refresh" type="button"></button></div>
+            </form>
+        </section>
+        <section class="ex-i18n-card" aria-labelledby="i18n-calendar">
+            <h2 id="i18n-calendar" lang="en">Dates, dialogs and details</h2>
+            <p class="ex-muted" lang="en">Month names, weekday names and week numbering use the selected locale. Accessible names and notification controls are translated too.</p>
+            <div wicket:id="calendar"></div>
+            <div class="ex-row"><div wicket:id="dialog"></div><div wicket:id="themePreview"><div wicket:id="theme"></div></div></div>
+            <div class="ex-row" lang="en"><button wicket:id="notify" type="button"></button><button wicket:id="feedback" type="button"></button></div>
+        </section>
+    </div>
+    <section aria-labelledby="i18n-table">
+        <h2 id="i18n-table" lang="en">Every page, in every locale</h2>
+        <p class="ex-muted" lang="en">Default table names, action headings, page sizes and summaries use the same resource lookup. Your own column headings and row actions stay under your control.</p>
+        <div wicket:id="cities"></div>
+    </section>
+</wicket:extend></html>

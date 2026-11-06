@@ -7,6 +7,8 @@ import dev.jbaby.shadwick.behaviors.StyledBehavior;
 import dev.jbaby.shadwick.components.SwDropdown;
 import dev.jbaby.shadwick.util.SerializableBiConsumer;
 import dev.jbaby.shadwick.util.SerializableFunction;
+import dev.jbaby.shadwick.util.LocalizedText;
+import dev.jbaby.shadwick.components.SwDataTable;
 import org.apache.wicket.AttributeModifier;
 import org.apache.wicket.Component;
 import org.apache.wicket.ajax.AjaxEventBehavior;
@@ -29,8 +31,9 @@ public class SwActionsColumn<T, S> extends AbstractColumn<T, S> implements IStyl
     private final List<RowAction<T>> actions = new ArrayList<>();
     private SerializableFunction<T, String> rowLabel = row -> String.valueOf(row);
     private SerializableFunction<T, ?> rowKey;
+    private boolean defaultTitle;
     public SwActionsColumn<T, S> setRowKey(SerializableFunction<T, ?> key) { rowKey = Objects.requireNonNull(key); return this; }
-    public SwActionsColumn() { this(Model.of("Actions")); }
+    public SwActionsColumn() { this(Model.of("Actions")); defaultTitle = true; }
     public SwActionsColumn(IModel<String> title) { super(title); }
     public SwActionsColumn<T, S> setRowLabel(SerializableFunction<T, String> label) { rowLabel = Objects.requireNonNull(label); return this; }
     public RowAction<T> addAction(String label, SerializableBiConsumer<AjaxRequestTarget, T> callback) { return addAction(Model.of(label), callback); }
@@ -38,7 +41,11 @@ public class SwActionsColumn<T, S> extends AbstractColumn<T, S> implements IStyl
         var action = new RowAction<>(Objects.requireNonNull(label), Objects.requireNonNull(callback)); actions.add(action); return action;
     }
     @Override public String getCssClass() { return "sw-table-actions sw-table-align-end"; }
-    @Override public Component getHeader(String id) { return new Label(id, getDisplayModel()).add(new StyledBehavior("sw-table-column-label")); }
+    @Override public Component getHeader(String id) {
+        Label header = new Label(id);
+        header.setDefaultModel(defaultTitle ? (IModel<String>) () -> LocalizedText.get(header, SwDataTable.class, "SwDataTable.actionsHeading", "Actions") : getDisplayModel());
+        return header.add(new StyledBehavior("sw-table-column-label"));
+    }
     @Override public void populateItem(Item<ICellPopulator<T>> item, String id, IModel<T> row) {
         IModel<List<RowAction<T>>> visible = () -> actions.stream().filter(a -> row.getObject() != null && a.visible(row.getObject())).toList();
         var menu = new SwDropdown<RowAction<T>>(id, "⋯", visible) {
@@ -70,7 +77,7 @@ public class SwActionsColumn<T, S> extends AbstractColumn<T, S> implements IStyl
         menu.setTriggerVariant(ButtonBehavior.Variant.GHOST).setAlign(DropdownMenuBehavior.Align.END);
         menu.getTrigger().add(AttributeModifier.replace("data-size", "icon"));
         menu.getTrigger().add(AttributeModifier.replace("aria-label", (IModel<String>) () ->
-                menu.getString("SwDataTable.actions", null, "Actions for") + " " + rowLabel.apply(row.getObject())));
+                LocalizedText.get(menu, SwDataTable.class, "SwDataTable.actions", "Actions for") + " " + rowLabel.apply(row.getObject())));
         item.setOutputMarkupId(true); item.add(menu);
     }
     @Override public void detach() { super.detach(); actions.forEach(a -> a.label.detach()); }

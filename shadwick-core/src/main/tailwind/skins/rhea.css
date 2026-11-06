@@ -1870,6 +1870,7 @@
     @apply gap-2 border-b border-border bg-background px-4;
   }
 
+  .sw-site-header[data-inset='true'],
   .sw-sidebar-inset > .sw-site-header,
   .sw-sidebar-provider > .sw-site-header:has(> .sw-sidebar[data-variant='inset']) {
     @apply border-b-0 bg-transparent;

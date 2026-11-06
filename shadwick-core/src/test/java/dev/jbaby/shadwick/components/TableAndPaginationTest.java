@@ -101,9 +101,24 @@ class TableAndPaginationTest {
         var summary = new SwPaginationSummary("summary", pageable); tester.startComponentInPage(summary);
         assertThat(html()).contains("1,001–1,010 of 12,345").doesNotContain("aria-live", "role=\"status\"");
         tester.getSession().setLocale(Locale.GERMANY); tester.startComponentInPage(summary);
-        assertThat(html()).contains("1.001–1.010 of 12.345");
-        pageable.count = 0; tester.startComponentInPage(summary); assertThat(html()).contains("0 of 0");
-        summary.setFormat(SwPaginationSummary.Format.PAGE); tester.startComponentInPage(summary); assertThat(html()).contains("Page 1 of 1");
+        assertThat(html()).contains("1.001–1.010 von 12.345");
+        tester.getSession().setLocale(Locale.JAPAN); tester.startComponentInPage(summary);
+        assertThat(html()).contains("12,345 件中 1,001～1,010 件");
+        summary.setFormat(SwPaginationSummary.Format.PAGE); tester.startComponentInPage(summary);
+        assertThat(html()).contains("1,235 ページ中 101 ページ");
+        summary.setFormat(SwPaginationSummary.Format.RANGE); tester.getSession().setLocale(Locale.GERMANY);
+        pageable.count = 0; tester.startComponentInPage(summary); assertThat(html()).contains("0 von 0");
+        summary.setFormat(SwPaginationSummary.Format.PAGE); tester.startComponentInPage(summary); assertThat(html()).contains("Seite 1 von 1");
+    }
+    @Test void croatianSummariesKeepRegionalNumbersAndMessageArguments() {
+        tester.getSession().setLocale(Locale.forLanguageTag("hr-HR"));
+        var pageable = new Pages(); pageable.count = 12345; pageable.current = 100;
+        var summary = new SwPaginationSummary("summary", pageable); tester.startComponentInPage(summary);
+        assertThat(html()).contains("1.001–1.010 od 12.345");
+        summary.setFormat(SwPaginationSummary.Format.PAGE); tester.startComponentInPage(summary);
+        assertThat(html()).contains("Stranica 101 od 1.235");
+        pageable.count = 0; summary.setFormat(SwPaginationSummary.Format.RANGE); tester.startComponentInPage(summary);
+        assertThat(html()).contains("0 od 0");
     }
     @Test void pageSizeIncludesTheCurrentChoiceAndUsesNativeMenuRadioLinks() {
         var pageable = new Pages(); pageable.size = 7;

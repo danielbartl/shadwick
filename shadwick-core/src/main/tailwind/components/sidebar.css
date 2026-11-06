@@ -20,7 +20,7 @@
 /* Adapted from Shadleaf (Apache-2.0, see NOTICE). */
 @layer components {
   .sw-sidebar-provider {
-    @apply flex min-h-svh w-full;
+    @apply flex min-h-svh min-w-0 w-full;
     /* Not hidden: clip makes no scroll container, so the sidebar stays sticky. */
     overflow-x: clip;
   }

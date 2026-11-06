@@ -4,6 +4,8 @@ import org.apache.wicket.Component;
 import org.apache.wicket.markup.ComponentTag;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
+import dev.jbaby.shadwick.components.SwPagination;
+import dev.jbaby.shadwick.util.LocalizedText;
 
 /** A named navigation landmark for native page links. */
 public class PaginationBehavior extends StyledBehavior {
@@ -16,7 +18,7 @@ public class PaginationBehavior extends StyledBehavior {
         super.onComponentTag(component, tag);
         if (label != null && label.getObject() != null) tag.put("aria-label", label.getObject());
         if (tag.getAttribute("aria-label") == null && tag.getAttribute("aria-labelledby") == null)
-            tag.put("aria-label", component.getString("SwPagination.label", null, "Pagination"));
+            tag.put("aria-label", LocalizedText.get(component, SwPagination.class, "SwPagination.label", "Pagination"));
     }
     @Override public void detach(Component component) { if (label != null) label.detach(); super.detach(component); }
 }

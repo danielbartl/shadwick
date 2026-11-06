@@ -23,7 +23,7 @@ It includes markup structure, CSS and JavaScript adapted from third-party projec
 
 - Wicket Oat (https://github.com/danielbartl/wicket-oat).
   Copyright (c) 2026 Daniel Bartl. Licensed under the MIT License.
-  The native SVG chart API and rendering patterns are adapted from Wicket Oat.
+  The native SVG chart API, rendering patterns and shared translation strings are adapted from Wicket Oat.
 
 - shadcn/ui (https://ui.shadcn.com), Copyright (c) 2023 shadcn.
   Licensed under the MIT License.

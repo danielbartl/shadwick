@@ -157,8 +157,8 @@ class FeedbackTest {
         tester.startPage(page);
 
         assertThat(tester.getLastResponseAsString())
-                .contains("Shadwick.toast(\"Info message\",\"info\",\"Dismiss notification\")")
-                .contains("Shadwick.toast(\"Error message\",\"error\",\"Dismiss notification\")");
+                .contains("Shadwick.toast(\"Info message\",\"info\",\"Dismiss notification\",\"Notifications (Alt+T)\")")
+                .contains("Shadwick.toast(\"Error message\",\"error\",\"Dismiss notification\",\"Notifications (Alt+T)\")");
     }
 
     @Test
@@ -191,7 +191,7 @@ class FeedbackTest {
         tester.getSession().success("Welcome back.");
         tester.startPage(new FeedbackPage(true));
 
-        assertThat(tester.getLastResponseAsString()).contains("Shadwick.toast(\"Welcome back.\",\"success\",\"Dismiss notification\")");
+        assertThat(tester.getLastResponseAsString()).contains("Shadwick.toast(\"Welcome back.\",\"success\",\"Dismiss notification\",\"Notifications (Alt+T)\")");
     }
 
     @Test
@@ -228,7 +228,7 @@ class FeedbackTest {
         tester.executeAjaxEvent("form:submit", "click");
 
         String response = tester.getLastResponseAsString();
-        assertThat(response).contains("Shadwick.toast(\"Please fix the errors.\",\"error\",\"Dismiss notification\")");
+        assertThat(response).contains("Shadwick.toast(\"Please fix the errors.\",\"error\",\"Dismiss notification\",\"Notifications (Alt+T)\")");
         assertThat(response).doesNotContain("Shadwick.toast(\"'Name' is required.\"");
     }
 

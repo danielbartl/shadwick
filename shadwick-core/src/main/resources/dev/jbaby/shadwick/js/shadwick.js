@@ -1004,10 +1004,10 @@
         paths[variant].forEach(function (d) { var path = document.createElementNS(svg.namespaceURI, 'path'); path.setAttribute('d', d); svg.appendChild(path); });
         return svg;
     }
-    Shadwick.toast = function (message, options, dismissLabel) {
+    Shadwick.toast = function (message, options, dismissLabel, regionLabel) {
         var legacy = typeof options === 'string', level = legacy ? options : null;
         options = legacy ? {variant: level === 'fatal' ? 'error' : level === 'warn' ? 'warning' : level,
-            dismissLabel: dismissLabel, duration: 0} : options || {};
+            dismissLabel: dismissLabel, regionLabel: regionLabel, duration: 0} : options || {};
         var variant = ['default', 'success', 'info', 'warning', 'error'].includes(options.variant) ? options.variant : 'default';
         var duration = options.duration == null ? 5000 : Number(options.duration);
         if (!Number.isFinite(duration) || duration < 0 || duration > 2147483647) duration = 5000;

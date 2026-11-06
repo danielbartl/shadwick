@@ -20,6 +20,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.CsvSource;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -49,7 +50,7 @@ class ShowcaseBrowserTest {
     // WCAG 2.2 A and AA, as axe-core tags its rules
     private static final List<String> WCAG = List.of("wcag2a", "wcag2aa", "wcag21a", "wcag21aa", "wcag22aa");
 
-    private static final List<String> PAGES = List.of("", "buttons", "form", "inputs", "choices", "selections", "custom-select", "combobox", "calendar", "month-view", "charts", "dates", "groups", "uploads", "dialog", "overlays", "popups", "menus", "toasts", "shell", "sidebar", "user-menu", "demo-sign-in", "theme", "layouts", "header-layout", "disclosure", "attachments", "data", "invoice", "tables", "pagination", "display", "feedback");
+    private static final List<String> PAGES = List.of("", "internationalization", "buttons", "form", "inputs", "choices", "selections", "custom-select", "combobox", "calendar", "month-view", "charts", "dates", "groups", "uploads", "dialog", "overlays", "popups", "menus", "toasts", "shell", "sidebar", "user-menu", "demo-sign-in", "theme", "layouts", "header-layout", "disclosure", "attachments", "data", "invoice", "tables", "pagination", "display", "feedback");
     private static final List<String> SKINS = browserSkins();
 
     private static List<String> browserSkins() {
@@ -104,6 +105,11 @@ class ShowcaseBrowserTest {
         return SKINS.stream().flatMap(skin -> MODES.stream().map(mode -> Arguments.of(skin, mode)));
     }
 
+    static Stream<Arguments> nativeLanguagesInEverySkinAndMode() {
+        return SKINS.stream().flatMap(skin -> MODES.stream().flatMap(mode ->
+                Stream.of("ja", "hr").map(language -> Arguments.of(skin, mode, language))));
+    }
+
     private void settleAnimations(Page tab) {
         tab.waitForFunction("() => document.getAnimations().every(a => !(a.timeline instanceof DocumentTimeline) || !a.effect || a.effect.getTiming().iterations === Infinity"
                 + " || a.playState === 'finished' || a.playState === 'idle')");
@@ -151,6 +157,98 @@ class ShowcaseBrowserTest {
             }
             assertThat(errors).as("console errors on " + where).containsExactlyInAnyOrderElementsOf(expectedErrors);
         }
+    }
+
+    @ParameterizedTest(name = "library controls in {0}")
+    @CsvSource({"de,Suchen…,Abbrechen", "es,Buscar…,Cancelar", "fr,Rechercher…,Annuler", "it,Cerca…,Annulla",
+            "ja,検索…,キャンセル", "nl,Zoeken…,Annuleren", "pt,Pesquisar…,Cancelar", "hr,Pretraži…,Odustani"})
+    void translatedControlsSurviveAjaxAndRemainAccessible(String language, String placeholder, String cancel) {
+        check("internationalization", "vega", "light", tab -> {
+            tab.navigate(url("internationalization", "vega", "light") + "&lang=" + language);
+            assertThat(tab.locator("html")).hasAttribute("lang", language);
+            Locator city = tab.locator(".sw-combobox").first();
+            Locator input = city.locator(".sw-combobox-input");
+            assertThat(input).hasAttribute("placeholder", placeholder);
+            input.fill("zzzzzz");
+            assertThat(city.locator(".sw-combobox-empty")).hasText(city.getAttribute("data-empty"));
+            input.press("Escape");
+            tab.getByRole(AriaRole.BUTTON, new Page.GetByRoleOptions().setName("Refresh fields with Ajax")).click();
+            assertThat(tab.locator(".sw-combobox-input")).hasCount(2);
+            assertThat(input).hasAttribute("placeholder", placeholder);
+            tab.getByRole(AriaRole.BUTTON, new Page.GetByRoleOptions().setName("Open dialog")).click();
+            Locator dialog = tab.getByRole(AriaRole.DIALOG, new Page.GetByRoleOptions().setName("A localized dialog"));
+            assertThat(dialog).isVisible();
+            assertThat(describe(new AxeBuilder(tab).withTags(WCAG).analyze().getViolations())).as("localized dialog").isEmpty();
+            dialog.getByRole(AriaRole.BUTTON, new Locator.GetByRoleOptions().setName(cancel).setExact(true)).click();
+            assertThat(dialog).isHidden();
+        });
+    }
+
+    @ParameterizedTest(name = "Japanese mobile, {0}, {1}")
+    @MethodSource("everySkinAndMode")
+    void japaneseUploadsToastsAndPaginationWorkOnNarrowScreens(String skin, String mode) {
+        check("internationalization", skin, mode, new Browser.NewContextOptions().setViewportSize(390, 850), tab -> {
+            tab.navigate(url("internationalization", skin, mode) + "&lang=ja");
+            Locator upload = tab.locator(".sw-file-upload");
+            upload.locator("input[type=file]").setInputFiles(new FilePayload("旅行.txt", "text/plain", "Trip notes".getBytes(java.nio.charset.StandardCharsets.UTF_8)));
+            assertThat(upload.getByRole(AriaRole.BUTTON, new Locator.GetByRoleOptions().setName("旅行.txt を削除"))).isVisible();
+            upload.getByRole(AriaRole.BUTTON, new Locator.GetByRoleOptions().setName("旅行.txt を削除")).click();
+            tab.getByRole(AriaRole.BUTTON, new Page.GetByRoleOptions().setName("Show notification").setExact(true)).click();
+            assertThat(tab.locator("#sw-toaster")).hasAttribute("aria-label", "通知 (Alt+T)");
+            tab.getByRole(AriaRole.BUTTON, new Page.GetByRoleOptions().setName("通知を閉じる")).click();
+            tab.getByRole(AriaRole.BUTTON, new Page.GetByRoleOptions().setName("Show feedback toast")).click();
+            assertThat(tab.locator("#sw-toaster")).hasAttribute("aria-label", "通知 (Alt+T)");
+            tab.getByRole(AriaRole.BUTTON, new Page.GetByRoleOptions().setName("通知を閉じる")).click();
+            assertThat(tab.locator(".sw-pagination-summary")).hasText("12 件中 1～3 件");
+            tab.getByRole(AriaRole.LINK, new Page.GetByRoleOptions().setName("次のページへ")).click();
+            assertThat(tab.locator(".sw-pagination-summary")).hasText("12 件中 4～6 件");
+            assertThat((Integer) tab.evaluate("document.documentElement.scrollWidth - innerWidth")).isLessThanOrEqualTo(1);
+        });
+    }
+
+    @ParameterizedTest(name = "Croatian mobile, {0}, {1}")
+    @MethodSource("everySkinAndMode")
+    void croatianControlsUseRegionalFallbackAndKeepDiacritics(String skin, String mode) {
+        check("internationalization", skin, mode, new Browser.NewContextOptions().setViewportSize(390, 850), tab -> {
+            tab.navigate(url("internationalization", skin, mode) + "&lang=hr-HR");
+            assertThat(tab.locator("html")).hasAttribute("lang", "hr-HR");
+            assertThat(tab.locator("#showcase-language option:checked")).hasText("hrvatski");
+            assertThat(tab.locator(".sw-combobox-input").first()).hasAttribute("placeholder", "Pretraži…");
+            Locator upload = tab.locator(".sw-file-upload");
+            upload.locator("input[type=file]").setInputFiles(new FilePayload("priča.txt", "text/plain", new byte[]{65}));
+            assertThat(upload.getByRole(AriaRole.BUTTON, new Locator.GetByRoleOptions().setName("Ukloni priča.txt"))).isVisible();
+            assertThat(upload.locator(".sw-file-upload-status")).hasText("Broj odabranih datoteka: 1.");
+            upload.getByRole(AriaRole.BUTTON, new Locator.GetByRoleOptions().setName("Ukloni priča.txt")).click();
+            for (String trigger : List.of("Show notification", "Show feedback toast")) {
+                tab.getByRole(AriaRole.BUTTON, new Page.GetByRoleOptions().setName(trigger).setExact(true)).click();
+                assertThat(tab.locator("#sw-toaster")).hasAttribute("aria-label", "Obavijesti (Alt+T)");
+                tab.getByRole(AriaRole.BUTTON, new Page.GetByRoleOptions().setName("Zatvori obavijest")).click();
+            }
+            assertThat(tab.locator(".sw-pagination-summary")).hasText("1–3 od 12");
+            tab.getByRole(AriaRole.LINK, new Page.GetByRoleOptions().setName("Sljedeća stranica")).click();
+            assertThat(tab.locator(".sw-pagination-summary")).hasText("4–6 od 12");
+            assertThat((Integer) tab.evaluate("document.documentElement.scrollWidth - innerWidth")).isLessThanOrEqualTo(1);
+        });
+    }
+
+    @ParameterizedTest(name = "native language picker, {0}, {1}, {2}")
+    @MethodSource("nativeLanguagesInEverySkinAndMode")
+    void languageSelectionAndComboboxFallbackWorkWithoutScript(String skin, String mode, String language) {
+        check("internationalization", skin, mode, new Browser.NewContextOptions().setJavaScriptEnabled(false).setViewportSize(390, 850), tab -> {
+            tab.navigate(url("internationalization", skin, mode) + "&lang=de-AT");
+            assertThat(tab.locator("html")).hasAttribute("lang", "de-AT");
+            Locator select = tab.locator(".sw-combobox select").first();
+            assertThat(select.locator("option").first()).hasText("Suchen…");
+            select.selectOption(new com.microsoft.playwright.options.SelectOption().setLabel("Berlin"));
+            assertThat(select.locator("option:checked")).hasText("Berlin");
+            tab.locator("#showcase-language").selectOption(language);
+            tab.getByRole(AriaRole.BUTTON, new Page.GetByRoleOptions().setName("Anwenden")).click();
+            assertThat(tab.locator("html")).hasAttribute("lang", language);
+            assertThat(tab.locator(".sw-combobox select").first().locator("option").first())
+                    .hasText("hr".equals(language) ? "Pretraži…" : "検索…");
+            assertThat(tab.locator("link[href*='shadwick-" + skin + "']")).hasCount(1);
+            assertThat(tab.locator("html")).hasClass("dark".equals(mode) ? "dark" : "");
+        });
     }
 
     @ParameterizedTest(name = "/{0} in {1}, {2}")
@@ -390,7 +488,7 @@ class ShowcaseBrowserTest {
             assertThat(small).hasAttribute("data-size", "sm");
             tab.locator("html").evaluate("html => html.dir = 'rtl'");
             // Wait for the switch's native CSS transition after changing direction.
-            assertThat(small).hasCSS("background-position-x", "0%");
+            tab.waitForFunction("n => getComputedStyle(n).backgroundPositionX.split(',').every(position => position.trim() === '0%')", small.elementHandle());
             tab.emulateMedia(new Page.EmulateMediaOptions().setForcedColors(ForcedColors.ACTIVE));
             org.assertj.core.api.Assertions.assertThat(disabled.evaluate("input => getComputedStyle(input).appearance")).isEqualTo("auto");
             assertThat(tab.locator(".sw-checkbox-indicator").first()).isHidden();

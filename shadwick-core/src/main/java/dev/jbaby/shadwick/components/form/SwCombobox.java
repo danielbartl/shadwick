@@ -111,7 +111,7 @@ public class SwCombobox<T> extends BaseSwField<T, DropDownChoice<T>, SwCombobox<
                     super.appendOptionHtml(option,choice,index,selected);
                     return options.decorate(option.toString(),choice);
                 });
-                html="<option value=\"\" data-placeholder=\"true\" hidden"+(Strings.isEmpty(selected)?" selected=\"selected\"":"")+">"+Strings.escapeMarkup(options.appearance.getPlaceholderText())+"</option>"+html;
+                html="<option value=\"\" data-placeholder=\"true\" hidden"+(Strings.isEmpty(selected)?" selected=\"selected\"":"")+">"+Strings.escapeMarkup(options.appearance.getPlaceholderText(this))+"</option>"+html;
                 replaceComponentTagBody(stream,tag,html);
             }
             @Override protected boolean isDisabled(T value,int index,String selected) { return options.isDisabled(value); }

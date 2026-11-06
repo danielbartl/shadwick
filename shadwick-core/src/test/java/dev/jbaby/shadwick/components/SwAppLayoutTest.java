@@ -80,7 +80,7 @@ class SwAppLayoutTest {
     @Test void inheritedContentAndShellLandmarksRenderWithLocaleAndEarlyTheme() {
         tester.getSession().setLocale(Locale.GERMANY);
         LayoutPage page = tester.startPage(LayoutPage.class);
-        tester.assertLabel("heading", "Page content"); tester.assertLabel("appTitle", "Shadwick Application");
+        tester.assertLabel("heading", "Page content"); tester.assertLabel("appTitle", "Shadwick-Anwendung");
         assertThat(TagTester.createTagByName(html(), "html").getAttribute("lang")).isEqualTo("de-DE");
         assertThat(tags("wicket:id", "main")).singleElement().satisfies(tag -> {
             assertThat(tag.getName()).isEqualTo("main"); assertThat(tag.getAttribute("id")).isEqualTo("sw-main");

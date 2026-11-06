@@ -40,6 +40,7 @@
         <a wicket:id="navDisclosure">Tabs &amp; disclosures</a>
         <a wicket:id="navDisplay">Display</a>
         <a wicket:id="navFeedback">Feedback</a>
+        <a wicket:id="navInternationalization">Internationalization</a>
     </nav>
     <div class="ex-switches">
         <div role="group" aria-label="Skin" class="ex-group">
@@ -57,6 +58,13 @@
             <a wicket:id="light">Light</a>
             <a wicket:id="dark">Dark</a>
         </div>
+        <form wicket:id="languageForm" class="ex-group ex-language">
+            <label wicket:id="languageLabel" for="showcase-language">Language</label>
+            <div class="sw-native-select-wrapper" data-size="sm">
+                <select wicket:id="language" class="sw-native-select"></select>
+            </div>
+            <button wicket:id="applyLanguage" type="submit">Apply</button>
+        </form>
     </div>
 </header>
 <main wicket:id="main" class="ex-main">

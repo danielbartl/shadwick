@@ -9,6 +9,9 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
+import org.junit.jupiter.params.provider.CsvSource;
+import java.util.Locale;
+import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.junit.jupiter.params.provider.EnumSource;
 import dev.jbaby.shadwick.Skin;
 
@@ -44,7 +47,7 @@ class ExamplesPagesTest {
     }
 
     @ParameterizedTest
-    @ValueSource(strings = {"HomePage", "ButtonPage", "FormPage", "InputPage", "ChoicePage", "SelectPage", "CustomSelectPage", "ComboboxPage", "CalendarPage", "MonthViewPage", "ChartPage", "DateTimePage", "GroupPage", "UploadPage", "DialogPage", "OverlayPage", "PopupPage", "MenuPage", "ToastPage", "ShellPage", "SidebarPage", "ThemePage", "AppLayoutPage", "HeaderLayoutPage", "DisclosurePage", "AttachmentPage", "DataTablePage", "InvoicePage", "TablePage", "PaginationPage", "UserMenuPage", "UserSignInPage", "DisplayPage", "FeedbackPage"})
+    @ValueSource(strings = {"HomePage", "InternationalizationPage", "ButtonPage", "FormPage", "InputPage", "ChoicePage", "SelectPage", "CustomSelectPage", "ComboboxPage", "CalendarPage", "MonthViewPage", "ChartPage", "DateTimePage", "GroupPage", "UploadPage", "DialogPage", "OverlayPage", "PopupPage", "MenuPage", "ToastPage", "ShellPage", "SidebarPage", "ThemePage", "AppLayoutPage", "HeaderLayoutPage", "DisclosurePage", "AttachmentPage", "DataTablePage", "InvoicePage", "TablePage", "PaginationPage", "UserMenuPage", "UserSignInPage", "DisplayPage", "FeedbackPage"})
     void everyPageRendersInTheDefaultSkinWithoutInlineStylesOrHandlers(String name) throws ClassNotFoundException {
         tester.startPage(page(name));
 
@@ -77,6 +80,37 @@ class ExamplesPagesTest {
 
         tester.startPage(DialogPage.class, new org.apache.wicket.request.mapper.parameter.PageParameters().add("mode", "light"));
         assertThat(TagTester.createTagByName(html(), "html").getAttribute("class")).isNull();
+    }
+
+    @ParameterizedTest
+    @CsvSource({"en,Language,Apply,Records,Actions", "de,Sprache,Anwenden,Datensätze,Aktionen", "es,Idioma,Aplicar,Registros,Acciones",
+            "fr,Langue,Appliquer,Enregistrements,Actions", "it,Lingua,Applica,Record,Azioni", "ja,言語,適用,データ,操作",
+            "nl,Taal,Toepassen,Gegevens,Acties", "pt,Idioma,Aplicar,Registros,Ações", "hr,Jezik,Primijeni,Zapisi,Radnje"})
+    void theShowcaseAndTableDefaultsUseTheSelectedLanguage(String language, String label, String apply, String records, String actions) {
+        tester.startPage(InternationalizationPage.class, new PageParameters().set("lang", language));
+        assertThat(TagTester.createTagByName(html(), "html").getAttribute("lang")).isEqualTo(language);
+        tester.assertLabel("languageForm:languageLabel", label);
+        assertThat(tester.getTagByWicketId("applyLanguage").getValue()).contains(apply);
+        assertThat(tester.getTagByWicketId("table").getAttribute("aria-label")).isEqualTo(records);
+        assertThat(TagTester.createTagsByAttribute(html(), "class", "sw-table-column-label", false))
+                .anySatisfy(tag -> assertThat(tag.getValue()).isEqualTo(actions));
+        tester.clickLink("form:refresh");
+        tester.assertComponentOnAjaxResponse("form");
+        assertThat(html()).doesNotContain("style=").doesNotContainPattern("\\son[a-z]+=");
+    }
+
+    @Test void theNativeLanguageFormPreservesThePageAndPreferences() {
+        tester.startPage(InternationalizationPage.class, new PageParameters().set("skin", "sketch").set("mode", "dark").set("lang", "de-AT"));
+        FormTester form = tester.newFormTester("languageForm");
+        form.select("language", 5); // 日本語, stable language tag values in real HTML
+        form.submit("applyLanguage");
+        tester.assertRenderedPage(InternationalizationPage.class);
+        assertThat(tester.getSession().getLocale()).isEqualTo(Locale.JAPANESE);
+        assertThat(html()).contains("shadwick-sketch", "キャンセル");
+        assertThat(TagTester.createTagByName(html(), "html").getAttribute("class")).isEqualTo("dark");
+        tester.startPage(ButtonPage.class);
+        assertThat(TagTester.createTagByName(html(), "html").getAttribute("lang")).isEqualTo("ja");
+        tester.assertLabel("languageForm:languageLabel", "言語");
     }
 
     @Test

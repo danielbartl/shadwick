@@ -49,6 +49,7 @@ public class ExamplesApplication extends WebApplication {
         mountPage("/demo-sign-in", UserSignInPage.class);
         mountPage("/display", DisplayPage.class);
         mountPage("/feedback", FeedbackPage.class);
+        mountPage("/internationalization", InternationalizationPage.class);
 
         // The markup a deployed application sends, also in development mode: Wicket's own
         // tags would be the children of the pages' grid layouts

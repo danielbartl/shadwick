@@ -106,4 +106,8 @@ Switching the selector also updates the accessible preview description to the se
 
 The collection catalog links to all implemented families, including calendars/date pickers, month view, charts,
 data tables/pagination, disclosures, attachments and reusable layouts. The status copy lists the nine shipped
-skins and keeps translations and documentation as future work; Maven Central remains pending.
+skins and built-in messages in nine languages. The static page remains English; the runnable Wicket
+showcase has a language picker and a dedicated `/internationalization` page. A language panel below the
+catalog names all nine languages, including Croatian, and links to the locale setup/override guide.
+Full documentation and a hosted
+interactive showcase are next; Maven Central remains pending.

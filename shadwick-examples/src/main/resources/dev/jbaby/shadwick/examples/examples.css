@@ -201,3 +201,12 @@ body {
 .ex-page-projects .ex-muted { margin-inline-start:auto; }
 
 .ex-chart-card { min-width:0; padding:1.5rem; border:1px solid var(--border); border-radius:var(--radius); }
+
+/* Locale controls work with native form submission as well as JavaScript. */
+.ex-language { margin: 0; }
+.ex-language label { font-size: .875rem; }
+.ex-language .sw-native-select-wrapper { width: auto; min-width: 7rem; }
+.ex-i18n-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 21rem), 1fr)); gap: 1.5rem; }
+.ex-i18n-card { min-width: 0; padding: 1.5rem; border: 1px solid var(--border); border-radius: var(--radius); display: grid; gap: 1rem; align-content: start; }
+.ex-i18n-card h2 { margin: 0; }
+.ex-i18n-card form { display: grid; gap: 1rem; }

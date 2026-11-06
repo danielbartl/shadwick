@@ -3,6 +3,8 @@ package dev.jbaby.shadwick.behaviors;
 import dev.jbaby.shadwick.Shadwick;
 import dev.jbaby.shadwick.components.form.DateRange;
 import dev.jbaby.shadwick.components.form.DisabledDates;
+import dev.jbaby.shadwick.components.form.SwCalendar;
+import dev.jbaby.shadwick.util.LocalizedText;
 import org.apache.wicket.Component;
 import org.apache.wicket.markup.ComponentTag;
 import org.apache.wicket.markup.head.IHeaderResponse;
@@ -76,7 +78,7 @@ public class CalendarBehavior extends StyledBehavior {
         if(minimum()!=null&&maximum()!=null&&minimum().isAfter(maximum()))throw new IllegalArgumentException("minimum date must not exceed maximum");
         if(value(startMonth)!=null&&value(endMonth)!=null&&value(startMonth).isAfter(value(endMonth)))throw new IllegalArgumentException("start month must not exceed end month");
         for(String[] text:new String[][]{{"previous","Go to the previous month"},{"next","Go to the next month"},{"month","Month"},{"year","Year"},{"week-number","Week"},{"unavailable","Choose a range without unavailable dates."}})
-            tag.put("data-"+text[0],component.getString("SwCalendar."+text[0],null,text[1]));
+            tag.put("data-"+text[0],LocalizedText.get(component,SwCalendar.class,"SwCalendar."+text[0],text[1]));
     }
     private static void put(ComponentTag tag,String name,Object value){if(value!=null)tag.put(name,value.toString());}
     @Override public void detach(Component component){for(IModel<?> model:Arrays.asList(defaultMonth,startMonth,endMonth,today,min,max,disabledDates))if(model!=null)model.detach();super.detach(component);}
