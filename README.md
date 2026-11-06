@@ -13,7 +13,7 @@ renaming `Oat` to `Sw`.
 
 > **Status: Forms, overlays, app shell, disclosures, attachment displays and data tables implemented.** Buttons, native input fields, custom selects, comboboxes, calendars/date pickers, month views, SVG charts, choices, toggles,
 > input groups, dialogs, menus, toasts, layouts, tabs, accordions, collapsibles, attachment cards/galleries, sortable data tables, pagination, display components and feedback,
-> in three skins (vega, lyra, nova), light and dark. Standalone and embedded CSS bundles.
+> in nine skins (vega, lyra, nova, maia, mira, luma, rhea, sera, sketch), light and dark. Standalone and embedded CSS bundles.
 > Not yet on Maven Central.
 
 ## Getting started
@@ -53,11 +53,23 @@ development-only `<wicket:panel>` wrappers out of native `details`/`summary` rel
 | `Skin.VEGA` | Classic spacing, 36px default controls and subtle control shadows. The default. |
 | `Skin.LYRA` | Square corners, small type and thin focus rings. |
 | `Skin.NOVA` | Compact 32px controls, rounder fields, tighter spacing and muted card/dialog footers. |
+| `Skin.MAIA` | Pill-shaped controls, large radii and generous spacing. |
+| `Skin.MIRA` | Dense 28px controls, small type and tighter menus/tables. |
+| `Skin.LUMA` | Soft rounded shapes, borderless fields and luminous shadows. |
+| `Skin.RHEA` | Luma's soft surfaces with compact 32px controls and tighter spacing. |
+| `Skin.SERA` | Editorial square geometry, uppercase labels and underlined 40px fields. |
+| `Skin.SKETCH` | Hand-drawn wireframes with uneven corners, pencil borders and Balsamiq Sans. |
 
 Each skin has complete standalone and embedded bundles, including minified versions, and supports light/dark
-appearance with the same markup and color tokens. Nova keeps mobile input text at 16px and the existing keyboard,
-forced-color and reduced-motion behavior. Pick a skin with `Shadwick.install(this).setSkin(Skin.NOVA)`; the optional
-`SkinStore` supports per-user selection. The showcase and landing studio include all three skin choices.
+appearance with the same markup and color tokens. Existing keyboard, forced-color and reduced-motion behavior
+is shared. Mira intentionally uses smaller mobile type for dense interfaces. Pick a skin with
+`Shadwick.install(this).setSkin(Skin.MAIA)`; the optional `SkinStore` supports per-user selection.
+The showcase and landing studio include all nine skin choices.
+
+Sketch bundles Balsamiq Sans (regular/bold Latin WOFF2, SIL Open Font License) in the jar. Font requests stay on
+that application's origin; no external font service or CSP change is needed. The standalone bundle gives the
+page its handwriting font. The embedded bundle scopes handwriting to `sw-` components, preserving the host's
+page typography. Apps copying the CSS elsewhere must also copy its `../fonts/balsamiq-sans/` assets and license.
 
 ### Buttons
 

@@ -2,7 +2,7 @@
 
 A static, responsive website for GitHub Pages. Plain HTML, CSS and JavaScript; no site package installation, client framework or external runtime requests. Geist is self-hosted under its SIL Open Font License (`assets/fonts/OFL.txt`). The icon sprite uses Lucide shapes (ISC; see the root NOTICE).
 
-The component studio uses **the library's compiled embedded CSS and component scripts**, with a custom green token palette. Skin selection loads the actual Vega, Lyra or Nova bundle. Light/Dark/System preference applies to the studio and its overlays. The studio theme toggle, user menus, sidebar, header, breadcrumb and first-in-body skip link use core styles too. Demo forms, buttons, dialogs, sheets, dropdown menus, popovers, tooltips and toasts run locally in the browser; no information is submitted or persisted. The site explicitly distinguishes this static preview from Wicket's server-side behavior.
+The component studio uses **the library's compiled embedded CSS and component scripts**, with a custom green token palette. Skin selection loads the actual bundle for any of the nine skins. Light/Dark/System preference applies to the studio and its overlays. The studio theme toggle, user menus, sidebar, header, breadcrumb and first-in-body skip link use core styles too. Demo forms, buttons, dialogs, sheets, dropdown menus, popovers, tooltips and toasts run locally in the browser; no information is submitted or persisted. The site explicitly distinguishes this static preview from Wicket's server-side behavior.
 
 ## Build and preview
 
@@ -19,7 +19,7 @@ Open **http://127.0.0.1:4173/shadwick/**. The preview deliberately uses a projec
 
 If Node isn't on your PATH, use the Node installed by Maven: `./shadwick-core/target/node/node` instead of `node` (Windows: `shadwick-core\target\node\node.exe`).
 
-`build.mjs` writes the ignored `site/dist/`, copying the three minified skin bundles and core component scripts from `shadwick-core/target/classes`. Never edit these copied assets or commit generated site output. Edit the page in `index.html`, presentation in `assets/site.css` and site interactions in `assets/site.js`. All asset URLs are relative. CSS, scripts and image/icon references receive content hashes in their query strings, including dynamically selected skins and table icons, so a new deployment does not reuse stale assets from a previous version.
+`build.mjs` writes the ignored `site/dist/`, copying the nine minified skin bundles and core component scripts from `shadwick-core/target/classes`. Never edit these copied assets or commit generated site output. Edit the page in `index.html`, presentation in `assets/site.css` and site interactions in `assets/site.js`. All asset URLs are relative. CSS, scripts and image/icon references receive content hashes in their query strings, including dynamically selected skins and table icons, so a new deployment does not reuse stale assets from a previous version.
 
 ## GitHub Pages
 
@@ -98,10 +98,12 @@ The Plans and progress section previews the actual chart CSS/runtime over native
 The adjacent month view uses server-style static HTML for October–December 2026; native fragment links
 switch the visible month without script. Both previews follow the selected skin/theme and navigation layout.
 
-Nova is available in the skin selector. Its compact geometry and muted footers come from the actual Nova bundle;
-the studio's extra decorative card shadow applies only to Vega/Lyra so Nova retains its flat outlined cards.
+All nine skins are available in the selector: Vega, Lyra, Nova, Maia, Mira, Luma, Rhea, Sera and Sketch.
+Each loads its actual embedded bundle. Extra decorative card shadows apply only to Vega/Lyra, preserving
+the other skins' own card identities. Sketch's local handwriting fonts and OFL license are copied to
+`dist/fonts/balsamiq-sans/`; embedded handwriting does not affect the marketing page.
 Switching the selector also updates the accessible preview description to the selected skin's name.
 
 The collection catalog links to all implemented families, including calendars/date pickers, month view, charts,
-data tables/pagination, disclosures, attachments and reusable layouts. The status copy lists the three shipped
-skins and keeps remaining skins, translations and documentation as future work; Maven Central remains pending.
+data tables/pagination, disclosures, attachments and reusable layouts. The status copy lists the nine shipped
+skins and keeps translations and documentation as future work; Maven Central remains pending.

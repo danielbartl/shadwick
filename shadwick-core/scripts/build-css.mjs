@@ -33,20 +33,24 @@ function tailwind(input, output, ...flags) {
   });
 }
 
-function build(minified) {
+async function build(minified) {
   const entries = fs.readdirSync(entriesDir).filter(file => file.endsWith('.css')).sort();
   if (entries.length === 0) {
     throw new Error(`No entries in ${entriesDir}`);
   }
   fs.mkdirSync(outDir, {recursive: true});
-  return Promise.all(entries.flatMap(entry => {
+  const jobs = entries.flatMap(entry => {
     const input = path.join(entriesDir, entry);
     const name = path.basename(entry, '.css');
-    const builds = [tailwind(input, path.join(outDir, `${name}.css`))];
+    const builds = [() => tailwind(input, path.join(outDir, `${name}.css`))];
     if (minified) {
-      builds.push(tailwind(input, path.join(outDir, `${name}.min.css`), '--minify'));
+      builds.push(() => tailwind(input, path.join(outDir, `${name}.min.css`), '--minify'));
     }
     return builds;
+  });
+  // Nine skins produce 36 bundles. Bound compiler processes and their output listeners on smaller CI runners.
+  await Promise.all(Array.from({length: Math.min(4, jobs.length)}, async () => {
+    while (jobs.length) await jobs.shift()();
   }));
 }
 

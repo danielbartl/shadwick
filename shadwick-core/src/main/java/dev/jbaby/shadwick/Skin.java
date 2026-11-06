@@ -19,7 +19,25 @@ public enum Skin {
     LYRA,
 
     /** Compact controls, generous radii and muted card/dialog footers. */
-    NOVA;
+    NOVA,
+
+    /** Pill-shaped controls and generous spacing. */
+    MAIA,
+
+    /** Dense interfaces with 28px controls and small type. */
+    MIRA,
+
+    /** Soft rounded shapes, borderless fields and luminous shadows. */
+    LUMA,
+
+    /** Luma's soft surfaces with smaller controls and tighter spacing. */
+    RHEA,
+
+    /** Editorial geometry, uppercase labels and underlined fields. */
+    SERA,
+
+    /** Hand-drawn wireframes with locally bundled Balsamiq Sans. */
+    SKETCH;
 
     /** The name used in the stylesheet's file name, e.g. {@code vega} for {@code shadwick-vega.css}. */
     public String id() {

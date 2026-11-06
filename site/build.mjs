@@ -2,11 +2,12 @@ import {access, cp, mkdir, readFile, rm, writeFile} from 'node:fs/promises';
 import path from 'node:path';
 import {fileURLToPath} from 'node:url';
 import {createHash} from 'node:crypto';
+import {skins} from './skins.mjs';
 
 const root = path.dirname(fileURLToPath(import.meta.url));
 const output = path.join(root, 'dist');
 const css = path.resolve(root, '../shadwick-core/target/classes/dev/jbaby/shadwick/css');
-for (const skin of ['vega', 'lyra', 'nova']) {
+for (const skin of skins) {
   try { await access(path.join(css, `shadwick-${skin}-embedded.min.css`)); }
   catch { throw new Error('Build the library CSS first: ./mvnw -B -pl shadwick-core -am package -DskipTests'); }
 }
@@ -22,7 +23,7 @@ let html = (await readFile(path.join(root, 'index.html'), 'utf8')).replaceAll('_
 await rm(output, {recursive: true, force: true});
 await mkdir(output, {recursive: true});
 await cp(path.join(root, 'assets'), path.join(output, 'assets'), {recursive: true});
-for (const skin of ['vega', 'lyra', 'nova']) {
+for (const skin of skins) {
   await cp(path.join(css, `shadwick-${skin}-embedded.min.css`), path.join(output, 'assets', `shadwick-${skin}.css`));
 }
 await cp(path.resolve(css, '../js/shadwick.js'), path.join(output, 'assets/shadwick.js'));
@@ -33,6 +34,7 @@ await cp(path.resolve(css, '../js/select.js'), path.join(output, 'assets/select.
 await cp(path.resolve(css, '../js/theme.js'), path.join(output, 'assets/theme.js'));
 await cp(path.resolve(root, '../NOTICE'), path.join(output, 'NOTICE.txt'));
 await cp(path.resolve(root, '../LICENSE'), path.join(output, 'LICENSE.txt'));
+await cp(path.resolve(css, '../fonts/balsamiq-sans'), path.join(output, 'fonts/balsamiq-sans'), {recursive: true});
 
 // Browsers may retain Pages assets for ten minutes. Content versions keep a new
 // page from using old component CSS/scripts, including when switching skins.
@@ -45,7 +47,7 @@ async function versioned(reference) {
 const sprite = await versioned('./assets/icons.svg');
 const tableScript = path.join(output, 'assets/table-demo.js');
 await writeFile(tableScript, (await readFile(tableScript, 'utf8')).replaceAll('./assets/icons.svg', sprite));
-for (const skin of ['vega', 'lyra', 'nova']) {
+for (const skin of skins) {
   const stylesheet = (await versioned(`./assets/shadwick-${skin}.css`)).replace('./assets/', '');
   html = html.replace(`<option value="${skin}">`, `<option value="${skin}" data-stylesheet="${stylesheet}">`);
 }

@@ -2,6 +2,7 @@ import {access, readFile, readdir} from 'node:fs/promises';
 import path from 'node:path';
 import {fileURLToPath} from 'node:url';
 import {createHash} from 'node:crypto';
+import {skins} from './skins.mjs';
 
 const root = path.join(path.dirname(fileURLToPath(import.meta.url)), 'dist');
 const html = await readFile(path.join(root, 'index.html'), 'utf8');
@@ -36,18 +37,23 @@ for (const match of html.matchAll(/\b(?:src|href)="([^"]+)"/g)) {
 const css = await readFile(path.join(root, 'assets/site.css'), 'utf8');
 for (const [, filename] of css.matchAll(/url\(['"]?([^)'"\s]+)['"]?\)/g)) await access(path.resolve(root, 'assets', filename));
 const offeredSkins = new Set();
-for (const [option, skin] of html.matchAll(/<option value="(vega|lyra|nova)"[^>]*>/g)) {
+for (const [option, skin] of html.matchAll(/<option value="([a-z]+)"[^>]*>/g)) {
+  if (!skins.includes(skin)) continue;
   const stylesheet = /data-stylesheet="([^"]+)"/.exec(option)?.[1];
   if (!stylesheet?.startsWith(`shadwick-${skin}.css?`)) throw new Error(`Missing versioned skin: ${skin}`);
   await checkAsset(`./assets/${stylesheet}`);
   offeredSkins.add(skin);
   references++;
 }
-if (offeredSkins.size !== 3) throw new Error('Expected all three versioned skin options.');
+if (offeredSkins.size !== skins.length) throw new Error('Expected every versioned skin option.');
+for (const skin of skins) {
+  const stylesheet = await readFile(path.join(root, `assets/shadwick-${skin}.css`), 'utf8');
+  for (const [, filename] of stylesheet.matchAll(/url\(['"]?([^)'"\s]+)['"]?\)/g)) await access(path.resolve(root, 'assets', filename));
+}
 const tableScript = await readFile(path.join(root, 'assets/table-demo.js'), 'utf8');
 for (const [, reference] of tableScript.matchAll(/href="([^"]+)"/g)) await checkAsset(reference);
 await access(path.join(root, 'assets/social.png'));
-for (const file of ['LICENSE.txt', 'NOTICE.txt', 'assets/fonts/OFL.txt']) await access(path.join(root, file));
+for (const file of ['LICENSE.txt', 'NOTICE.txt', 'assets/fonts/OFL.txt', 'fonts/balsamiq-sans/OFL.txt']) await access(path.join(root, file));
 let bytes = 0;
 async function size(directory) {
   for (const entry of await readdir(directory, {withFileTypes:true})) {

@@ -13,10 +13,12 @@ Maven dependency and is done: no Node, no Tailwind, no CSS build on their side.
 - Java package: `dev.jbaby.shadwick`
 - License: Apache 2.0
 
-## Resume point — 2026-11-05
+## Resume point — 2026-11-06
 
-**Next implementation group: remaining skins — Maia next.**
-Nova is the third skin, including standalone/embedded bundles and selectors.
+**Next implementation group: internationalization — translated built-in component messages.**
+Maia, Mira, Luma, Rhea, Sera and Sketch join Vega, Lyra and Nova, including standalone/embedded bundles
+and selectors. All nine skins are included in this publication checkpoint; use `git log -1 --oneline`
+and the Website workflow for the current source/deployed revision.
 All main component families now have implementations. Review the recorded variant gaps before
 claiming full Shadleaf parity. Maven Central publication is still future work.
 Read Wicket Oat's corresponding APIs/tests and Shadleaf's markup/CSS/runtime first. Native
@@ -30,7 +32,24 @@ collapsible, attachment displays, data tables/pagination, custom select, combobo
 picker, month view and charts are included in this publication checkpoint, with verification
 records below. Attachment displays complement the completed upload controls.
 
-Current publication checkpoint — 2026-11-05:
+Current publication checkpoint — 2026-11-06:
+
+- The user requested committing/pushing all six remaining skins and updating the landing page.
+  This checkpoint includes all nine skin identities, standalone/embedded entries, Sketch's
+  bundled fonts/license, showcase selectors, README/NOTICE and the updated landing preview.
+- Landing: https://danielbartl.github.io/shadwick/ . Hero, feature and status copy now describe
+  nine skins; the preview loads each actual embedded bundle through versioned asset URLs.
+  Sketch's font stays inside the component preview. The full component catalog remains live.
+- Verification: 661 core and 49 showcase-page tests passed. The recorded browser checks include
+  all nine skins' geometry, all new skins' page audits, desktop/mobile screenshots and focused
+  rechecks after the attachment/disclosure repairs. Detailed coverage and limits remain below;
+  a single final green 660-case run is not claimed.
+- Static site checks pass 165 references and 104 IDs, including all nine skin assets and the
+  font files/license. Site output remains generated and ignored. GitHub Pages deploys through
+  .github/workflows/pages.yml; its run records the deployment result and source revision.
+- Next: built-in translations, then full docs/showcase, agent guidance and Maven Central.
+
+Previous publication checkpoint — 2026-11-05:
 
 - The user requested committing/pushing all accumulated work and updating the landing page.
   This checkpoint gathers the complete component catalog, Nova, showcases, docs and landing
@@ -59,7 +78,8 @@ Current publication checkpoint — 2026-11-05:
   checks and two no-script cases also passed. Cache blocking, failed-image fallback, build
   determinism and rejection of stale asset hashes passed. WebKit was unavailable locally
   because required system libraries are absent. Site checks now pass 159 internal references.
-- Next implementation group: Maia, then the remaining skins and translations/docs/tooling.
+- That publication preceded the remaining skins; all six are now implemented locally. Next: translations,
+  documentation/tooling and release preparation.
 
 Previous published baseline (historical):
 
@@ -83,7 +103,7 @@ The roadmap below includes the latest Shadleaf parity review. In particular, exp
 include tabs/accordion/collapsible and attachment displays, which the earlier roadmap
 omitted. Native selects/date fields, file upload and attachment displays are complete;
 month view and charts now complete the main catalog at the family level. Remaining work includes
-additional skins, translations, documentation/tooling, release preparation and variant-level gaps.
+translations, documentation/tooling, release preparation and variant-level gaps.
 
 ## Two references, two roles
 
@@ -409,7 +429,7 @@ wicket-extensions dependency was added after the user asked to continue with the
 8. **Advanced controls and visualization** (complete at family level locally): custom select, combobox
    with server-side search, calendar/date picker, month view and SVG charts are implemented.
    Charts cover bars/lines/areas, composed and stacked series, axes/grid, legends, tooltips and native data tables.
-9. **Visual breadth** (in progress): Nova is complete locally; Maia is next, followed by Mira, Luma, Rhea, Sera and Sketch.
+9. **Visual breadth** (complete locally): all nine skins — Vega, Lyra, Nova, Maia, Mira, Luma, Rhea, Sera and Sketch.
 10. **Internationalization, docs and distribution:** built-in translations, full component docs,
     interactive showcase, agent guidance/llms.txt, then a Maven Central release.
 
@@ -418,8 +438,7 @@ and per-corner bar radii. Native SVG is an intentional alternative to Shadleaf�
 
 For broader Shadleaf parity after/alongside these groups:
 
-- Six remaining skins: Maia, Mira, Luma, Rhea, Sera and Sketch; Shadwick currently
-  has Vega, Lyra and Nova. Light/dark token support is already implemented.
+- All nine skins now have implementations, with shared light/dark token support.
 - Translated built-in component messages (currently English).
 - Full component documentation and interactive showcase site, beyond the landing page
   and runnable Wicket examples already available.
@@ -446,8 +465,8 @@ SwDatePicker/SwDateRangePicker cover native date-backed grids and popups, with n
 validation in /calendar and working landing previews. SwMonthView provides a native agenda with
 custom day slots, links and independent months in /month-view. SwChart/ChartSeries provide native
 SVG bars/lines/areas, mixed/stacked series, keyboard tooltips and exact data in /charts.
-The landing previews both. Nova is the third complete local skin. Next: Maia, then the other
-remaining skins, translations/docs/tooling/release.
+The landing previews both. All nine skins are implemented locally. Next: translations, then
+documentation, tooling and release preparation.
 
 ## Working agreements
 
@@ -460,6 +479,27 @@ remaining skins, translations/docs/tooling/release.
 - Record every decision under Conventions as soon as it is made.
 
 ## Conventions
+
+### Remaining skins (2026-11-06)
+
+- Each of Maia, Mira, Luma, Rhea, Sera and Sketch owns a complete identity and independent
+  standalone/embedded entries. Adapt Shadleaf's full skins with sw- component/custom-property
+  names, preserving native Wicket form wrappers, logical sheet edges, checkbox/menu indicators,
+  upload rows, data-table controls and native SVG charts. Shared structures, tokens and JS stay
+  unchanged. No Maven/npm dependency or CSP change.
+- Maia has 36px pill controls and spacious cards; Mira 28px controls and dense type; Luma
+  36px soft borderless fields; Rhea 32px soft controls with tighter spacing; Sera 40px underlined
+  fields, square corners and uppercase type. Sketch uses 36px controls, asymmetric pencil
+  borders, hatched skeletons and offset shadows. Keep each skin's focus/error/readonly styling.
+- Sketch bundles the unmodified Balsamiq Sans Latin regular/bold WOFF2 and OFL license under
+  dev/jbaby/shadwick/fonts/balsamiq-sans. Stylesheets use relative same-origin URLs. Standalone
+  sets the body's font; embedded scopes it to sw- components and leaves host typography alone.
+  The landing copies the fonts alongside assets and retains its marketing font.
+- All showcase layouts expose every enum skin. site/skins.mjs is the build/check catalog for
+  nine content-versioned CSS options; the landing applies extra card shadows only to Vega/Lyra.
+- References read: Shadleaf ac29987's nine skins, adjustability guide and SkinCompletenessTest;
+  Wicket Oat's OatTheme/OatThemeTest and existing Shadwick Skin/resource/CSS/browser tests.
+  Oat's color themes do not have equivalent geometry skins to port.
 
 ### Nova skin (2026-11-05)
 
@@ -1972,3 +2012,64 @@ remaining skins, translations/docs/tooling/release.
 - Final ordinary verify passed 630 core tests and 43 showcase-page tests, with no failures
   or skips (/tmp/shadwick-nova-final-verify.log). Packaged standalone/embedded Nova resources
   and updated NOTICE are included; no runtime dependency or CSP changes.
+
+### Phase 9 remaining skins — local implementation, 2026-11-06
+
+- Added Skin.MAIA, MIRA, LUMA, RHEA, SERA and SKETCH, each with an independent complete
+  identity and standalone/embedded entries. The library now packages 36 CSS resources across
+  nine skins, including minified variants. Existing Vega/Lyra/Nova sources, shared structures,
+  color tokens, component Java APIs and JS runtimes are unchanged.
+- Ports cover every implemented family, including Wicket form wrappers in dialogs/sheets,
+  logical sheet edges, native menu/checkbox indicators, upload rows, data-table controls and
+  native SVG charts. Outline buttons own their text color, tabs keep legible contrast on the
+  landing palette, and sidebar group actions retain Shadwick's 24px minimum target.
+- Sketch includes unmodified Balsamiq Sans Latin regular/bold WOFF2 and its OFL license in the
+  jar. Same-origin relative font URLs work under the existing Wicket CSP. Embedded typography
+  is scoped to sw- components; standalone pages also opt into body handwriting. NOTICE and
+  resource checks cover the font assets and license; no Maven/npm dependency was added.
+- CSS compilation now runs at most four compiler processes, preventing 36 simultaneous
+  compiler/output listeners as the skin catalog expands. All bundles still build automatically.
+- Showcase skin controls include all nine choices, including app/header layouts and session
+  persistence tests. Geometry tests now describe each skin's actual controls, card spacing and
+  mobile type; Sketch's joined toggle border is intentionally 2px. The landing uses the real
+  nine embedded bundles, versioned dynamic URLs and local Sketch fonts. Extra decorative card
+  shadows remain specific to Vega/Lyra; marketing copy and README/site docs list nine skins.
+- Ordinary verify passed 661 core tests and 49 showcase-page tests with no failures or skips
+  (/tmp/shadwick-skins-verify5.log). Jar inspection confirmed all 36 CSS bundles and three font
+  assets/license files. The first geometry/embedded browser pass passed all 72 nine-skin/mode
+  cases (/tmp/shadwick-skins-browser-geometry1.log).
+- Screenshot/accessibility/overflow checks passed 168 new-skin × desktop/320px × light/dark ×
+  route views, including open menus and range pickers. Representative screenshots were reviewed
+  for all six skins (/tmp/shadwick-skins-visual2.log). Later Wicket-specific geometry and focus
+  repairs received the focused rechecks recorded below.
+- Final landing checks passed all 108 nine-skin × 1440/390/320px × light/dark × sidebar/header
+  combinations, plus two no-script widths (/tmp/shadwick-skins-landing6.log). They include
+  native dialogs/date pickers, image previews, chart keys, focus return, fonts, WCAG axe audits,
+  overflow and console errors. All 24 new-skin Firefox desktop/mobile/light/dark checks passed,
+  including actual downloads and disclosures (/tmp/shadwick-skins-firefox1.log).
+- Light/dark comparison screenshots: /tmp/shadwick-six-skins-light.png and
+  /tmp/shadwick-six-skins-dark.png. Site build/check passes 165 references, 104 IDs and about
+  2,665 KB, including all nine optional skin bundles; the page initially loads only Vega.
+- The broader 660-case run passed 622 and identified missing Wicket attachment hit-area and
+  wrapped-summary geometry adaptations, plus old assertions that assumed all borders were
+  1px. All 408 route/skin/mode page audits passed. Restored transparent full-card attachment
+  triggers and auto-height summaries with skin-specific minimum heights. Also mapped Wicket's
+  input-group icon size, overflow breadcrumb button and combobox active-item focus ring.
+- The follow-up passed 142 of 144 affected cases, including all disclosure, upload-state,
+  native/no-script, print, focus and embedded paths. The two remaining failures were another
+  copy of the old attachment border tolerance; corrected both dimension assertions and the
+  final all-nine-skin attachment checks passed all 36 cases, with no failures or skips
+  (/tmp/shadwick-skins-browser-final-attachments.log). Earlier affected results are in
+  /tmp/shadwick-skins-browser-affected5.log; do not claim one final green 660-case run.
+- Final ordinary verify again passed 661 core and 49 showcase-page tests, with no failures or
+  skips (/tmp/shadwick-skins-final-verify.log). Final affected landing checks passed 64 cases
+  across both browsers, desktop/320px, modes and layouts, including the full-card hit area,
+  separate native downloads, wrapped labels, WCAG axe and overflow
+  (/tmp/shadwick-skins-final-landing.log).
+- Final repaired attachment/disclosure screenshots passed all 48 new-skin × desktop/320px ×
+  light/dark × route views (/tmp/shadwick-skins-final-visual.log); representative Sketch/Sera
+  images were reviewed. Temporary showcase and static preview servers were stopped.
+- The final CSS/JS syntax and diff whitespace checks pass; no dependency or CSP change.
+  The implementation initially remained local; the user subsequently requested commit, push
+  and landing publication, recorded in the current checkpoint above. Next: translations, then
+  docs/tooling/release.

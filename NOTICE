@@ -7,7 +7,7 @@ It includes markup structure, CSS and JavaScript adapted from third-party projec
 
 - Shadleaf (https://github.com/wimdeblauwe/shadleaf), shadcn/ui for Thymeleaf.
   Licensed under the Apache License, Version 2.0.
-  Shadwick's tokens, component structure CSS and skins (vega, lyra, nova) are adapted
+  Shadwick's tokens, component structure CSS and skins (vega, lyra, nova, maia, mira, luma, rhea, sera, sketch) are adapted
   from Shadleaf's, as are the native popup, menu, toast and custom select, combobox, calendar and date picker interactions.
   Month-view markup and skin rules, and chart tooltip/legend structure and skins,
   are also adapted from Shadleaf. The native SVG chart API and rendering patterns
@@ -28,12 +28,19 @@ It includes markup structure, CSS and JavaScript adapted from third-party projec
 - shadcn/ui (https://ui.shadcn.com), Copyright (c) 2023 shadcn.
   Licensed under the MIT License.
   The design tokens (names and the neutral theme's values), the component
-  anatomy and the vega, lyra and nova styles come from shadcn/ui.
+  anatomy and the Vega, Lyra, Nova, Maia, Mira, Luma, Rhea and Sera styles come from shadcn/ui.
 
 - Basecoat (https://basecoatui.com), Copyright (c) 2025 Ronan Berder.
   Licensed under the MIT License.
   Shadleaf's skins, from which Shadwick's are adapted, follow Basecoat's
-  vega, lyra and nova styles.
+  Vega, Lyra, Nova, Maia, Mira, Luma, Rhea and Sera styles.
+
+- Balsamiq Sans (https://github.com/balsamiq/balsamiqsans).
+  Copyright 2011 The Balsamiq Sans Project Authors.
+  Licensed under the SIL Open Font License, Version 1.1.
+  Sketch includes the unmodified Latin regular/bold WOFF2 files, adapted through
+  Shadleaf. The full license ships beside them at
+  dev/jbaby/shadwick/fonts/balsamiq-sans/OFL.txt.
 
 - Lucide (https://lucide.dev), Copyright (c) Lucide Contributors.
   Licensed under the ISC License.

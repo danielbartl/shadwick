@@ -9,6 +9,8 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
+import org.junit.jupiter.params.provider.EnumSource;
+import dev.jbaby.shadwick.Skin;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -53,8 +55,9 @@ class ExamplesPagesTest {
     }
 
     @ParameterizedTest
-    @ValueSource(strings = {"lyra", "nova"})
-    void theSkinSwitcherKeepsTheSkinForTheSession(String skin) {
+    @EnumSource(value = Skin.class, names = "VEGA", mode = EnumSource.Mode.EXCLUDE)
+    void theSkinSwitcherKeepsTheSkinForTheSession(Skin selected) {
+        String skin = selected.id();
         tester.startPage(ButtonPage.class, new org.apache.wicket.request.mapper.parameter.PageParameters().add("skin", skin));
         assertThat(html()).contains("shadwick-" + skin).doesNotContain("shadwick-vega");
         assertThat(tester.getTagByWicketId(skin).getAttribute("aria-current")).isEqualTo("true");

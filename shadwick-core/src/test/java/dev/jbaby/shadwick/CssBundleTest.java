@@ -2,6 +2,7 @@ package dev.jbaby.shadwick;
 
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.EnumSource;
+import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -33,7 +34,8 @@ class CssBundleTest {
     @EnumSource(Skin.class)
     void aBundleEmitsNoUtilityClasses(Skin skin) throws IOException {
         // Without comments (the banner's URL) and escaped dots
-        String css = read("shadwick-" + skin.id() + ".min.css").replaceAll("(?s)/\\*.*?\\*/", "").replace("\\.", "");
+        String css = read("shadwick-" + skin.id() + ".min.css").replaceAll("(?s)/\\*.*?\\*/", "")
+                .replaceAll("url\\([^)]*\\)", "").replace("\\.", "");
 
         // Every class selector is a component's, so an application's own Tailwind utilities always win
         assertThat(css).doesNotContainPattern("\\.(?!sw-|dark\\b)[a-z][\\w-]*[\\s{:,\\[>~+)]");
@@ -83,6 +85,12 @@ class CssBundleTest {
     void choiceControlsAreAvailableInBothBundlesWithoutImageRequests(Skin skin) throws IOException {
         for (Bundle bundle : Bundle.values()) {
             String css = read("shadwick-" + skin.id() + bundle.suffix() + ".css");
+            // Sketch alone requests fonts, all bundled locally. Choice controls still use native CSS drawings.
+            if (skin == Skin.SKETCH) {
+                assertThat(css).contains("../fonts/balsamiq-sans/balsamiq-sans-latin-400-normal.woff2",
+                        "../fonts/balsamiq-sans/balsamiq-sans-latin-700-normal.woff2");
+                css = css.replaceAll("url\\(['\"]?\\.\\./fonts/balsamiq-sans/balsamiq-sans-latin-(?:400|700)-normal\\.woff2['\"]?\\)", "");
+            }
             assertThat(css).contains(".sw-checkbox-wrapper", ".sw-checkbox-indicator", ".sw-radio-group-item", ".sw-switch",
                             ".sw-native-select-wrapper", ".sw-native-select-icon", ".sw-checkbox-group", ".sw-checkbox-option",
                             ".sw-toggle-input", ".sw-toggle-group", ".sw-input-group", ".sw-input-group-addon",
@@ -90,5 +98,22 @@ class CssBundleTest {
                     .contains("radial-gradient(", "forced-colors: active", ":dir(rtl)")
                     .doesNotContain("url(", "data:image");
         }
+    }
+
+    @Test
+    void sketchFontsArePackagedAndEmbeddedTypographyDoesNotStyleTheHostBody() throws IOException {
+        for (String weight : new String[] {"400", "700"}) {
+            try (InputStream in = Shadwick.class.getResourceAsStream("fonts/balsamiq-sans/balsamiq-sans-latin-" + weight + "-normal.woff2")) {
+                assertThat(in).isNotNull();
+                assertThat(new String(in.readNBytes(4), StandardCharsets.US_ASCII)).isEqualTo("wOF2");
+            }
+        }
+        try (InputStream in = Shadwick.class.getResourceAsStream("fonts/balsamiq-sans/OFL.txt")) {
+            assertThat(in).isNotNull();
+            assertThat(new String(in.readAllBytes(), StandardCharsets.UTF_8)).contains("SIL OPEN FONT LICENSE");
+        }
+        assertThat(read("shadwick-sketch-embedded.css")).contains("Balsamiq Sans")
+                .doesNotContainPattern("(?s)(?:^|[{}])\\s*body\\s*\\{");
+        assertThat(read("shadwick-sketch.css")).contains("body {");
     }
 }

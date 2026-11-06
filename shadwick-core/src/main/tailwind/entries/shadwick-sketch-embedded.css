@@ -1,0 +1,8 @@
+/* Embedded: inline Tailwind defaults, tokens and components; no preflight or page base styles.
+   Tailwind documents theme(inline) at https://tailwindcss.com/docs/preflight#disabling-preflight. */
+@layer theme, base, components, utilities;
+@import "tailwindcss/theme.css" layer(theme) theme(inline);
+@import "tailwindcss/utilities.css" layer(utilities) source(none);
+@import "../tokens.css";
+@import "../components.css";
+@import "../skins/sketch.css";

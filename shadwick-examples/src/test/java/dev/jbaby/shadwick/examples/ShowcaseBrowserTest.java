@@ -687,7 +687,7 @@ class ShowcaseBrowserTest {
             Locator form = tab.getByRole(AriaRole.FORM, new Page.GetByRoleOptions().setName("Normal composition"));
             Locator group = form.getByRole(AriaRole.RADIOGROUP, new Locator.GetByRoleOptions().setName("Alignment"));
             tab.locator("html").evaluate("html => html.dir = 'rtl'");
-            assertThat(group.locator("label").first()).hasCSS("border-right-width", "1px");
+            assertThat(group.locator("label").first()).hasCSS("border-right-width", "sketch".equals(skin) ? "2px" : "1px");
             assertThat(group.locator("label").nth(1)).hasCSS("border-right-width", "0px");
             Locator highlight = form.getByLabel("Highlight", new Locator.GetByLabelOptions().setExact(true));
             highlight.check();
@@ -1537,7 +1537,7 @@ class ShowcaseBrowserTest {
             tab.locator(".sw-toast").last().getByRole(AriaRole.BUTTON).tap();
             assertThat(tab.locator(".sw-toast")).hasCount(9);
             tab.emulateMedia(new Page.EmulateMediaOptions().setForcedColors(ForcedColors.ACTIVE));
-            assertThat(tab.locator(".sw-toast").last()).hasCSS("border-top-width", "1px");
+            assertThat(tab.locator(".sw-toast").last()).hasCSS("border-top-width", "sketch".equals(skin) ? "2px" : "1px");
             tab.keyboard().press("Alt+KeyT");
             assertThat(tab.locator(".sw-toast").last().getByRole(AriaRole.BUTTON)).isFocused();
             assertThat(tab.locator(".sw-toast").last().getByRole(AriaRole.BUTTON)).hasCSS("outline-style", "solid");
@@ -2449,8 +2449,9 @@ class ShowcaseBrowserTest {
             trigger.hover();
             tab.waitForFunction("() => getComputedStyle(document.querySelector('#photo-attachment .sw-attachment-trigger')).backgroundColor === 'rgba(0, 0, 0, 0)'");
             var cardBox = photo.boundingBox(); var triggerBox = trigger.boundingBox();
-            assertThat(Math.abs(cardBox.width - triggerBox.width)).isLessThan(4);
-            assertThat(Math.abs(cardBox.height - triggerBox.height)).isLessThan(4);
+            double borderAllowance = "sketch".equals(skin) ? 4 : 2; // two 2px pencil edges, otherwise two 1px edges
+            assertThat(Math.abs(cardBox.width - triggerBox.width)).isLessThanOrEqualTo(borderAllowance);
+            assertThat(Math.abs(cardBox.height - triggerBox.height)).isLessThanOrEqualTo(borderAllowance);
             photo.click(new Locator.ClickOptions().setPosition(70, 25));
             Locator dialog = tab.getByRole(AriaRole.DIALOG); assertThat(dialog).isVisible();
             assertThat(dialog.locator("img")).isVisible(); tab.keyboard().press("Escape"); assertThat(dialog).isHidden();
@@ -2568,7 +2569,7 @@ class ShowcaseBrowserTest {
             check("attachments", skin, mode, tab -> {
                 assertThat(tab.locator("body").evaluate("n => getComputedStyle(n).margin")).isEqualTo("8px");
                 Locator photo = tab.locator("#photo-attachment"); Locator trigger = photo.locator(".sw-attachment-trigger");
-                assertThat(Math.abs(photo.boundingBox().width - trigger.boundingBox().width)).isLessThan(4);
+                assertThat(Math.abs(photo.boundingBox().width - trigger.boundingBox().width)).isLessThanOrEqualTo("sketch".equals(skin) ? 4 : 2);
                 trigger.hover();
                 tab.waitForFunction("() => getComputedStyle(document.querySelector('#photo-attachment .sw-attachment-trigger')).backgroundColor === 'rgba(0, 0, 0, 0)'");
                 tab.getByRole(AriaRole.BUTTON, new Page.GetByRoleOptions().setName("Next file status")).click();
@@ -3399,18 +3400,31 @@ class ShowcaseBrowserTest {
     void skinControlsUseTheirOwnGeometry(String skin,String mode){
         check("buttons",skin,mode,tab->{
             Locator sizes=tab.locator("section[aria-labelledby='sizes-heading']");
-            boolean vega="vega".equals(skin);
-            assertThat(sizes.getByRole(AriaRole.BUTTON,new Locator.GetByRoleOptions().setName("Default").setExact(true))).hasCSS("height",vega?"36px":"32px");
-            assertThat(sizes.getByRole(AriaRole.BUTTON,new Locator.GetByRoleOptions().setName("Default").setExact(true))).hasCSS("border-top-left-radius","nova".equals(skin)?"10px":vega?"8px":"0px");
-            assertThat(sizes.getByRole(AriaRole.BUTTON,new Locator.GetByRoleOptions().setName("Small").setExact(true))).hasCSS("height",vega?"32px":"28px");
-            assertThat(sizes.getByRole(AriaRole.BUTTON,new Locator.GetByRoleOptions().setName("Large").setExact(true))).hasCSS("height",vega?"40px":"36px");
+            int[] heights = switch (skin) {
+                case "vega", "maia", "luma", "sketch" -> new int[]{36,32,40};
+                case "mira" -> new int[]{28,24,32};
+                case "sera" -> new int[]{40,36,44};
+                default -> new int[]{32,28,36};
+            };
+            String radius = switch (skin) {
+                case "vega", "mira" -> "8px";
+                case "nova" -> "10px";
+                case "maia", "luma" -> "32px";
+                case "rhea" -> "16px";
+                case "sketch" -> "255px 15px";
+                default -> "0px";
+            };
+            assertThat(sizes.getByRole(AriaRole.BUTTON,new Locator.GetByRoleOptions().setName("Default").setExact(true))).hasCSS("height",heights[0]+"px");
+            assertThat(sizes.getByRole(AriaRole.BUTTON,new Locator.GetByRoleOptions().setName("Default").setExact(true))).hasCSS("border-top-left-radius",radius);
+            assertThat(sizes.getByRole(AriaRole.BUTTON,new Locator.GetByRoleOptions().setName("Small").setExact(true))).hasCSS("height",heights[1]+"px");
+            assertThat(sizes.getByRole(AriaRole.BUTTON,new Locator.GetByRoleOptions().setName("Large").setExact(true))).hasCSS("height",heights[2]+"px");
         });
     }
     @ParameterizedTest @MethodSource("everySkinAndMode")
     void skinCardFooterMatchesItsIdentity(String skin,String mode){
         check("display",skin,mode,tab->{
             Locator card=tab.locator(".sw-card").first(),footer=card.locator(".sw-card-footer");
-            assertThat(card).hasCSS("padding-top","vega".equals(skin)?"24px":"16px");
+            assertThat(card).hasCSS("padding-top",switch(skin){case "vega","maia","luma","sketch"->"24px";case "rhea"->"20px";case "sera"->"32px";default->"16px";});
             if("nova".equals(skin)){
                 assertThat(card).hasCSS("padding-bottom","0px");assertThat(footer).hasCSS("padding-bottom","16px");assertThat(footer).hasCSS("border-top-width","1px");
                 org.assertj.core.api.Assertions.assertThat(footer.evaluate("n=>getComputedStyle(n).backgroundColor!=='rgba(0, 0, 0, 0)'" )).isEqualTo(true);
@@ -3421,7 +3435,7 @@ class ShowcaseBrowserTest {
     void skinFieldsPreserveReadonlyDisabledAndMobileType(String skin,String mode){
         check("inputs",skin,mode,new Browser.NewContextOptions().setViewportSize(390,850),tab->{
             Locator input=tab.locator("input[type=email]").first();
-            assertThat(input).hasCSS("font-size","lyra".equals(skin)?"12px":"16px");assertThat(input).hasCSS("height","vega".equals(skin)?"36px":"32px");
+            assertThat(input).hasCSS("font-size",switch(skin){case "lyra"->"12px";case "mira"->"14px";default->"16px";});assertThat(input).hasCSS("height",switch(skin){case "vega","maia","luma","sketch"->"36px";case "mira"->"28px";case "sera"->"40px";default->"32px";});
             if("nova".equals(skin)){
                 assertThat(input).hasCSS("box-shadow","none");input.evaluate("n=>n.disabled=true");
                 org.assertj.core.api.Assertions.assertThat(input.evaluate("n=>getComputedStyle(n).backgroundColor!=='rgba(0, 0, 0, 0)'" )).isEqualTo(true);

@@ -467,7 +467,7 @@ body {
 .studio-canvas .sw-card {
   border-color:var(--border)
 }
-.studio-canvas:not([data-skin="nova"]) .sw-card {
+.studio-canvas:is([data-skin="vega"], [data-skin="lyra"]) .sw-card {
   box-shadow:0 4px 12px -7px #1f38221c
 }
 
