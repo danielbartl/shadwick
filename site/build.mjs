@@ -3,6 +3,7 @@ import path from 'node:path';
 import {fileURLToPath} from 'node:url';
 import {createHash} from 'node:crypto';
 import {skins} from './skins.mjs';
+import {buildDocumentation} from './docs/build.mjs';
 
 const root = path.dirname(fileURLToPath(import.meta.url));
 const output = path.join(root, 'dist');
@@ -62,5 +63,6 @@ html = html.replace(/\b(src|href)="([^"]+)"/g, (_, attribute, reference) =>
 await writeFile(path.join(output, 'index.html'), html);
 await writeFile(path.join(output, '.nojekyll'), '');
 await writeFile(path.join(output, 'robots.txt'), `User-agent: *\nAllow: /\nSitemap: ${url.href}sitemap.xml\n`);
-await writeFile(path.join(output, 'sitemap.xml'), `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"><url><loc>${escapeHtml(url.href)}</loc></url></urlset>\n`);
+const documentationUrls = await buildDocumentation({repositoryRoot:path.resolve(root,'..'),output,siteUrl:url,repository});
+await writeFile(path.join(output, 'sitemap.xml'), `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"><url><loc>${escapeHtml(url.href)}</loc></url>${documentationUrls.map(page => `<url><loc>${escapeHtml(page)}</loc></url>`).join('')}</urlset>\n`);
 console.log(`Built ${output}\nCanonical URL: ${url.href}`);

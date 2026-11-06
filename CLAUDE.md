@@ -15,7 +15,23 @@ Maven dependency and is done: no Node, no Tailwind, no CSS build on their side.
 
 ## Resume point — 2026-11-06
 
-**Publication checkpoint: busy/value controls and advanced tables.**
+**Publication checkpoint: component documentation.** The existing static site now builds a searchable
+`/docs/` section from 52 Markdown guides and source-based references for 150 API types. Every public Sw
+component is covered. README compatibility headings link to the guides; landing/catalog links use the
+new docs routes. Docs include Java/HTML, configuration, native/Ajax behavior and accessibility guidance.
+The complete installation/form files are compiled and tested. No dependency or hosting service was added.
+
+The docs reader supports keyboard search, copy/fallback, native navigation/disclosures, light/dark system
+appearance, responsive widths and print. Website builds validate all HTML/Markdown links, fragments,
+versioned assets, component coverage and synchronized examples. Docs changes trigger the Pages workflow.
+See docs/README.md and docs/CONTRIBUTING.md for content and maintenance. Generated site/dist stays ignored.
+The user requested committing and pushing this group. It joins the landing at
+https://danielbartl.github.io/shadwick/docs/ through the Website workflow; the workflow records the source
+revision and deployment result. Previous published baseline is 0ef053f. Next: host the interactive Wicket
+showcase, then agent skill/llms.txt and release preparation/Maven Central. Broader Oat/chart gaps remain
+separately scoped. Detailed verification and the handoff are recorded at the end of this file.
+
+**Previous publication checkpoint: busy/value controls and advanced tables.**
 The user requested committing and pushing all accumulated work and publishing the updated landing page.
 This checkpoint includes busy Ajax buttons, progress bars/rings, native meters, rating display/input,
 CSV export, column choices, lazy expandable details and validated inline editing. The `/status-controls`
@@ -30,8 +46,9 @@ persistence, authorization and database concurrency. Native standalone forms wor
 Editors retain server-side validation while their row remains visible. Stable `setRowKey` IDs let fresh
 provider models replace old delegates; paging/filtering a row away discards its editor. Details retain keys.
 The final component verification and implementation decisions remain recorded at the end of this file.
-Next roadmap group: full component documentation and a hosted interactive Wicket showcase, then agent
-skill/llms.txt and release preparation/Maven Central. Further Oat families/chart variants remain scoped follow-ups.
+Next roadmap group: a hosted interactive Wicket showcase, then agent skill/llms.txt and release
+preparation/Maven Central. Component documentation is now implemented locally. Further Oat families/chart
+variants remain scoped follow-ups.
 
 The library ships English plus German, Spanish, French, Italian, Japanese, Dutch, Portuguese and Croatian
 built-in messages through Wicket's resource lookup: 280 translated core bundles across eight non-English
@@ -500,8 +517,9 @@ wicket-extensions dependency was added after the user asked to continue with the
     meters, star-rating display and editable rating fields, plus advanced tables (CSV export, column
     chooser, expandable row details and inline edits). Other confirmed gaps include forms, workflows,
     layouts, trees/CRUD, messaging, async content and extra chart types. Scope these deliberately.
-12. **Documentation and distribution:** full component docs and a hosted interactive showcase,
-    then agent guidance/llms.txt and a Maven Central release.
+12. **Documentation and distribution:** component documentation is implemented locally (52 guides,
+    searchable static reader and source-based API references). Next: a hosted interactive Wicket
+    showcase, then agent guidance/llms.txt and a Maven Central release.
 
 Chart variant follow-ups: forecast joins, arbitrary per-series light/dark colors, natural splines
 and per-corner bar radii. Native SVG is an intentional alternative to Shadleaf’s Recharts runtime.
@@ -510,8 +528,8 @@ For broader Shadleaf parity after/alongside these groups:
 
 - All nine skins now have implementations, with shared light/dark token support.
 - Built-in messages now ship in nine languages; additional languages can use application resource bundles.
-- Full component documentation and interactive showcase site, beyond the landing page
-  and runnable Wicket examples already available.
+- Component documentation is implemented locally. Host the runnable interactive Wicket showcase
+  alongside the static landing/documentation site.
 - Agent skill + llms.txt and a Maven Central release.
 
 Parity review references (checked against the published docs on 2026-11-04):
@@ -535,8 +553,8 @@ SwDatePicker/SwDateRangePicker cover native date-backed grids and popups, with n
 validation in /calendar and working landing previews. SwMonthView provides a native agenda with
 custom day slots, links and independent months in /month-view. SwChart/ChartSeries provide native
 SVG bars/lines/areas, mixed/stacked series, keyboard tooltips and exact data in /charts.
-The landing previews both. All nine skins and internationalization are implemented locally. Next:
-documentation and a hosted interactive showcase, then tooling and release preparation.
+The landing previews both. All nine skins, internationalization and component documentation are implemented
+locally. Next: a hosted interactive showcase, then tooling and release preparation.
 
 ## Working agreements
 
@@ -549,6 +567,26 @@ documentation and a hosted interactive showcase, then tooling and release prepar
 - Record every decision under Conventions as soon as it is made.
 
 ## Conventions
+
+### Component documentation (2026-11-06)
+
+- Repository Markdown lives in docs/guides and docs/components. docs/catalog.json declares routes,
+  groups, descriptions, Java API sources and actual showcase source classes. All public Sw component
+  files must appear in the API registry. Package-private helpers are not public documentation APIs.
+- Keep the README's established headings as compatibility entry points. Use source-relative .md links
+  between guides; the build rewrites them to subpath-safe HTML routes. Examples/API source links point
+  at the GitHub main branch. Generated output is ignored and must not be edited or committed.
+- site/docs builds the static reader with Node built-ins. Escaped, deliberately bounded Markdown;
+  fenced code is highlighted without executing it. No raw HTML or unsafe URL schemes. API signatures,
+  nested/root enums, record declarations and useful descriptions come from current Java source.
+- Complete examples under docs/examples match their printed fences byte-for-byte. DocumentationExamplesTest
+  compiles them with --release 17 and tests native/Ajax validation. DocumentationBrowserTest reuses the
+  existing Playwright/axe dependencies and the Node preview on an ephemeral port; no new dependency.
+- Search/copy are progressive enhancements. Navigation, reading and API disclosures work without script.
+  Default appearance follows the OS; print uses light tokens. Respect project-subpath URLs, keyboard
+  focus, 320px layouts and copy labels matching visible state. Search failure falls back to navigation.
+- Component docs are static. The publicly hosted interactive Wicket application is a separate next task.
+  This work does not imply commit/push/publication. Use the Sites skill's local workflow for the repo.
 
 ### Busy buttons and progress/meter/rating controls (2026-11-06)
 
@@ -2415,3 +2453,81 @@ documentation and a hosted interactive showcase, then tooling and release prepar
   are recorded above; publication runs fresh CI through the Build and Website workflows on main.
 - Live URL: https://danielbartl.github.io/shadwick/ . Use the Website run's source SHA and deployment
   result, and `git log`, for the exact checkpoint rather than hard-coding the commit inside itself.
+
+### Component documentation — local implementation, 2026-11-06
+
+- User selected component documentation after publishing controls/advanced tables at 0ef053f. Implemented
+  a static documentation section in the existing GitHub Pages project; no new hosting or dependency.
+- docs/catalog.json and 52 focused Markdown guides cover all public Sw components and related behaviors,
+  with setup, typed models, markup, options, keyboard/native/Ajax behavior, accessibility and application
+  responsibilities. Six getting-started/integration guides and 46 component/family guides share the
+  clover/forest identity. Code is selected for syntax highlighting but never executed in the reader.
+- Migrated the large README reference into guides. Preserved all 49 original README headings as compatibility
+  entry points and retained the quick start/build instructions. Source Markdown has its own readable index.
+  Longer guides have feature-level anchors (CSV, details, inline edits, search, validation and options).
+- site/docs/markdown.mjs is a tested, escaped authoring subset (documented in docs/CONTRIBUTING.md), with
+  stable unique anchors, code IDs across callouts, safe URL validation, tables and accessible copy controls.
+  API references expose direct constructors/methods/hooks, class inheritance, enums and record declarations
+  for 150 public types. Routine lifecycle overrides/anonymous internals are excluded. Raw/private helpers
+  and path traversal are rejected. New public Sw components require guide registration before a build passes.
+- The responsive reader has a native mobile browse disclosure, native on-page navigation and API disclosures,
+  static prev/next links and code copy with selected-text fallback. Keyboard search uses title/API/full-text
+  indexing, Ctrl/Command+K, Enter/ArrowDown/Escape, no-result handling and network-failure recovery. Stale search
+  requests cannot replace the current query. Search and copy hide without script; core content remains readable.
+  Copy labels follow the visible Copy/Copied/Selected state. System dark mode, reduced motion, forced colors
+  and light print tokens are included. No storage, external search service or client framework is introduced.
+- Existing site/build.mjs generates docs and includes routes in the sitemap. site/check.mjs now checks every
+  HTML page plus cross-page anchors, source Markdown links, search inventory and content-versioned assets.
+  Landing links now open the appropriate docs and retain the original preview. Pages watches docs/** and README
+  and runs renderer tests. The preview now serves nested directory indexes, preserves redirect queries and
+  supports ephemeral ports/JSON responses. Source links remain relative under a GitHub project subpath.
+- Complete docs/examples/QuickStartApplication.java, QuickStartPage.java and matching HTML are printed in the
+  installation/forms guides. The build rejects stale fences. New DocumentationExamplesTest compiles those exact
+  files with Java 17 release settings, loads the resources and tests native/Ajax validation/model submission.
+  Existing public component runtime code was unchanged in this documentation group.
+- Final normal Maven verify passed 750 core and 64 example tests (814 total). Log:
+  /tmp/shadwick-docs-verify.log. The new compiled-example tests are two of the 64 example cases.
+- Node tests passed all 34 checks covering escaping, URL validation, heading/code-ID behavior, Java API scanning,
+  complete builds, coverage gaps, path traversal, stale snippets and invalid guide links. Log:
+  /tmp/shadwick-docs-node-final.log. Final static build/check passed 54 HTML pages, 4069 internal references,
+  748 IDs and Markdown/search links, about 3894 KB. Node worker tests need normal execution permissions locally;
+  CI uses the Maven-installed Node and needs no new package installation.
+- DocumentationBrowserTest passed 111 Chromium cases: every guide plus index at desktop/light and mobile/dark,
+  keyboard search, real clipboard copy, denied-clipboard selection fallback, search network recovery, query-preserving
+  redirects, API disclosures and native no-script navigation. Log: /tmp/shadwick-docs-browser2.log. The suite runs
+  with the existing browser profile and starts/stops its own ephemeral static preview. It precedes only final
+  editorial section headings/installation prose and print-token adjustments, checked separately below.
+- Additional Chromium/Firefox visual/axe checks passed 42 cases over six representative pages at 1440/390/320,
+  including no-script navigation and print. Final long-guide section navigation/readability rechecks passed 18
+  cases after adding headings. Logs/scripts: /tmp/shadwick-docs-visual.cjs and .log,
+  /tmp/shadwick-docs-final-reading.cjs and .log. Desktop advanced-table, mobile Firefox forms and dark overview
+  screenshots were inspected. Browser review fixed the original preview's root-only routing and the copy button's
+  visible/accessibility-name mismatch. The final images are /tmp/shadwick-docs-{chromium,firefox}-*.png.
+- Landing regression audits passed 18 Chromium/Firefox cases at three widths in Vega/Sera/Sketch, covering axe,
+  console errors, overflow and updated links. Log: /tmp/shadwick-docs-landing.log. Generated output remains ignored.
+- Documentation is ready locally, intentionally uncommitted/unpublished. Published baseline remains 0ef053f.
+  The temporary preview was stopped after final checks. Next roadmap work is hosting the actual Wicket showcase, then
+  agent guidance/llms.txt and release/Maven Central; broader Oat families and chart variants remain separate.
+
+### Documentation publication checkpoint — 2026-11-06
+
+- User requested committing/pushing the docs and asked whether they belong to the landing page.
+  They are part of the same GitHub Pages build at /shadwick/docs/, linked by the main navigation,
+  catalog entries and internationalization links. The landing and docs publish together on main.
+- This publication supersedes the local/uncommitted status recorded for the documentation group.
+  Includes the 52 guides, searchable reader, 150 API references, exact compiled examples, docs browser
+  tests, compatibility README, source/build/link checks, preview routing and workflow changes.
+  Generated output remains ignored; no new dependency or hosting service was added.
+- Before this push, the previous 0ef053f full browser run finished with 3 failures out of 3617 cases.
+  Java 17/25 and Website had passed. One failure exposed chart initialization on an incomplete header;
+  two rating assertions in Sera were affected by hover after responsive scrolling. Repair e78807d waits
+  for a complete header/rows/SVG and tests staged rendering. Keyboard-rating checks move the pointer
+  away before asserting the selected fill. All 54 targeted skin/mode cases passed in
+  /tmp/shadwick-docs-publish-ci-fixes.log. This is focused verification, not a full-suite-green claim.
+- Final local docs checks from the implementation remain recorded above. Publication JVM verification
+  is in /tmp/shadwick-docs-publish-verify.log; Website runs fresh core and Node tests and checks the
+  combined artifact. The new Build run also runs both Java versions and the complete browser profile.
+- Live guides: https://danielbartl.github.io/shadwick/docs/ . Use git log and the Website workflow's
+  head SHA/result for the exact source and deployment rather than embedding a self-referential commit.
+- Next roadmap step remains hosting the interactive Wicket showcase; agent tooling and Maven Central
+  follow. The guide website is static and the example source links do not imply a hosted Wicket backend.

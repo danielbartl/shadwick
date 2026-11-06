@@ -5,6 +5,8 @@ on:
     branches: [main]
     paths:
       - 'site/**'
+      - 'docs/**'
+      - 'README.md'
       - 'shadwick-core/**'
       - 'pom.xml'
       - '.mvn/**'
@@ -16,6 +18,8 @@ on:
     branches: [main]
     paths:
       - 'site/**'
+      - 'docs/**'
+      - 'README.md'
       - 'shadwick-core/**'
       - 'pom.xml'
       - '.mvn/**'
@@ -48,6 +52,8 @@ jobs:
           key: npm-${{ runner.os }}-${{ hashFiles('shadwick-core/package-lock.json') }}
       - name: Build and test the library and its CSS
         run: ./mvnw -B -pl shadwick-core -am verify
+      - name: Check documentation renderer and API scanner
+        run: ./shadwick-core/target/node/node --test site/docs/*.test.mjs
       - name: Build the static website
         run: ./shadwick-core/target/node/node site/build.mjs
       - name: Check site assets and internal links

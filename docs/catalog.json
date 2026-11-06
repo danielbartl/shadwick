@@ -1,0 +1,625 @@
+[
+  {
+    "slug": "guides/installation",
+    "title": "Installation",
+    "group": "Getting started",
+    "description": "Install Shadwick, configure Wicket and run your first form.",
+    "apis": [
+      "shadwick-core/src/main/java/dev/jbaby/shadwick/Shadwick.java",
+      "shadwick-core/src/main/java/dev/jbaby/shadwick/ShadwickSettings.java",
+      "shadwick-core/src/main/java/dev/jbaby/shadwick/Sw.java"
+    ],
+    "example": "HomePage"
+  },
+  {
+    "slug": "guides/wicket-integration",
+    "title": "Wicket integration",
+    "group": "Getting started",
+    "description": "Models, markup ownership, Ajax, forms, resources and application responsibilities.",
+    "apis": [
+      "shadwick-core/src/main/java/dev/jbaby/shadwick/Sw.java",
+      "shadwick-core/src/main/java/dev/jbaby/shadwick/behaviors/StyledBehavior.java",
+      "shadwick-core/src/main/java/dev/jbaby/shadwick/behaviors/NestedFormButtonBehavior.java",
+      "shadwick-core/src/main/java/dev/jbaby/shadwick/components/form/BaseSwField.java"
+    ],
+    "example": "FormPage"
+  },
+  {
+    "slug": "guides/skins",
+    "title": "Skins",
+    "group": "Getting started",
+    "description": "Choose from nine geometries with shared light and dark color tokens.",
+    "apis": [
+      "shadwick-core/src/main/java/dev/jbaby/shadwick/Skin.java",
+      "shadwick-core/src/main/java/dev/jbaby/shadwick/SkinStore.java",
+      "shadwick-core/src/main/java/dev/jbaby/shadwick/ShadwickSettings.java"
+    ],
+    "example": "HomePage"
+  },
+  {
+    "slug": "guides/theming",
+    "title": "Theming",
+    "group": "Getting started",
+    "description": "Color tokens, appearance preferences and embedded bundles.",
+    "apis": [
+      "shadwick-core/src/main/java/dev/jbaby/shadwick/ThemeMode.java",
+      "shadwick-core/src/main/java/dev/jbaby/shadwick/behaviors/ThemeBehavior.java",
+      "shadwick-core/src/main/java/dev/jbaby/shadwick/components/SwThemeToggle.java",
+      "shadwick-core/src/main/java/dev/jbaby/shadwick/Bundle.java"
+    ],
+    "example": "ThemePage"
+  },
+  {
+    "slug": "guides/internationalization",
+    "title": "Internationalization",
+    "group": "Getting started",
+    "description": "Use nine message languages, regional formats and Wicket resource overrides.",
+    "apis": [
+      "shadwick-core/src/main/java/dev/jbaby/shadwick/ShadwickSettings.java"
+    ],
+    "example": "InternationalizationPage"
+  },
+  {
+    "slug": "guides/accessibility",
+    "title": "Accessibility",
+    "group": "Getting started",
+    "description": "Naming, keyboard use, feedback, native fallbacks and application content.",
+    "apis": [
+      "shadwick-core/src/main/java/dev/jbaby/shadwick/AccessibilityChecks.java"
+    ],
+    "example": "HomePage"
+  },
+  {
+    "slug": "components/buttons",
+    "title": "Buttons",
+    "group": "Actions and feedback",
+    "description": "Ajax actions, submit buttons, variants, sizes and icon-only names.",
+    "apis": [
+      "shadwick-core/src/main/java/dev/jbaby/shadwick/components/SwButton.java",
+      "shadwick-core/src/main/java/dev/jbaby/shadwick/components/SwSubmitButton.java",
+      "shadwick-core/src/main/java/dev/jbaby/shadwick/behaviors/ButtonBehavior.java"
+    ],
+    "example": "ButtonPage"
+  },
+  {
+    "slug": "components/busy-controls",
+    "title": "Busy controls",
+    "group": "Actions and feedback",
+    "description": "Show pending work and guard repeated Ajax activation.",
+    "apis": [
+      "shadwick-core/src/main/java/dev/jbaby/shadwick/behaviors/AjaxBusyBehavior.java"
+    ],
+    "example": "StatusControlsPage"
+  },
+  {
+    "slug": "components/toasts",
+    "title": "Toasts",
+    "group": "Actions and feedback",
+    "description": "Notifications, dismissal, timing and accessible announcements.",
+    "apis": [
+      "shadwick-core/src/main/java/dev/jbaby/shadwick/behaviors/ToastBehavior.java",
+      "shadwick-core/src/main/java/dev/jbaby/shadwick/Sw.java"
+    ],
+    "example": "ToastPage"
+  },
+  {
+    "slug": "components/feedback",
+    "title": "Feedback",
+    "group": "Actions and feedback",
+    "description": "Inline validation, fenced feedback panels and feedback toasts.",
+    "apis": [
+      "shadwick-core/src/main/java/dev/jbaby/shadwick/components/SwFeedbackPanel.java",
+      "shadwick-core/src/main/java/dev/jbaby/shadwick/behaviors/FeedbackToastsBehavior.java",
+      "shadwick-core/src/main/java/dev/jbaby/shadwick/components/form/NotShownInlineFilter.java",
+      "shadwick-core/src/main/java/dev/jbaby/shadwick/components/form/ShowsErrorsInline.java"
+    ],
+    "example": "FeedbackPage"
+  },
+  {
+    "slug": "components/forms",
+    "title": "Form fields",
+    "group": "Forms and choices",
+    "description": "Labels, models, validators, inline errors and normal or Ajax submission.",
+    "apis": [
+      "shadwick-core/src/main/java/dev/jbaby/shadwick/components/form/BaseSwField.java",
+      "shadwick-core/src/main/java/dev/jbaby/shadwick/components/form/BaseSwInputField.java"
+    ],
+    "example": "FormPage"
+  },
+  {
+    "slug": "components/inputs",
+    "title": "Text and number inputs",
+    "group": "Forms and choices",
+    "description": "Text, email, password, URL, telephone, search, textarea and numeric input.",
+    "apis": [
+      "shadwick-core/src/main/java/dev/jbaby/shadwick/components/form/SwTextField.java",
+      "shadwick-core/src/main/java/dev/jbaby/shadwick/components/form/SwEmailField.java",
+      "shadwick-core/src/main/java/dev/jbaby/shadwick/components/form/SwPasswordField.java",
+      "shadwick-core/src/main/java/dev/jbaby/shadwick/components/form/SwUrlField.java",
+      "shadwick-core/src/main/java/dev/jbaby/shadwick/components/form/SwTelField.java",
+      "shadwick-core/src/main/java/dev/jbaby/shadwick/components/form/SwSearchField.java",
+      "shadwick-core/src/main/java/dev/jbaby/shadwick/components/form/SwTextArea.java",
+      "shadwick-core/src/main/java/dev/jbaby/shadwick/components/form/SwNumberField.java"
+    ],
+    "example": "InputPage"
+  },
+  {
+    "slug": "components/native-selects",
+    "title": "Native selections",
+    "group": "Forms and choices",
+    "description": "Browser select and multi-select controls with typed Wicket choices.",
+    "apis": [
+      "shadwick-core/src/main/java/dev/jbaby/shadwick/components/form/SwDropdownChoice.java",
+      "shadwick-core/src/main/java/dev/jbaby/shadwick/components/form/SwListMultipleChoice.java"
+    ],
+    "example": "SelectPage"
+  },
+  {
+    "slug": "components/select",
+    "title": "Custom select",
+    "group": "Forms and choices",
+    "description": "Styled single selection with native and progressive listbox paths.",
+    "apis": [
+      "shadwick-core/src/main/java/dev/jbaby/shadwick/components/form/SwSelect.java",
+      "shadwick-core/src/main/java/dev/jbaby/shadwick/behaviors/SelectBehavior.java"
+    ],
+    "example": "CustomSelectPage"
+  },
+  {
+    "slug": "components/combobox",
+    "title": "Combobox",
+    "group": "Forms and choices",
+    "description": "Search single or multiple choices, remotely or locally.",
+    "apis": [
+      "shadwick-core/src/main/java/dev/jbaby/shadwick/components/form/SwCombobox.java",
+      "shadwick-core/src/main/java/dev/jbaby/shadwick/components/form/SwMultiCombobox.java",
+      "shadwick-core/src/main/java/dev/jbaby/shadwick/behaviors/ComboboxBehavior.java"
+    ],
+    "example": "ComboboxPage"
+  },
+  {
+    "slug": "components/date-time",
+    "title": "Date and time fields",
+    "group": "Forms and choices",
+    "description": "Native local date, time, month, week and date-time inputs.",
+    "apis": [
+      "shadwick-core/src/main/java/dev/jbaby/shadwick/components/form/SwDateField.java",
+      "shadwick-core/src/main/java/dev/jbaby/shadwick/components/form/SwTimeField.java",
+      "shadwick-core/src/main/java/dev/jbaby/shadwick/components/form/SwMonthField.java",
+      "shadwick-core/src/main/java/dev/jbaby/shadwick/components/form/SwWeekField.java",
+      "shadwick-core/src/main/java/dev/jbaby/shadwick/components/form/SwDateTimeLocalField.java"
+    ],
+    "example": "DateTimePage"
+  },
+  {
+    "slug": "components/toggles-input-groups",
+    "title": "Toggles and input groups",
+    "group": "Forms and choices",
+    "description": "Pressed buttons, single/multiple toggle choices and input addons.",
+    "apis": [
+      "shadwick-core/src/main/java/dev/jbaby/shadwick/components/form/SwToggle.java",
+      "shadwick-core/src/main/java/dev/jbaby/shadwick/components/form/SwToggleChoice.java",
+      "shadwick-core/src/main/java/dev/jbaby/shadwick/components/form/SwToggleMultipleChoice.java",
+      "shadwick-core/src/main/java/dev/jbaby/shadwick/behaviors/ToggleBehavior.java",
+      "shadwick-core/src/main/java/dev/jbaby/shadwick/behaviors/ToggleGroupBehavior.java",
+      "shadwick-core/src/main/java/dev/jbaby/shadwick/behaviors/InputGroupBehavior.java",
+      "shadwick-core/src/main/java/dev/jbaby/shadwick/behaviors/InputGroupAddonBehavior.java",
+      "shadwick-core/src/main/java/dev/jbaby/shadwick/behaviors/InputGroupButtonBehavior.java"
+    ],
+    "example": "GroupPage"
+  },
+  {
+    "slug": "components/choices",
+    "title": "Checkboxes switches and radios",
+    "group": "Forms and choices",
+    "description": "Boolean and multiple choices with native form semantics.",
+    "apis": [
+      "shadwick-core/src/main/java/dev/jbaby/shadwick/components/form/SwCheckBox.java",
+      "shadwick-core/src/main/java/dev/jbaby/shadwick/components/form/SwSwitch.java",
+      "shadwick-core/src/main/java/dev/jbaby/shadwick/components/form/SwRadioChoice.java",
+      "shadwick-core/src/main/java/dev/jbaby/shadwick/components/form/SwCheckBoxMultipleChoice.java",
+      "shadwick-core/src/main/java/dev/jbaby/shadwick/behaviors/SwitchBehavior.java"
+    ],
+    "example": "ChoicePage"
+  },
+  {
+    "slug": "components/file-upload",
+    "title": "File upload",
+    "group": "Forms and choices",
+    "description": "Native upload and dropzones, validation, metadata and storage callbacks.",
+    "apis": [
+      "shadwick-core/src/main/java/dev/jbaby/shadwick/components/form/SwFileUpload.java",
+      "shadwick-core/src/main/java/dev/jbaby/shadwick/components/form/SwFileDropzone.java",
+      "shadwick-core/src/main/java/dev/jbaby/shadwick/components/form/BaseSwFileUpload.java"
+    ],
+    "example": "UploadPage"
+  },
+  {
+    "slug": "components/ratings",
+    "title": "Ratings",
+    "group": "Forms and choices",
+    "description": "Half-star read-only ratings and native whole-star radio inputs.",
+    "apis": [
+      "shadwick-core/src/main/java/dev/jbaby/shadwick/components/SwRating.java",
+      "shadwick-core/src/main/java/dev/jbaby/shadwick/components/form/SwRatingField.java"
+    ],
+    "example": "StatusControlsPage"
+  },
+  {
+    "slug": "components/calendar",
+    "title": "Calendar and date picker",
+    "group": "Data and planning",
+    "description": "Single dates, ranges, disabled days and native-backed popup pickers.",
+    "apis": [
+      "shadwick-core/src/main/java/dev/jbaby/shadwick/components/form/SwCalendar.java",
+      "shadwick-core/src/main/java/dev/jbaby/shadwick/components/form/SwRangeCalendar.java",
+      "shadwick-core/src/main/java/dev/jbaby/shadwick/components/form/SwDatePicker.java",
+      "shadwick-core/src/main/java/dev/jbaby/shadwick/components/form/SwDateRangePicker.java",
+      "shadwick-core/src/main/java/dev/jbaby/shadwick/components/form/BaseSwCalendar.java",
+      "shadwick-core/src/main/java/dev/jbaby/shadwick/components/form/DateRange.java",
+      "shadwick-core/src/main/java/dev/jbaby/shadwick/components/form/DisabledDates.java",
+      "shadwick-core/src/main/java/dev/jbaby/shadwick/behaviors/CalendarBehavior.java"
+    ],
+    "example": "CalendarPage"
+  },
+  {
+    "slug": "components/month-view",
+    "title": "Month view",
+    "group": "Data and planning",
+    "description": "Server-rendered monthly plans with locale-aware weeks and custom day slots.",
+    "apis": [
+      "shadwick-core/src/main/java/dev/jbaby/shadwick/components/SwMonthView.java"
+    ],
+    "example": "MonthViewPage"
+  },
+  {
+    "slug": "components/charts",
+    "title": "Charts",
+    "group": "Data and planning",
+    "description": "Native SVG bars, lines and areas with exact accessible data.",
+    "apis": [
+      "shadwick-core/src/main/java/dev/jbaby/shadwick/components/chart/SwChart.java",
+      "shadwick-core/src/main/java/dev/jbaby/shadwick/components/chart/ChartSeries.java"
+    ],
+    "example": "ChartPage"
+  },
+  {
+    "slug": "components/table",
+    "title": "Native tables",
+    "group": "Data and planning",
+    "description": "Compose native, compact, grouped and sticky-column tables.",
+    "apis": [
+      "shadwick-core/src/main/java/dev/jbaby/shadwick/components/SwTable.java",
+      "shadwick-core/src/main/java/dev/jbaby/shadwick/behaviors/TableBehavior.java"
+    ],
+    "example": "TablePage"
+  },
+  {
+    "slug": "components/data-table",
+    "title": "Data tables",
+    "group": "Data and planning",
+    "description": "Providers, sort state, selection, row actions and bookmarkable filters.",
+    "apis": [
+      "shadwick-core/src/main/java/dev/jbaby/shadwick/components/SwDataTable.java",
+      "shadwick-core/src/main/java/dev/jbaby/shadwick/components/table/SwSelectionColumn.java",
+      "shadwick-core/src/main/java/dev/jbaby/shadwick/components/table/SwActionsColumn.java",
+      "shadwick-core/src/main/java/dev/jbaby/shadwick/components/table/SwBadgeColumn.java",
+      "shadwick-core/src/main/java/dev/jbaby/shadwick/components/table/SwBooleanColumn.java",
+      "shadwick-core/src/main/java/dev/jbaby/shadwick/components/table/SwDateColumn.java",
+      "shadwick-core/src/main/java/dev/jbaby/shadwick/components/table/SwNumberColumn.java",
+      "shadwick-core/src/main/java/dev/jbaby/shadwick/components/table/SwLinkColumn.java",
+      "shadwick-core/src/main/java/dev/jbaby/shadwick/components/table/SwHeadersToolbar.java",
+      "shadwick-core/src/main/java/dev/jbaby/shadwick/components/TableQuery.java",
+      "shadwick-core/src/main/java/dev/jbaby/shadwick/components/SwQueryParameters.java"
+    ],
+    "example": "DataTablePage"
+  },
+  {
+    "slug": "components/advanced-table",
+    "title": "Advanced tables",
+    "group": "Data and planning",
+    "description": "CSV downloads, column choices, lazy row details and staged inline edits.",
+    "apis": [
+      "shadwick-core/src/main/java/dev/jbaby/shadwick/components/table/SwCsvExport.java",
+      "shadwick-core/src/main/java/dev/jbaby/shadwick/components/table/SwRowDetailsColumn.java",
+      "shadwick-core/src/main/java/dev/jbaby/shadwick/components/table/SwEditableColumn.java"
+    ],
+    "example": "AdvancedTablePage"
+  },
+  {
+    "slug": "components/pagination",
+    "title": "Pagination",
+    "group": "Data and planning",
+    "description": "Independent pagers, summaries, page sizes and native URL factories.",
+    "apis": [
+      "shadwick-core/src/main/java/dev/jbaby/shadwick/components/SwPagination.java",
+      "shadwick-core/src/main/java/dev/jbaby/shadwick/components/SwPagingNavigator.java",
+      "shadwick-core/src/main/java/dev/jbaby/shadwick/components/SwPaginationSummary.java",
+      "shadwick-core/src/main/java/dev/jbaby/shadwick/components/SwPaginationSize.java",
+      "shadwick-core/src/main/java/dev/jbaby/shadwick/behaviors/PaginationBehavior.java",
+      "shadwick-core/src/main/java/dev/jbaby/shadwick/behaviors/PaginationLinkBehavior.java"
+    ],
+    "example": "PaginationPage"
+  },
+  {
+    "slug": "components/progress",
+    "title": "Progress",
+    "group": "Data and planning",
+    "description": "Native progress and SVG rings with known or indeterminate values.",
+    "apis": [
+      "shadwick-core/src/main/java/dev/jbaby/shadwick/components/SwProgress.java",
+      "shadwick-core/src/main/java/dev/jbaby/shadwick/components/SwRadialProgress.java",
+      "shadwick-core/src/main/java/dev/jbaby/shadwick/behaviors/ProgressBehavior.java"
+    ],
+    "example": "StatusControlsPage"
+  },
+  {
+    "slug": "components/meters",
+    "title": "Meters",
+    "group": "Data and planning",
+    "description": "Native measurements with bounds and quality thresholds.",
+    "apis": [
+      "shadwick-core/src/main/java/dev/jbaby/shadwick/components/SwMeter.java",
+      "shadwick-core/src/main/java/dev/jbaby/shadwick/behaviors/MeterBehavior.java"
+    ],
+    "example": "StatusControlsPage"
+  },
+  {
+    "slug": "components/dialog",
+    "title": "Dialog",
+    "group": "Overlays",
+    "description": "Modal content, validation, confirmation and focus restoration.",
+    "apis": [
+      "shadwick-core/src/main/java/dev/jbaby/shadwick/components/SwDialog.java"
+    ],
+    "example": "DialogPage"
+  },
+  {
+    "slug": "components/confirmation-dialog",
+    "title": "Confirmation dialog",
+    "group": "Overlays",
+    "description": "Confirm actions with server state and explicit destructive choices.",
+    "apis": [
+      "shadwick-core/src/main/java/dev/jbaby/shadwick/components/SwConfirmDialog.java"
+    ],
+    "example": "OverlayPage"
+  },
+  {
+    "slug": "components/sheet",
+    "title": "Sheet",
+    "group": "Overlays",
+    "description": "Side panels using native dialogs and logical edges.",
+    "apis": [
+      "shadwick-core/src/main/java/dev/jbaby/shadwick/components/SwSheet.java"
+    ],
+    "example": "OverlayPage"
+  },
+  {
+    "slug": "components/popover",
+    "title": "Popover",
+    "group": "Overlays",
+    "description": "Native popover content with controlled placement and focus behavior.",
+    "apis": [
+      "shadwick-core/src/main/java/dev/jbaby/shadwick/components/SwPopover.java"
+    ],
+    "example": "PopupPage"
+  },
+  {
+    "slug": "components/tooltip",
+    "title": "Tooltip",
+    "group": "Overlays",
+    "description": "Descriptions for focus and hover without replacing control names.",
+    "apis": [
+      "shadwick-core/src/main/java/dev/jbaby/shadwick/behaviors/TooltipBehavior.java"
+    ],
+    "example": "PopupPage"
+  },
+  {
+    "slug": "components/dropdown-menu",
+    "title": "Dropdown menus",
+    "group": "Overlays",
+    "description": "Action menus, checked items, native placement and keyboard navigation.",
+    "apis": [
+      "shadwick-core/src/main/java/dev/jbaby/shadwick/components/SwDropdown.java",
+      "shadwick-core/src/main/java/dev/jbaby/shadwick/behaviors/DropdownMenuBehavior.java",
+      "shadwick-core/src/main/java/dev/jbaby/shadwick/behaviors/DropdownMenuItemBehavior.java"
+    ],
+    "example": "MenuPage"
+  },
+  {
+    "slug": "components/app-shell",
+    "title": "App shell",
+    "group": "Navigation and layout",
+    "description": "Header, breadcrumb and skip-link primitives for your own page structure.",
+    "apis": [
+      "shadwick-core/src/main/java/dev/jbaby/shadwick/components/SwSiteHeader.java",
+      "shadwick-core/src/main/java/dev/jbaby/shadwick/components/SwBreadcrumb.java",
+      "shadwick-core/src/main/java/dev/jbaby/shadwick/components/SwSkipLink.java",
+      "shadwick-core/src/main/java/dev/jbaby/shadwick/behaviors/SiteHeaderBehavior.java",
+      "shadwick-core/src/main/java/dev/jbaby/shadwick/behaviors/BreadcrumbBehavior.java",
+      "shadwick-core/src/main/java/dev/jbaby/shadwick/behaviors/SkipLinkBehavior.java"
+    ],
+    "example": "ShellPage"
+  },
+  {
+    "slug": "components/sidebar",
+    "title": "Sidebar",
+    "group": "Navigation and layout",
+    "description": "Responsive navigation, submenus, row actions and logical placement.",
+    "apis": [
+      "shadwick-core/src/main/java/dev/jbaby/shadwick/components/SwSidebar.java",
+      "shadwick-core/src/main/java/dev/jbaby/shadwick/components/SwSidebarTrigger.java",
+      "shadwick-core/src/main/java/dev/jbaby/shadwick/behaviors/SidebarBehavior.java",
+      "shadwick-core/src/main/java/dev/jbaby/shadwick/behaviors/SidebarProviderBehavior.java",
+      "shadwick-core/src/main/java/dev/jbaby/shadwick/behaviors/SidebarTriggerBehavior.java",
+      "shadwick-core/src/main/java/dev/jbaby/shadwick/behaviors/SidebarActionBehavior.java"
+    ],
+    "example": "SidebarPage"
+  },
+  {
+    "slug": "components/app-layout",
+    "title": "App layout",
+    "group": "Navigation and layout",
+    "description": "Application chrome, named slots, menus and page locale.",
+    "apis": [
+      "shadwick-core/src/main/java/dev/jbaby/shadwick/components/SwAppLayout.java",
+      "shadwick-core/src/main/java/dev/jbaby/shadwick/components/MenuItem.java"
+    ],
+    "example": "AppLayoutPage"
+  },
+  {
+    "slug": "components/user-menu",
+    "title": "User menu",
+    "group": "Navigation and layout",
+    "description": "Identity display, menu placements and native sign-in/sign-out integration.",
+    "apis": [
+      "shadwick-core/src/main/java/dev/jbaby/shadwick/components/SwUserMenu.java"
+    ],
+    "example": "UserMenuPage"
+  },
+  {
+    "slug": "components/tabs",
+    "title": "Tabs",
+    "group": "Navigation and layout",
+    "description": "Keyboard tab selection with server-configured panels.",
+    "apis": [
+      "shadwick-core/src/main/java/dev/jbaby/shadwick/components/SwTabs.java",
+      "shadwick-core/src/main/java/dev/jbaby/shadwick/behaviors/TabsBehavior.java"
+    ],
+    "example": "DisclosurePage"
+  },
+  {
+    "slug": "components/accordion",
+    "title": "Accordion",
+    "group": "Navigation and layout",
+    "description": "Single or multiple native details sections with named triggers.",
+    "apis": [
+      "shadwick-core/src/main/java/dev/jbaby/shadwick/components/SwAccordion.java",
+      "shadwick-core/src/main/java/dev/jbaby/shadwick/behaviors/AccordionBehavior.java",
+      "shadwick-core/src/main/java/dev/jbaby/shadwick/behaviors/DisclosureTriggerBehavior.java"
+    ],
+    "example": "DisclosurePage"
+  },
+  {
+    "slug": "components/collapsible",
+    "title": "Collapsible",
+    "group": "Navigation and layout",
+    "description": "One native details disclosure with optional content.",
+    "apis": [
+      "shadwick-core/src/main/java/dev/jbaby/shadwick/components/SwCollapsible.java",
+      "shadwick-core/src/main/java/dev/jbaby/shadwick/behaviors/CollapsibleBehavior.java"
+    ],
+    "example": "DisclosurePage"
+  },
+  {
+    "slug": "components/cards",
+    "title": "Cards",
+    "group": "Display",
+    "description": "Compose content into cards with caller-owned markup.",
+    "apis": [
+      "shadwick-core/src/main/java/dev/jbaby/shadwick/components/SwCard.java",
+      "shadwick-core/src/main/java/dev/jbaby/shadwick/behaviors/CardBehavior.java"
+    ],
+    "example": "DisplayPage"
+  },
+  {
+    "slug": "components/badges",
+    "title": "Badges",
+    "group": "Display",
+    "description": "Short escaped labels and status indicators.",
+    "apis": [
+      "shadwick-core/src/main/java/dev/jbaby/shadwick/components/SwBadge.java",
+      "shadwick-core/src/main/java/dev/jbaby/shadwick/behaviors/BadgeBehavior.java"
+    ],
+    "example": "DisplayPage"
+  },
+  {
+    "slug": "components/alerts",
+    "title": "Alerts",
+    "group": "Display",
+    "description": "Persistent messages and composed alert content.",
+    "apis": [
+      "shadwick-core/src/main/java/dev/jbaby/shadwick/components/SwAlert.java",
+      "shadwick-core/src/main/java/dev/jbaby/shadwick/behaviors/AlertBehavior.java"
+    ],
+    "example": "FeedbackPage"
+  },
+  {
+    "slug": "components/avatars",
+    "title": "Avatars",
+    "group": "Display",
+    "description": "Pictures, initials, loading and image-failure fallbacks.",
+    "apis": [
+      "shadwick-core/src/main/java/dev/jbaby/shadwick/components/SwAvatar.java"
+    ],
+    "example": "DisplayPage"
+  },
+  {
+    "slug": "components/icons",
+    "title": "Icons",
+    "group": "Display",
+    "description": "Bundled Lucide SVGs with decorative or named semantics.",
+    "apis": [
+      "shadwick-core/src/main/java/dev/jbaby/shadwick/components/SwIcon.java"
+    ],
+    "example": "DisplayPage"
+  },
+  {
+    "slug": "components/loading",
+    "title": "Skeletons and spinners",
+    "group": "Display",
+    "description": "Decorative placeholders and named loading indicators.",
+    "apis": [
+      "shadwick-core/src/main/java/dev/jbaby/shadwick/components/SwSkeleton.java",
+      "shadwick-core/src/main/java/dev/jbaby/shadwick/components/SwSpinner.java",
+      "shadwick-core/src/main/java/dev/jbaby/shadwick/behaviors/SkeletonBehavior.java",
+      "shadwick-core/src/main/java/dev/jbaby/shadwick/behaviors/SpinnerBehavior.java"
+    ],
+    "example": "DisplayPage"
+  },
+  {
+    "slug": "components/empty-state",
+    "title": "Empty state",
+    "group": "Display",
+    "description": "A heading, explanation and optional next action.",
+    "apis": [
+      "shadwick-core/src/main/java/dev/jbaby/shadwick/components/SwEmptyState.java"
+    ],
+    "example": "DisplayPage"
+  },
+  {
+    "slug": "components/separators",
+    "title": "Separators",
+    "group": "Display",
+    "description": "Decorative or semantic horizontal and vertical dividers.",
+    "apis": [
+      "shadwick-core/src/main/java/dev/jbaby/shadwick/components/SwSeparator.java",
+      "shadwick-core/src/main/java/dev/jbaby/shadwick/behaviors/SeparatorBehavior.java"
+    ],
+    "example": "DisplayPage"
+  },
+  {
+    "slug": "components/keyboard",
+    "title": "Keyboard keys",
+    "group": "Display",
+    "description": "Display keys and shortcut sequences in semantic markup.",
+    "apis": [
+      "shadwick-core/src/main/java/dev/jbaby/shadwick/components/SwKbd.java"
+    ],
+    "example": "DisplayPage"
+  },
+  {
+    "slug": "components/attachments",
+    "title": "Attachments",
+    "group": "Display",
+    "description": "Stored file cards, image previews, downloads and grouped displays.",
+    "apis": [
+      "shadwick-core/src/main/java/dev/jbaby/shadwick/components/SwAttachment.java",
+      "shadwick-core/src/main/java/dev/jbaby/shadwick/components/SwAttachmentGroup.java",
+      "shadwick-core/src/main/java/dev/jbaby/shadwick/behaviors/AttachmentBehavior.java",
+      "shadwick-core/src/main/java/dev/jbaby/shadwick/behaviors/AttachmentGroupBehavior.java",
+      "shadwick-core/src/main/java/dev/jbaby/shadwick/behaviors/AttachmentControlBehavior.java"
+    ],
+    "example": "AttachmentPage"
+  }
+]
