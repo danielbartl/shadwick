@@ -8,11 +8,14 @@ function scan(){
   document.querySelectorAll('.sw-chart').forEach(root=>{
     if(states.has(root))return;
     const plot=root.querySelector('.sw-chart-plot'),table=root.querySelector('.sw-chart-data table');
-    if(!plot||!table||plot.dataset.tooltip==='false')return;
+    if(!plot||!table||!plot.querySelector('svg')||plot.dataset.tooltip==='false')return;
     const tooltip=plot.querySelector('.sw-chart-tooltip-content');
-    const rows=Array.from(table.tBodies[0]?.rows||[]),headers=Array.from(table.tHead.rows[0].cells).slice(1);
+    // Parsing and Ajax can expose the table before its header/last row is complete. Retry on the next mutation.
+    const header=table.tHead?.rows[0];
+    if(!header||header.cells.length<2)return;
+    const rows=Array.from(table.tBodies[0]?.rows||[]),headers=Array.from(header.cells).slice(1);
     const bands=Array.from(plot.querySelectorAll('.sw-chart-hit'));
-    if(!rows.length||!tooltip||rows.length!==bands.length)return;
+    if(!rows.length||!tooltip||rows.length!==bands.length||rows.some(row=>row.cells.length!==header.cells.length))return;
     const cleanups=[];
     const listen=(node,type,handler)=>{node.addEventListener(type,handler);cleanups.push(()=>node.removeEventListener(type,handler));};
     let active=-1;

@@ -246,6 +246,8 @@ class ShowcaseBrowserTest {
             tab.emulateMedia(new Page.EmulateMediaOptions().setForcedColors(ForcedColors.ACTIVE));
             assertThat(tab.locator("progress").first()).hasCSS("appearance", "auto");
             Locator stars = tab.getByRole(AriaRole.RADIOGROUP, new Page.GetByRoleOptions().setName("Your rating"));
+            // Responsive scrolling can leave a star under the pointer; test the keyboard's selected state alone.
+            tab.mouse().move(0, 0);
             stars.getByRole(AriaRole.RADIO).first().focus(); stars.getByRole(AriaRole.RADIO).first().press("Space");
             assertThat(stars.locator("label").first()).hasCSS("outline-style", "solid");
             assertThat(stars.locator("label").first().locator(".sw-rating-fill")).isVisible();
@@ -3666,6 +3668,24 @@ class ShowcaseBrowserTest {
             assertThat(chart.locator(".sw-chart-tooltip-content")).containsText("March");assertThat(chart.locator(".sw-chart-tooltip-content")).containsText("237");
             assertThat(chart.locator(".sw-chart-legend-item")).hasText(new String[]{"Desktop","Mobile"});
             chart.locator("summary").click();assertThat(chart.locator("table")).isVisible();assertThat(chart.locator("tbody tr").nth(2)).containsText("237");
+        });
+    }
+    @ParameterizedTest @MethodSource("everySkinAndMode")
+    void chartInitializationWaitsForCompleteHeaderAndRows(String skin,String mode){
+        check("charts",skin,mode,tab->{
+            tab.locator(".sw-chart").first().evaluate("""
+                chart=>{
+                    const partial=chart.cloneNode(true),header=partial.querySelector('thead tr');
+                    header.remove();chart.replaceWith(partial);Shadwick.enhanceCharts();
+                    const row=partial.querySelector('tbody tr:last-child'),cell=row.lastElementChild;
+                    cell.remove();partial.querySelector('thead').append(header);Shadwick.enhanceCharts();
+                    row.append(cell);Shadwick.enhanceCharts();Shadwick.enhanceCharts();
+                }
+                """);
+            Locator chart=tab.locator(".sw-chart").first();chart.locator(".sw-chart-plot").focus();
+            assertThat(chart.locator(".sw-chart-tooltip-content")).containsText("January");
+            tab.keyboard().press("End");assertThat(chart.locator(".sw-chart-tooltip-content")).containsText("June");
+            assertThat(chart.locator("[data-chart-status]")).hasCount(1);
         });
     }
     @ParameterizedTest @MethodSource("everySkinAndMode")
