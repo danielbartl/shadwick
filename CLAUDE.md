@@ -28,6 +28,10 @@ All 1005 JVM tests pass again, along with 16 refreshed appearance cases; the pre
 is green. Chromium/Firefox desktop/mobile landing checks pass image preview/download, project dialog, skin/theme
 controls, chart keyboard tooltips, axe, overflow, guide links and console checks. Screenshots are under
 `/tmp/shadwick-publication-screenshots/local`; logs `/tmp/shadwick-publication-{verify,browser,local,site}.log`.
+The initial chart commit is e07267e. Publication CI exposed one JDK-version-specific donut test assumption:
+Java 17's Croatian currency symbol is EUR, while newer CLDR data uses €. Assert the configured currency's runtime
+locale symbol instead of hardcoding it; retain Java's locale formatting in the implementation. Railway's rollout
+for e07267e succeeded; Pages retries on the follow-up test correction.
 
 The broad CI browser suite was already failing before this group: Build run 42357263722 on published baseline
 2eedac3 had 255 failures out of 3836 cases, including ambiguous role=status selectors in user-menu tests. Keep

@@ -102,7 +102,8 @@ class SwDonutChartTest {
         tester.getSession().setLocale(Locale.forLanguageTag(language));
         tester.startComponentInPage(chart(List.of(new Row("A", 1), new Row("B", 2), new Row("C", 3)))
                 .setMaxSegments(2).setCurrency(Currency.getInstance("EUR")));
-        assertThat(html()).contains(other, total, share, "€");
+        // Currency symbols follow the runtime's CLDR data (Java 17 uses EUR for Croatian, newer JDKs use €).
+        assertThat(html()).contains(other, total, share, Currency.getInstance("EUR").getSymbol(tester.getSession().getLocale()));
         if (language.equals("de")) assertThat(tags("sw-donut-total").get(0).getValue()).contains("6,00");
     }
     @Test void valuesAreSnapshottedOnceAndAllConfiguredModelsDetach() {
