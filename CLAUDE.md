@@ -15,6 +15,33 @@ Maven dependency and is done: no Node, no Tailwind, no CSS build on their side.
 
 ## Resume point — 2026-11-07
 
+**Current checkpoint: agent guidance.** The user selected the next roadmap group. The reusable consumer skill
+is `shadwick/SKILL.md`, with three focused references, optional `agents/openai.yaml` metadata, Apache license
+and three portable QuickStart Java/HTML assets. It covers component/markup ownership, typed/detachable models,
+validation, partial Ajax, data, themes and locale while preserving the consuming application's structure.
+No user agent configuration was modified or skill installed globally. The skill-creator validator passes.
+
+The website now generates `/llms.txt`, 54 guide Markdown companions plus the docs overview (`index.md` in each
+HTML page directory), and the complete skill under `/skills/shadwick/`. Markdown includes current API declarations
+for 150 source types and rewrites prose guide links without touching code examples. HTML `alternate` and
+`describedby` metadata expose the Markdown/index. The new agent guide is searchable in the Getting started group.
+`site/agents.mjs` verifies portable references, byte parity between skill templates and compiled docs examples,
+license parity, guide inventory and published link/copy integrity. Skill-only changes trigger Website publication.
+
+Validation: 43 Node documentation/API/agent tests pass with the managed Node runner (`--test-isolation=none`),
+the two canonical native/Ajax documentation-example JVM tests pass, and the complete website build/link checks
+pass (57 HTML files, including the exported HTML template; 54 guides and nine skill files). Chromium and Firefox
+passed desktop/light, mobile/dark and 320px no-script guide/resource checks, with accessibility audits on the
+scripted layouts. Screenshots are `/tmp/shadwick-agent-guide-*.png`. A Firefox no-script font-ready promise in
+the temporary preview harness stalled; that check passed after omitting the font promise/screenshot for no-script.
+No application/runtime change was needed. Logs: `/tmp/shadwick-agent-{tests-expanded,examples,site}.log`.
+
+Publication uses the existing GitHub Pages workflow. The planned public index is
+https://danielbartl.github.io/shadwick/llms.txt and package entrypoint is `/shadwick/skills/shadwick/SKILL.md`.
+Use GitHub Actions and live fetches for the exact publication outcome. Clover Studio remains deployed on Railway;
+these documentation/skill changes do not require a new Java deployment. Next: first-release/API/compatibility
+preparation, changelog/signing/release automation, then Maven Central. Broader Oat/chart variants remain separate.
+
 **Current checkpoint: Studio homepage and a navigable component catalog.** The user requested Clover Studio
 at `/`, the catalog at `/components`, improved catalog navigation and Wicket code on each demo page.
 The `/studio` alias remains a direct-rendering compatibility route; generated Studio links use `/`.
@@ -43,8 +70,8 @@ Logs: `/tmp/shadwick-catalog-{verify,browser,regression-browser,image-build,prod
 The public Railway URL is https://shadwick-production.up.railway.app/ and the catalog is `/components`.
 Landing/README/guide links now use these real URLs. Publication uses the existing Railway GitHub integration
 and GitHub Pages workflow; use `git log`, commit statuses and live checks for the exact deployed revision.
-No Railway CLI login/integration is required for these automatic source deployments. Next: agent guidance/
-llms.txt, followed by release preparation and Maven Central. Broader Oat/chart variants remain separate.
+No Railway CLI login/integration is required for these automatic source deployments. Agent guidance/llms.txt
+is now implemented in the checkpoint above; release preparation and Maven Central follow.
 
 **Railway deployment preparation.** The user selected Railway and authorized deploying Clover Studio.
 The repository is now connected to Railway project `26a6a91d-41b3-4a54-999d-650612a8957d`, service

@@ -12,6 +12,7 @@ Those sources provide declared constructors, methods and hooks when reading the 
 
 - [Installation](guides/installation.md) — Install Shadwick, configure Wicket and run your first form.
 - [Wicket integration](guides/wicket-integration.md) — Models, markup ownership, Ajax, forms, resources and application responsibilities.
+- [Agent guidance](guides/agent-guidance.md) — Use the portable coding skill, working templates and machine-readable guides.
 - [Clover Studio](guides/clover-studio.md) — Run the connected agency workspace and try the project-to-payment journey.
 - [Skins](guides/skins.md) — Choose from nine geometries with shared light and dark color tokens.
 - [Theming](guides/theming.md) — Color tokens, appearance preferences and embedded bundles.

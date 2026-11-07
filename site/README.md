@@ -131,8 +131,20 @@ navigation, on-page links, complete Java/HTML examples, copy controls and API re
 sources. Guides remain readable as Markdown on GitHub. The README keeps its existing heading anchors
 as links to the focused guides. This static documentation does not deploy the runnable Wicket examples.
 
-Run `node --test site/docs/*.test.mjs` before building when the renderer/API scanner changes. The checker
+Run `./shadwick-core/target/node/node --test --test-isolation=none site/docs/*.test.mjs` before building when the renderer/API scanner changes. The checker
 now validates every generated HTML page, cross-page fragments, Markdown source links, the search inventory
 and versioned assets. `DocumentationBrowserTest` audits every guide in desktop/light and mobile/dark
 views and exercises search recovery, clipboard fallbacks and native navigation. Docs changes trigger the Website workflow. Source/authoring instructions are in
 `../docs/CONTRIBUTING.md`. Preview at `http://127.0.0.1:4173/shadwick/docs/`.
+
+## Agent guidance
+
+The build also publishes `/llms.txt`, an `index.md` companion for every documentation page, and the complete
+portable Shadwick skill at `/skills/shadwick/`. Markdown guides include the same source-derived API declarations
+as their HTML pages. HTML metadata advertises the Markdown companion and documentation index.
+
+`../shadwick/` is the skill source. Its references and working templates remain usable when copied out of this
+repository; template/source parity and local links are checked before publication. The documentation test command above
+includes the agent-resource tests, and `node site/check.mjs` crawls the generated index, Markdown targets and
+published skill. The publisher uses Node built-ins. See the agent guide under `/docs/`
+and `../docs/CONTRIBUTING.md` for maintenance.

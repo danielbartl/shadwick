@@ -33,6 +33,14 @@
     "example": "StudioPage"
   },
   {
+    "slug": "guides/agent-guidance",
+    "title": "Agent guidance",
+    "group": "Getting started",
+    "description": "Use the Shadwick coding skill and machine-readable guides to build Wicket interfaces with the current Java API.",
+    "apis": [],
+    "example": "HomePage"
+  },
+  {
     "slug": "guides/skins",
     "title": "Skins",
     "group": "Getting started",

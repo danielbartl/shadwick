@@ -4,6 +4,7 @@ import {fileURLToPath} from 'node:url';
 import {createHash} from 'node:crypto';
 import {skins} from './skins.mjs';
 import {slug} from './docs/markdown.mjs';
+import {checkAgentResources} from './agents.mjs';
 
 const project=path.resolve(path.dirname(fileURLToPath(import.meta.url)),'..');
 const root=path.join(project,'site/dist');
@@ -63,6 +64,8 @@ if(offered.size!==skins.length)throw new Error('Expected every skin option');
 for(const [,reference]of (await contents(path.join(root,'assets/table-demo.js'))).toString('utf8').matchAll(/href="([^"]+)"/g))await checkAsset(reference);
 for(const file of ['LICENSE.txt','NOTICE.txt','assets/fonts/OFL.txt','fonts/balsamiq-sans/OFL.txt'])await access(path.join(root,file));
 const catalog=JSON.parse(await readFile(path.join(project,'docs/catalog.json'),'utf8'));
+const canonical=new URL(/<link rel="canonical" href="([^"]+)"/.exec(html)?.[1] || '');
+await checkAgentResources({repositoryRoot:project,output:root,siteUrl:canonical});
 const search=JSON.parse(await contents(path.join(root,'docs/search-index.json')));
 if(search.length!==catalog.length||new Set(search.map(e=>e.href)).size!==search.length)throw new Error('Search index does not match guide inventory');
 for(const entry of search)await checkAsset(entry.href,'docs/index.html',false);

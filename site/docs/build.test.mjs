@@ -50,3 +50,19 @@ test('duplicate routes fail instead of overwriting pages',async t=>{
 test('raw script blocks cannot enter a generated guide',async t=>{
  const f=await fixture(t);await f.write('docs/components/sample.md','# Sample\n\n<script>alert(1)</script>\n');await assert.rejects(f.build(),/Unsupported Markdown block/);
 });
+test('Markdown companions contain the current API and discoverable links without HTML navigation',async t=>{
+ const f=await fixture(t);await f.write('docs/components/sample.md','# Sample\n\n[Usage](sample.md#usage)\n\n## Usage\n\n```html\n<div wicket:id="sample"></div>\n```\n');
+ await f.build();
+ const machine=await readFile(path.join(f.output,'docs/components/sample/index.md'),'utf8');
+ assert(machine.includes('https://example.test/widgets/shadwick/docs/components/sample/index.md#usage'));
+ assert(machine.includes('public SwSample setLabel(String text)'));
+ assert(machine.includes('```html\n<div wicket:id="sample"></div>\n```'));
+ assert(!machine.includes('<nav'));
+ const html=await readFile(path.join(f.output,'docs/components/sample/index.html'),'utf8');
+ assert(html.includes('rel="alternate" type="text/markdown" href="./index.md"'));
+ assert(html.includes('rel="describedby" href="../../../llms.txt"'));
+ await f.write(f.source,'public class SwSample { public SwSample withLabel(String text) { return this; } }');
+ await f.build();
+ const updated=await readFile(path.join(f.output,'docs/components/sample/index.md'),'utf8');
+ assert(updated.includes('withLabel(String text)'));assert(!updated.includes('setLabel(String text)'));
+});

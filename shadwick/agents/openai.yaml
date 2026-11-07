@@ -1,0 +1,4 @@
+interface:
+  display_name: "Shadwick"
+  short_description: "Build server-rendered Wicket UIs with Shadwick"
+  default_prompt: "Use $shadwick to build this interface with matching Java, Wicket markup, and appropriate Ajax updates."

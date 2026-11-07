@@ -41,7 +41,7 @@ and Ajax validation/submission. Update the source file and the printed fence tog
 From the repository root, after building the library CSS:
 
 ```sh
-node --test site/docs/*.test.mjs
+./shadwick-core/target/node/node --test --test-isolation=none site/docs/*.test.mjs
 node site/build.mjs
 node site/check.mjs
 ./mvnw -B -pl shadwick-examples -am -Dtest=DocumentationExamplesTest -Dsurefire.failIfNoSpecifiedTests=false test
@@ -56,3 +56,21 @@ accessibility checks when layout or interaction changes. Stop the owned preview 
 
 Generated `site/dist/` output is ignored and must not be edited or committed. The Website workflow builds the docs
 with the landing page; changing `docs/**` triggers it. Publishing the static guides does not deploy a Wicket server.
+
+## Agent resources
+
+The same build writes `llms.txt` from `catalog.json` and publishes every guide at its HTML directory's
+`index.md`. Markdown companions include the current source-derived API declarations; code fences are preserved
+and guide links point to their Markdown counterparts. HTML pages advertise the Markdown/index resources with
+`alternate` and `describedby` link relations. Keep these exports generated from the same source as the HTML.
+
+The portable skill lives in `../shadwick/` and is copied to `skills/shadwick/` on the static site. Keep its
+instructions focused on decisions that matter to consuming Wicket applications. Update the task-to-guide
+references when introducing a new family or changing a guide route. Skill Markdown references must stay inside
+the package or use explicit external URLs. Keep `agents/openai.yaml` consistent with the skill entrypoint.
+
+The skill's three `QuickStart*` assets are byte-identical copies of `docs/examples/` and are validated against
+those compiled examples. When changing an example, update its printed guide fence and skill asset together.
+Keep the skill's license synchronized with the repository license. `site/agents.mjs` checks portability, source
+parity, guide coverage and exported link targets; its tests run with the documentation tests above. Skill-only
+changes trigger the Website workflow too. Do not edit the copies under `site/dist/`.

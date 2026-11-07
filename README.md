@@ -19,6 +19,13 @@ renaming `Oat` to `Sw`.
 Read the [component documentation](docs/README.md) for focused guides, matching markup, accessibility notes and
 API references generated from the Java source. The existing README anchors below link to those guides.
 
+## Agent guidance
+
+Use the [Shadwick skill](shadwick/SKILL.md) with its supporting references and working Java/HTML templates.
+The [agent guide](docs/guides/agent-guidance.md) explains how to add the portable package to a compatible coding
+agent. [llms.txt](https://danielbartl.github.io/shadwick/llms.txt) links to machine-readable guides with
+source-derived API references. No agent configuration is changed by this repository.
+
 ## Getting started
 
 Requires Wicket 10 and Java 17. Until the first release, install it locally with `./mvnw install`, then:
