@@ -4,6 +4,10 @@ A static, responsive website for GitHub Pages. Plain HTML, CSS and JavaScript; n
 
 The component studio uses **the library's compiled embedded CSS and component scripts**, with a custom green token palette. Skin selection loads the actual bundle for any of the nine skins. Light/Dark/System preference applies to the studio and its overlays. The studio theme toggle, user menus, sidebar, header, breadcrumb and first-in-body skip link use core styles too. Demo forms, buttons, dialogs, sheets, dropdown menus, popovers, tooltips and toasts run locally in the browser; no information is submitted or persisted. The site explicitly distinguishes this static preview from Wicket's server-side behavior.
 
+Clover Studio is the separate, server-backed Wicket application at `/studio` in the examples module.
+Its [guide](../docs/guides/clover-studio.md) is included in the static documentation; a public Java host
+is still the next deployment checkpoint. The static component studio below remains a browser preview.
+
 ## Build and preview
 
 From the repository root:
@@ -109,8 +113,8 @@ data tables/pagination, disclosures, attachments and reusable layouts. The statu
 skins and built-in messages in nine languages. The static page remains English; the runnable Wicket
 showcase has a language picker and a dedicated `/internationalization` page. A language panel below the
 catalog names all nine languages, including Croatian, and links to the locale setup/override guide.
-Full documentation and a hosted
-interactive showcase are next; Maven Central remains pending.
+Searchable component documentation is available under `/docs/`. Clover Studio is implemented and
+documented for local use; public Java hosting and Maven Central publication remain pending.
 
 The display catalog includes progress bars/rings, native meters, star ratings and busy Ajax buttons.
 The runnable Wicket `/status-controls` page exercises these APIs; the static studio remains a local preview.

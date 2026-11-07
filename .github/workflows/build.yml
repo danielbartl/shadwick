@@ -51,7 +51,7 @@ jobs:
           path: ~/.npm
           key: npm-${{ runner.os }}-${{ hashFiles('shadwick-core/package-lock.json') }}
 
-      - name: Cache Playwright's Chromium
+      - name: Cache Playwright browsers
         uses: actions/cache@v6
         with:
           path: ~/.cache/ms-playwright
@@ -60,8 +60,8 @@ jobs:
       - name: Install the library
         run: ./mvnw -B install -DskipTests -pl shadwick-core -am
 
-      - name: Install Chromium and its system libraries
-        run: ./mvnw -B -pl shadwick-examples exec:java -Dexec.mainClass=com.microsoft.playwright.CLI -Dexec.args="install --with-deps chromium" -Dexec.classpathScope=test
+      - name: Install Chromium, Firefox and their system libraries
+        run: ./mvnw -B -pl shadwick-examples exec:java -Dexec.mainClass=com.microsoft.playwright.CLI -Dexec.args="install --with-deps chromium firefox" -Dexec.classpathScope=test
 
-      - name: Check the showcase in Chromium
+      - name: Check the showcase in Chromium and Firefox
         run: ./mvnw -B verify -pl shadwick-examples -Pbrowser

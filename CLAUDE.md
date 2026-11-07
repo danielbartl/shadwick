@@ -13,7 +13,48 @@ Maven dependency and is done: no Node, no Tailwind, no CSS build on their side.
 - Java package: `dev.jbaby.shadwick`
 - License: Apache 2.0
 
-## Resume point — 2026-11-06
+## Resume point — 2026-11-07
+
+**Publication checkpoint: Clover Studio.** The user requested committing and pushing the completed Studio
+application, fixes, tests and landing/documentation updates. The landing links to its local-run guide; the
+Website workflow publishes the static site after the push. GitHub Actions and `git log` record the exact
+source revision and deployment outcome. The interactive Java backend is not publicly hosted yet.
+Publication checks pass: 838 JVM tests, all 61 Studio browser scenarios, three documentation renderer/API
+checks and the website build/check (55 HTML pages, 4,206 internal references). Logs are under
+`/tmp/shadwick-studio-publication-{verify,browser,docs,site}.log`; generated output remains ignored.
+Next: choose a Java host, deploy Clover Studio and link its public URL; then agent guidance/llms.txt and
+release preparation/Maven Central. Do not move Java hosting into GitHub Pages.
+
+**Latest follow-up: Studio Ajax composition.** All scripted commands, internal navigation, filters,
+preferences and table controls now use partial Ajax responses. Studio's former setResponsePage callbacks
+caused the observed full-page reloads; no component API change was needed. Live models/ViewState bindings
+patch only changed regions, and normal Studio GETs render directly. Native links/forms remain fallbacks.
+Explicit searches/clear filters always return fresh result, count and empty-state HTML, including identical
+matches; do not suppress those patches using ViewState comparisons. `CloverStudio.url` only updates browser
+history. The 12 focused search/history checks pass in Chromium/Firefox after this follow-up.
+The verified executable is `shadwick-examples/target/shadwick-examples-0.1.0-SNAPSHOT-ajax.jar`.
+Original executables/processes were preserved. 838 JVM tests pass; the 61-case Studio browser suite and
+16 focused command/context checks pass, plus a packaged-JAR smoke. The publication checkpoint above
+records the subsequent commit/push request.
+
+**Clover Studio is implemented locally.** The user approved a composed agency-workspace showcase.
+The Wicket examples now mount `/studio`: overview, searchable/filterable/sortable projects, project
+workspace and sortable/exportable invoices. A dedicated SwAppLayout composition uses a warm paper/green
+palette, the existing clover mark, responsive sidebar, skin/language settings and browser-owned themes.
+The component catalog remains at `/`. No new dependency was added. Public backend hosting remains a separate checkpoint.
+
+The resettable session-owned StudioWorkspace connects creation/editing, task owners/estimates/completion,
+derived progress, milestones, scope preview/download, confirmed client handoff/ZIP and invoice payments.
+Overview metrics/chart/activity reflect the same records. Generation, revision and task-state checks
+reject stale actions; payments are idempotent and delivered projects are locked. Scope/ZIP use native
+session-checked downloads. New projects do not automatically issue invoices. The complete Studio interface supports English/German only;
+client/project/task content stays as entered. Built-in messages and date/number formats follow that locale.
+
+Read docs/guides/clover-studio.md for run instructions, the full journey, limits and source locations.
+It joins the searchable docs (53 guides now); the landing links to local-run instructions until a Java
+host is available. Next: deploy this actual Wicket application alongside the static landing/docs, then
+agent guidance/llms.txt and release preparation/Maven Central. Keep deployment configuration separate
+from GitHub Pages: Pages cannot run the Java backend. Detailed verification/handoff is appended below.
 
 **Publication checkpoint: component documentation.** The existing static site now builds a searchable
 `/docs/` section from 52 Markdown guides and source-based references for 150 API types. Every public Sw
@@ -517,9 +558,9 @@ wicket-extensions dependency was added after the user asked to continue with the
     meters, star-rating display and editable rating fields, plus advanced tables (CSV export, column
     chooser, expandable row details and inline edits). Other confirmed gaps include forms, workflows,
     layouts, trees/CRUD, messaging, async content and extra chart types. Scope these deliberately.
-12. **Documentation and distribution:** component documentation is implemented locally (52 guides,
-    searchable static reader and source-based API references). Next: a hosted interactive Wicket
-    showcase, then agent guidance/llms.txt and a Maven Central release.
+12. **Documentation and distribution:** searchable documentation is implemented (53 guides and source-based
+    API references). Clover Studio is the implemented interactive agency application at `/studio`.
+    Next: host Clover Studio, then agent guidance/llms.txt and a Maven Central release.
 
 Chart variant follow-ups: forecast joins, arbitrary per-series light/dark colors, natural splines
 and per-corner bar radii. Native SVG is an intentional alternative to Shadleaf’s Recharts runtime.
@@ -567,6 +608,49 @@ locally. Next: a hosted interactive showcase, then tooling and release preparati
 - Record every decision under Conventions as soon as it is made.
 
 ## Conventions
+
+### Clover Studio application (2026-11-06)
+
+- Current Studio languages are English/German only, per user request after the initial component-only
+  switch appeared to do nothing. Localize all interface text with StudioPage resource keys. Keep the
+  English .properties ASCII/Unicode-escaped and German .utf8.properties UTF-8. Unsupported old session
+  locales fall back to English; the library's nine language bundles remain unchanged.
+- Activity records store keys/arguments so switching languages also translates past system activity.
+  Model errors expose stable message keys; translate at the UI boundary. Preserve entered project/task
+  content and client names. The native Apply preferences form preserves filters and skin selection.
+- Project filtering uses a native GET form with stable `view`, `q`, `status`, `sort` parameter names and
+  stable choice values. Translate labels, not query tokens. StudioPageMapper now directly renders normal
+  bookmarkable Studio GETs with NEVER_REDIRECT (GET200). Keep listener/hybrid/POST/Ajax requests on
+  Wicket defaults; never change the global rendering strategy just to simplify navigation.
+- Studio interactions now use live models and per-component ViewState snapshots, adding only changed
+  components to AjaxRequestTarget and skipping descendants already covered by an updated parent. Commands
+  must not call setResponsePage. The sole remaining use is the native/no-script preferences fallback.
+  Task rows retain their last-rendered done state for conflict checks. Collection changes replace the
+  collection region; task completion replaces one row, progress/count and dependent controls, not the view.
+- Internal links and search progressively enhance native hrefs/GET forms with Wicket Ajax, updating history
+  through studio.js. Ajax transport uses unique studioQ/Status/Sort names to avoid stale callback-URL filters.
+  Accept submitted input values without replacing their DOM; history/clear updates inputs when needed.
+  Use page-level Ajax history for cross-view navigation. Downloads remain native and generation-checked.
+- Preference updates rebuild localized regions and preserve invoice table sort, page size and visible columns.
+  Ordinary Shadwick Ajax resources intentionally pin the original page skin. Studio's global skin action
+  explicitly loads the public CSS resource URL, carrying the document's style nonce, and activates it after
+  load. Keep prior bundles disabled for switching back. Do not replace a running user's executable JAR.
+
+- `/studio` is the composed Wicket application; `/` retains focused component references. Use stable
+  `view`/`project` bookmarkable parameters. Dedicated composition CSS belongs to the examples module,
+  never the library skins. Keep demo utilities separate from the product workflow. Reuse the clover SVG.
+- Session metadata owns StudioWorkspace. Use immutable snapshots, bounded collections and fresh ID lookups
+  for callbacks. Recheck generation after reset, project revisions on edit, task state on completion and
+  handoff eligibility on confirmation. Call Session.dirty() after changes; redirect feedback is session-owned.
+- Generated downloads recheck the current session/generation. ZIP entry paths and filenames are controlled.
+  This is session-lifetime sample data; no real payment gateway, invoice issuing, upload storage or database.
+- Dialog form-level feedback must be fenced inside the modal; inline field errors remain at the fields.
+- Avoid two serializable bound references to inherited Component.getMarkupId() on different receiver types
+  in SwSidebar: Java lambda deserialization can cast the label to SwSidebar. Explicit lambdas give distinct
+  identities. Core and composed-page regression tests cover round-trip serialization and restored actions.
+- StudioBrowserTest covers the journey in Chromium/Firefox and all four screens in every skin at desktop
+  light/mobile dark sizes. Wait for saved state and finite animations, rather than racing redirects. Use
+  distinct bookmarkable page URLs for separate-tab tests. The CI browser setup installs Firefox as well.
 
 ### Component documentation (2026-11-06)
 
@@ -2531,3 +2615,146 @@ locally. Next: a hosted interactive showcase, then tooling and release preparati
   head SHA/result for the exact source and deployment rather than embedding a self-referential commit.
 - Next roadmap step remains hosting the interactive Wicket showcase; agent tooling and Maven Central
   follow. The guide website is static and the example source links do not imply a hosted Wicket backend.
+
+## Clover Studio handoff — 2026-11-06 (implemented locally)
+
+- User approved Clover Studio as a concrete agency workspace, rather than another component grid.
+  `/studio` mounts StudioPage with overview/projects/project/invoices views. The existing component catalog
+  remains at `/`, with a prominent Studio entry. No commit, push or publication was requested this turn.
+- StudioWorkspace lives in bound Wicket session metadata. Immutable project/task/invoice snapshots, stable IDs,
+  derived metrics/chart, task estimates, generated planning milestones and a capped activity feed share one
+  model. Reset creates a new generation; project revisions/task-state checks reject conflicts. Delivery locks
+  tasks, payment recording is idempotent, and mutation callbacks mark the session dirty.
+- Working journey: edit Fern & Field, complete its remaining tasks, confirm delivery, download the real ZIP,
+  inspect CLV-2402, record its payment, and see updated project counts/cash/activity. Scope preview/download
+  works before delivery. New projects start empty and accept scoped tasks, without automatically issuing invoices.
+  Project search/status/sort use native bookmarkable forms. Invoices provide sorting, pagination, column choices
+  and CSV. Native browsing/filters/available downloads work without script; editing/modals/payments need script.
+- Warm paper/forest palette, existing clover artwork, editorial client covers, responsive sidebar, themed controls,
+  all nine skins and English/German interface locales. Demo utilities explain the language choices and session lifetime. No database, external service, file-storage dependency or payment integration was added.
+- The longer journey exposed an existing SwSidebar serialization failure: inherited getMarkupId method references
+  on Label and SwSidebar could deserialize through the wrong receiver cast. Replaced them with distinct explicit
+  lambdas; grouped navigation and the entire Studio page now round-trip and perform restored actions in JVM tests.
+- Final `./mvnw -B verify`: 751 core +79 example tests =830, all passing. Log:
+  `/tmp/shadwick-studio-serialization-verify2.log`. Covers data transitions, conflict rejection, ZIP contents,
+  immutable snapshots, workspace/page serialization, validated forms, reset/stale actions, preferences and visitors.
+- Final StudioBrowserTest:22 scenarios, all passing; log `/tmp/shadwick-studio-browser4.log`. Chromium checks all
+  four screens in every skin at 1440px light/390px dark, plus demo-settings panels (90 audits); both Chromium and
+  Firefox complete creation/editing/task/handoff/ZIP/payment/CSV/reset and independent-visitor/stale-tab journeys.
+  Mobile320px checks keyboard sidebar/Escape/focus, invalid modal submission, Nova/Croatian preference persistence;
+  native browsing/filtering is checked without JS. 72 full-page screen captures are under the ignored
+  `shadwick-examples/target/studio-screenshots/`. Reviewed desktop overview/projects/workspace/invoices and dark
+  mobile screenshots. Browser checks wait for saved state and finite animations; no WebKit claim.
+- Added docs/guides/clover-studio.md to the searchable catalog:53 guides now. README includes run instructions.
+  Landing caption links to local-run instructions; no unavailable public-app URL was invented. Node docs tests
+  pass; site build/check passes55 HTML pages,4204 internal references,760 IDs and3918KB. `git diff --check` passes.
+- CI browser setup now installs Firefox and its system libraries alongside Chromium. No live Java preview is
+  left running; test-owned servers close with their test JVM. The executable examples jar is built.
+- Next checkpoint: host Clover Studio on a Java-capable service, configure deployment mode/session lifecycle and
+  connect the public URL from landing/docs. Keep the existing GitHub Pages static site. Then agent skill/llms.txt,
+  release preparation and Maven Central. Oat/chart variant gaps remain separately scoped.
+
+## Clover Studio English/German and GET search follow-up — 2026-11-06
+
+- User observed that Croatian selection barely changed Studio, then explicitly requested full English/German
+  support and no other language options. Studio now normalizes unsupported old/query locales to English and
+  offers exactly English/Deutsch. This is Studio scope; the core library's nine translations remain intact.
+- Added matching StudioPage.properties and StudioPage_de.utf8.properties. Navigation, headings, forms,
+  confirmations, feedback, status badges, milestones, attachments, accessible names, charts, tables and static
+  markup use Wicket resource keys. English .properties uses Unicode escapes; German remains UTF-8. Client
+  names and project/task content are preserved. Activity stores keys/arguments and is translated when rendered;
+  model exceptions expose stable keys for translated errors. Generated handoff documents remain sample data.
+- Select a language and submit Apply preferences/Einstellungen anwenden. That native form preserves filters,
+  skin and page parameters, replacing explicit locale parameters so switching back to English also works.
+- User asked about POST, GET302, GET200 when searching. The old Wicket filter Form submitted a POST,
+  redirected to a bookmarkable results URL, then Wicket redirected to its buffered stateful render URL.
+  Replaced search with a native GET form, stable q/status/sort names and renderer values plus hidden view.
+  Localized labels do not change query tokens. Wicket's default render strategy is unchanged. Packaged-app
+  smoke trace confirms only GET302 → GET200, with no POST or application form redirect.
+- Full `./mvnw -B test`:751 core +83 example tests =834, passing. Log:
+  `/tmp/shadwick-studio-en-de-get-tests.log`. Added real preference-form switching, all screen translations,
+  preserved content/progress, unsupported locale fallback, two-choice picker, equal bundle keys and GET markup.
+- StudioBrowserTest final:42 passing scenarios. Log `/tmp/shadwick-studio-en-de-get-browser.log`. All four
+  screens/settings audited in EN/DE across nine skins at1440px light/390px dark (144 screen captures); real
+  language switching/forms/payment persistence in Chromium/Firefox, native no-script German preferences and
+  GET search requests, plus existing workflow/reset/session tests. Reviewed German mobile screenshot.
+- Docs/README describe the two Studio languages, applying preferences and GET behavior. Static docs tests,
+  site build/check and git diff --check pass:55 HTML pages,4204 references,760 IDs,3919KB.
+- User's original app is running `shadwick-examples-0.1.0-SNAPSHOT.jar`. Do not stop it or overwrite that JAR.
+  Installed current core locally and used a temporary Maven descriptor (removed in finally) to package a new
+  `shadwick-examples/target/shadwick-examples-0.1.0-SNAPSHOT-en-de.jar`. Original JAR SHA-256 stayed unchanged.
+  Packaging log `/tmp/shadwick-studio-en-de-package.log`. New executable passed German/picker/search smoke
+  on a temporary random port; that owned process was stopped. Smoke log `/tmp/shadwick-studio-en-de-smoke.log`.
+  User can stop their old process and run the new -en-de.jar. A later normal package rebuilds the standard JAR.
+- Changes remain local; no commit, push, deployment or live user-server restart was requested.
+
+## Direct search rendering follow-up — 2026-11-06
+
+- User explicitly requested removing Wicket's remaining redirect from project searches. Added StudioPageMapper,
+  mounted at /studio, overriding only processBookmarkable. Normal non-Ajax HTTP GETs with view=projects use
+  the original PageProvider with NEVER_REDIRECT. Null page parameters, other views, POSTs, hybrid page URLs
+  and component listeners retain normal framework handling; the global REDIRECT_TO_BUFFER setting stays intact.
+- Project filtering, initial directory loads, clear filters and reload now return a single GET200 and retain
+  the bookmarkable query URL. Callback URLs still carry their own page IDs, so Ajax dialogs and saves work.
+- Full `./mvnw -B verify` passes751 core +83 example tests =834. Log:
+  `/tmp/shadwick-studio-direct-search-verify.log`. Final focused browser run passes14 cases in Chromium/Firefox:
+  eight engine × script/no-script × EN/DE search cases verify fresh-session200/no redirects, one navigation,
+  filtered contents, reload, back/forward, clear and Ajax project creation; existing native and connected
+  edit/handoff/payment/language journeys pass. API scope checks confirm other views and POST still return302.
+  Log `/tmp/shadwick-studio-direct-search-final-browser.log`.
+- Packaged executable smoke test confirms GET200, zero redirects and the exact original filtered query URL.
+  Temporary random-port server was stopped. Log `/tmp/shadwick-studio-direct-search-smoke.log`.
+  No user JAR process was running before packaging. Both standard and -en-de JARs under examples/target now
+  contain the fix (the old -en-de artifact was refreshed only after checking it was not running).
+- Docs now explain the scoped direct renderer. Docs tests/build/check and git diff --check pass:
+  55 pages,4204 references,760 IDs,3920KB. No additional skin/visual changes or dependencies were introduced;
+  this focused run follows the prior42-case bilingual/nine-skin browser suite. Changes remain local/uncommitted.
+
+
+## Studio Ajax composition handoff — 2026-11-06
+
+- User reported redirects/full-page refresh after task completion and asked whether Shadwick or Studio was
+  responsible. Root cause: Studio callbacks explicitly called setResponsePage after receiving Ajax targets,
+  and its constructor captured display snapshots. SwButton/SwDialog/SwDataTable already support partial Ajax.
+- Studio now uses live models and app-local ViewState behaviors. A partial refresh compares rendered values,
+  adds only changed components and avoids descendant targets covered by a parent. Task50→75% updates exactly
+  five components: the affected row, native progress, percentage, completed count and feedback. Unchanged
+  rows, shell/header/sidebar, summary container, budget, files, milestones and handoff container retain DOM.
+  Reopen and100%/handoff eligibility update dependent controls. Task collection additions replace that list.
+- Project create/edit, add/complete/reopen tasks, handoff, payment and reset all stay in the same document.
+  Creation/reset intentionally change the view using Ajax. Payments update the current project/register.
+  Status-sorted tables rerender only when row order changes; otherwise only badge/totals change. Busy guards
+  prevent repeated UI submissions. Only native/no-script preference submission still calls setResponsePage.
+- Internal links/sidebar and browser history use Ajax with real native href fallbacks. Different views update
+  content/header/active-menu state and title, preserving the shell. Revisiting the current view preserves its
+  widgets. Heading receives focus after view navigation. Filters/clear and repeated searches update current
+  results and bookmarkable history; submitted input nodes retain identity. Native no-script search stays GET200.
+- StudioPageMapper directly renders all normal bookmarkable Studio GETs, not only searches; component/hybrid,
+  Ajax and POST handling and the application's global request strategy remain unchanged. Native file downloads
+  remain request-based, generation-checked and respond409 for stale sessions rather than redirecting.
+- Preferences use AjaxFallbackButton and preserve invoice sorting, page size and column choices. Shadwick
+  intentionally pins ordinary Ajax CSS to the page's original skin. Studio's explicit global switch loads
+  the selected public CSS URL with the document nonce, activates after load and keeps older links disabled
+  for switching back. EN/DE remains the only Studio language choice; core language bundles are unchanged.
+- Added dialog CommandContext tokens, consumed on success/close/replacement, and stable task-project targets.
+  They reject stale dialog instances and old task callback contexts after view changes. Generation/revision/
+  expected-task-state safeguards remain. UI validation stays inside the dialog and preserves the current page.
+- Final full JVM verification (`./mvnw -B test`):751 core +87 examples =838 passing. Log:
+  `/tmp/shadwick-studio-ajax-verify.log`. Unit checks assert the exact five task component IDs, same Page instance,
+  no redirect XML, current-project payment patches, wrong project callback rejection and stale invoice contexts.
+- Full Studio browser suite:59 passing scenarios; log `/tmp/shadwick-studio-ajax-complete-browser.log`. Includes
+  all four views/settings across nine skins, EN/DE,1440px light/390px dark (144 screen captures), Chromium/Firefox
+  tasks/payment DOM identity and zero document navigation, eight engine/script/locale search/history cases,
+  repeated skin switching with preserved table state, current-view preservation, sidebar/history and successive
+  searches. After adding context guards,16 focused command/navigation cases passed in
+  `/tmp/shadwick-studio-ajax-context-browser.log`; both single-request checks passed in
+  `/tmp/shadwick-studio-ajax-request-count.log`. Final close-token lifecycle is covered by JVM and packaged smoke.
+- Packaged with a temporary Maven descriptor (removed in finally) as
+  `shadwick-examples/target/shadwick-examples-0.1.0-SNAPSHOT-ajax.jar`; original JARs untouched. Build log:
+  `/tmp/shadwick-studio-ajax-package.log`. Installed the matching current core locally before packaging.
+  Packaged app passed a Chromium smoke: exactly one task AjaxPOST, preserved nodes, payment, sidebar navigation,
+  search and German/Nova preferences, with zero document navigations or console errors. Temporary random-port
+  server was stopped. `/tmp/shadwick-studio-ajax-smoke.log`, `/tmp/shadwick-studio-ajax-packaged.png`.
+- README/guide describe the Ajax composition, native fallbacks, request behavior and concurrency boundaries.
+  Docs tests/site build/check and git diff --check pass. Changes remain local/uncommitted. Next roadmap checkpoint
+  is hosting the Java app alongside GitHub Pages, then agent guidance/llms.txt and release/Maven Central.

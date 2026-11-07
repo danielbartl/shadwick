@@ -32,6 +32,18 @@ class SwSidebarTest {
     String html() { return tester.getLastResponseAsString(); }
     void render(SwSidebar sidebar) { tester.startComponentInPage(sidebar, Markup.of("<nav wicket:id='sidebar'></nav>")); }
     List<TagTester> tags(String attr, String value) { return TagTester.createTagsByAttribute(html(), attr, value, false); }
+    @Test void groupedSidebarSurvivesPageSerializationAndCanRenderAgain() {
+        tester.startPage(NavigationPage.class);
+        var serializer = tester.getApplication().getFrameworkSettings().getSerializer();
+        byte[] bytes = serializer.serialize(tester.getLastRenderedPage());
+        assertThat(bytes).isNotNull();
+        var restored = (WebPage) serializer.deserialize(bytes);
+        assertThat(restored).isNotNull();
+        tester.startPage(restored);
+        assertThat(html()).contains("Workspace", "Current");
+        assertThat(tester.getTagByWicketId("close").getAttribute("popovertarget")).isEqualTo(tester.getTagByWicketId("sidebar").getAttribute("id"));
+        assertThat(tester.getTagByWicketId("group").getAttribute("aria-labelledby")).isEqualTo(tester.getTagByWicketId("label").getAttribute("id"));
+    }
     @Test void nativeNavigationLinksHaveNamesIconsBadgesAndNoMenuRoles() {
         render(new SwSidebar("sidebar", Model.ofList(List.of(MenuItem.of("<Inbox>", WebPage.class).withBadge("3").withIcon("mail")))));
         TagTester nav = tester.getTagByWicketId("sidebar"), link = tester.getTagByWicketId("link"), badge = tester.getTagByWicketId("menuBadge");

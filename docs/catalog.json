@@ -25,6 +25,14 @@
     "example": "FormPage"
   },
   {
+    "slug": "guides/clover-studio",
+    "title": "Clover Studio",
+    "group": "Getting started",
+    "description": "A working agency workspace that composes Shadwick components into a connected project-to-payment workflow.",
+    "apis": [],
+    "example": "StudioPage"
+  },
+  {
     "slug": "guides/skins",
     "title": "Skins",
     "group": "Getting started",

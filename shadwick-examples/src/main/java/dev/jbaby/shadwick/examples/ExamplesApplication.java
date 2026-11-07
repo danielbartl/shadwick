@@ -16,6 +16,7 @@ public class ExamplesApplication extends WebApplication {
     protected void init() {
         super.init();
 
+        mount(new StudioPageMapper());
         mountPage("/buttons", ButtonPage.class);
         mountPage("/form", FormPage.class);
         mountPage("/inputs", InputPage.class);

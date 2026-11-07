@@ -1,0 +1,11 @@
+<wicket:extend xmlns:wicket="http://wicket.apache.org">
+<div class="studio-main">
+  <div class="studio-topline"><span wicket:id="section" class="studio-eyebrow"></span><span wicket:id="date"></span></div>
+  <div class="studio-page-heading"><div><h1 wicket:id="heading" tabindex="-1"></h1><p wicket:id="intro"></p></div><button wicket:id="newProject" type="button"></button></div>
+  <div wicket:id="feedback" role="status" aria-live="polite"></div>
+  <noscript><p class="studio-muted"><wicket:message key="studio.demo.noScript"/></p></noscript>
+  <div wicket:id="content"></div>
+  <footer wicket:id="footer" class="studio-footer"><span><wicket:message key="studio.footer.care"/></span><a wicket:id="components"><wicket:message key="studio.footer.components"/> <span aria-hidden="true">↗︎</span></a></footer>
+</div>
+<div wicket:id="projectEditor"></div><div wicket:id="taskEditor"></div><div wicket:id="invoiceDialog"></div><div wicket:id="confirmation"></div>
+</wicket:extend>

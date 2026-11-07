@@ -53,7 +53,8 @@ public class SwSidebar extends Panel {
             }
         });
         WebMarkupContainer close = new WebMarkupContainer("close");
-        close.add(AttributeModifier.replace("popovertarget", (IModel<String>) this::getMarkupId));
+        // Explicit lambdas keep distinct serialized identities for inherited Component methods.
+        close.add(AttributeModifier.replace("popovertarget", (IModel<String>) () -> getMarkupId()));
         close.add(AttributeModifier.replace("aria-label", new StringResourceModel("SwSidebar.close", this)
                 .setDefaultValue("Close sidebar")));
         close.add(new ButtonBehavior(ButtonBehavior.Variant.GHOST).setSize(ButtonBehavior.Size.ICON));
@@ -100,7 +101,7 @@ public class SwSidebar extends Panel {
         container.add(details);
         Label label = new Label("label", OncePerRequestModel.of(group.label()));
         label.setOutputMarkupId(true);
-        container.add(AttributeModifier.replace("aria-labelledby", (IModel<String>) label::getMarkupId));
+        container.add(AttributeModifier.replace("aria-labelledby", (IModel<String>) () -> label.getMarkupId()));
         details.add(label, new SwIcon("groupIcon", group.icon() != null ? group.icon() : Model.of("folder")));
         details.add(AttributeModifier.replace("open", (IModel<String>) () ->
                 group.items().stream().anyMatch(this::containsCurrent) ? "open" : null));
