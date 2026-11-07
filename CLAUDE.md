@@ -15,6 +15,28 @@ Maven dependency and is done: no Node, no Tailwind, no CSS build on their side.
 
 ## Resume point — 2026-11-07
 
+**Railway deployment preparation.** The user selected Railway and authorized deploying Clover Studio.
+The root Dockerfile builds both modules/CSS with Java 17, then runs an unprivileged JRE image in Wicket
+deployment mode. `railway.json` configures one replica, no sleeping, `/healthz` readiness and graceful
+teardown. The Railway Spring profile handles forwarded HTTPS headers, secure/HttpOnly/SameSite=Lax
+cookies and 30-minute session expiry. The stateless health resource neither binds a session nor caches.
+The Studio guide documents GitHub-repository deployment and a local Docker check.
+
+Java 17's compiler crashed on the local Cash record inside Overview's constructor lambda (also affected
+the earlier CI job). Moving it to a private member record fixes compilation while retaining the Java 17
+baseline. The complete 839 JVM tests pass inside the Java 17 builder. The runtime image passed Chromium
+and Firefox checks behind a local HTTPS proxy with one CPU/512 MB, verifying deployment mode, assigned
+PORT, a non-root user, secure sessions/CSP, task/payment Ajax, fresh repeated-search HTML and German/Nova
+preferences without document reloads or console errors. Website/docs checks pass. Logs:
+`/tmp/shadwick-railway-{image-build,java17-tests,runtime,smoke,site-check}.log`.
+
+No public backend has been created yet: the Railway integration was offered but was not installed at the
+last check; there is no Railway CLI login, environment token or repository secret. An account-access
+question is pending. Finish deployment after the user adds Railway or chooses CLI authentication; do not
+ask for deployment authorization again. Deploy from the repository root, generate a public domain, verify
+the live `/studio` journey and replace the landing's local-run link with the actual public URL. Do not
+invent a domain. Then continue agent guidance/llms.txt and release preparation/Maven Central.
+
 **Publication checkpoint: Clover Studio.** The user requested committing and pushing the completed Studio
 application, fixes, tests and landing/documentation updates. The landing links to its local-run guide; the
 Website workflow publishes the static site after the push. GitHub Actions and `git log` record the exact

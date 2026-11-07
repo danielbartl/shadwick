@@ -1,0 +1,23 @@
+# syntax=docker/dockerfile:1
+FROM eclipse-temurin:17-jdk-jammy AS build
+WORKDIR /workspace
+COPY mvnw pom.xml LICENSE NOTICE ./
+COPY .mvn/ .mvn/
+COPY shadwick-core/ shadwick-core/
+COPY shadwick-examples/ shadwick-examples/
+RUN --mount=type=cache,target=/root/.m2 \
+    --mount=type=cache,target=/root/.npm \
+    ./mvnw -B -pl shadwick-examples -am -DskipTests package \
+    && cp shadwick-examples/target/shadwick-examples-*.jar /tmp/app.jar
+
+FROM eclipse-temurin:17-jre-jammy AS runtime
+WORKDIR /app
+RUN groupadd --system shadwick \
+    && useradd --system --gid shadwick --home-dir /app shadwick \
+    && chown shadwick:shadwick /app
+COPY --from=build --chown=shadwick:shadwick /tmp/app.jar /app/app.jar
+USER shadwick
+ENV SPRING_PROFILES_ACTIVE=railway \
+    JAVA_TOOL_OPTIONS="-XX:MaxRAMPercentage=65.0 -XX:+ExitOnOutOfMemoryError"
+EXPOSE 8080
+ENTRYPOINT ["java", "-Dwicket.configuration=deployment", "-jar", "/app/app.jar"]

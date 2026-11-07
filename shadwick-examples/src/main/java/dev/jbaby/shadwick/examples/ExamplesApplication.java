@@ -3,6 +3,12 @@ package dev.jbaby.shadwick.examples;
 import dev.jbaby.shadwick.Shadwick;
 import org.apache.wicket.Page;
 import org.apache.wicket.protocol.http.WebApplication;
+import org.apache.wicket.request.resource.IResource;
+import org.apache.wicket.request.resource.ResourceReference;
+import org.apache.wicket.request.resource.ResourceStreamResource;
+import org.apache.wicket.util.resource.StringResourceStream;
+
+import java.time.Duration;
 
 /** The showcase's Wicket application, also what the page tests run. */
 public class ExamplesApplication extends WebApplication {
@@ -16,6 +22,13 @@ public class ExamplesApplication extends WebApplication {
     protected void init() {
         super.init();
 
+        // Stateless readiness check: do not render a page or allocate a visitor workspace.
+        mountResource("/healthz", new ResourceReference(ExamplesApplication.class, "healthz") {
+            @Override public IResource getResource() {
+                return new ResourceStreamResource(new StringResourceStream("ok", "text/plain"))
+                        .setCacheDuration(Duration.ZERO);
+            }
+        });
         mount(new StudioPageMapper());
         mountPage("/buttons", ButtonPage.class);
         mountPage("/form", FormPage.class);

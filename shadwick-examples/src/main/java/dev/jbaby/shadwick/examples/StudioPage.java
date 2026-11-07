@@ -41,6 +41,7 @@ import static dev.jbaby.shadwick.examples.StudioWorkspace.*;
 
 /** Visitor-owned sample application. Commands update current models and changed DOM regions over Ajax. */
 public class StudioPage extends SwAppLayout {
+    private record Cash(String label, long euros) implements java.io.Serializable {}
     private static final CssResourceReference CSS = new CssResourceReference(StudioPage.class, "studio.css");
     private static final JavaScriptResourceReference JS = new JavaScriptResourceReference(StudioPage.class, "studio.js");
     private UUID generation;
@@ -411,7 +412,6 @@ public class StudioPage extends SwAppLayout {
             feed.add(new ListView<Activity>("activity", (IModel<List<Activity>>) this::events) {
                 @Override protected void populateItem(ListItem<Activity> item) { Activity event = item.getModelObject(); item.add(text("event", t(event.key(), event.arguments().toArray()))); }
             }); add(feed);
-            record Cash(String label, long euros) implements java.io.Serializable {}
             IModel<List<Cash>> cash = () -> List.of(new Cash(t("chart.collected"), workspace().collected() / 100), new Cash(t("chart.outstanding"), workspace().outstanding() / 100));
             add(watch(new SwChart<>("cash", cash, Cash::label).setTitle(t("chart.title")).setCategoryHeader(t("chart.category")).setCurrency(Currency.getInstance("EUR"))
                     .addSeries(ChartSeries.bar(t("chart.fees"), Cash::euros)).setShowLegend(false), cash), link("invoices", "invoices", 0));

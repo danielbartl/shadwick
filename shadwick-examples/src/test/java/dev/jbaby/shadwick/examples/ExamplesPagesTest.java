@@ -41,6 +41,15 @@ class ExamplesPagesTest {
         return tester.getLastResponseAsString();
     }
 
+    @Test
+    void healthcheckReturnsAnUncachedResponseWithoutBindingAVisitorSession() {
+        tester.executeUrl("healthz");
+        assertThat(tester.getLastResponse().getStatus()).isEqualTo(200);
+        assertThat(html()).isEqualTo("ok");
+        assertThat(tester.getLastResponse().getHeader("Cache-Control")).contains("no-cache");
+        assertThat(tester.getSession().isTemporary()).isTrue();
+    }
+
     @SuppressWarnings("unchecked")
     private static Class<? extends WebPage> page(String name) throws ClassNotFoundException {
         return (Class<? extends WebPage>) Class.forName("dev.jbaby.shadwick.examples." + name);

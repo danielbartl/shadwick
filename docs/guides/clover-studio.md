@@ -19,6 +19,34 @@ Open `http://localhost:8080/studio`. The `PORT` environment variable changes the
 GitHub Pages serves the static marketing site and these guides; the Wicket application needs a Java host.
 A public backend deployment is a separate roadmap checkpoint.
 
+## Deploy to Railway
+
+The repository includes a root `Dockerfile` and `railway.json`. Connect the GitHub repository to a Railway
+service with the repository root as its root directory. Railway builds both Maven modules and the compiled
+CSS in the build stage, then runs the executable examples JAR as an unprivileged user on Java 17.
+Keep the Dockerfile's start command; it selects Wicket's deployment mode and the `railway` Spring profile.
+Railway supplies `PORT`, so no build command, start command or fixed port needs to be entered manually.
+
+Generate a public Railway domain and open `/studio`; `/` remains the component catalog. The application
+accepts forwarded HTTPS headers and uses secure, HttpOnly, SameSite=Lax session cookies with a 30-minute
+idle timeout. The uncached `/healthz` readiness endpoint returns `ok` without binding a visitor session.
+
+The Railway configuration runs one replica and disables sleeping because workspace data and Wicket pages
+belong to the running instance. Keep one replica in one region. Demo sessions are discarded on deployment,
+restart or expiry; a database, volume and shared session store are not required for this resettable showcase.
+The static landing page and guides continue to be deployed separately through GitHub Pages.
+
+To check the same container locally over HTTP:
+
+```sh
+docker build -t shadwick-clover-studio .
+docker run --rm -p 127.0.0.1:8080:8080 -e SESSION_COOKIE_SECURE=false shadwick-clover-studio
+```
+
+Open `http://localhost:8080/studio`. The cookie override is for this local HTTP check; Railway's HTTPS
+deployment uses secure cookies by default. See [Railway's Dockerfile support](https://docs.railway.com/builds/dockerfiles)
+and [configuration reference](https://docs.railway.com/config-as-code/reference) for the hosting settings.
+
 ## Try a complete journey
 
 1. Open **Fern & Field** from the overview or project directory.
