@@ -15,6 +15,20 @@ Maven dependency and is done: no Node, no Tailwind, no CSS build on their side.
 
 ## Resume point — 2026-11-07
 
+**Current checkpoint: landing-page demo visibility.** The hero now promotes Clover Studio and the live component
+catalog as its primary actions, with both destinations also in the main navigation. The static composition is
+labelled Component preview. Twelve catalog groups pair documentation with live examples and cover the recent
+chart/table work. The inline calendar moved out of the preferences column into a responsive chart/calendar/month
+row, removing the large blank area before the chart (about 650px less preview height at 1440px).
+
+Landing verification passes in Chromium/Firefox: all nine skins, sidebar/header layouts, light/dark, five widths
+from 320px to 1440px, compact grid geometry, calendar selection, month navigation, table filtering/pagination and
+no-script fallback. The publication smoke also passes image preview/download, project dialog, chart keyboard
+tooltips, axe, guide navigation and console/overflow checks at desktop/mobile sizes. Screenshots and logs:
+`/tmp/shadwick-landing-refresh/`, `/tmp/shadwick-landing-refresh-*.log`. Site build/link checks and documentation
+tests pass. Only landing/docs/checkpoint files change; Railway does not need a new application deployment.
+Next roadmap checkpoint remains first-release preparation/Maven Central.
+
 **Current checkpoint: chart expansion publication.** The user authorized committing/pushing all accumulated chart
 work and publishing the updated landing/docs and applicable Studio/catalog build. This checkpoint packages horizontal
 bars, donuts, sparklines/value labels, forecast joins, independent formats and appearance options. Website's main-branch
