@@ -1,0 +1,15 @@
+<wicket:panel xmlns:wicket="http://wicket.apache.org">
+  <section class="ex-source" id="example-source" aria-labelledby="example-source-heading">
+    <header class="ex-source-heading"><div><p class="ex-eyebrow">FROM PREVIEW TO PROJECT</p><h2 id="example-source-heading" tabindex="-1">Build this example</h2></div><a wicket:id="guide">Read the guide <span aria-hidden="true">↗︎</span></a></header>
+    <p class="ex-muted">The Java and Wicket markup from this running example. Expand a file to explore it, or copy it into your editor.</p>
+    <div wicket:id="files">
+      <details wicket:id="disclosure" class="ex-source-file">
+        <summary><span wicket:id="filename"></span><span wicket:id="language" class="ex-source-language"></span><span aria-hidden="true">⌄</span></summary>
+        <div class="ex-source-toolbar"><a wicket:id="github">View file on GitHub <span aria-hidden="true">↗︎</span></a><button wicket:id="copy" type="button" data-source-copy="" hidden>Copy code</button></div>
+        <div wicket:id="scroll" class="ex-source-scroll" tabindex="0" role="region"><pre><code wicket:id="code"></code></pre></div>
+      </details>
+    </div>
+    <p class="ex-muted">Match each Java component ID to its <code>wicket:id</code> in the markup. Shared layouts and data helpers are available in the <a href="https://github.com/danielbartl/shadwick/tree/main/shadwick-examples/src/main/java/dev/jbaby/shadwick/examples">examples project</a>.</p>
+    <span class="sw-sr-only ex-copy-status" role="status"></span>
+  </section>
+</wicket:panel>

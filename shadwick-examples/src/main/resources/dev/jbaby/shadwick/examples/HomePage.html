@@ -1,43 +1,13 @@
 <wicket:extend xmlns:wicket="http://wicket.apache.org">
-<div>
-    <h1 class="ex-title">Shadwick</h1>
-    <p class="ex-lead">shadcn/ui-style components for Apache Wicket, rendered on the server. Switch the skin and
-        light or dark mode at the top of every page.</p>
-</div>
-<p><a wicket:id="studioLink" class="sw-button">Open Clover Studio — the interactive agency workspace</a></p>
-<ul class="ex-links">
-    <li><a wicket:id="buttonsLink">Buttons</a>: every variant and size, on links and buttons</li>
-    <li><a wicket:id="formLink">Form</a>: text fields with validation, submitted normally and over Ajax</li>
-    <li><a wicket:id="inputsLink">Inputs</a>: email, password, search, telephone, URL and typed numbers</li>
-    <li><a wicket:id="choicesLink">Choices</a>: checkboxes, switches and radio groups, including immediate Ajax updates</li>
-    <li><a wicket:id="monthViewLink">Month view</a>: native agenda navigation and custom day content</li>
-    <li><a wicket:id="chartsLink">Charts</a>: bars, lines, areas, keyboard tooltips and exact data</li>
-    <li><a wicket:id="calendarLink">Calendar &amp; date picker</a>: date and range grids, native fallbacks and locale-aware navigation</li>
-    <li><a wicket:id="comboboxLink">Combobox</a>: search, multiple chips and server-backed choices</li>
-    <li><a wicket:id="customSelectLink">Custom select</a>: grouped choices, icons and progressive native pickers</li>
-    <li><a wicket:id="selectionsLink">Selections</a>: native dropdowns, multi-select lists and checkbox groups</li>
-    <li><a wicket:id="datesLink">Dates &amp; time</a>: native date, time, local date/time, month and week fields</li>
-    <li><a wicket:id="groupsLink">Groups</a>: toggles, single/multiple selections, input addons and actions</li>
-    <li><a wicket:id="uploadsLink">Uploads</a>: native file inputs, dropzones and multipart validation</li>
-    <li><a wicket:id="dialogLink">Dialog</a>: opened in the browser, over Ajax, and one with a form</li>
-    <li><a wicket:id="overlaysLink">Overlays</a>: reusable confirmations and sheets from every edge</li>
-    <li><a wicket:id="popupsLink">Popovers &amp; tooltips</a>: anchored content, quick forms and keyboard hints</li>
-    <li><a wicket:id="menusLink">Menus</a>: actions, navigation links, checked choices and keyboard navigation</li>
-    <li><a wicket:id="toastsLink">Toasts</a>: direct notifications, timing, keyboard access and modal support</li>
-    <li><a wicket:id="themeLink">Theme &amp; preferences</a>: Light/Dark/System, remembered choices and synchronized controls</li>
-    <li><a wicket:id="layoutsLink">App layouts</a>: reusable sidebar/header compositions, submenus, badges and actions</li>
-    <li><a wicket:id="tableLink">Tables</a>: native cells, compact spacing, column groups and a pinned first column</li>
-    <li><a wicket:id="paginationLink">Pagination</a>: summaries, page sizes and independent bookmarkable lists</li>
-    <li><a wicket:id="dataLink">Data tables</a>: sorting, filters, selection, row actions and bookmarkable pagination</li>
-    <li><a wicket:id="attachmentLink">Attachment displays</a>: file cards, image previews, native downloads and galleries</li>
-    <li><a wicket:id="disclosureLink">Tabs &amp; disclosures</a>: bookmarkable tabs, native accordions and collapsibles</li>
-    <li><a wicket:id="userMenuLink">User menu</a>: account menus in the header and sidebar, sign-in and sign-out</li>
-    <li><a wicket:id="sidebarLink">Sidebar</a>: responsive navigation, icon rails and grouped links</li>
-    <li><a wicket:id="shellLink">App shell</a>: headers, breadcrumbs and keyboard shortcuts to the content</li>
-    <li><a wicket:id="displayLink">Display</a>: cards, badges, alerts, avatars, loading states and icons</li>
-    <li><a wicket:id="feedbackLink">Feedback</a>: form messages and persistent, dismissible toasts</li>
-    <li><a wicket:id="internationalizationLink">Internationalization</a>: nine languages, locale-aware controls and application overrides</li>
-<li><a wicket:id="advancedTablesLink">Advanced tables</a>: column choices, CSV downloads, row details and validated inline edits</li>
-<li><a wicket:id="statusControlsLink">Progress &amp; ratings</a>: busy buttons, progress bars/rings, native meters and star ratings</li>
-</ul>
+  <header class="ex-catalog-intro">
+    <p class="ex-eyebrow">THE SHADWICK COMPONENT CATALOG</p>
+    <h1 class="ex-title">A good place to build.</h1>
+    <p class="ex-lead">Explore live components. Try their interactions. Take the Java and Wicket markup into your next project.</p>
+    <div class="ex-catalog-intro-actions"><a wicket:id="studioLink" class="sw-button">Explore Clover Studio <span aria-hidden="true">↗︎</span></a><a href="https://danielbartl.github.io/shadwick/docs/guides/installation/">Start building <span aria-hidden="true">→</span></a></div>
+    <dl class="ex-catalog-facts"><div><dt>Live examples</dt><dd wicket:id="exampleCount"></dd></div><div><dt>Collections</dt><dd wicket:id="groupCount"></dd></div><div><dt>Distinct skins</dt><dd>9</dd></div></dl>
+  </header>
+  <section wicket:id="groups" class="ex-overview-group" data-catalog-group="">
+    <header><h2 wicket:id="heading"></h2><span wicket:id="count" class="ex-muted"></span></header>
+    <div class="ex-catalog-cards"><article wicket:id="examples"><a wicket:id="link"><div><h3 wicket:id="name"></h3><span aria-hidden="true">↗︎</span></div><p wicket:id="description"></p><span class="ex-card-action">Explore example <span aria-hidden="true">→</span></span></a></article></div>
+  </section>
 </wicket:extend>

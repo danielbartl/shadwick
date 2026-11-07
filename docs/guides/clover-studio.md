@@ -2,9 +2,9 @@
 
 A working agency workspace that composes Shadwick components into a connected project-to-payment workflow.
 
-Clover Studio runs in the existing Wicket examples application at `/studio`. It has its own responsive
+Clover Studio is the homepage of the Wicket examples application at `/`. Existing `/studio` bookmarks also work. It has its own responsive
 application shell, with an overview, project directory, project workspace and invoice register. The component
-catalog remains at `/` for focused API examples. No new library or frontend dependency is required.
+catalog is at `/components` for focused API examples with their Java and markup. No new library or frontend dependency is required.
 
 ## Run locally
 
@@ -15,9 +15,10 @@ From the repository root:
 java -jar shadwick-examples/target/shadwick-examples-0.1.0-SNAPSHOT.jar
 ```
 
-Open `http://localhost:8080/studio`. The `PORT` environment variable changes the server port.
-GitHub Pages serves the static marketing site and these guides; the Wicket application needs a Java host.
-A public backend deployment is a separate roadmap checkpoint.
+Open `http://localhost:8080/`. The `PORT` environment variable changes the server port.
+Try the [hosted Studio](https://shadwick-production.up.railway.app/) or the
+[live component catalog](https://shadwick-production.up.railway.app/components). Railway runs the Java application;
+GitHub Pages continues to serve the static marketing site and these guides.
 
 ## Deploy to Railway
 
@@ -30,7 +31,7 @@ The Maven and npm cache mounts use literal IDs scoped to the Shadwick Railway se
 this Dockerfile to a different service, replace the service UUID in both cache IDs; Railway validates them
 before building and does not support environment-variable interpolation in those IDs.
 
-Generate a public Railway domain and open `/studio`; `/` remains the component catalog. The application
+Generate a public Railway domain and open `/` for Studio or `/components` for the catalog. The `/studio` alias remains available. The application
 accepts forwarded HTTPS headers and uses secure, HttpOnly, SameSite=Lax session cookies with a 30-minute
 idle timeout. The uncached `/healthz` readiness endpoint returns `ok` without binding a visitor session.
 
@@ -46,9 +47,26 @@ docker build -t shadwick-clover-studio .
 docker run --rm -p 127.0.0.1:8080:8080 -e SESSION_COOKIE_SECURE=false shadwick-clover-studio
 ```
 
-Open `http://localhost:8080/studio`. The cookie override is for this local HTTP check; Railway's HTTPS
+Open `http://localhost:8080/`. The cookie override is for this local HTTP check; Railway's HTTPS
 deployment uses secure cookies by default. See [Railway's Dockerfile support](https://docs.railway.com/builds/dockerfiles)
 and [configuration reference](https://docs.railway.com/config-as-code/reference) for the hosting settings.
+
+## Explore the component catalog
+
+Open `/components` to browse the grouped catalog. The sidebar highlights the current example; use
+**Find a component** or **Ctrl/Command+K** to search by name or description. On narrow screens, expand
+**Browse components**. Native links and disclosures remain available without JavaScript.
+
+Each demo has a **View Wicket code** link to its Java and matching HTML. Expand a filename to read its
+source, use **Copy code**, or follow the guide for focused API usage. Supporting panel markup is included,
+and the header-layout example also shows its shared application-layout source. The shared base layout and
+data helpers are linked from the examples project. Source is packaged with the running build, so the
+catalog does not depend on GitHub being available to display it. Copying falls back to selecting the code
+when clipboard access is unavailable. Without script, files remain readable and selectable.
+
+The header links back to Clover Studio and the documentation. **Appearance & language** contains the
+nine skins, light/dark choices and component-language selector. Navigation carries those preferences
+between examples.
 
 ## Try a complete journey
 

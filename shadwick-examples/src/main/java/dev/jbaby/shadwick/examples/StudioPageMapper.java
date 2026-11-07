@@ -11,7 +11,7 @@ import org.apache.wicket.request.mapper.parameter.PageParameters;
 
 /** Direct responses for Studio navigations; listener and mutation requests keep Wicket defaults. */
 final class StudioPageMapper extends MountedMapper {
-    StudioPageMapper() { super("/studio", StudioPage.class); }
+    StudioPageMapper(String path) { super(path, StudioPage.class); }
 
     @Override
     protected IRequestHandler processBookmarkable(Class<? extends IRequestablePage> pageClass, PageParameters parameters) {

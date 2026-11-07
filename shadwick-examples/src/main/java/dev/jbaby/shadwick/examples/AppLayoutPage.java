@@ -34,6 +34,7 @@ public class AppLayoutPage extends SwAppLayout {
 
     public AppLayoutPage(PageParameters parameters) {
         super(parameters);
+        add(new ExampleSourcePanel("exampleSource", getClass()));
         for (Skin skin : Skin.values()) if (skin.id().equals(parameters.get("skin").toString())) ShadwickSettings.get().setCurrentSkin(skin);
         add(new Label("heading", (IModel<String>) this::viewTitle));
         Label update = new Label("status", status); update.setOutputMarkupId(true); add(update);

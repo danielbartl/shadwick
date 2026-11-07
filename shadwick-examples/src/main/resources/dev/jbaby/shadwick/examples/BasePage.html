@@ -8,42 +8,9 @@
 <body>
 <a wicket:id="skip"></a>
 <header wicket:id="siteHeader" class="ex-header">
-    <nav aria-label="Examples" class="ex-nav">
-        <a wicket:id="navHome">Shadwick</a>
-        <a wicket:id="navButtons">Buttons</a>
-        <a wicket:id="navForm">Form</a>
-        <a wicket:id="navInputs">Inputs</a>
-        <a wicket:id="navChoices">Choices</a>
-        <a wicket:id="navMonthView">Month view</a>
-        <a wicket:id="navCharts">Charts</a>
-        <a wicket:id="navCalendar">Calendar &amp; date picker</a>
-        <a wicket:id="navCombobox">Combobox</a>
-        <a wicket:id="navCustomSelect">Custom select</a>
-            <a wicket:id="navSelections">Selections</a>
-        <a wicket:id="navDates">Dates &amp; time</a>
-        <a wicket:id="navGroups">Groups</a>
-        <a wicket:id="navUploads">Uploads</a>
-        <a wicket:id="navDialog">Dialog</a>
-        <a wicket:id="navOverlays">Overlays</a>
-        <a wicket:id="navPopups">Popovers &amp; tooltips</a>
-        <a wicket:id="navMenus">Menus</a>
-        <a wicket:id="navToasts">Toasts</a>
-        <a wicket:id="navShell">App shell</a>
-        <a wicket:id="navSidebar">Sidebar</a>
-        <a wicket:id="navUserMenu">User menu</a>
-        <a wicket:id="navTheme">Theme</a>
-        <a wicket:id="navLayouts">Layouts</a>
-        <a wicket:id="navTables">Tables</a>
-        <a wicket:id="navPagination">Pagination</a>
-        <a wicket:id="navAdvancedTables">Advanced tables</a>
-        <a wicket:id="navData">Data tables</a>
-        <a wicket:id="navAttachments">Attachments</a>
-        <a wicket:id="navDisclosure">Tabs &amp; disclosures</a>
-        <a wicket:id="navDisplay">Display</a>
-        <a wicket:id="navStatusControls">Progress &amp; ratings</a>
-        <a wicket:id="navFeedback">Feedback</a>
-        <a wicket:id="navInternationalization">Internationalization</a>
-    </nav>
+    <a wicket:id="catalogHome" class="ex-brand"><img wicket:id="brandLogo" alt="" width="28" height="28"><span>Shadwick <small>Components</small></span></a>
+    <nav aria-label="Project" class="ex-project-nav"><a wicket:id="studioHome">Clover Studio <span aria-hidden="true">↗︎</span></a><a href="https://danielbartl.github.io/shadwick/docs/">Documentation <span aria-hidden="true">↗︎</span></a></nav>
+    <details class="ex-preferences"><summary>Appearance &amp; language</summary>
     <div class="ex-switches">
         <div role="group" aria-label="Skin" class="ex-group">
             <a wicket:id="vega">Vega</a>
@@ -68,9 +35,16 @@
             <button wicket:id="applyLanguage" type="submit">Apply</button>
         </form>
     </div>
+    </details>
 </header>
-<main wicket:id="main" class="ex-main">
+<div class="ex-catalog-shell">
+  <div wicket:id="catalogNavigation"></div>
+  <main wicket:id="main" class="ex-main">
+    <div class="ex-page-context"><div><span wicket:id="pageGroup"></span><span aria-hidden="true">/</span><strong wicket:id="pageTitle"></strong></div><div><a wicket:id="viewCode" href="#example-source">View Wicket code <span aria-hidden="true">↓</span></a><a wicket:id="pageGuide">Guide <span aria-hidden="true">↗︎</span></a></div></div>
     <wicket:child/>
-</main>
+    <div wicket:id="exampleSource"></div>
+    <footer class="ex-catalog-footer"><span>Shadwick · Apache Wicket 10 · Java 17+</span><a href="https://github.com/danielbartl/shadwick">GitHub <span aria-hidden="true">↗︎</span></a></footer>
+  </main>
+</div>
 </body>
 </html>

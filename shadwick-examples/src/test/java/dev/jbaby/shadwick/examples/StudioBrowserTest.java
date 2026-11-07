@@ -244,7 +244,7 @@ class StudioBrowserTest {
             List<Request> documents = new ArrayList<>(), commands = new ArrayList<>(); List<Response> responses = new ArrayList<>();
             page.onRequest(request -> {
                 if (request.isNavigationRequest()) documents.add(request);
-                if (List.of("xhr", "fetch").contains(request.resourceType()) && request.url().contains("/studio")) commands.add(request);
+                if ("true".equals(request.headers().get("wicket-ajax"))) commands.add(request);
             });
             page.onResponse(response -> { if (response.request().url().contains("row-toggle")) responses.add(response); });
             page.evaluate("""

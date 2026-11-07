@@ -68,6 +68,20 @@
 	</dependencies>
 
 	<build>
+		<resources>
+			<resource><directory>src/main/resources</directory></resource>
+			<!-- Display the exact page source in the deployed catalog, without a GitHub request. -->
+			<resource>
+				<directory>src/main/java</directory>
+				<targetPath>META-INF/showcase-source</targetPath>
+				<includes><include>**/*.java</include></includes>
+			</resource>
+			<resource>
+				<directory>src/main/resources</directory>
+				<targetPath>META-INF/showcase-source</targetPath>
+				<includes><include>**/*.html</include></includes>
+			</resource>
+		</resources>
 		<plugins>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>

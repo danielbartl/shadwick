@@ -317,14 +317,16 @@ Run the showcase to explore the components with skin, light/dark and language co
 java -jar shadwick-examples/target/shadwick-examples-0.1.0-SNAPSHOT.jar
 ```
 
-Open **http://localhost:8080/studio** for **Clover Studio**, a working agency workspace: create and edit
+Open **http://localhost:8080/** for **Clover Studio**, a working agency workspace: create and edit
 projects, complete tasks, prepare a downloadable client handoff and record invoice payments. The overview,
 project screens and invoices share private, resettable session data. Commands and in-app navigation use
 Ajax updates without full-page refreshes; native browsing/filtering remains available without script. Demo settings switch skins and the full interface between English and German; the header switches appearance.
 See the [Clover Studio guide](docs/guides/clover-studio.md) for
-the complete journey, design and data lifecycle. Public backend hosting remains the next checkpoint.
+the complete journey, design and data lifecycle. Try the [hosted Studio](https://shadwick-production.up.railway.app/) on Railway; existing `/studio` links continue to work.
 
-The component reference remains at http://localhost:8080. While working on the CSS, `npm run watch:css` in `shadwick-core` (with a local
+The [live component catalog](https://shadwick-production.up.railway.app/components) is at **http://localhost:8080/components** locally. Its grouped navigation includes component search (Ctrl/⌘K), and each demo displays the actual Java and Wicket markup with copy controls and guide links.
+
+While working on the CSS, `npm run watch:css` in `shadwick-core` (with a local
 Node) rebuilds the bundles into `target/classes` on every change; reload the page to see it.
 
 The browser checks (Playwright and axe-core, every page in all supported skins, light and dark) run with:

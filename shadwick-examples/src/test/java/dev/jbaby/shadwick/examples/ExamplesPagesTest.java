@@ -126,10 +126,10 @@ class ExamplesPagesTest {
     void theCurrentPageIsMarkedInTheNavigation() {
         tester.startPage(FormPage.class);
 
-        TagTester current = tester.getTagByWicketId("navForm");
+        TagTester current = TagTester.createTagByAttribute(html(), "aria-current", "page");
         assertThat(current.getAttribute("aria-current")).isEqualTo("page");
-        assertThat(current.getAttribute("data-variant")).isEqualTo("secondary");
-        assertThat(tester.getTagByWicketId("navButtons").getAttribute("data-variant")).isEqualTo("ghost");
+        assertThat(current.getAttribute("href")).contains("form");
+        assertThat(TagTester.createTagsByAttribute(html(), "aria-current", "page", false)).hasSize(1);
     }
 
     @Test

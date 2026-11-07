@@ -1485,7 +1485,8 @@ body {
     gap:18px;
     font-size:11px
   }
-  .site-header nav a:nth-child(2) {
+  .site-header nav a[href="#components"],
+  .site-header nav a[href="#why-shadwick"] {
     display:none
   }
   .github-link span,.github-link .small-icon {
@@ -1804,9 +1805,14 @@ body {
   .site-header nav {
     gap:15px
   }
-  .site-header nav a:first-child {
+  .site-header nav a[href="./docs/"] {
     display:none
   }
+}
+
+@media(max-width:360px) {
+  .site-header { gap:12px; }
+  .site-header nav a[href="#get-started"] { display:none; }
 }
 
 @media(prefers-reduced-motion:reduce) {

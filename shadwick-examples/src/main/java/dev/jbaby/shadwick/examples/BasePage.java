@@ -54,40 +54,15 @@ public abstract class BasePage extends WebPage {
         add(new TransparentWebMarkupContainer("siteHeader").add(Sw.Behaviors.siteHeader()));
         add(new Label("title", (IModel<String>) () -> getTitle() + " · Shadwick"));
 
-        add(navLink("navHome", HomePage.class));
-        add(navLink("navButtons", ButtonPage.class));
-        add(navLink("navForm", FormPage.class));
-        add(navLink("navInputs", InputPage.class));
-        add(navLink("navChoices", ChoicePage.class));
-        add(navLink("navSelections", SelectPage.class));
-        add(navLink("navCustomSelect", CustomSelectPage.class));
-        add(navLink("navCombobox", ComboboxPage.class));
-        add(navLink("navCalendar", CalendarPage.class));
-        add(navLink("navMonthView", MonthViewPage.class));
-        add(navLink("navCharts", ChartPage.class));
-        add(navLink("navDates", DateTimePage.class));
-        add(navLink("navGroups", GroupPage.class));
-        add(navLink("navUploads", UploadPage.class));
-        add(navLink("navDialog", DialogPage.class));
-        add(navLink("navOverlays", OverlayPage.class));
-        add(navLink("navPopups", PopupPage.class));
-        add(navLink("navMenus", MenuPage.class));
-        add(navLink("navToasts", ToastPage.class));
-        add(navLink("navShell", ShellPage.class));
-        add(navLink("navSidebar", SidebarPage.class));
-        add(navLink("navUserMenu", UserMenuPage.class));
-        add(navLink("navTheme", ThemePage.class));
-        add(navLink("navLayouts", AppLayoutPage.class));
-        add(navLink("navDisclosure", DisclosurePage.class));
-        add(navLink("navAttachments", AttachmentPage.class));
-        add(navLink("navData", DataTablePage.class));
-        add(navLink("navAdvancedTables", AdvancedTablePage.class));
-        add(navLink("navTables", TablePage.class));
-        add(navLink("navPagination", PaginationPage.class));
-        add(navLink("navDisplay", DisplayPage.class));
-        add(navLink("navStatusControls", StatusControlsPage.class));
-        add(navLink("navFeedback", FeedbackPage.class));
-        add(navLink("navInternationalization", InternationalizationPage.class));
+        var brand = navLink("catalogHome", HomePage.class);
+        brand.add(new org.apache.wicket.markup.html.image.Image("brandLogo", new org.apache.wicket.request.resource.PackageResourceReference(BasePage.class, "clover.svg")));
+        add(brand, navLink("studioHome", StudioPage.class));
+        add(new CatalogNavigation("catalogNavigation", getClass(), parameters));
+        var example = CatalogPages.find(getClass());
+        add(new Label("pageGroup", example == null ? "Getting started" : example.group()), new Label("pageTitle", (IModel<String>) this::getTitle));
+        add(new org.apache.wicket.markup.html.link.ExternalLink("pageGuide", CatalogPages.guide(getClass())));
+        add(new org.apache.wicket.markup.html.WebMarkupContainer("viewCode").setVisible(getClass() != HomePage.class));
+        add(new ExampleSourcePanel("exampleSource", getClass()).setVisible(getClass() != HomePage.class));
 
         for (Skin skin : Skin.values()) {
             add(switchLink(skin.id(), "skin", skin.id(), () -> currentSkin() == skin));
@@ -169,5 +144,6 @@ public abstract class BasePage extends WebPage {
     public void renderHead(IHeaderResponse response) {
         super.renderHead(response);
         response.render(CssHeaderItem.forReference(EXAMPLES_CSS));
+        response.render(org.apache.wicket.markup.head.JavaScriptHeaderItem.forReference(ExampleSourcePanel.SCRIPT));
     }
 }

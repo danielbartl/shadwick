@@ -50,7 +50,7 @@ class ShowcaseBrowserTest {
     // WCAG 2.2 A and AA, as axe-core tags its rules
     private static final List<String> WCAG = List.of("wcag2a", "wcag2aa", "wcag21a", "wcag21aa", "wcag22aa");
 
-    private static final List<String> PAGES = List.of("", "internationalization", "status-controls", "advanced-tables", "buttons", "form", "inputs", "choices", "selections", "custom-select", "combobox", "calendar", "month-view", "charts", "dates", "groups", "uploads", "dialog", "overlays", "popups", "menus", "toasts", "shell", "sidebar", "user-menu", "demo-sign-in", "theme", "layouts", "header-layout", "disclosure", "attachments", "data", "invoice", "tables", "pagination", "display", "feedback");
+    private static final List<String> PAGES = List.of("components", "internationalization", "status-controls", "advanced-tables", "buttons", "form", "inputs", "choices", "selections", "custom-select", "combobox", "calendar", "month-view", "charts", "dates", "groups", "uploads", "dialog", "overlays", "popups", "menus", "toasts", "shell", "sidebar", "user-menu", "demo-sign-in", "theme", "layouts", "header-layout", "disclosure", "attachments", "data", "invoice", "tables", "pagination", "display", "feedback");
     private static final List<String> SKINS = browserSkins();
 
     private static List<String> browserSkins() {
@@ -374,6 +374,7 @@ class ShowcaseBrowserTest {
             assertThat(select.locator("option").first()).hasText("Suchen…");
             select.selectOption(new com.microsoft.playwright.options.SelectOption().setLabel("Berlin"));
             assertThat(select.locator("option:checked")).hasText("Berlin");
+            tab.locator(".ex-preferences > summary").click();
             tab.locator("#showcase-language").selectOption(language);
             tab.getByRole(AriaRole.BUTTON, new Page.GetByRoleOptions().setName("Anwenden")).click();
             assertThat(tab.locator("html")).hasAttribute("lang", language);

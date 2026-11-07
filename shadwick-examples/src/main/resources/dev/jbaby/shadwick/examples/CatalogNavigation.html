@@ -1,0 +1,22 @@
+<wicket:panel xmlns:wicket="http://wicket.apache.org">
+  <aside class="ex-catalog-sidebar">
+    <details class="ex-catalog-menu" open>
+      <summary>Browse components <span aria-hidden="true">⌄</span></summary>
+      <div class="ex-catalog-menu-body">
+        <div class="ex-catalog-search" hidden>
+          <label for="catalog-query">Find a component</label>
+          <div><input id="catalog-query" type="search" placeholder="Search components…" autocomplete="off" aria-keyshortcuts="Control+K Meta+K"><kbd aria-hidden="true">⌘ K</kbd></div>
+          <p class="ex-catalog-search-status" role="status"></p>
+        </div>
+        <nav aria-label="Components" class="ex-catalog-nav">
+          <a wicket:id="overview" class="ex-catalog-overview">Catalog overview <span aria-hidden="true">↗︎</span></a>
+          <section wicket:id="groups" data-catalog-group="">
+            <h2 wicket:id="groupTitle"></h2>
+            <ul><li wicket:id="examples"><a wicket:id="link"><span wicket:id="label"></span></a></li></ul>
+          </section>
+        </nav>
+        <p class="ex-catalog-no-results" hidden>No matching components. Try “table”, “date” or “dialog”.</p>
+      </div>
+    </details>
+  </aside>
+</wicket:panel>

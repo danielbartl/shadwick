@@ -15,14 +15,43 @@ Maven dependency and is done: no Node, no Tailwind, no CSS build on their side.
 
 ## Resume point — 2026-11-07
 
+**Current checkpoint: Studio homepage and a navigable component catalog.** The user requested Clover Studio
+at `/`, the catalog at `/components`, improved catalog navigation and Wicket code on each demo page.
+The `/studio` alias remains a direct-rendering compatibility route; generated Studio links use `/`.
+`CatalogPages` is the shared inventory for 35 demo routes, seven navigation groups, overview cards and
+guide links. BasePage now has a compact header, responsive/searchable sidebar (Ctrl/Command+K), active
+links and a native preferences disclosure. Navigation carries skin/mode/locale without unrelated demo state.
+Layout demos retain their own layout preview and link back to the catalog.
+
+Every catalog demo has Java and matching HTML, including supporting panel markup and inherited header-layout
+source. Maven packages these exact files under `META-INF/showcase-source`; `ExampleSourcePanel` renders
+escaped source through detachable models. Files have native disclosures, guide/GitHub links, copy controls
+and selection fallback. No runtime GitHub fetch or new dependency is needed. Source remains readable without
+script. Source panels use bounded scrolling, adequate contrast and matching visible/accessibility labels.
+
+Validation: 880 JVM tests, 25 catalog browser scenarios (all nine skins, desktop/mobile, Chromium/Firefox,
+search, copy/fallback, no-script and all demo routes), 29 Studio scenarios and 14 targeted existing showcase
+regressions pass. Java 17 Docker build and both-browser HTTPS container smoke pass, including actual Chromium
+clipboard copying, strict CSP/secure cookies, canonical root links and exact packaged source. Reviewed
+catalog/source screenshots under ignored `shadwick-examples/target/catalog-screenshots/`. Static site/docs
+checks and landing checks at 1440/1024/800/700/390/320 px pass. Adding Live demo exposed a positional mobile
+nav selector; it now hides explicit hrefs so Live demo stays visible without overflowing the header.
+Logs: `/tmp/shadwick-catalog-{verify,browser,regression-browser,image-build,production-smoke,site}.log`.
+
+The public Railway URL is https://shadwick-production.up.railway.app/ and the catalog is `/components`.
+Landing/README/guide links now use these real URLs. Publication uses the existing Railway GitHub integration
+and GitHub Pages workflow; use `git log`, commit statuses and live checks for the exact deployed revision.
+No Railway CLI login/integration is required for these automatic source deployments. Next: agent guidance/
+llms.txt, followed by release preparation and Maven Central. Broader Oat/chart variants remain separate.
+
 **Railway deployment preparation.** The user selected Railway and authorized deploying Clover Studio.
 The repository is now connected to Railway project `26a6a91d-41b3-4a54-999d-650612a8957d`, service
 `794b0087-a4ca-44ff-8ecd-375e87f53a24` (shadwick), environment `83c1bd75-8d11-4b8f-8dae-2631f28bfa3c`.
 These IDs were verified from Railway's GitHub commit-status URL. Its first build was rejected before
 execution because cache mounts lacked IDs. Both mounts now use Railway's literal
 `s/<service UUID>-<target path>` IDs; variables/build args cannot be used for this validation. Keep the
-service UUID synchronized in both mounts if the service changes. Inspect the next GitHub commit status
-for Railway's deployment result; account access is still needed for Railway dashboard/API operations.
+service UUID synchronized in both mounts if the service changes. Railway accepted the cache correction and
+reported a successful deployment. Account access is still needed for Railway dashboard/API operations.
 The root Dockerfile builds both modules/CSS with Java 17, then runs an unprivileged JRE image in Wicket
 deployment mode. `railway.json` configures one replica, no sleeping, `/healthz` readiness and graceful
 teardown. The Railway Spring profile handles forwarded HTTPS headers, secure/HttpOnly/SameSite=Lax
@@ -37,18 +66,16 @@ PORT, a non-root user, secure sessions/CSP, task/payment Ajax, fresh repeated-se
 preferences without document reloads or console errors. Website/docs checks pass. Logs:
 `/tmp/shadwick-railway-{image-build,java17-tests,runtime,smoke,site-check}.log`.
 
-The user connected GitHub to Railway directly; the service above is created, but a working public backend
-has not been verified yet. The Railway integration was offered but was not installed at the last check;
-there is no Railway CLI login, environment token or repository secret. GitHub status updates can track
+The user connected GitHub to Railway directly and supplied https://shadwick-production.up.railway.app/.
+There is no Railway CLI login, environment token or repository secret. GitHub status updates track
 automatic deployments. For dashboard/API operations, use Railway access if subsequently provided; do not
-ask for deployment authorization again. Deploy from the repository root, generate a public domain, verify
-the live `/studio` journey and replace the landing's local-run link with the actual public URL. Do not
-invent a domain. Then continue agent guidance/llms.txt and release preparation/Maven Central.
+ask for deployment authorization again. The current routing/catalog checkpoint above supersedes the old
+root-catalog setup. Continue agent guidance/llms.txt and release preparation/Maven Central after publication.
 
 **Publication checkpoint: Clover Studio.** The user requested committing and pushing the completed Studio
 application, fixes, tests and landing/documentation updates. The landing links to its local-run guide; the
 Website workflow publishes the static site after the push. GitHub Actions and `git log` record the exact
-source revision and deployment outcome. The interactive Java backend is not publicly hosted yet.
+source revision and deployment outcome. The Java backend is now hosted on Railway as described above.
 Publication checks pass: 838 JVM tests, all 61 Studio browser scenarios, three documentation renderer/API
 checks and the website build/check (55 HTML pages, 4,206 internal references). Logs are under
 `/tmp/shadwick-studio-publication-{verify,browser,docs,site}.log`; generated output remains ignored.

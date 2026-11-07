@@ -4,9 +4,10 @@ A static, responsive website for GitHub Pages. Plain HTML, CSS and JavaScript; n
 
 The component studio uses **the library's compiled embedded CSS and component scripts**, with a custom green token palette. Skin selection loads the actual bundle for any of the nine skins. Light/Dark/System preference applies to the studio and its overlays. The studio theme toggle, user menus, sidebar, header, breadcrumb and first-in-body skip link use core styles too. Demo forms, buttons, dialogs, sheets, dropdown menus, popovers, tooltips and toasts run locally in the browser; no information is submitted or persisted. The site explicitly distinguishes this static preview from Wicket's server-side behavior.
 
-Clover Studio is the separate, server-backed Wicket application at `/studio` in the examples module.
-Its [guide](../docs/guides/clover-studio.md) is included in the static documentation; a public Java host
-is still the next deployment checkpoint. The static component studio below remains a browser preview.
+Clover Studio is the server-backed Wicket homepage at https://shadwick-production.up.railway.app/;
+the component catalog is at `/components`, with grouped navigation and copyable Java/Wicket source.
+The `/studio` alias remains available. Its [guide](../docs/guides/clover-studio.md) is included in the static
+documentation. The static component studio below remains a browser preview.
 
 ## Build and preview
 
@@ -114,7 +115,7 @@ skins and built-in messages in nine languages. The static page remains English; 
 showcase has a language picker and a dedicated `/internationalization` page. A language panel below the
 catalog names all nine languages, including Croatian, and links to the locale setup/override guide.
 Searchable component documentation is available under `/docs/`. Clover Studio is implemented and
-documented for local use; public Java hosting and Maven Central publication remain pending.
+hosted on Railway, with source examples in the component catalog. Maven Central publication remains pending.
 
 The display catalog includes progress bars/rings, native meters, star ratings and busy Ajax buttons.
 The runnable Wicket `/status-controls` page exercises these APIs; the static studio remains a local preview.
