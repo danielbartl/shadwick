@@ -16,6 +16,13 @@ Maven dependency and is done: no Node, no Tailwind, no CSS build on their side.
 ## Resume point — 2026-11-07
 
 **Railway deployment preparation.** The user selected Railway and authorized deploying Clover Studio.
+The repository is now connected to Railway project `26a6a91d-41b3-4a54-999d-650612a8957d`, service
+`794b0087-a4ca-44ff-8ecd-375e87f53a24` (shadwick), environment `83c1bd75-8d11-4b8f-8dae-2631f28bfa3c`.
+These IDs were verified from Railway's GitHub commit-status URL. Its first build was rejected before
+execution because cache mounts lacked IDs. Both mounts now use Railway's literal
+`s/<service UUID>-<target path>` IDs; variables/build args cannot be used for this validation. Keep the
+service UUID synchronized in both mounts if the service changes. Inspect the next GitHub commit status
+for Railway's deployment result; account access is still needed for Railway dashboard/API operations.
 The root Dockerfile builds both modules/CSS with Java 17, then runs an unprivileged JRE image in Wicket
 deployment mode. `railway.json` configures one replica, no sleeping, `/healthz` readiness and graceful
 teardown. The Railway Spring profile handles forwarded HTTPS headers, secure/HttpOnly/SameSite=Lax
@@ -30,9 +37,10 @@ PORT, a non-root user, secure sessions/CSP, task/payment Ajax, fresh repeated-se
 preferences without document reloads or console errors. Website/docs checks pass. Logs:
 `/tmp/shadwick-railway-{image-build,java17-tests,runtime,smoke,site-check}.log`.
 
-No public backend has been created yet: the Railway integration was offered but was not installed at the
-last check; there is no Railway CLI login, environment token or repository secret. An account-access
-question is pending. Finish deployment after the user adds Railway or chooses CLI authentication; do not
+The user connected GitHub to Railway directly; the service above is created, but a working public backend
+has not been verified yet. The Railway integration was offered but was not installed at the last check;
+there is no Railway CLI login, environment token or repository secret. GitHub status updates can track
+automatic deployments. For dashboard/API operations, use Railway access if subsequently provided; do not
 ask for deployment authorization again. Deploy from the repository root, generate a public domain, verify
 the live `/studio` journey and replace the landing's local-run link with the actual public URL. Do not
 invent a domain. Then continue agent guidance/llms.txt and release preparation/Maven Central.

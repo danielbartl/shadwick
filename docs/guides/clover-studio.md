@@ -26,6 +26,9 @@ service with the repository root as its root directory. Railway builds both Mave
 CSS in the build stage, then runs the executable examples JAR as an unprivileged user on Java 17.
 Keep the Dockerfile's start command; it selects Wicket's deployment mode and the `railway` Spring profile.
 Railway supplies `PORT`, so no build command, start command or fixed port needs to be entered manually.
+The Maven and npm cache mounts use literal IDs scoped to the Shadwick Railway service. When deploying
+this Dockerfile to a different service, replace the service UUID in both cache IDs; Railway validates them
+before building and does not support environment-variable interpolation in those IDs.
 
 Generate a public Railway domain and open `/studio`; `/` remains the component catalog. The application
 accepts forwarded HTTPS headers and uses secure, HttpOnly, SameSite=Lax session cookies with a 30-minute

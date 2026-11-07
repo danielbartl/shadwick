@@ -5,8 +5,9 @@ COPY mvnw pom.xml LICENSE NOTICE ./
 COPY .mvn/ .mvn/
 COPY shadwick-core/ shadwick-core/
 COPY shadwick-examples/ shadwick-examples/
-RUN --mount=type=cache,target=/root/.m2 \
-    --mount=type=cache,target=/root/.npm \
+# Railway requires literal cache IDs scoped to this service (not build-arg interpolation).
+RUN --mount=type=cache,id=s/794b0087-a4ca-44ff-8ecd-375e87f53a24-/root/.m2,target=/root/.m2 \
+    --mount=type=cache,id=s/794b0087-a4ca-44ff-8ecd-375e87f53a24-/root/.npm,target=/root/.npm \
     ./mvnw -B -pl shadwick-examples -am -DskipTests package \
     && cp shadwick-examples/target/shadwick-examples-*.jar /tmp/app.jar
 
