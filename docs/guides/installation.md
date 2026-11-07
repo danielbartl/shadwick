@@ -54,7 +54,8 @@ java -jar shadwick-examples/target/shadwick-examples-0.1.0-SNAPSHOT.jar
 
 Open `http://localhost:8080`. The examples have skin, appearance and language controls. Their demo data is for
 exploration; replace it with your own providers and services. The examples application is separate from the library
-and is not published as a Maven dependency. A publicly hosted interactive Wicket showcase remains a later step.
+and is not published as a Maven dependency. Try the hosted [Clover Studio](https://shadwick-production.up.railway.app/)
+and [component catalog](https://shadwick-production.up.railway.app/components), or read the [Studio guide](./clover-studio.md).
 
 ## Choose your integration
 

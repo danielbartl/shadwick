@@ -15,6 +15,209 @@ Maven dependency and is done: no Node, no Tailwind, no CSS build on their side.
 
 ## Resume point — 2026-11-07
 
+**Current checkpoint: chart expansion publication.** The user authorized committing/pushing all accumulated chart
+work and publishing the updated landing/docs and applicable Studio/catalog build. This checkpoint packages horizontal
+bars, donuts, sparklines/value labels, forecast joins, independent formats and appearance options. Website's main-branch
+workflow publishes GitHub Pages; the linked Railway service watches core/examples changes and rebuilds the shared app.
+Live URLs: https://danielbartl.github.io/shadwick/ and https://shadwick-production.up.railway.app/ (`/components`, `/charts`).
+
+Publication review fixed legacy static chart compatibility: enhance only category axes carrying data-max-ticks,
+and keep plain-text tick spans centered. The landing predates nested measured tick labels; do not dereference their
+missing child spans. Appearance browser cases now rebuild this legacy markup and verify working tooltips/2px strokes.
+All 1005 JVM tests pass again, along with 16 refreshed appearance cases; the preceding combined 70-case chart run
+is green. Chromium/Firefox desktop/mobile landing checks pass image preview/download, project dialog, skin/theme
+controls, chart keyboard tooltips, axe, overflow, guide links and console checks. Screenshots are under
+`/tmp/shadwick-publication-screenshots/local`; logs `/tmp/shadwick-publication-{verify,browser,local,site}.log`.
+
+The broad CI browser suite was already failing before this group: Build run 42357263722 on published baseline
+2eedac3 had 255 failures out of 3836 cases, including ambiguous role=status selectors in user-menu tests. Keep
+that release-preparation cleanup distinct from the passing targeted chart/publication checks. No dependency or
+deployment configuration was changed for this publication. Next: first-release preparation/Maven Central.
+
+**Current checkpoint: chart appearance (implemented and verified locally).** The user selected the next chart checkpoint.
+ChartSeries now supports safe CSS light/dark colors, palette reset, native-pixel stroke widths, individual physical
+bar corners and NATURAL/STEP_BEFORE/STEP_AFTER/STEP_MIDDLE curves (STEP keeps its legacy after-step semantics).
+Natural cubic splines have continuous derivatives/natural endpoint boundaries and are clipped to the plot because
+they can overshoot. Null runs, forecast anchors, original samples and default interpolation remain unchanged.
+Color/width classes use SHA-256 content identities and nonce-protected Wicket header styles; unsupported literal
+colors fall back through @supports. No style attributes, external sources, new dependency or CSP relaxation.
+
+Explicit radii use native-pixel SVG bar viewports/masks with percentage positions, including no-script rendering.
+LTR/RTL positions are rendered separately so physical corners keep their meaning. Each mask combines full-size
+rounded rectangles clipped to four quadrants, letting SVG clamp radii to the responsive bar size. Crisp one-pixel
+midline joins remove fractional viewport seams while preserving antialiased outer corners. Do not return to CSS
+sizing on nested mask SVGs (browsers stretched them into leaf shapes), blending (Firefox seams), or mask dilation
+(changed the corner outlines). The final pixel checks verify real colors/corners and opaque bar centers in both browsers.
+
+SwChart adds approximate numeric tick count, max category ticks/min pixel gap, responsive category text measurement,
+tooltip AUTO/DOT/LINE/DASHED indicators and independent visual label/indicator/cursor toggles. TOP/BOTTOM legends
+support logical START/CENTER/END alignment. Numeric values, complete tables, native titles and keyboard context
+are retained. Axis observers handle complete-markup readiness, resize/fonts/direction and Ajax/clone cleanup even
+when tooltips are disabled. Default line CSS remains 2px for static landing/history SVG without attributes.
+Catalog examples compose branded forecasts, softer bars, rounded stack ends, a quiet activity report and a partial
+Ajax report that changes colors/corners and restores a palette token. Guide/API, README, catalog and landing copy
+are updated. All work stays local; the last published checkpoint remains agent guidance `2eedac3`.
+
+Validation: all 1005 JVM tests pass (876 core/129 examples), including 34 new appearance cases and 22 forecast curve
+cases. All 43 documentation tests and site checks pass (54 guides/152 API types). Initial 16 Chromium/Firefox
+appearance scenarios pass across Vega/Nova/Sketch, desktop light/mobile dark, 320px embedded RTL/touch, strict CSP
+nonces, native pixel corner sampling, font/resize/tick layout, palette restore, repeated Ajax/head deduplication,
+partial-markup readiness, no-script and forced-color paths. Desktop/mobile screenshots were reviewed under ignored
+`shadwick-examples/target/chart-appearance-screenshots/`. The final combined run passes all 70 browser scenarios:
+16 appearance, 16 formatting, 28 existing Cartesian, four forecast, and two each horizontal/donut/sparkline cases.
+It also verifies the 2px fallback for static SVG, unique style/mask IDs and unchanged unrelated regions during Ajax.
+Logs: `/tmp/shadwick-appearance-{verify,corners,browser,regression,doc-tests,site}.log`.
+Keep all six chart increments local until publication is requested. Next suggested checkpoint: first-release
+preparation/Maven Central. Pie, 100%-stacked charts and reference lines remain optional chart follow-ups; radar,
+scatter, radial charts, gradients, heatmaps, brushes and arbitrary tooltip/legend content are later breadth.
+
+**Current checkpoint: independent axis/tooltip formats (implemented and verified locally).** The user selected the next chart task.
+`SwChart` retains shared value/category formatting for its data table, value labels and unconfigured parts. New
+setAxisValueFormat/setAxisCategoryFormat and setTooltipValueFormat/setTooltipLabelFormat overrides accept named
+enums or serializable locale callbacks. Axis settings follow category/value meaning in either orientation.
+setAxisCurrency/setTooltipCurrency can choose independent currencies; named CURRENCY can inherit the common currency.
+Overrides survive shared-format changes, and null through a callback overload restores inheritance.
+
+CategoryFormat adds DAY/MONTH_SHORT/MONTH/MONTH_YEAR/DATE/TIME on shared, axis and tooltip category settings.
+Calendar/wall-clock types remain fixed; instant/offset/zoned values follow the explicit server zone. Incompatible
+types keep automatic output and strings are never parsed as dates. setTooltipLabel extracts another row property
+before formatting, for invoice references and similar context; null restores the constructor's category extractor.
+Callbacks receive original values (including BigDecimal precision) and the component locale. Null measurements stay
+empty; custom null/empty output stays empty. The request snapshot stores all text, preserving one read per extractor.
+
+Only differing tooltip strings become escaped data attributes on the existing table cells. Native SVG titles,
+keyboard announcements and pointer/touch tooltips share them; the runtime uses textContent with nullish inheritance.
+There is no browser formatting/date parser, extra request, dependency or CSP change. Forecast anchors, original table
+cells and value labels retain their original semantics. Repeated init and Ajax use the existing readiness/cleanup lifecycle.
+`/charts` includes vertical/horizontal revenue formats, invoice headers and a live formatted report. Guide, searchable
+catalog, README and landing descriptions are updated (54 guides/152 API types).
+
+All 963 JVM tests pass (834 core/129 examples), including 29 formatting tests for precision, both orientations,
+callbacks, empty/reset/precedence/currency settings, Java time types, zones, escaping and serialized Ajax locale changes.
+Standalone full-month names use LLLL, matching month-view grammar (Croatian travanj, Polish kwiecień).
+All 43 documentation tests and site checks pass. Initial 16 Chromium/Firefox browser scenarios pass across
+Vega/Nova/Sketch, desktop light/mobile dark, German 320px embedded RTL/touch/Ajax, literal/empty override handling,
+repeated init, axe and no-script/browser-zone checks. Desktop/mobile screenshots reviewed under ignored
+`shadwick-examples/target/chart-format-screenshots/`. Final validation passes 54 distinct browser scenarios: 16 format
+cases and 38 existing Cartesian/horizontal/donut/forecast/sparkline cases. Screenshot review and single-line checks
+caught amounts splitting in narrow cards. Values now resist flex shrinking, and horizontal tooltips can use the
+whole plot width while remaining beside the active row; long values still wrap within the cap. Cropped tooltip
+screenshots were rechecked. The failed intermediate regression log is superseded by green layout/regression-final
+runs. Logs: `/tmp/shadwick-format-{verify,tests,examples,browser,layout,regression-final,doc-tests,site}.log`.
+Keep all five chart increments local until publication is requested; last published commit remains `2eedac3`.
+Next suggested checkpoint: appearance options (light/dark series colors, curves/corners and axis/tooltip/legend
+configuration), then first-release preparation. Pie/100%-stacked/reference lines remain separate variations.
+
+**Current checkpoint: forecast joins (implemented and verified locally).** The user selected the next chart task.
+`ChartSeries.setJoin(source)` lets a dashed line/area continue the last real source sample strictly before its
+first forecast sample. It takes a typed series reference, independent of translated legend labels; null clears it.
+Both series must be registered once in the same chart. Bars, solid targets, foreign sources, cycles and incompatible
+area stacks fail clearly. Compatible stacked areas borrow the source's existing low/high geometry without counting
+the anchor twice. Chains use real input samples only and work regardless of registration order.
+
+The request snapshot adds the borrowed coordinates only to plotted geometry. Original input rows, formatted cells,
+tooltips, native titles, spoken values, dots and value labels retain real measurements only. Existing null gaps stay
+gaps, including a missing category between source and forecast; an isolated borrowed anchor is not drawn as a fake dot.
+Zero/negative/single-future values, no suitable source and overlapping original series keep their expected semantics.
+No extra extractor calls, dependency, inline style, JavaScript geometry or CSP change.
+
+`/charts` shows line/area continuations, missing future reports and a live handoff moving from March to April using
+the existing partial Ajax refresh. Guide, catalog/README/landing descriptions and consumer skill routing are updated.
+All 934 JVM tests pass (805 core/129 examples), including 14 forecast cases covering curves, stacks, chains,
+validation, snapshots, serialization, translated labels and clearing via Ajax. Documentation's 43 tests and site
+checks pass (54 guides/152 API types). Initial 16 Chromium/Firefox forecast scenarios pass, including Vega/Nova/Sketch,
+desktop light/mobile dark, 320px embedded RTL, keyboard/live status, no-script rendering, axe audits and Ajax without
+navigation or replacing unrelated charts. Desktop and mobile screenshots reviewed under ignored
+`shadwick-examples/target/forecast-chart-screenshots/`. The final browser run passes all 46 scenarios: all 16 forecast
+cases, 28 existing chart cases in Vega/Nova and two Chromium/Firefox sparkline resize/RTL/Ajax regressions.
+Logs: `/tmp/shadwick-forecast-{verify,browser,regression,serialization,doc-tests,site}.log`.
+Keep all four chart increments local until publication is requested; last published commit remains `2eedac3`.
+Next suggested checkpoint: independent axis/tooltip formatting, then appearance/curve/corner/tick/legend options,
+then first-release preparation. Pie/100%-stacked/reference lines remain separate variations.
+
+**Current checkpoint: sparklines and value labels (implemented and verified locally).** The user
+selected the next chart checkpoint after donuts. SwSparkline follows Oat's WebComponent/model-of-numbers API on a
+span. It is decorative, native/no-script, auto-detached and Ajax-targetable. It keeps null gaps, isolated samples,
+single/flat/negative/tiny ranges, optional fill and chart-token endpoint accents; separate SVG layers preserve
+stroke/dot sizes at responsive widths. Put readable value/period text beside it; do not add a second hidden label
+or make it a focus stop. It composes with existing SwCard/caller-owned markup and table cells, not a new stat-card API.
+
+ChartSeries.ValueLabels NONE/LAST/HIGHEST_AND_LAST/ALL configures each series. Labels use snapshot text/formatter
+and raw series values for stacks, skip nulls, deduplicate highest/latest and keep first highest ties. Separate
+native-size SVG text overlays use percentage anchors and direction-specific groups for readable RTL text.
+Chart.js has an independent label lifecycle even with tooltips off: resize/font/direction observers hide clipped or
+overlapping candidates, preferring latest then highest. Native vertical ALL falls back to highest/latest; native
+horizontal rows retain their labels. Labels remain aria-hidden with the complete accessible data table unchanged.
+
+/charts now composes native KPI cards and a team-capacity trend table, and shows latest/highest/latest/all/dense
+label configurations. The shared Refresh report Ajax action updates the 84→96 h card and its sparkline together,
+plus existing live reports. The dense label demo hides its category axis; tick-density improvements remain separate.
+Guide/API manifest/README/landing copy/agent routing are updated (54 guides/152 API types).
+Validation passes: all 920 JVM tests (791 core/129 examples, including 10 sparkline and 25 SwChart cases),
+40 new Chromium/Firefox scenarios across all skins, 36 existing chart browser cases, 43 documentation tests and
+site checks. The final focused rerun passes partial-markup readiness, repeated init, native fallback and Ajax
+trend changes in both browsers, plus eight existing Ajax/header-init cases. A final packaging run passes all
+46 CSS-bundle tests and two browser system-color checks, with CanvasText/Canvas label/halo contrast.
+One timing failure exposed early label-node retention: enhanceLabels now waits for the complete native table/plot
+before creating observers. The browser test removes then restores the data region to verify this; initial,
+resize and font layout are awaited as observable conditions. Logs: /tmp/shadwick-spark-{verify,browser,regression,
+focused-final,forced-final,doc-tests,site}.log.
+Screenshots are under ignored shadwick-examples/target/sparkline-screenshots; desktop/mobile images were reviewed.
+Keep all three chart increments local until publication is requested. Next suggested checkpoint is forecast joins
+and independent axis/tooltip formatting, then appearance/curve/corner/tick/legend options, then release preparation.
+
+**Current checkpoint: donut charts (implemented and verified locally).** The user selected donut
+charts after horizontal bars. `SwDonutChart<T>` is a separate Panel with Oat's data/category/value constructor,
+title/header/total-label models, shared SwChart.ValueFormat/currency/custom formatting, legend/tooltip toggles,
+and optional small-part grouping (default five parts, configurable minimum two). Positive parts retain input order;
+grouping keeps the largest N-1 plus localized Other and breaks ties by input index. Duplicate rows contribute once
+each. Every original row remains in the native table with shares and an exact total footer. Null stays missing,
+zero has zero share/no slice, negative/non-finite/>1e100 inputs fail. Decimal/integer totals use BigDecimal;
+tiny values are normalized before conversion to geometry. No new dependency or CSP relaxation.
+
+Native SVG ring/center/legend/table work without script. A separate donut-chart.js adds one focus stop, arrows,
+Home/End/Escape, pointer/legend/touch exploration, active styles and teardown/reinitialization after Ajax. All nine
+message bundles are included. ChartValues is a package-private formatter extracted from SwChart without changing
+its behavior. Catalog /charts now shows client hours, grouped/all region shares, empty/zero states and a shared
+Ajax refresh for Cartesian/horizontal/donut reports. Guides/API manifest/README/landing/agent routing are updated.
+Validation passes: all 904 JVM tests (775 core/129 examples, including 17 new donut tests), 40 donut browser
+scenarios across Chromium/Firefox/all nine skins, four horizontal browser regressions and 28 vertical cases.
+Coverage includes desktop light/mobile dark, open data/contrast, grouped/ungrouped shares, 320px embedded RTL/touch,
+forced colors, Ajax without navigation, idempotent replacement, dialog Escape and German no-script empty/zero data.
+All 43 docs tests, skill validation and the full site build/link checks pass (54 guides/151 API types).
+Browser review fixed muted percentage contrast on the active light legend and touch focus loss; active shares use
+foreground and legend pointerdown prevents default focus changes. German percentage assertions honor the locale's
+nonbreaking space. Desktop/mobile screenshots were visually reviewed under ignored
+`shadwick-examples/target/donut-chart-screenshots/`. Logs: `/tmp/shadwick-donut-{verify,browser-final,core,doc-tests,site}.log`.
+Keep donut and horizontal work local until publication is requested. Next suggested chart task is sparklines/value
+labels, followed by forecast/formatting/appearance parity, then release preparation. Pie remains a separate variation.
+
+**Current checkpoint: horizontal bar charts (local implementation).** Before release preparation, the user asked
+for chart variations relative to Shadleaf/Wicket Oat and selected the first recommendation, horizontal bars.
+`SwChart.setOrientation(Orientation.HORIZONTAL)` accepts bar series only and keeps VERTICAL as the default.
+It reuses the request snapshot, domain/stack calculations, formatters, legend, exact table and Ajax resource lifecycle.
+Each category has an HTML label and its own SVG row, so labels wrap without stretching text or overlapping bars.
+Groups/stacks share a common scale, signed stacks accumulate separately, and missing/zero values stay distinct.
+The horizontal value axis is X and category axis is Y; hiding the grid retains the zero baseline. RTL mirrors
+value geometry and places labels on the right. Up/Down, Home/End and Escape navigate rows; all nine message
+bundles include the new instructions. No dependency or CSP change.
+
+The `/charts` catalog now includes client rankings, grouped planned/delivered hours, signed stacks and a live
+horizontal report refreshed with the existing button. Guide, catalog descriptions, README and landing catalog
+copy are updated. Source-based HTML/Markdown API references include the new enum and setter automatically.
+Validation passes: all 887 JVM tests (including 19 chart tests), 40 new Chromium/Firefox horizontal scenarios
+(all nine skins, desktop light/mobile dark, 320px RTL/touch/embedded/forced colors/Ajax and no-script),
+28 existing vertical chart browser cases in Vega/Nova, 43 documentation tests, skill validation and full site checks.
+A final two-browser keyboard check also passes after adding scroll-into-view for the selected horizontal row.
+The narrow open-table audit exposed a real scroll-region keyboard-access issue: chart table wrappers now have
+tabindex=0 and a named region, including the landing preview. Firefox forced-colors checks use actual Tab focus.
+Horizontal tooltips attach beside the active row. Browser screenshots are under ignored
+`shadwick-examples/target/horizontal-chart-screenshots/`; desktop/mobile images were visually reviewed.
+Logs: `/tmp/shadwick-horizontal-{verify,browser-final,keyboard-final,doc-tests,site}.log`.
+Keep this implementation local until publication is requested. Last published checkpoint is agent guidance `2eedac3`.
+Next suggested chart work: donut charts, then sparklines/value labels and forecast/formatting/appearance parity,
+before returning to release preparation. The user has selected horizontal bars only so far.
+
 **Current checkpoint: agent guidance.** The user selected the next roadmap group. The reusable consumer skill
 is `shadwick/SKILL.md`, with three focused references, optional `agents/openai.yaml` metadata, Apache license
 and three portable QuickStart Java/HTML assets. It covers component/markup ownership, typed/detachable models,
@@ -636,7 +839,9 @@ wicket-extensions dependency was added after the user asked to continue with the
 
 8. **Advanced controls and visualization** (complete at family level locally): custom select, combobox
    with server-side search, calendar/date picker, month view and SVG charts are implemented.
-   Charts cover bars/lines/areas, composed and stacked series, axes/grid, legends, tooltips and native data tables.
+   Charts cover horizontal/vertical bars, lines/areas, composed/stacked series, donuts with exact totals/shares,
+   decorative sparklines and configurable value labels,
+   axes/grid where applicable, legends, tooltips and native data tables.
 9. **Visual breadth** (complete locally): all nine skins — Vega, Lyra, Nova, Maia, Mira, Luma, Rhea, Sera and Sketch.
 10. **Internationalization** (complete locally): English plus eight translated built-in message sets,
     locale-aware fallbacks and overrides, showcase language selection and Ajax/native verification.
@@ -644,12 +849,18 @@ wicket-extensions dependency was added after the user asked to continue with the
     meters, star-rating display and editable rating fields, plus advanced tables (CSV export, column
     chooser, expandable row details and inline edits). Other confirmed gaps include forms, workflows,
     layouts, trees/CRUD, messaging, async content and extra chart types. Scope these deliberately.
-12. **Documentation and distribution:** searchable documentation is implemented (53 guides and source-based
-    API references). Clover Studio is the implemented interactive agency application at `/studio`.
-    Next: host Clover Studio, then agent guidance/llms.txt and a Maven Central release.
+12. **Documentation and distribution:** searchable documentation is published (54 guides and source-based
+    API references). Clover Studio is hosted on Railway at `/`, with `/studio` retained as a compatibility route
+    and the source-backed catalog at `/components`. Agent skill/llms.txt/Markdown companions are published.
+    Chart expansion now precedes first-release preparation and Maven Central; horizontal bars, donuts, sparklines,
+    value labels, forecast joins, independent formatting and appearance options are implemented locally.
 
-Chart variant follow-ups: forecast joins, arbitrary per-series light/dark colors, natural splines
-and per-corner bar radii. Native SVG is an intentional alternative to Shadleaf’s Recharts runtime.
+The selected chart expansion checkpoints are complete locally, including light/dark series colors, curves/corners,
+tooltip/legend presentation and tick density. Next is first-release preparation/Maven Central.
+Pie/100%-stacked/reference lines can follow; radar/scatter/radial/heatmaps are later breadth.
+Horizontal bars, donuts, sparklines, value labels, forecast joins and independent axis/tooltip formats have been
+selected and implemented locally, along with chart appearance options.
+Native SVG remains the chart architecture.
 
 For broader Shadleaf parity after/alongside these groups:
 
@@ -694,6 +905,96 @@ locally. Next: a hosted interactive showcase, then tooling and release preparati
 - Record every decision under Conventions as soon as it is made.
 
 ## Conventions
+
+### Chart appearance (2026-11-07)
+
+- Keep native SVG/data tables and existing defaults. ChartSeries accepts independent light/dark CSS colors and
+  0..20px outline widths. Whitelist safe color literal syntax (including simple CSS variables), reject declaration,
+  URL/markup/nested-expression injection and use @supports to preserve the palette for unsupported literals.
+  SHA-256 content-addressed series classes and Wicket nonce-protected CssHeaderItem rules style geometry, legends
+  and tooltip swatches together; no style attributes or CSP relaxation. setColor(int) restores palette colors.
+  Default line CSS retains a 2px fallback for static landing/history markup without a stroke-width attribute.
+- Explicit bar radii use a separate native-pixel SVG overlay with percentage geometry. A mask composes clipped
+  quadrants of full-size rounded rectangles, so SVG clamps radii to responsive dimensions. SVG attributes define
+  viewport sizes: CSS sizing of nested mask SVG viewports stretched corners into leaf shapes in both browsers.
+  Separate LTR/RTL positions preserve physical corner meanings without mirroring shapes or requiring script layout.
+  Keep masks aria-hidden and pointer-inert; original SVG hit bands and exact table remain authoritative.
+- Add a real natural cubic spline with zero endpoint second derivatives; line/area runs preserve null gaps and
+  forecast joins. Natural interpolation can overshoot, so clip it to the plot. STEP remains the old after-step;
+  expose STEP_BEFORE/STEP_AFTER/STEP_MIDDLE explicitly. Original points and formatted values stay unchanged.
+- Numeric ticks have a target count; nice rounding may add one. Category max count/min pixel gap use an independent
+  resize/font/direction observer with complete-table readiness and replacement cleanup, even with tooltips off.
+  Keep a server-selected native subset and every horizontal category row; never thin the table or tooltips.
+- Tooltip AUTO indicators preserve series dashes; DOT/LINE/DASHED are explicit overrides. Visual label, indicator
+  and cursor toggles retain full native titles/keyboard context. TOP/BOTTOM and logical START/CENTER/END legends
+  keep source series order and respect RTL. No new dependency, geometry runtime or extra request.
+
+### Independent chart formats (2026-11-07)
+
+- Preserve shared setValueFormat/setCategoryFormat/setCurrency defaults for tables, value labels and unconfigured
+  axes/tooltips. Add semantic axis value/category settings that keep their meaning on horizontal charts, and
+  independent tooltip value/label formats and currencies. Last setter within a part wins; later shared changes do
+  not overwrite explicit overrides. Null through custom-formatter overloads restores inheritance.
+- CategoryFormat provides DAY/MONTH_SHORT/MONTH/MONTH_YEAR/DATE/TIME for typed Java time values. Local calendar and
+  wall-clock types do not shift; instant/offset/zoned values use the configured zone (UTC default). No string date
+  parser or browser Intl dependency. Incompatible types retain automatic representation; callbacks receive the
+  original object and locale. Full month names use standalone grammar (LLLL). Optional setTooltipLabel extracts
+  another property once per row, before formatting.
+- Extend the per-request snapshot with axis categories, tooltip labels and original-Number tooltip text. Keep
+  exact table/value-label formatting intact. Only differing tooltip strings become escaped data attributes on
+  existing table cells; chart.js reads them with nullish fallbacks and textContent. Empty overrides remain empty,
+  null measurements never invoke numeric formatters, and synthetic forecast anchors remain absent from reported
+  values. Native titles and keyboard live status use tooltip text, as do pointer/touch tooltips. Ajax cleanup and
+  partial-markup readiness keep the existing lifecycle; no extra request, inline style, dependency or CSP change.
+- Keep tooltip values from flex-shrinking below their normal width; retain the 60% cap and overflow-wrap:anywhere
+  for unusually long amounts. Shrinking ordinary currency strings split decimal places onto a new line in compact
+  Vega cards. Horizontal tooltips stay beside the active row, but use max-content width capped to the whole plot's
+  inline-size container (100cqi minus gutters), so the bar column does not constrain the detail. Browser checks
+  assert containment, separation of name/value, one line for normal amounts and wrapping for very long values.
+
+### Sparklines and value labels (2026-11-07)
+
+- SwSparkline is a decorative WebComponent taking IModel of a numeric list. Match Oat's construction/composition
+  pattern, but preserve null gaps instead of connecting through them. Snapshot numeric values once while rendering;
+  reject non-finite/>1e100 magnitudes. Use isolated points, midpoint for flat values and a centered single sample.
+  Native rendering needs no JS or message bundle; semantic values belong in neighboring application text.
+- Keep chart value labels on ChartSeries. Choose last non-null/highest by original numeric data, not stack height;
+  format from the existing snapshot. Default NONE preserves existing plots. ALL is a candidate set; scripts prune
+  collisions and native vertical fallback keeps latest/highest. Keep tooltip/table data complete.
+- Do not stretch text inside the geometric viewBox. Use native pixel text overlays with percentage anchors and
+  CSS-selected LTR/RTL groups. Keep pointer events off overlays and give labels a background halo for legibility.
+- The independent label observer map must wait for complete native table/plot markup before retaining nodes,
+  detach on plot replacement, handle font/direction/resize changes and initialize with tooltips disabled.
+  Keep latest/highest priority when hiding overlaps; use CanvasText/Canvas for system-color label/halo contrast.
+  No inline styles or CSP change.
+
+### Donut charts (2026-11-07)
+
+- SwDonutChart models one value per category; do not add axes, orientation or Cartesian series APIs to it. Match
+  Oat's constructor/figure/data disclosure while sharing Shadwick chart tokens, tooltip skins and value formatting.
+- Snapshot extractors once per request and detach every model. Preserve original Numbers for individual formatting;
+  sum decimal/integral amounts exactly before normalizing shares. Reject negatives rather than silently clamping.
+  Zero/missing rows remain distinct in the exact table and do not consume ring colors/grouping slots.
+- Group positive rows by stable input indexes, not equality. Defaults show four largest plus Other when needed,
+  retaining input order. Keep the original full table and localized grouping note; colors repeat after five when
+  grouping is disabled or the configured limit exceeds the palette.
+- Use a square native SVG with a full single-part ring and proportional separator gaps. Center totals have smaller
+  text/ellipsis for long formatting; the footer retains the full total. Keep SVG titles as the no-script fallback.
+- JS reads the rendered legend (including when visually hidden), waits for complete parts, and owns no business
+  state. Keep listeners/status scoped to the current plot. Preserve keyboard focus when touching legend rows.
+
+### Horizontal charts (2026-11-07)
+
+- Extend SwChart with an explicit Orientation enum instead of adding a second data/series API. Reject horizontal
+  line/area combinations at render time. Preserve the default vertical rendering and existing category/value semantics.
+- Render horizontal categories in input order, wrapping labels next to independently sized SVG rows. Group slots
+  depend on stack IDs, positive/negative sums stay separate, and all rows share one snapshot/domain. Keep exact values
+  and missing cells in the native disclosure. The zero baseline remains visible when optional grid lines are hidden.
+- Keep colors/geometry in packaged CSS and SVG attributes; no inline styles. Mirror only the SVG geometry for RTL,
+  with logical HTML labels/ticks. Up/Down always follows row order; vertical charts retain their existing Left/Right.
+- References are Wicket Oat OatBarChart/OatChart/TierB tests at 76562314a52eb37b517321632cfb6ef2f5187781 and
+  Shadleaf chart parts/CSS/runtime at ac2998704d3ed9590266ffca49bcc6455c70a025. Both current upstream heads were
+  verified during the chart review. Horizontal bars are absent from Shadleaf's current chart parts.
 
 ### Clover Studio application (2026-11-06)
 

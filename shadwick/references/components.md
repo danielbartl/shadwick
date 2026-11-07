@@ -15,7 +15,7 @@ verify constructors, callback shapes and slots for the task. Several controls sh
 | Date/time input | Native typed fields | [Date and time](https://danielbartl.github.io/shadwick/docs/components/date-time/index.md) |
 | Calendar or date range | `SwCalendar`, `SwDatePicker`, range equivalents | [Calendar](https://danielbartl.github.io/shadwick/docs/components/calendar/index.md) |
 | Agenda | `SwMonthView` | [Month view](https://danielbartl.github.io/shadwick/docs/components/month-view/index.md) |
-| Charts with exact data | `SwChart`, `ChartSeries` | [Charts](https://danielbartl.github.io/shadwick/docs/components/charts/index.md) |
+| Charts, forecasts, rankings and small trends | `SwChart`, `ChartSeries`, `SwDonutChart`, `SwSparkline` | [Charts](https://danielbartl.github.io/shadwick/docs/components/charts/index.md) |
 | Toggle buttons or field addons | Toggles and input groups | [Groups](https://danielbartl.github.io/shadwick/docs/components/toggles-input-groups/index.md) |
 | Upload a file | `SwFileUpload`; application-owned storage | [Upload](https://danielbartl.github.io/shadwick/docs/components/file-upload/index.md) |
 | Show existing files | `SwAttachment`, `SwAttachmentGroup` | [Attachments](https://danielbartl.github.io/shadwick/docs/components/attachments/index.md) |

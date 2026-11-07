@@ -124,7 +124,7 @@ Server-rendered monthly plans with locale-aware weeks and custom day slots.
 
 ### Charts
 
-Native SVG bars, lines and areas with exact accessible data.
+Native SVG bars, lines, areas and donuts with grouped/stacked series, forecast joins, independent formats, light/dark colors, curves/corners, value labels and exact data; decorative sparklines for cards and tables.
 
 [Charts](docs/components/charts.md)
 

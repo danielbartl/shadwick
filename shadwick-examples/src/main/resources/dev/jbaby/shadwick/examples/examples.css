@@ -344,3 +344,12 @@ body {
   .ex-source pre { padding:1rem; font-size:.6875rem; }
 }
 @media(prefers-reduced-motion:reduce) { .ex-catalog-cards article > a,.ex-catalog-menu > summary span { transition:none; } }
+
+/* Compact chart compositions; the sparkline itself remains a library component. */
+.ex-spark-cards { display:grid; grid-template-columns:repeat(auto-fit,minmax(min(100%,14rem),1fr)); gap:1.5rem; }
+.ex-spark-metric { display:flex; align-items:center; justify-content:space-between; gap:1rem; }
+.ex-spark-metric strong { font-size:1.75rem; font-weight:600; font-variant-numeric:tabular-nums; }
+.ex-spark-metric .sw-sparkline { flex-shrink:1; }
+.ex-spark-table { margin-top:2rem; max-width:100%; overflow-x:auto; }
+.ex-spark-table caption { padding-block-end:1rem; text-align:start; font-weight:500; }
+.ex-spark-table .sw-sparkline { width:8rem; }

@@ -292,10 +292,12 @@
     "slug": "components/charts",
     "title": "Charts",
     "group": "Data and planning",
-    "description": "Native SVG bars, lines and areas with exact accessible data.",
+    "description": "Native SVG charts with custom colors/corners/curves, independent formats, forecasts, donuts, sparklines and accessible data.",
     "apis": [
       "shadwick-core/src/main/java/dev/jbaby/shadwick/components/chart/SwChart.java",
-      "shadwick-core/src/main/java/dev/jbaby/shadwick/components/chart/ChartSeries.java"
+      "shadwick-core/src/main/java/dev/jbaby/shadwick/components/chart/ChartSeries.java",
+      "shadwick-core/src/main/java/dev/jbaby/shadwick/components/chart/SwDonutChart.java",
+      "shadwick-core/src/main/java/dev/jbaby/shadwick/components/chart/SwSparkline.java"
     ],
     "example": "ChartPage"
   },

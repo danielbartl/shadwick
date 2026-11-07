@@ -35,7 +35,7 @@ final class CatalogPages {
         new Example("invoice", "Invoice detail", "Tables & data", "A detail view connected to the data-table example.", InvoicePage.class, "components/data-table"),
         new Example("calendar", "Calendar & date picker", "Dates & charts", "Single dates, ranges and locale-aware calendars.", CalendarPage.class, "components/calendar"),
         new Example("month-view", "Month view", "Dates & charts", "An agenda with custom day content and navigation.", MonthViewPage.class, "components/month-view"),
-        new Example("charts", "Charts", "Dates & charts", "Native SVG bars, lines, areas and exact data.", ChartPage.class, "components/charts"),
+        new Example("charts", "Charts", "Dates & charts", "Charts, custom appearance, independent formats, forecasts, donuts, sparklines and exact data.", ChartPage.class, "components/charts"),
         new Example("shell", "App shell", "Layout & navigation", "Headers, breadcrumbs and skip navigation.", ShellPage.class, "components/app-shell"),
         new Example("sidebar", "Sidebar", "Layout & navigation", "Grouped links, icon rails and mobile navigation.", SidebarPage.class, "components/sidebar"),
         new Example("user-menu", "User menu", "Layout & navigation", "Account actions in a header or sidebar.", UserMenuPage.class, "components/user-menu"),
