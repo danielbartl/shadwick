@@ -307,7 +307,8 @@ public class StudioPage extends SwAppLayout {
     @Override protected IModel<String> appTitleModel() { return () -> heading() + " · Clover Studio"; }
     @Override protected IModel<List<MenuItem>> sidebarMenuItemsModel() {
         return () -> List.of(MenuItem.group(t("nav.workspace").toUpperCase(getLocale()), MenuItem.of(t("nav.overview"), StudioPage.class, route("overview", 0)).withIcon("house"),
-                MenuItem.of(t("nav.projects"), StudioPage.class, route("projects", 0)).withIcon("folder"), MenuItem.of(t("nav.invoices"), StudioPage.class, route("invoices", 0)).withIcon("file-text")));
+                MenuItem.of(t("nav.projects"), StudioPage.class, route("projects", 0)).withIcon("folder"), MenuItem.of(t("nav.invoices"), StudioPage.class, route("invoices", 0)).withIcon("file-text"),
+                MenuItem.of(t("nav.components"), HomePage.class, CatalogPages.preferences(getPageParameters())).withIcon("package")));
     }
     @Override protected boolean isCurrentPage(MenuItem item) { return item.parameters() != null && item.parameters().get("view").toString("").equals(view.equals("project") ? "projects" : view); }
     @Override protected SidebarBehavior.Collapsible sidebarCollapsible() { return SidebarBehavior.Collapsible.NONE; }

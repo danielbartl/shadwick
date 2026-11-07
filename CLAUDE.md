@@ -22,6 +22,8 @@ The `/studio` alias remains a direct-rendering compatibility route; generated St
 guide links. BasePage now has a compact header, responsive/searchable sidebar (Ctrl/Command+K), active
 links and a native preferences disclosure. Navigation carries skin/mode/locale without unrelated demo state.
 Layout demos retain their own layout preview and link back to the catalog.
+Studio also has Components/Komponenten as the last sidebar link, opening `/components` with its current
+skin/mode/locale parameters. It uses normal navigation into the catalog; Studio-only links remain Ajax.
 
 Every catalog demo has Java and matching HTML, including supporting panel markup and inherited header-layout
 source. Maven packages these exact files under `META-INF/showcase-source`; `ExampleSourcePanel` renders
