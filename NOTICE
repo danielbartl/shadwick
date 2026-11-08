@@ -9,7 +9,7 @@ It includes markup structure, CSS and JavaScript adapted from third-party projec
   Licensed under the Apache License, Version 2.0.
   Shadwick's tokens, component structure CSS and skins (vega, lyra, nova, maia, mira, luma, rhea, sera, sketch) are adapted
   from Shadleaf's, as are the native popup, menu, toast and custom select, combobox, calendar and date picker interactions.
-  Month-view markup and skin rules, and chart tooltip/legend structure and skins,
+  Fieldset/legend markup and skin rules, month-view markup and skin rules, and chart tooltip/legend structure and skins,
   are also adapted from Shadleaf. The native SVG chart API and rendering patterns
   follow Wicket Oat (MIT).
   Shadwick is inspired by Shadleaf; it is not affiliated with
@@ -24,7 +24,7 @@ It includes markup structure, CSS and JavaScript adapted from third-party projec
 - Wicket Oat (https://github.com/danielbartl/wicket-oat).
   Copyright (c) 2026 Daniel Bartl. Licensed under the MIT License.
   The native SVG chart API, rendering patterns, progress/meter/rating controls, Ajax busy lifecycle,
-  CSV export, row-details and inline-edit APIs, and shared translation strings are adapted from Wicket Oat.
+  steps indicator API and labels, avatar-group API, freeform tag-input API and comma conversion, lazy-load panel API and shared-timer scheduling, record-detail/timeline APIs and localized value presentation, button-group/split-button, fieldset/custom-field, money/percentage/range APIs, CSV export, row-details and inline-edit APIs, and shared translation strings are adapted from Wicket Oat.
 
 - shadcn/ui (https://ui.shadcn.com), Copyright (c) 2023 shadcn.
   Licensed under the MIT License.

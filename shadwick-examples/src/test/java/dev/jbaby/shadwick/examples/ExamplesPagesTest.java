@@ -56,7 +56,7 @@ class ExamplesPagesTest {
     }
 
     @ParameterizedTest
-    @ValueSource(strings = {"HomePage", "InternationalizationPage", "StatusControlsPage", "AdvancedTablePage", "ButtonPage", "FormPage", "InputPage", "ChoicePage", "SelectPage", "CustomSelectPage", "ComboboxPage", "CalendarPage", "MonthViewPage", "ChartPage", "DateTimePage", "GroupPage", "UploadPage", "DialogPage", "OverlayPage", "PopupPage", "MenuPage", "ToastPage", "ShellPage", "SidebarPage", "ThemePage", "AppLayoutPage", "HeaderLayoutPage", "DisclosurePage", "AttachmentPage", "DataTablePage", "InvoicePage", "TablePage", "PaginationPage", "UserMenuPage", "UserSignInPage", "DisplayPage", "FeedbackPage"})
+    @ValueSource(strings = {"HomePage", "InternationalizationPage", "StatusControlsPage", "AdvancedTablePage", "ButtonPage", "ButtonGroupPage", "FormPage", "FormCompletionPage", "InputPage", "ChoicePage", "SelectPage", "CustomSelectPage", "ComboboxPage", "TagInputPage", "CalendarPage", "MonthViewPage", "ChartPage", "DateTimePage", "GroupPage", "UploadPage", "DialogPage", "OverlayPage", "PopupPage", "MenuPage", "ToastPage", "ShellPage", "SidebarPage", "ThemePage", "AppLayoutPage", "HeaderLayoutPage", "DisclosurePage", "StepsPage", "AttachmentPage", "DataTablePage", "InvoicePage", "TablePage", "PaginationPage", "UserMenuPage", "UserSignInPage", "DisplayPage", "AvatarGroupPage", "RecordDisplayPage", "LazyLoadPage", "FeedbackPage"})
     void everyPageRendersInTheDefaultSkinWithoutInlineStylesOrHandlers(String name) throws ClassNotFoundException {
         tester.startPage(page(name));
 

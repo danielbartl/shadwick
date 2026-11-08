@@ -11,13 +11,19 @@ markup and CSS. It is not affiliated with or endorsed by Shadleaf or shadcn/ui. 
 [Wicket Oat](https://github.com/danielbartl/wicket-oat): if you know Wicket Oat, moving to Shadwick is mostly
 renaming `Oat` to `Sw`.
 
-> **Status: Forms, overlays, app shell, disclosures, attachment displays and data tables implemented.** Buttons, native input fields, custom selects, comboboxes, calendars/date pickers, month views, SVG charts, choices, toggles,
-> input groups, dialogs, menus, toasts, layouts, tabs, accordions, collapsibles, attachment cards/galleries, sortable/editable data tables with CSV export, row details and column choices, pagination, display components and feedback,
+> **Status: Forms, overlays, app shell, disclosures, attachment displays and data tables implemented.** Buttons, button groups/split buttons, native input fields, custom selects, comboboxes, calendars/date pickers, month views, SVG charts, choices, toggles,
+> freeform tag inputs, input groups, dialogs, menus, toasts, layouts, tabs, accordions, collapsibles, attachment cards/galleries, sortable/editable data tables with CSV export, row details and column choices, pagination, description lists, timelines, lazy-loaded panels, avatar groups, steps indicators, display components and feedback,
 > in nine skins (vega, lyra, nova, maia, mira, luma, rhea, sera, sketch), light and dark. Standalone and embedded CSS bundles. Busy buttons, progress/meter controls and star ratings. Built-in messages in nine languages.
 > Not yet on Maven Central.
 
 Read the [component documentation](docs/README.md) for focused guides, matching markup, accessibility notes and
 API references generated from the Java source. The existing README anchors below link to those guides.
+
+The pre-release component shortlist is complete. Try the new [quote fields](https://shadwick-production.up.railway.app/form-completion),
+[button groups](https://shadwick-production.up.railway.app/button-groups), [record details and activity](https://shadwick-production.up.railway.app/record-display),
+[lazy panels](https://shadwick-production.up.railway.app/lazy-load), [freeform tags](https://shadwick-production.up.railway.app/tag-input),
+[avatar groups](https://shadwick-production.up.railway.app/avatar-groups) and [steps indicator](https://shadwick-production.up.railway.app/steps)
+in the live catalog. Release notes, signing/release automation and Maven Central publication are the next checkpoint.
 
 ## Agent guidance
 
@@ -28,7 +34,8 @@ source-derived API references. No agent configuration is changed by this reposit
 
 ## Getting started
 
-Requires Wicket 10 and Java 17. Until the first release, install it locally with `./mvnw install`, then:
+Built against Wicket 10.11.0 with Java 17 as the minimum. Read [Compatibility](docs/guides/compatibility.md) for the
+candidate API and stored-page contracts. Until the first release, install it locally with `./mvnw install`, then:
 
 ```xml
 <dependency>
@@ -68,11 +75,41 @@ Use nine message languages, regional formats and Wicket resource overrides.
 
 [Internationalization](docs/guides/internationalization.md)
 
+### Lazy-loaded panels
+
+Defer expensive components with skeletons, shared readiness polling and a native fallback.
+
+[Lazy-loaded panels](docs/components/lazy-load.md)
+
+### Steps indicator
+
+Show numbered process stages with localized state captions and optional completed-step selection.
+
+[Steps indicator](docs/components/steps.md)
+
+### Freeform tags
+
+Create and remove tags with native/Ajax validation and a comma-separated no-script input.
+
+[Freeform tags](docs/components/tag-input.md)
+
+### Record details and activity
+
+Native description lists and ordered histories with localized values and times.
+
+[Description lists](docs/components/description-list.md) · [Timelines](docs/components/timeline.md)
+
 ### Buttons
 
 Ajax actions, submit buttons, variants, sizes and icon-only names.
 
 [Buttons](docs/components/buttons.md)
+
+### Button groups and split buttons
+
+Connect existing controls or pair a primary Ajax action with a menu of alternatives.
+
+[Button groups and split buttons](docs/components/button-groups.md)
 
 ### Busy Ajax controls
 
@@ -97,6 +134,12 @@ Labels, models, validators, inline errors and normal or Ajax submission.
 Text, email, password, URL, telephone, search, textarea and numeric input.
 
 [Text and number inputs](docs/components/inputs.md)
+
+### Quote fields
+
+Native fieldsets, compound inputs, localized money/percentage amounts and a native range slider.
+
+[Fieldsets and custom fields](docs/components/fieldsets-custom-fields.md) · [Money and percentages](docs/components/money-percent.md) · [Range](docs/components/range.md)
 
 ### Native selections
 

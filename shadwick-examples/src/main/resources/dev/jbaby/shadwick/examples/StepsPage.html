@@ -1,0 +1,21 @@
+<wicket:extend xmlns:wicket="http://wicket.apache.org">
+<div><h1 class="ex-title">Steps indicator</h1><p class="ex-lead">Show where an ordered process stands, with numbered stages and explicit state labels. The application decides how to move between stages.</p></div>
+<section id="shipping-example" class="ex-section" aria-labelledby="shipping-heading"><h2 id="shipping-heading">Order status</h2><div wicket:id="shipping"></div></section>
+<section id="workflow-example" class="ex-section" aria-labelledby="workflow-heading"><h2 id="workflow-heading">A project workflow</h2>
+  <p class="ex-muted">Completed stages can be selected with JavaScript. Without it, the indicator stays readable and Next normally still submits the form.</p>
+  <form wicket:id="form" aria-label="Project workflow"><div wicket:id="steps"></div><div class="ex-form"><div wicket:id="name"></div></div>
+    <div class="ex-row"><button wicket:id="normal" type="submit">Next normally</button><button wicket:id="next"></button></div>
+    <div class="ex-row"><button wicket:id="reset"></button><button wicket:id="finish"></button><button wicket:id="replace"></button></div>
+    <p wicket:id="receipt" class="ex-muted" role="status"></p>
+  </form>
+</section>
+<section id="states-example" class="ex-section" aria-labelledby="states-heading"><h2 id="states-heading">Boundary states</h2>
+  <h3>Not started</h3><div wicket:id="notStarted"></div><h3>All completed</h3><div wicket:id="complete"></div>
+  <h3>Single step</h3><div wicket:id="single"></div><h3>Empty process</h3><div wicket:id="empty"></div>
+  <h3>Read-only process</h3><div wicket:id="disabled"></div>
+</section>
+<section id="compact-example" class="ex-section" aria-labelledby="compact-heading"><h2 id="compact-heading">Inside a narrow container</h2>
+  <p class="ex-muted">This sidebar-sized container stacks the stages even on a wide screen.</p><div class="ex-steps-compact"><div wicket:id="compact"></div></div>
+</section>
+<section id="long-example" class="ex-section" aria-labelledby="long-heading"><h2 id="long-heading">Long and literal titles</h2><div wicket:id="longTitles"></div></section>
+</wicket:extend>

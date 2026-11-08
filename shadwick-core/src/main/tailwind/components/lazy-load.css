@@ -1,0 +1,7 @@
+/* The existing skin owns skeleton identity. One status names the loading region's placeholder. */
+@layer components {
+  .sw-lazy-load, .sw-lazy-load-placeholder { min-inline-size: 0; }
+  .sw-lazy-load-placeholder { display: grid; }
+  .sw-lazy-load-status { margin: 0; overflow-wrap: anywhere; }
+  .sw-lazy-load-native { text-decoration: underline; text-underline-offset: .2em; }
+}

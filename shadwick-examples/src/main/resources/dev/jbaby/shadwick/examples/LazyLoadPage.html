@@ -1,0 +1,14 @@
+<wicket:extend xmlns:wicket="http://wicket.apache.org">
+<div><h1 class="ex-title">Lazy-loaded panels</h1><p class="ex-lead">Show the page first, then replace skeletons with server-rendered content. Without JavaScript, use the Load content link.</p></div>
+<section class="ex-section" id="revenue-example" aria-labelledby="revenue-heading"><h2 id="revenue-heading">Deferred revenue report</h2>
+  <p class="ex-muted">The report and its editable form are created after the initial page response.</p><div wicket:id="revenue"></div>
+</section>
+<section class="ex-section" id="queued-example" aria-labelledby="queued-heading"><h2 id="queued-heading">Wait for readiness</h2>
+  <p class="ex-muted">This example waits until you mark the report ready. Replace it while it is pending, or after it loads, to start a fresh generation.</p>
+  <div wicket:id="queued"></div><div class="ex-row"><button wicket:id="ready"></button><button wicket:id="replace"></button></div>
+</section>
+<section class="ex-section" id="recovery-example" aria-labelledby="recovery-heading"><h2 id="recovery-heading">Recover from a temporary failure</h2>
+  <p class="ex-muted">This sample reporting service fails once. Its error content provides a retry action that replaces the lazy panel.</p><div wicket:id="recoverable"></div>
+</section>
+<p wicket:id="receipt" class="ex-muted" role="status"></p>
+</wicket:extend>

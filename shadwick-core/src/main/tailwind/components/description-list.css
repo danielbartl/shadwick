@@ -1,0 +1,9 @@
+/* Native term/value relationships; identity follows the Shadleaf-derived skin. */
+@layer components {
+  .sw-description-list { container: sw-details / inline-size; min-inline-size: 0; margin: 0; }
+  .sw-description-list-item { display: grid; min-inline-size: 0; }
+  .sw-description-list-item > :is(dt, dd) { min-inline-size: 0; margin: 0; overflow-wrap: anywhere; }
+  @container sw-details (width >= 28rem) {
+    .sw-description-list-item { grid-template-columns: minmax(0, 1fr) minmax(0, 2fr); }
+  }
+}

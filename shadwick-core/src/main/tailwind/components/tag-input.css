@@ -1,0 +1,9 @@
+@layer components {
+  .sw-tag-input[data-enhanced]:has(> .sw-tag-input-native:disabled) > .sw-combobox-control { @apply cursor-not-allowed bg-muted; }
+  .sw-tag-input[data-enhanced] > .sw-tag-input-native { @apply pointer-events-none absolute inset-0 size-full opacity-0; }
+  .sw-tag-input .sw-combobox-chip { min-inline-size: 0; max-inline-size: 100%; height: auto; min-height: 1.5rem; flex-shrink: 1; white-space: normal; }
+  .sw-tag-input .sw-combobox-chip-label { min-inline-size: 0; overflow-wrap: anywhere; white-space: normal; overflow: visible; text-overflow: clip; }
+  .sw-tag-input .sw-combobox-chip-remove { @apply self-center; }
+  .sw-tag-input-status, .sw-tag-input-instructions { @apply sr-only; }
+  .sw-tag-input:has(> .sw-tag-input-native:disabled) :is(.sw-combobox-control, .sw-combobox-chip) { @apply forced-colors:border-[GrayText] forced-colors:text-[GrayText]; }
+}

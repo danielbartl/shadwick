@@ -97,7 +97,7 @@ public abstract class BaseSwField<T, C extends FormComponent<T>, F extends BaseS
         // The field's element in shadcn's markup. Transparent, so the label, input, description and error inside it
         // are children of this panel, with short paths such as "email:input".
         TransparentWebMarkupContainer container = new TransparentWebMarkupContainer("container");
-        container.add(AttributeModifier.replace("data-invalid", (IModel<String>) () -> getInput().hasErrorMessage() ? "true" : null));
+        container.add(AttributeModifier.replace("data-invalid", (IModel<String>) () -> currentError() != null ? "true" : null));
         add(container);
 
         this.label = new Label("label", label != null ? label : new StringResourceModel(id, this).setDefaultValue(id));
@@ -161,7 +161,7 @@ public abstract class BaseSwField<T, C extends FormComponent<T>, F extends BaseS
             input.setOutputMarkupId(true);
             // Link the input to its description and error for screen readers
             input.add(AttributeModifier.replace("aria-describedby", (IModel<String>) this::getDescribedBy));
-            input.add(AttributeModifier.replace("aria-invalid", (IModel<String>) () -> input.hasErrorMessage() ? "true" : "false"));
+            input.add(AttributeModifier.replace("aria-invalid", (IModel<String>) () -> currentError() != null ? "true" : "false"));
             // Not the native "required", which would make the browser block the submit
             // with its own message before Wicket's validation could show one inline
             input.add(AttributeModifier.replace("aria-required", (IModel<String>) () -> input.isRequired() ? "true" : null));
@@ -201,7 +201,8 @@ public abstract class BaseSwField<T, C extends FormComponent<T>, F extends BaseS
         return !Strings.isEmpty(getDescriptionText());
     }
 
-    private FeedbackMessage currentError() {
+    /** The inline error; compound fields may surface an inner input's error here. */
+    protected FeedbackMessage currentError() {
         return getInput().getFeedbackMessages().first(FeedbackMessage.ERROR);
     }
 

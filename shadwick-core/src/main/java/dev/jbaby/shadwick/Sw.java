@@ -81,6 +81,20 @@ public final class Sw {
             return new ButtonBehavior();
         }
 
+        public static dev.jbaby.shadwick.behaviors.ButtonGroupBehavior buttonGroup() {
+            return new dev.jbaby.shadwick.behaviors.ButtonGroupBehavior();
+        }
+
+        public static dev.jbaby.shadwick.behaviors.DescriptionListBehavior descriptionList() {
+            return new dev.jbaby.shadwick.behaviors.DescriptionListBehavior();
+        }
+        public static dev.jbaby.shadwick.behaviors.TimelineBehavior timeline() {
+            return new dev.jbaby.shadwick.behaviors.TimelineBehavior();
+        }
+        public static dev.jbaby.shadwick.behaviors.TimelineEventBehavior timelineEvent() {
+            return new dev.jbaby.shadwick.behaviors.TimelineEventBehavior();
+        }
+
         public static AjaxBusyBehavior ajaxBusy() { return new AjaxBusyBehavior(); }
         public static ProgressBehavior progress() { return new ProgressBehavior(); }
         public static MeterBehavior meter() { return new MeterBehavior(); }
@@ -97,6 +111,8 @@ public final class Sw {
         public static dev.jbaby.shadwick.behaviors.AttachmentControlBehavior attachmentTrigger() { return new dev.jbaby.shadwick.behaviors.AttachmentControlBehavior(dev.jbaby.shadwick.behaviors.AttachmentControlBehavior.Kind.TRIGGER); }
         public static dev.jbaby.shadwick.behaviors.CalendarBehavior calendar() { return new dev.jbaby.shadwick.behaviors.CalendarBehavior(); }
         public static dev.jbaby.shadwick.behaviors.ComboboxBehavior combobox() { return new dev.jbaby.shadwick.behaviors.ComboboxBehavior(); }
+        public static dev.jbaby.shadwick.behaviors.AvatarGroupBehavior avatarGroup() { return new dev.jbaby.shadwick.behaviors.AvatarGroupBehavior(); }
+        public static dev.jbaby.shadwick.behaviors.TagInputBehavior tagInput(org.apache.wicket.markup.html.form.FormComponent<?> input) { return new dev.jbaby.shadwick.behaviors.TagInputBehavior(input); }
         public static dev.jbaby.shadwick.behaviors.SelectBehavior select() { return new dev.jbaby.shadwick.behaviors.SelectBehavior(); }
         public static dev.jbaby.shadwick.behaviors.TableBehavior table() { return new dev.jbaby.shadwick.behaviors.TableBehavior(); }
         public static StyledBehavior tableContainer() { return new StyledBehavior("sw-table-container"); }
@@ -202,6 +218,25 @@ public final class Sw {
     public static final class Components {
 
         private Components() {
+        }
+
+        public static <T> dev.jbaby.shadwick.components.SwAvatarGroup<T> avatarGroup(String id, IModel<List<T>> model,
+                SerializableBiConsumer<ListItem<T>, T> populate) {
+            return dev.jbaby.shadwick.components.SwAvatarGroup.of(id, model, populate);
+        }
+        public static <T> dev.jbaby.shadwick.components.SwAvatarGroup<T> avatarGroup(String id, IModel<List<T>> model,
+                dev.jbaby.shadwick.components.SwAvatarGroup.Size size, SerializableBiConsumer<ListItem<T>, T> populate) {
+            return dev.jbaby.shadwick.components.SwAvatarGroup.of(id, model, size, populate);
+        }
+
+        public static dev.jbaby.shadwick.components.SwLazyLoadPanel<Component> lazyLoad(String id,
+                dev.jbaby.shadwick.util.SerializableFunction<String, ? extends Component> content) {
+            return dev.jbaby.shadwick.components.SwLazyLoadPanel.of(id, content);
+        }
+
+        public static <T> dev.jbaby.shadwick.components.SwButtonGroup<T> buttonGroup(String id, IModel<List<T>> items,
+                SerializableBiConsumer<ListItem<T>, T> populate) {
+            return dev.jbaby.shadwick.components.SwButtonGroup.of(id, items, populate);
         }
 
         public static <T> dev.jbaby.shadwick.components.SwPagination<T> pagination(String id, IModel<List<T>> items, SerializableBiConsumer<ListItem<T>, T> populate) {

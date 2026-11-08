@@ -57,6 +57,41 @@ accessibility checks when layout or interaction changes. Stop the owned preview 
 Generated `site/dist/` output is ignored and must not be edited or committed. The Website workflow builds the docs
 with the landing page; changing `docs/**` triggers it. Publishing the static guides does not deploy a Wicket server.
 
+## Candidate API compatibility
+
+The library's normal tests compare its compiled public/protected declarations with
+`shadwick-core/src/test/resources/dev/jbaby/shadwick/compatibility/api-0.1.txt`. The baseline includes inherited
+type relationships, generic signatures, subclass hooks, enum order, record components and scalar constant values.
+It excludes anonymous, private and package-private types and compiler bridges. Changes to implementation bodies
+do not require a baseline update. Exported additions, removals and signature changes do.
+
+Review the diff before accepting it: check existing call sites and documentation, fluent return types, overload
+ambiguity, detachable models, serializable callbacks and protected hooks. Adding an abstract interface method
+can break existing implementations even when no old declaration is removed. A baseline match does not prove
+behavioral or serialized-session compatibility. Read [Compatibility](guides/compatibility.md) for that boundary.
+
+After intentionally reviewing a Java API change, regenerate the baseline from the repository root:
+
+```sh
+./mvnw -B -pl shadwick-core -am test -Dtest=PublicApiTest -Dsurefire.failIfNoSpecifiedTests=false -Dshadwick.api.update=true
+git diff -- shadwick-core/src/test/resources/dev/jbaby/shadwick/compatibility/api-0.1.txt
+./mvnw -B test
+```
+
+Keep the update flag out of CI and normal test commands. A baseline update accepts declarations; it is not a
+release, a version bump or authorization to publish. The guard runs automatically in the existing Java 17/25 CI
+matrix without an additional dependency. The consumer tests compile in an external package and exercise
+serialized models/callbacks through real Wicket form and chart usage.
+
+Standard Javadoc is also checked during first-release preparation:
+
+```sh
+./mvnw -B -pl shadwick-core org.apache.maven.plugins:maven-javadoc-plugin:3.12.0:javadoc -Ddoclint=all,-missing
+```
+
+Malformed tags and links must be fixed rather than disabling doclint. The later release automation checkpoint
+will attach source/Javadoc artifacts and configure signing/publication.
+
 ## Agent resources
 
 The same build writes `llms.txt` from `catalog.json` and publishes every guide at its HTML directory's

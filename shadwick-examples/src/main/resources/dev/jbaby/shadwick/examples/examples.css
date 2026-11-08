@@ -86,10 +86,14 @@ body {
   max-width: 28rem;
 }
 
+.ex-record-compact { max-inline-size: 20rem; min-inline-size: 0; }
+.ex-record-compact h3 { font-size: .875rem; font-weight: 600; }
+.ex-record-link { text-decoration: underline; text-underline-offset: .2em; }
+
 .ex-forms {
   display: grid;
   gap: 3rem;
-  grid-template-columns: repeat(auto-fit, minmax(18rem, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 18rem), 1fr));
 }
 
 .ex-links {
@@ -353,3 +357,8 @@ body {
 .ex-spark-table { margin-top:2rem; max-width:100%; overflow-x:auto; }
 .ex-spark-table caption { padding-block-end:1rem; text-align:start; font-weight:500; }
 .ex-spark-table .sw-sparkline { width:8rem; }
+
+/* Host sizing also applies when demonstrating the embedded bundle without preflight. */
+.ex-switches, .ex-switches > *, .ex-form, .ex-form .ex-row > label { min-width: 0; max-width: 100%; }
+.ex-form input { box-sizing: border-box; max-width: 100%; }
+.ex-steps-compact { max-inline-size: 20rem; min-inline-size: 0; }

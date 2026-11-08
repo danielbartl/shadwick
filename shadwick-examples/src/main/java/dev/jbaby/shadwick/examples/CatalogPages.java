@@ -13,12 +13,15 @@ final class CatalogPages {
     record Group(String title, List<Example> examples) implements Serializable {}
     static final List<Example> ALL = List.of(
         new Example("buttons", "Buttons", "Inputs & forms", "Variants, sizes, links and Ajax actions.", ButtonPage.class, "components/buttons"),
+        new Example("button-groups", "Button groups & split buttons", "Inputs & forms", "Connected actions and a primary action with related commands.", ButtonGroupPage.class, "components/button-groups"),
         new Example("form", "Forms & validation", "Inputs & forms", "Connect models, validation and form feedback.", FormPage.class, "components/forms"),
         new Example("inputs", "Text & number fields", "Inputs & forms", "Typed inputs, labels and validation states.", InputPage.class, "components/inputs"),
+        new Example("form-completion", "Quote fields", "Inputs & forms", "Money, percentages, range and compound fields.", FormCompletionPage.class, "components/fieldsets-custom-fields"),
         new Example("choices", "Checkboxes & switches", "Inputs & forms", "Checkboxes, switches and radio groups.", ChoicePage.class, "components/choices"),
         new Example("selections", "Native selects", "Inputs & forms", "Single, multiple and grouped native choices.", SelectPage.class, "components/native-selects"),
         new Example("custom-select", "Custom select", "Inputs & forms", "Rich choices with a native foundation.", CustomSelectPage.class, "components/select"),
         new Example("combobox", "Combobox", "Inputs & forms", "Search, select and manage multiple choices.", ComboboxPage.class, "components/combobox"),
+        new Example("tag-input", "Freeform tags", "Inputs & forms", "Create and remove tags with native and Ajax validation.", TagInputPage.class, "components/tag-input"),
         new Example("dates", "Date & time fields", "Inputs & forms", "Native date, time, month and week inputs.", DateTimePage.class, "components/date-time"),
         new Example("groups", "Toggles & input groups", "Inputs & forms", "Compose toggles, addons and input actions.", GroupPage.class, "components/toggles-input-groups"),
         new Example("uploads", "File upload", "Inputs & forms", "Dropzones, selected files and multipart forms.", UploadPage.class, "components/file-upload"),
@@ -43,7 +46,11 @@ final class CatalogPages {
         new Example("layouts", "Sidebar layout", "Layout & navigation", "A reusable workspace with sidebar navigation.", AppLayoutPage.class, "components/app-layout"),
         new Example("header-layout", "Header layout", "Layout & navigation", "The same workspace with navigation in the header.", HeaderLayoutPage.class, "components/app-layout"),
         new Example("disclosure", "Tabs & disclosures", "Layout & navigation", "Tabs, accordions and standalone collapsibles.", DisclosurePage.class, "components/tabs"),
+        new Example("steps", "Steps indicator", "Layout & navigation", "Numbered process stages and completed-step selection.", StepsPage.class, "components/steps"),
         new Example("display", "Cards, badges & display", "Display & media", "Cards, avatars, badges, icons and loading states.", DisplayPage.class, "components/cards"),
+        new Example("avatar-groups", "Avatar groups", "Display & media", "Overlapping team members, native links, sizes and wrapping.", AvatarGroupPage.class, "components/avatars"),
+        new Example("record-display", "Details & activity", "Display & media", "Description lists and ordered customer histories.", RecordDisplayPage.class, "components/description-list"),
+        new Example("lazy-load", "Lazy-loaded panels", "Display & media", "Deferred reports, readiness polling and application-owned retry.", LazyLoadPage.class, "components/lazy-load"),
         new Example("attachments", "Attachments", "Display & media", "File cards, image previews and download actions.", AttachmentPage.class, "components/attachments"),
         new Example("status-controls", "Progress & ratings", "Display & media", "Busy buttons, progress, meters and star ratings.", StatusControlsPage.class, "components/progress"),
         new Example("internationalization", "Internationalization", "Getting started", "Nine component languages and application overrides.", InternationalizationPage.class, "guides/internationalization")

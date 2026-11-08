@@ -19,3 +19,5 @@ informative spinner; an unspecified spinner label uses the localized Loading fal
 Your application owns async work and refresh scheduling. Replace a loading region with content and clear its
 `aria-busy` state when complete. For a numeric amount use [progress](./progress.md); for a pending Ajax action use
 [busy controls](./busy-controls.md), which guard repeated activation and restore the action after completion.
+
+For deferred server-rendered content with these skeletons and Wicket’s shared timer, use [lazy-loaded panels](lazy-load.md).

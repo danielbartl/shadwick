@@ -25,6 +25,14 @@
     "example": "FormPage"
   },
   {
+    "slug": "guides/compatibility",
+    "title": "Compatibility",
+    "group": "Getting started",
+    "description": "Java and Wicket requirements, the candidate public API, serialization and browser compatibility.",
+    "apis": [],
+    "example": "HomePage"
+  },
+  {
     "slug": "guides/clover-studio",
     "title": "Clover Studio",
     "group": "Getting started",
@@ -98,6 +106,18 @@
     "example": "ButtonPage"
   },
   {
+    "slug": "components/button-groups",
+    "title": "Button groups and split buttons",
+    "group": "Actions and feedback",
+    "description": "Connected controls and primary actions with related commands.",
+    "apis": [
+      "shadwick-core/src/main/java/dev/jbaby/shadwick/components/SwButtonGroup.java",
+      "shadwick-core/src/main/java/dev/jbaby/shadwick/components/SwSplitButton.java",
+      "shadwick-core/src/main/java/dev/jbaby/shadwick/behaviors/ButtonGroupBehavior.java"
+    ],
+    "example": "ButtonGroupPage"
+  },
+  {
     "slug": "components/busy-controls",
     "title": "Busy controls",
     "group": "Actions and feedback",
@@ -160,6 +180,39 @@
     "example": "InputPage"
   },
   {
+    "slug": "components/fieldsets-custom-fields",
+    "title": "Fieldsets and custom fields",
+    "group": "Forms and choices",
+    "description": "Native fieldset groups and application-owned compound inputs.",
+    "apis": [
+      "shadwick-core/src/main/java/dev/jbaby/shadwick/components/SwFieldset.java",
+      "shadwick-core/src/main/java/dev/jbaby/shadwick/components/form/SwCustomField.java"
+    ],
+    "example": "FormCompletionPage"
+  },
+  {
+    "slug": "components/money-percent",
+    "title": "Money and percentage fields",
+    "group": "Forms and choices",
+    "description": "Exact locale-aware BigDecimal amounts and percentage values.",
+    "apis": [
+      "shadwick-core/src/main/java/dev/jbaby/shadwick/components/form/BaseSwDecimalField.java",
+      "shadwick-core/src/main/java/dev/jbaby/shadwick/components/form/SwMoneyField.java",
+      "shadwick-core/src/main/java/dev/jbaby/shadwick/components/form/SwPercentField.java"
+    ],
+    "example": "FormCompletionPage"
+  },
+  {
+    "slug": "components/range",
+    "title": "Range field",
+    "group": "Forms and choices",
+    "description": "Native single-value sliders with server-validated bounds and steps.",
+    "apis": [
+      "shadwick-core/src/main/java/dev/jbaby/shadwick/components/form/SwRangeField.java"
+    ],
+    "example": "FormCompletionPage"
+  },
+  {
     "slug": "components/native-selects",
     "title": "Native selections",
     "group": "Forms and choices",
@@ -192,6 +245,17 @@
       "shadwick-core/src/main/java/dev/jbaby/shadwick/behaviors/ComboboxBehavior.java"
     ],
     "example": "ComboboxPage"
+  },
+  {
+    "slug": "components/tag-input",
+    "title": "Freeform tags",
+    "group": "Forms and choices",
+    "description": "Editable freeform chips, native comma-separated fallback and Wicket list validation.",
+    "apis": [
+      "shadwick-core/src/main/java/dev/jbaby/shadwick/components/form/SwTagInput.java",
+      "shadwick-core/src/main/java/dev/jbaby/shadwick/behaviors/TagInputBehavior.java"
+    ],
+    "example": "TagInputPage"
   },
   {
     "slug": "components/date-time",
@@ -541,6 +605,39 @@
     "example": "DisplayPage"
   },
   {
+    "slug": "components/description-list",
+    "title": "Description lists",
+    "group": "Display",
+    "description": "Read-only record details with native term/value relationships.",
+    "apis": [
+      "shadwick-core/src/main/java/dev/jbaby/shadwick/components/SwDescriptionList.java",
+      "shadwick-core/src/main/java/dev/jbaby/shadwick/behaviors/DescriptionListBehavior.java"
+    ],
+    "example": "RecordDisplayPage"
+  },
+  {
+    "slug": "components/timeline",
+    "title": "Timelines",
+    "group": "Display",
+    "description": "Ordered event histories, localized times and decorative markers.",
+    "apis": [
+      "shadwick-core/src/main/java/dev/jbaby/shadwick/components/SwTimeline.java",
+      "shadwick-core/src/main/java/dev/jbaby/shadwick/behaviors/TimelineBehavior.java",
+      "shadwick-core/src/main/java/dev/jbaby/shadwick/behaviors/TimelineEventBehavior.java"
+    ],
+    "example": "RecordDisplayPage"
+  },
+  {
+    "slug": "components/steps",
+    "title": "Steps indicator",
+    "group": "Display",
+    "description": "Ordered process stages, localized state captions and optional completed-step selection.",
+    "apis": [
+      "shadwick-core/src/main/java/dev/jbaby/shadwick/components/SwSteps.java"
+    ],
+    "example": "StepsPage"
+  },
+  {
     "slug": "components/badges",
     "title": "Badges",
     "group": "Display",
@@ -566,11 +663,13 @@
     "slug": "components/avatars",
     "title": "Avatars",
     "group": "Display",
-    "description": "Pictures, initials, loading and image-failure fallbacks.",
+    "description": "Pictures, initials, loading/error fallbacks and overlapping team groups.",
     "apis": [
-      "shadwick-core/src/main/java/dev/jbaby/shadwick/components/SwAvatar.java"
+      "shadwick-core/src/main/java/dev/jbaby/shadwick/components/SwAvatar.java",
+      "shadwick-core/src/main/java/dev/jbaby/shadwick/components/SwAvatarGroup.java",
+      "shadwick-core/src/main/java/dev/jbaby/shadwick/behaviors/AvatarGroupBehavior.java"
     ],
-    "example": "DisplayPage"
+    "example": "AvatarGroupPage"
   },
   {
     "slug": "components/icons",
@@ -594,6 +693,16 @@
       "shadwick-core/src/main/java/dev/jbaby/shadwick/behaviors/SpinnerBehavior.java"
     ],
     "example": "DisplayPage"
+  },
+  {
+    "slug": "components/lazy-load",
+    "title": "Lazy-loaded panels",
+    "group": "Display",
+    "description": "Deferred content, shared readiness polling and a native fallback.",
+    "apis": [
+      "shadwick-core/src/main/java/dev/jbaby/shadwick/components/SwLazyLoadPanel.java"
+    ],
+    "example": "LazyLoadPage"
   },
   {
     "slug": "components/empty-state",

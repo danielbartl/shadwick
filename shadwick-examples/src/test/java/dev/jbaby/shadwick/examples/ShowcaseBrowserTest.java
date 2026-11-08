@@ -119,6 +119,11 @@ class ShowcaseBrowserTest {
         return "http://localhost:" + port + "/" + page + "?skin=" + skin + "&mode=" + mode;
     }
 
+    private Locator exampleStatus(Page tab) {
+        // The catalog also announces search and code-copy results outside the demo's status paragraph.
+        return tab.getByRole(AriaRole.MAIN).locator(".ex-muted[role=status]");
+    }
+
     /** Opens the page in a fresh browser session, runs the steps, and checks it with axe-core and for console errors. */
     private void check(String page, String skin, String mode, Consumer<Page> steps) {
         check(page, skin, mode, new Browser.NewContextOptions(), steps);
@@ -1255,7 +1260,7 @@ class ShowcaseBrowserTest {
             trigger.click();
             tab.getByRole(AriaRole.BUTTON, new Page.GetByRoleOptions().setName("Continue on page")).click();
             assertThat(popup).isHidden();
-            assertThat(tab.getByRole(AriaRole.STATUS)).hasText("The page stayed interactive.");
+            assertThat(exampleStatus(tab)).hasText("The page stayed interactive.");
         });
     }
 
@@ -1397,7 +1402,7 @@ class ShowcaseBrowserTest {
     void touchPopoversWorkWithoutShowingHoverTooltips(String skin, String mode) {
         check("popups", skin, mode, new Browser.NewContextOptions().setHasTouch(true).setViewportSize(390, 700), tab -> {
             tab.getByRole(AriaRole.BUTTON, new Page.GetByRoleOptions().setName("Export").setExact(true)).tap();
-            assertThat(tab.getByRole(AriaRole.STATUS)).hasText("Export preview requested.");
+            assertThat(exampleStatus(tab)).hasText("Export preview requested.");
             assertThat(tab.locator(".sw-tooltip-content:popover-open")).hasCount(0);
             tab.getByRole(AriaRole.BUTTON, new Page.GetByRoleOptions().setName("Quick edit").setExact(true)).tap();
             assertThat(tab.getByLabel("Display name", new Page.GetByLabelOptions().setExact(true))).isFocused();
@@ -1791,10 +1796,10 @@ class ShowcaseBrowserTest {
             assertThat(tab.getByRole(AriaRole.MAIN)).isFocused();
             assertThat(tab.getByRole(AriaRole.MAIN)).hasAttribute("tabindex", "-1");
             tab.keyboard().press("Tab");
-            assertThat(tab.getByRole(AriaRole.MAIN).getByRole(AriaRole.LINK, new Locator.GetByRoleOptions().setName("Shadwick").setExact(true))).isFocused();
+            assertThat(tab.getByRole(AriaRole.MAIN).getByRole(AriaRole.LINK, new Locator.GetByRoleOptions().setName("View Wicket code"))).isFocused();
             assertThat(tab.getByRole(AriaRole.BANNER)).hasCount(1);
             tab.getByRole(AriaRole.BUTTON, new Page.GetByRoleOptions().setName("Save view").setExact(true)).click();
-            assertThat(tab.getByRole(AriaRole.STATUS)).hasText("View saved.");
+            assertThat(exampleStatus(tab)).hasText("View saved.");
         });
     }
 
@@ -1823,7 +1828,7 @@ class ShowcaseBrowserTest {
             Locator design = menu.getByRole(AriaRole.MENUITEM, new Locator.GetByRoleOptions().setName("Design system").setExact(true));
             assertThat(design).isFocused(); design.press("Enter");
             tab.waitForURL("**/shell*page=Design*");
-            assertThat(tab.getByRole(AriaRole.STATUS)).hasText("Viewing: Design system.");
+            assertThat(exampleStatus(tab)).hasText("Viewing: Design system.");
             assertThat(trail.locator("[aria-current='page']")).hasText("Design system");
         });
     }
@@ -1836,12 +1841,12 @@ class ShowcaseBrowserTest {
             trail.getByRole(AriaRole.BUTTON, new Locator.GetByRoleOptions().setName("Show more levels")).click();
             assertThat(trail.getByRole(AriaRole.MENU)).isVisible();
             tab.getByRole(AriaRole.BUTTON, new Page.GetByRoleOptions().setName("Refresh breadcrumb")).evaluate("n=>n.click()");
-            assertThat(tab.getByRole(AriaRole.STATUS)).hasText("Breadcrumb refreshed.");
+            assertThat(exampleStatus(tab)).hasText("Breadcrumb refreshed.");
             assertThat(trail.locator("[aria-current='page']")).hasText("Updated overview");
             assertThat(trail.getByRole(AriaRole.MENU)).hasCount(0);
             assertThat(trail.getByRole(AriaRole.BUTTON)).hasAttribute("aria-expanded", "false");
             tab.getByRole(AriaRole.BUTTON, new Page.GetByRoleOptions().setName("Clear breadcrumb")).click();
-            assertThat(tab.getByRole(AriaRole.STATUS)).hasText("Breadcrumb cleared.");
+            assertThat(exampleStatus(tab)).hasText("Breadcrumb cleared.");
             assertThat(trail).hasCount(0);
             tab.getByRole(AriaRole.BUTTON, new Page.GetByRoleOptions().setName("Restore breadcrumb")).click();
             assertThat(trail).isVisible();
@@ -1858,7 +1863,7 @@ class ShowcaseBrowserTest {
     void shellHeadersAndLongBreadcrumbsWrapAndReverseInRtl(String skin, String mode) {
         check("shell", skin, mode, new Browser.NewContextOptions().setViewportSize(320, 700), tab -> {
             tab.getByRole(AriaRole.BUTTON, new Page.GetByRoleOptions().setName("Use long labels")).click();
-            assertThat(tab.getByRole(AriaRole.STATUS)).hasText("Long labels applied.");
+            assertThat(exampleStatus(tab)).hasText("Long labels applied.");
             for (String direction : List.of("ltr", "rtl")) {
                 tab.locator("html").evaluate("(n,dir)=>n.dir=dir", direction);
                 assertThat((Boolean) tab.evaluate("document.documentElement.scrollWidth<=innerWidth+1")).isTrue();
@@ -1887,7 +1892,7 @@ class ShowcaseBrowserTest {
             assertThat(home).hasCSS("outline-style", "solid");
             home.press("Enter");
             tab.waitForURL("**/shell*page=Home*");
-            assertThat(tab.getByRole(AriaRole.STATUS)).hasText("Viewing: Home.");
+            assertThat(exampleStatus(tab)).hasText("Viewing: Home.");
             tab.emulateMedia(new Page.EmulateMediaOptions().setForcedColors(ForcedColors.NONE));
         });
     }
@@ -2053,16 +2058,48 @@ class ShowcaseBrowserTest {
             tab.emulateMedia(new Page.EmulateMediaOptions().setForcedColors(ForcedColors.ACTIVE)
                     .setReducedMotion(com.microsoft.playwright.options.ReducedMotion.REDUCE));
             tab.locator(".sw-sidebar-trigger").click();
+            tab.mouse().move(1200, 0);
             Locator current = tab.locator(".sw-sidebar a[aria-current=page]");
             current.focus(); tab.keyboard().press("Tab"); tab.keyboard().press("Shift+Tab");
             assertThat(current).isFocused(); assertThat(current).hasCSS("outline-style", "solid");
             assertThat(current).hasCSS("outline-width", "2px");
+            assertThat(tab.locator(".sw-sidebar-menu-tooltip:popover-open")).hasCount(1);
             tab.keyboard().press("Escape");
-            tab.setViewportSize(390, 800); tab.locator(".sw-sidebar-trigger").click();
+            assertThat(tab.locator(".sw-sidebar-menu-tooltip:popover-open")).hasCount(0);
+            tab.keyboard().press("Tab"); tab.keyboard().press("Shift+Tab");
+            assertThat(tab.locator(".sw-sidebar-menu-tooltip:popover-open")).hasCount(1);
+            tab.setViewportSize(390, 800);
+            assertThat(tab.locator(".sw-sidebar-trigger")).hasAttribute("popovertarget", tab.locator(".sw-sidebar").getAttribute("id"));
+            assertThat(tab.locator(".sw-sidebar-menu-tooltip:popover-open")).hasCount(0);
+            tab.locator(".sw-sidebar-trigger").click();
             assertThat(current).isFocused();
             assertThat(tab.locator(".sw-sidebar:popover-open")).hasCount(1);
-            tab.keyboard().press("Escape"); assertThat(tab.locator(".sw-sidebar-trigger")).isFocused();
+            tab.keyboard().press("Escape"); assertThat(tab.locator(".sw-sidebar:popover-open")).hasCount(0);
+            assertThat(tab.locator(".sw-sidebar-trigger")).isFocused();
             tab.emulateMedia(new Page.EmulateMediaOptions().setForcedColors(ForcedColors.NONE));
+        });
+    }
+
+    @ParameterizedTest(name = "{0}, {1}")
+    @MethodSource("everySkinAndMode")
+    void sidebarOpeningPreservesFocusMovedIntoANestedMenu(String skin, String mode) {
+        check("user-menu", skin, mode, new Browser.NewContextOptions().setViewportSize(390, 800), tab -> {
+            // Hold the panel's immediate timers while a user opens a nested menu, then release them.
+            tab.locator(".sw-sidebar-trigger").evaluate("n => { const schedule = window.setTimeout; window.panelTimers = [];"
+                    + " window.setTimeout = (callback, delay, ...args) => { if (delay === 0) {"
+                    + " window.panelTimers.push(() => callback(...args)); return schedule(() => {}, 0); }"
+                    + " return schedule(callback, delay, ...args); };"
+                    + " try { n.click(); } finally { window.setTimeout = schedule; } }");
+            Locator trigger = tab.locator("#sidebar-user .sw-user-menu-trigger");
+            trigger.focus(); trigger.press("ArrowDown");
+            Locator menu = tab.locator("#sidebar-user [role=menu]");
+            assertThat(menu.getByRole(AriaRole.MENUITEM).first()).isFocused();
+            tab.evaluate("() => { window.panelTimers.forEach(callback => callback()); delete window.panelTimers; }");
+            assertThat(menu.getByRole(AriaRole.MENUITEM).first()).isFocused();
+            tab.keyboard().press("Escape"); assertThat(menu).isHidden();
+            assertThat(tab.locator(".sw-sidebar:popover-open")).hasCount(1);
+            tab.keyboard().press("Escape"); assertThat(tab.locator(".sw-sidebar:popover-open")).hasCount(0);
+            assertThat(tab.locator(".sw-sidebar-trigger")).isFocused();
         });
     }
 
@@ -2082,7 +2119,7 @@ class ShowcaseBrowserTest {
             tab.keyboard().press("ArrowUp");
             assertThat(menu.getByRole(AriaRole.MENUITEM, new Locator.GetByRoleOptions().setName("Sign out").setExact(true))).isFocused();
             tab.keyboard().press("Enter");
-            assertThat(tab.locator("[role=status]")).hasText("Signed out of the demo workspace.");
+            assertThat(exampleStatus(tab)).hasText("Signed out of the demo workspace.");
             assertThat(posts).hasSize(1);
             assertThat(tab.getByRole(AriaRole.LINK, new Page.GetByRoleOptions().setName("Sign in").setExact(true))).hasCount(2);
             assertThat(describe(new AxeBuilder(tab).withTags(WCAG).analyze().getViolations())).isEmpty();
@@ -2117,7 +2154,7 @@ class ShowcaseBrowserTest {
             tab.locator("#header-user .sw-user-menu-trigger").click();
             Locator headerMenu = tab.locator("#header-user [role=menu]");
             headerMenu.getByRole(AriaRole.MENUITEM, new Locator.GetByRoleOptions().setName("My account").setExact(true)).click();
-            assertThat(tab.locator("[role=status]")).hasText("Viewing account.");
+            assertThat(exampleStatus(tab)).hasText("Viewing account.");
         });
     }
 
@@ -2173,7 +2210,7 @@ class ShowcaseBrowserTest {
             tab.locator(".sw-sidebar-trigger").click();
             Locator root = tab.locator("#sidebar-user"); root.locator(".sw-user-menu-trigger").click();
             root.getByRole(AriaRole.MENUITEM, new Locator.GetByRoleOptions().setName("Sign out").setExact(true)).click();
-            assertThat(tab.locator("[role=status]")).hasText("Signed out of the demo workspace.");
+            assertThat(exampleStatus(tab)).hasText("Signed out of the demo workspace.");
             assertThat(tab.locator("#header-user .sw-user-menu-sign-in")).isVisible();
         });
     }
@@ -2207,6 +2244,7 @@ class ShowcaseBrowserTest {
 
     private void chooseTheme(Page tab, String root, String mode) {
         tab.locator("#" + root + " [popovertarget]").click();
+        settleAnimations(tab);
         tab.locator("#" + root + " [data-sw-theme-choice=" + mode + "]").click();
         assertThat(tab.locator("#" + root + " [popover]")).isHidden();
     }
@@ -2691,7 +2729,7 @@ class ShowcaseBrowserTest {
             tab.getByRole(AriaRole.BUTTON, new Page.GetByRoleOptions().setName("Remove Workspace notes.txt")).click();
             assertThat(tab.locator("#notes-attachment")).isHidden();
             assertThat(tab.getByRole(AriaRole.BUTTON, new Page.GetByRoleOptions().setName("Restore notes"))).isFocused();
-            assertThat(tab.getByRole(AriaRole.STATUS)).containsText("Workspace notes removed");
+            assertThat(exampleStatus(tab)).containsText("Workspace notes removed");
             tab.getByRole(AriaRole.BUTTON, new Page.GetByRoleOptions().setName("Restore notes")).click();
             assertThat(tab.locator("#notes-attachment")).isVisible();
             var notes = tab.waitForDownload(() -> tab.getByRole(AriaRole.LINK, new Page.GetByRoleOptions().setName("Download Workspace notes.txt")).click());
@@ -2718,7 +2756,7 @@ class ShowcaseBrowserTest {
                 assertThat(file.locator("[aria-live], [role='alert']")).hasCount(0);
                 if (state.equals("error")) {
                     assertThat(file).containsText("Upload failed · Please try again");
-                    assertThat(tab.getByRole(AriaRole.STATUS)).containsText("Upload failed");
+                    assertThat(exampleStatus(tab)).containsText("Upload failed");
                 }
             }
         });
@@ -2836,7 +2874,7 @@ class ShowcaseBrowserTest {
             assertThat(input).hasAttribute("aria-invalid", "true"); assertThat(row.locator(".sw-field-error")).containsText("between 1 and 80");
             input.press("Escape"); assertThat(row.locator(".sw-table-editable")).hasText("8"); assertThat(row.locator(".sw-table-editable")).isFocused();
             row.locator(".sw-table-editable").press("Enter"); input.fill("13"); input.press("Enter");
-            assertThat(tab.getByRole(AriaRole.STATUS)).hasText("Saved 13 hours for Customer portal.");
+            assertThat(exampleStatus(tab)).hasText("Saved 13 hours for Customer portal.");
             assertThat(row.locator(".sw-table-editable")).hasText("13"); assertThat(row.locator(".sw-table-editable")).isFocused();
             assertThat(tab.locator(".sw-table > tbody > tr:not(.sw-table-row-details)").filter(new Locator.FilterOptions().setHasText("Autumn release")).locator(".sw-table-editable")).hasAttribute("aria-disabled", "true");
         });
@@ -2948,7 +2986,7 @@ class ShowcaseBrowserTest {
             table.getByRole(AriaRole.LINK, new Locator.GetByRoleOptions().setName("Go to next page")).click();
             assertThat(table.locator(".sw-pagination-summary")).hasText("6–10 of 24"); assertThat(table.locator(".sw-table-selection-count")).hasText("5 selected");
             table.getByRole(AriaRole.BUTTON, new Locator.GetByRoleOptions().setName("Mark selected as paid")).click();
-            assertThat(tab.getByRole(AriaRole.STATUS)).containsText("5 invoices marked as paid");
+            assertThat(exampleStatus(tab)).containsText("5 invoices marked as paid");
             assertThat(table.locator(".sw-table-bulk-actions")).isHidden();
             table.getByRole(AriaRole.LINK, new Locator.GetByRoleOptions().setName("Page 1").setExact(true)).click();
             assertThat(table.locator("tbody .sw-badge")).hasText(new String[]{"Paid", "Paid", "Paid", "Paid", "Paid"});
@@ -3472,7 +3510,9 @@ class ShowcaseBrowserTest {
             Locator form=tab.locator("form[aria-label='Normal booking']"),field=calendarField(form,"Departure"),trigger=field.locator(".sw-date-picker-trigger"),root=field.locator(".sw-calendar");
             trigger.focus();trigger.press("Enter");assertThat(calendarDay(root,"2026-11-10")).isFocused();tab.keyboard().press("ArrowRight");tab.keyboard().press("Enter");
             assertThat(field.locator(".sw-date-picker-content")).isHidden();assertThat(trigger).isFocused();assertThat(field.locator("input[type=date]")).hasValue("2026-11-11");assertThat(trigger).containsText("Nov 11, 2026");
-            trigger.click();root.locator(".sw-calendar-next").click();tab.keyboard().press("Escape");assertThat(trigger).isFocused();trigger.click();assertThat(calendarDay(root,"2026-11-11")).isFocused();
+            trigger.click();root.locator(".sw-calendar-next").click();
+            assertThat(root.locator(".sw-calendar-next")).isDisabled();assertThat(root.locator(".sw-calendar-previous")).isFocused();
+            tab.keyboard().press("Escape");assertThat(trigger).isFocused();trigger.click();assertThat(calendarDay(root,"2026-11-11")).isFocused();
             tab.keyboard().press("Enter");assertThat(field.locator("input[type=date]")).hasValue("2026-11-11");
         });
     }

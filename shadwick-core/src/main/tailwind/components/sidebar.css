@@ -607,6 +607,8 @@
     Forced colours drop backgrounds and box shadows: the current entry gets an outline, focus a thicker one.
   */
   @media (forced-colors: active) {
+    .sw-sidebar .sw-sidebar-group-label { @apply text-[CanvasText]; }
+
     .sw-sidebar .sw-sidebar-header,
     .sw-sidebar .sw-sidebar-footer { @apply text-[CanvasText]; }
 

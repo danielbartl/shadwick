@@ -188,6 +188,10 @@ function setUpCalendar(root, template, listen, cleanups, handle) {
           ?.querySelector(`.sw-calendar-dropdown[data-unit="${refocusSelect.unit}"] > .sw-calendar-select`)?.focus();
     } else if (focused?.matches('.sw-calendar-day-button')) {
       dayButton(state.focus)?.focus();
+    } else if (focused?.matches('.sw-calendar-nav-button') && focused.disabled) {
+      // Reaching a month bound disables the button just activated. Keep focus inside the calendar.
+      const navigation = previous.disabled ? next : previous;
+      (navigation.disabled ? body.querySelector('.sw-calendar-day-button[tabindex="0"]') : navigation)?.focus();
     }
   };
 

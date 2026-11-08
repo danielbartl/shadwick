@@ -1,0 +1,56 @@
+@layer components {
+  .sw-steps-shell { container-type: inline-size; min-inline-size: 0; }
+  .sw-steps { @apply m-0 flex list-none flex-col p-0; }
+  .sw-step { position: relative; min-inline-size: 0; }
+  .sw-step:not(:last-child) { padding-block-end: var(--sw-step-gap); }
+  .sw-step:not(:last-child)::after {
+    content: ''; position: absolute;
+    inset-inline-start: calc((var(--sw-step-size) - var(--sw-step-line-width)) / 2);
+    inset-block-start: var(--sw-step-size); inset-block-end: 0;
+    border-inline-start: var(--sw-step-line-width) var(--sw-step-line-style, solid) var(--border);
+  }
+  .sw-step[data-state='done']::after { border-color: var(--primary); }
+  .sw-step-link {
+    @apply relative flex min-w-0 items-start no-underline;
+    gap: var(--sw-step-content-gap); color: inherit;
+    border-radius: var(--radius); outline: none;
+  }
+  .sw-step-number {
+    @apply relative z-1 flex shrink-0 items-center justify-center text-muted-legible;
+    box-sizing: border-box; inline-size: var(--sw-step-size); block-size: var(--sw-step-size);
+    border: var(--sw-step-line-width) solid var(--border); background: var(--muted);
+  }
+  .sw-step[data-state='done'] .sw-step-number { border-color: var(--primary); background: var(--primary); color: var(--primary-foreground); }
+  .sw-step[data-state='current'] .sw-step-number { border-color: var(--primary); background: var(--background); color: var(--foreground); box-shadow: 0 0 0 2px var(--background), 0 0 0 4px var(--primary); }
+  .sw-step-content { @apply block min-w-0; }
+  .sw-step-title, .sw-step-status { @apply block; overflow-wrap: anywhere; }
+  .sw-step-status { @apply text-xs text-muted-legible; }
+  a.sw-step-link[href]:hover .sw-step-title { text-decoration: underline; text-underline-offset: .2em; }
+  a.sw-step-link[href]:focus-visible { @apply outline-2 outline-offset-4 outline-solid outline-ring; }
+  @container (min-width: 32rem) {
+    .sw-steps { @apply grid; grid-auto-flow: column; grid-auto-columns: minmax(0, 1fr); gap: var(--sw-step-gap); }
+    .sw-step:not(:last-child) { padding-block-end: 0; }
+    .sw-step-link { @apply flex-col; }
+    .sw-step:not(:last-child)::after {
+      inset-inline-start: var(--sw-step-size); inset-inline-end: calc(-1 * var(--sw-step-gap));
+      inset-block-start: calc((var(--sw-step-size) - var(--sw-step-line-width)) / 2); inset-block-end: auto;
+      border-inline-start: 0; border-block-start: var(--sw-step-line-width) var(--sw-step-line-style, solid) var(--border);
+    }
+    .sw-step[data-state='done']::after { border-color: var(--primary); }
+  }
+  @media (scripting: none) { .sw-steps .sw-step-action { display: none; } }
+  @media (forced-colors: active) {
+    .sw-steps .sw-step[data-state] .sw-step-number { border-color: CanvasText; }
+    .sw-step[data-state='done'] .sw-step-number { forced-color-adjust: none; background: CanvasText; color: Canvas; }
+    .sw-step[data-state='current'] .sw-step-number { border-width: 3px; box-shadow: none; }
+    .sw-step:not(:last-child)::after { border-color: CanvasText; }
+    a.sw-step-link[href]:focus-visible { outline-color: Highlight; }
+  }
+  @media print {
+    .sw-steps-shell > .sw-steps { color-scheme: light; color: CanvasText; }
+    .sw-steps .sw-step-status { color: CanvasText; }
+    .sw-step { break-inside: avoid; }
+    .sw-steps .sw-step[data-state] .sw-step-number { border-color: currentColor; background: transparent; color: inherit; box-shadow: none; }
+    .sw-step:not(:last-child)::after { border-color: currentColor; }
+  }
+}

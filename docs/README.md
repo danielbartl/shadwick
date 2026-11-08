@@ -8,10 +8,16 @@ The website build renders these Markdown sources at `/docs/` in the existing Git
 The website adds API references generated from the [Java API source](../shadwick-core/src/main/java/dev/jbaby/shadwick/).
 Those sources provide declared constructors, methods and hooks when reading the Markdown directly.
 
+The pre-release component collection is implemented, including compound and numeric fields, connected actions,
+record details, timelines, lazy panels, tags, avatar groups and process steps. The project remains a locally
+installable `0.1.0-SNAPSHOT`; Maven Central publication follows release preparation. See
+[Compatibility](guides/compatibility.md) for the candidate API and Java/Wicket requirements.
+
 ## Getting started
 
 - [Installation](guides/installation.md) — Install Shadwick, configure Wicket and run your first form.
 - [Wicket integration](guides/wicket-integration.md) — Models, markup ownership, Ajax, forms, resources and application responsibilities.
+- [Compatibility](guides/compatibility.md) — Java/Wicket requirements, the candidate API, stored pages and browser coverage.
 - [Agent guidance](guides/agent-guidance.md) — Use the portable coding skill, working templates and machine-readable guides.
 - [Clover Studio](guides/clover-studio.md) — Run the connected agency workspace and try the project-to-payment journey.
 - [Skins](guides/skins.md) — Choose from nine geometries with shared light and dark color tokens.
@@ -22,17 +28,23 @@ Those sources provide declared constructors, methods and hooks when reading the 
 ## Actions and feedback
 
 - [Buttons](components/buttons.md) — Ajax actions, submit buttons, variants, sizes and icon-only names.
+- [Button groups and split buttons](components/button-groups.md) — Connected controls and primary actions with related commands.
 - [Busy controls](components/busy-controls.md) — Show pending work and guard repeated Ajax activation.
 - [Toasts](components/toasts.md) — Notifications, dismissal, timing and accessible announcements.
 - [Feedback](components/feedback.md) — Inline validation, fenced feedback panels and feedback toasts.
 
 ## Forms and choices
 
+- [Fieldsets and custom fields](components/fieldsets-custom-fields.md) — Native groups and compound inputs.
+- [Money and percentages](components/money-percent.md) — Exact localized decimal values.
+- [Range field](components/range.md) — Native slider with server-validated bounds and steps.
+
 - [Form fields](components/forms.md) — Labels, models, validators, inline errors and normal or Ajax submission.
 - [Text and number inputs](components/inputs.md) — Text, email, password, URL, telephone, search, textarea and numeric input.
 - [Native selections](components/native-selects.md) — Browser select and multi-select controls with typed Wicket choices.
 - [Custom select](components/select.md) — Styled single selection with native and progressive listbox paths.
 - [Combobox](components/combobox.md) — Search single or multiple choices, remotely or locally.
+- [Freeform tags](components/tag-input.md) — Editable chips, comma-separated native fallback and list validation.
 - [Date and time fields](components/date-time.md) — Native local date, time, month, week and date-time inputs.
 - [Toggles and input groups](components/toggles-input-groups.md) — Pressed buttons, single/multiple toggle choices and input addons.
 - [Checkboxes switches and radios](components/choices.md) — Boolean and multiple choices with native form semantics.
@@ -41,6 +53,7 @@ Those sources provide declared constructors, methods and hooks when reading the 
 
 ## Data and planning
 
+- [Steps indicator](components/steps.md) — Ordered process stages, current state and optional completed-step selection.
 - [Calendar and date picker](components/calendar.md) — Single dates, ranges, disabled days and native-backed popup pickers.
 - [Month view](components/month-view.md) — Server-rendered monthly plans with locale-aware weeks and custom day slots.
 - [Charts](components/charts.md) — Native SVG bars, lines and areas with exact accessible data.
@@ -75,11 +88,14 @@ Those sources provide declared constructors, methods and hooks when reading the 
 Related measurements and ratings: [Progress](components/progress.md), [Meters](components/meters.md) and [Ratings](components/ratings.md).
 
 - [Cards](components/cards.md) — Compose content into cards with caller-owned markup.
+- [Description lists](components/description-list.md) — Read-only record details with native term/value relationships.
+- [Timelines](components/timeline.md) — Ordered activity histories with localized times and decorative markers.
 - [Badges](components/badges.md) — Short escaped labels and status indicators.
 - [Alerts](components/alerts.md) — Persistent messages and composed alert content.
-- [Avatars](components/avatars.md) — Pictures, initials, loading and image-failure fallbacks.
+- [Avatars](components/avatars.md) — Pictures, initials, loading/error fallbacks and overlapping team groups.
 - [Icons](components/icons.md) — Bundled Lucide SVGs with decorative or named semantics.
 - [Skeletons and spinners](components/loading.md) — Decorative placeholders and named loading indicators.
+- [Lazy-loaded panels](components/lazy-load.md) — Deferred content with shared readiness polling and a native fallback.
 - [Empty state](components/empty-state.md) — A heading, explanation and optional next action.
 - [Separators](components/separators.md) — Decorative or semantic horizontal and vertical dividers.
 - [Keyboard keys](components/keyboard.md) — Display keys and shortcut sequences in semantic markup.

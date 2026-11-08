@@ -1,0 +1,46 @@
+/* Connected independent actions. Button/menu identity comes from the active Shadleaf-derived skin. */
+@layer components {
+  .sw-button-group {
+    display: inline-flex;
+    align-items: stretch;
+    padding: 0;
+    margin: 0;
+    list-style: none;
+    vertical-align: middle;
+    isolation: isolate;
+  }
+  .sw-button-group > .sw-button-group-item { display: inline-flex; }
+  .sw-button-group > .sw-button-group-item[hidden] { display: none; }
+  .sw-button-group[data-orientation='vertical'] { flex-direction: column; }
+  .sw-button-group[data-orientation='vertical'] > .sw-button-group-item > .sw-button { flex: 1; }
+  .sw-button-group > .sw-button,
+  .sw-button-group > .sw-button-group-item > .sw-button { position: relative; }
+  .sw-button-group > .sw-button:focus-visible,
+  .sw-button-group > .sw-button-group-item > .sw-button:focus-visible { z-index: 1; }
+  .sw-split-button > .sw-split-button-trigger.sw-button { padding-inline: 0; aspect-ratio: 1; }
+  .sw-button-group:not([data-orientation='vertical']) > :is(.sw-button, .sw-button-group-item):not([hidden]) ~ :is(.sw-button, .sw-button-group-item):not([hidden]).sw-button,
+  .sw-button-group:not([data-orientation='vertical']) > :is(.sw-button, .sw-button-group-item):not([hidden]) ~ :is(.sw-button, .sw-button-group-item):not([hidden]).sw-button-group-item > .sw-button {
+    border-start-start-radius: 0; border-end-start-radius: 0;
+    margin-inline-start: calc(-1 * var(--sw-button-group-border-width));
+    border-inline-start-color: var(--sw-button-group-divider);
+  }
+  .sw-button-group:not([data-orientation='vertical']) > :is(.sw-button, .sw-button-group-item):not([hidden]):has(~ :is(.sw-button, .sw-button-group-item):not([hidden])).sw-button,
+  .sw-button-group:not([data-orientation='vertical']) > :is(.sw-button, .sw-button-group-item):not([hidden]):has(~ :is(.sw-button, .sw-button-group-item):not([hidden])).sw-button-group-item > .sw-button {
+    border-start-end-radius: 0; border-end-end-radius: 0;
+  }
+  .sw-button-group[data-orientation='vertical'] > :is(.sw-button, .sw-button-group-item):not([hidden]) ~ :is(.sw-button, .sw-button-group-item):not([hidden]).sw-button,
+  .sw-button-group[data-orientation='vertical'] > :is(.sw-button, .sw-button-group-item):not([hidden]) ~ :is(.sw-button, .sw-button-group-item):not([hidden]).sw-button-group-item > .sw-button {
+    border-start-start-radius: 0; border-start-end-radius: 0;
+    margin-block-start: calc(-1 * var(--sw-button-group-border-width));
+    border-block-start-color: var(--sw-button-group-divider);
+  }
+  .sw-button-group[data-orientation='vertical'] > :is(.sw-button, .sw-button-group-item):not([hidden]):has(~ :is(.sw-button, .sw-button-group-item):not([hidden])).sw-button,
+  .sw-button-group[data-orientation='vertical'] > :is(.sw-button, .sw-button-group-item):not([hidden]):has(~ :is(.sw-button, .sw-button-group-item):not([hidden])).sw-button-group-item > .sw-button {
+    border-end-start-radius: 0; border-end-end-radius: 0;
+  }
+  @media (forced-colors: active) {
+    .sw-button-group { --sw-button-group-divider: ButtonText; }
+    .sw-button-group[role='group'] .sw-button:not([hidden]) { --sw-button-group-divider: ButtonText; }
+    .sw-button-group .sw-button:focus-visible { outline: 2px solid Highlight; outline-offset: 2px; }
+  }
+}

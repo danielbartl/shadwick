@@ -1,6 +1,10 @@
 /* Every component, in the order their selectors compose: base and button first, then the rest. */
 @import "./components/base.css";
 @import "./components/button.css";
+@import "./components/button-group.css";
+@import "./components/description-list.css";
+@import "./components/timeline.css";
+@import "./components/steps.css";
 @import "./components/dialog.css";
 @import "./components/alert-dialog.css";
 @import "./components/sheet.css";
@@ -14,9 +18,11 @@
 @import "./components/badge.css";
 @import "./components/alert.css";
 @import "./components/avatar.css";
+@import "./components/avatar-group.css";
 @import "./components/separator.css";
 @import "./components/kbd.css";
 @import "./components/skeleton.css";
+@import "./components/lazy-load.css";
 @import "./components/spinner.css";
 @import "./components/empty.css";
 @import "./components/icon.css";
@@ -50,6 +56,7 @@
 @import "./components/select.css";
 
 @import "./components/combobox.css";
+@import "./components/tag-input.css";
 
 @import "./components/calendar.css";
 @import "./components/date-picker.css";
@@ -60,3 +67,5 @@
 
 @import "./components/progress.css";
 @import "./components/rating.css";
+
+@import "./components/range.css";

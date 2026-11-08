@@ -1,0 +1,25 @@
+<wicket:extend xmlns:wicket="http://wicket.apache.org">
+<div><h1 class="ex-title">Avatar groups</h1><p class="ex-lead">Show a team with overlapping pictures and initials. Groups keep their member order and wrap when space is limited.</p></div>
+<section id="sizes-example" class="ex-section" aria-labelledby="sizes-heading"><h2 id="sizes-heading">Three sizes</h2>
+  <div class="ex-row"><div><h3>Small</h3><ul wicket:id="small"><li wicket:id="avatars"><span wicket:id="avatar"></span></li></ul></div>
+  <div><h3>Default</h3><ul wicket:id="standard"><li wicket:id="avatars"><span wicket:id="avatar"></span></li></ul></div>
+  <div><h3>Large</h3><ul wicket:id="large"><li wicket:id="avatars"><span wicket:id="avatar"></span></li></ul></div></div>
+</section>
+<section id="team-example" class="ex-section" aria-labelledby="team-heading"><h2 id="team-heading">A team with member links</h2>
+  <p class="ex-muted">These are ordinary named links. The example chooses three visible members and a native link to show two more.</p>
+  <ul wicket:id="team"><li wicket:id="avatars"><a wicket:id="person"><span wicket:id="avatar"></span></a></li>
+    <li wicket:id="overflow" class="sw-avatar-group-item"><a wicket:id="more"><span class="sw-avatar sw-avatar-group-count" aria-hidden="true">+2</span></a></li>
+  </ul>
+  <p wicket:id="receipt" class="ex-muted" role="status"></p>
+</section>
+<section id="dynamic-example" class="ex-section" aria-labelledby="dynamic-heading"><h2 id="dynamic-heading">Updating reviewers</h2>
+  <p class="ex-muted">Clear, restore or replace the group through Ajax. Cached pictures reuse the existing avatar fallback behavior.</p>
+  <div wicket:id="changing"><ul wicket:id="dynamic"><li wicket:id="avatars"><span wicket:id="avatar"></span></li></ul><p wicket:id="empty" class="ex-muted"></p></div>
+  <div class="ex-row"><button wicket:id="clear"></button><button wicket:id="restore"></button><button wicket:id="replace"></button></div>
+</section>
+<section id="wrapping-example" class="ex-section" aria-labelledby="wrapping-heading"><h2 id="wrapping-heading">Wrapping and fixed markup</h2>
+  <p class="ex-muted">Long groups wrap at the same logical edge. Member names remain available to assistive technology.</p>
+  <ul wicket:id="wrapping"><li wicket:id="avatars"><span wicket:id="avatar"></span></li></ul>
+  <h3>A fixed group using the behavior</h3><div wicket:id="fixed"><span class="sw-avatar-group-item"><span wicket:id="ada"></span></span><span class="sw-avatar-group-item"><span wicket:id="grace"></span></span></div>
+</section>
+</wicket:extend>

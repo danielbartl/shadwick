@@ -1,0 +1,19 @@
+<wicket:extend xmlns:wicket="http://wicket.apache.org">
+<div><h1 class="ex-title">Details &amp; activity</h1><p class="ex-lead">Read a customer’s details and follow the account’s history, with localized values and native HTML relationships.</p></div>
+<section class="ex-section" aria-labelledby="details-heading"><h2 id="details-heading">Customer details</h2>
+  <p class="ex-muted">Labels sit beside values when the list has enough space, and stack in narrow containers. Empty values use an em dash.</p>
+  <dl wicket:id="details" aria-labelledby="details-heading"></dl>
+  <div class="ex-record-compact"><h3 id="compact-heading">Compact summary</h3><dl wicket:id="compact" aria-labelledby="compact-heading"></dl></div>
+</section>
+<section class="ex-section" aria-labelledby="history-heading"><h2 id="history-heading">Account activity</h2>
+  <p class="ex-muted">Events stay in the supplied order. Status is written in the event text as well as shown by a decorative marker.</p>
+  <div wicket:id="activity"><div wicket:id="timeline"></div><div wicket:id="empty"></div></div>
+  <div class="ex-row"><button wicket:id="payment"></button><button wicket:id="clear"></button><button wicket:id="restore"></button></div>
+</section>
+<section class="ex-section" aria-labelledby="edit-heading"><h2 id="edit-heading">Update the customer</h2>
+  <form wicket:id="form" class="ex-form" aria-label="Edit customer"><div wicket:id="name"></div>
+    <div class="ex-row"><button wicket:id="normalSave" type="submit">Save normally</button><button wicket:id="save"></button></div>
+  </form>
+  <p wicket:id="receipt" class="ex-muted" role="status"></p>
+</section>
+</wicket:extend>

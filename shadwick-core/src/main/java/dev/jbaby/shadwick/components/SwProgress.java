@@ -5,7 +5,7 @@ import org.apache.wicket.markup.html.WebComponent;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
 
-/** Native progress bar. Use on <progress>, give it an accessible label, and use a null value while progress is unknown. */
+/** Native progress bar. Use on {@code <progress>}, give it an accessible label, and use a null value while progress is unknown. */
 public class SwProgress extends WebComponent {
     private final ProgressBehavior appearance;
     public SwProgress(String id, Number value) { this(id, Model.of(value)); }

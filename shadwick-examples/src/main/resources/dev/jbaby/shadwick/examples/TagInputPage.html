@@ -1,0 +1,24 @@
+<wicket:extend xmlns:wicket="http://wicket.apache.org">
+<div><h1 class="ex-title">Freeform tags</h1><p class="ex-lead">Enter your own labels, commit them with Enter or comma, and remove them with the named buttons. Pending text is included when you save.</p></div>
+<section id="native-example" class="ex-section" aria-labelledby="native-heading"><h2 id="native-heading">Native submission</h2>
+  <p class="ex-muted">Without JavaScript, enter a comma-separated list in the same field.</p>
+  <form wicket:id="nativeForm" class="ex-form" aria-label="Native tags">
+    <fieldset wicket:id="fields"><legend>Project labels</legend><div wicket:id="tags"></div></fieldset>
+    <div class="ex-row"><button wicket:id="save" type="submit">Save normally</button><button type="reset" class="sw-button" data-variant="outline">Reset tags</button></div>
+    <div class="ex-row"><button wicket:id="toggle"></button><button wicket:id="replace"></button><button wicket:id="preset"></button><button wicket:id="refresh"></button></div>
+    <p wicket:id="saved" class="ex-muted" role="status"></p>
+  </form>
+</section>
+<section id="ajax-example" class="ex-section" aria-labelledby="ajax-heading"><h2 id="ajax-heading">Ajax validation</h2>
+  <p class="ex-muted">A failed save keeps your tags and draft in place. Refresh status to update another part of the form.</p>
+  <form wicket:id="ajaxForm" class="ex-form" aria-label="Ajax tags">
+    <fieldset wicket:id="fields"><legend>Project labels</legend><div wicket:id="tags"></div></fieldset>
+    <div class="ex-row"><button wicket:id="save"></button><button type="reset" class="sw-button" data-variant="outline">Reset tags</button></div>
+    <div class="ex-row"><button wicket:id="toggle"></button><button wicket:id="replace"></button><button wicket:id="preset"></button><button wicket:id="refresh"></button></div>
+    <p wicket:id="saved" class="ex-muted" role="status"></p>
+  </form>
+</section>
+<section id="states-example" class="ex-section" aria-labelledby="states-heading"><h2 id="states-heading">States and wrapping</h2>
+  <div class="ex-form"><div wicket:id="readonly"></div><div wicket:id="disabled"></div><div wicket:id="wrapping"></div></div>
+</section>
+</wicket:extend>

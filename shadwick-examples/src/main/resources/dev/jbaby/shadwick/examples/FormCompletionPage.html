@@ -1,0 +1,23 @@
+<wicket:extend xmlns:wicket="http://wicket.apache.org">
+<div><h1 class="ex-title">Quote fields</h1>
+<p class="ex-lead">Localized amounts, percentages, a native slider and a compound project reference, grouped in a native fieldset.</p></div>
+<div class="ex-forms">
+<section class="ex-section"><h2>Normal quote</h2>
+<form wicket:id="form" class="ex-form" aria-label="Normal quote" novalidate>
+<fieldset wicket:id="pricing">
+<div wicket:id="budget"></div><div wicket:id="tax"></div><div wicket:id="priority"></div><div wicket:id="reference"></div>
+</fieldset>
+<div class="ex-row"><button wicket:id="save" type="submit">Save quote</button><button type="reset" class="sw-button" data-variant="outline">Reset inputs</button></div>
+<div class="ex-row"><a wicket:id="toggle">Toggle section</a><a wicket:id="replace">Replace revision</a></div>
+<p wicket:id="saved" role="status" class="ex-muted"></p>
+</form></section>
+<section class="ex-section"><h2>Ajax quote</h2>
+<form wicket:id="ajaxForm" class="ex-form" aria-label="Ajax quote" novalidate>
+<fieldset wicket:id="pricing">
+<div wicket:id="budget"></div><div wicket:id="tax"></div><div wicket:id="priority"></div><div wicket:id="reference"></div>
+</fieldset>
+<div class="ex-row"><button wicket:id="save" type="submit">Save quote</button><button type="reset" class="sw-button" data-variant="outline">Reset inputs</button></div>
+<div class="ex-row"><a wicket:id="toggle">Toggle section</a><a wicket:id="replace">Replace revision</a></div>
+<p wicket:id="saved" role="status" class="ex-muted"></p>
+</form></section>
+</div></wicket:extend>

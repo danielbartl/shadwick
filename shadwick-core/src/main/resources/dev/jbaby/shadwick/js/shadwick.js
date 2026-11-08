@@ -649,6 +649,12 @@
             return node.tabIndex >= 0 && !node.matches(':disabled') && visibleControl(node);
         });
     }
+    function focusSidebar(nav) {
+        // An action may already have moved focus into the panel or a nested menu/dialog before the timer runs.
+        if (nav.contains(document.activeElement) || document.activeElement.closest('dialog:modal')) return;
+        var current = nav.querySelector('a[aria-current="page"]');
+        (current && visibleControl(current) ? current : sidebarControls(nav)[0] || nav).focus();
+    }
     function sidebarInert(state) {
         var branch = state.nav;
         while (branch && branch !== document.body) {
@@ -722,8 +728,7 @@
             sidebarSync(provider, state);
             if (nav.matches(':popover-open') && !sidebarDesktop.matches) {
                 sidebarInert(state);
-                if (!nav.contains(document.activeElement) && !document.activeElement.closest('dialog:modal'))
-                    (sidebarControls(nav)[0] || nav).focus();
+                focusSidebar(nav);
             }
         });
     }
@@ -739,8 +744,7 @@
             sidebarInert(state);
             state.focusTimer = setTimeout(function () {
                 if (!nav.isConnected || !nav.matches(':popover-open')) return;
-                var current = nav.querySelector('a[aria-current="page"]');
-                (current && visibleControl(current) ? current : sidebarControls(nav)[0] || nav).focus();
+                focusSidebar(nav);
             }, 0);
         } else {
             var focused = nav.contains(document.activeElement);
@@ -820,6 +824,7 @@
     });
     sidebarDesktop.addEventListener('change', function () {
         sidebarStates.forEach(function (state, provider) {
+            if (activeTooltip && state.nav.contains(activeTooltip.source)) hideTooltip(activeTooltip);
             sidebarClose(state, true); sidebarSync(provider, state);
             if (state.nav.contains(document.activeElement) && !visibleControl(document.activeElement)) {
                 var trigger = sidebarTriggers(state.nav)[0]; if (trigger) trigger.focus();

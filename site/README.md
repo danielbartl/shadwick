@@ -9,8 +9,9 @@ the component catalog is at `/components`, with grouped navigation and copyable 
 The `/studio` alias remains available. Its [guide](../docs/guides/clover-studio.md) is included in the static
 documentation. The static component studio below remains a browser preview.
 
-The hero and main navigation link directly to Clover Studio and the live component catalog. The 12-group
-component listing pairs guide links with live examples, including the latest chart and advanced-table features.
+The hero and main navigation link directly to Clover Studio and the live component catalog. The 20-group
+component listing pairs guide links with live examples, including form composition, exact money/percentage/range
+fields, button groups/split buttons, record details/timelines, lazy panels, tags, avatar groups and steps.
 The preview places the chart, inline calendar and compact month view together below the main cards; keep the
 calendar out of the preferences column so its height cannot leave a large gap before the chart. Insights use
 three columns on desktop, a full-width chart above two calendars on tablet, and one column on mobile.

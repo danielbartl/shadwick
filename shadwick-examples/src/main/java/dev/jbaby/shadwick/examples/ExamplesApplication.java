@@ -22,6 +22,10 @@ public class ExamplesApplication extends WebApplication {
     protected void init() {
         super.init();
 
+        // Browsers request this even without an icon link. Keep it out of the root Studio mapper,
+        // whose page construction deliberately normalizes Studio to English/German.
+        mountResource("/favicon.ico", new org.apache.wicket.request.resource.PackageResourceReference(BasePage.class, "clover.svg"));
+
         // Stateless readiness check: do not render a page or allocate a visitor workspace.
         mountResource("/healthz", new ResourceReference(ExamplesApplication.class, "healthz") {
             @Override public IResource getResource() {

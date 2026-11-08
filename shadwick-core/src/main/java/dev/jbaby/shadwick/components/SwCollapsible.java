@@ -13,7 +13,7 @@ import org.apache.wicket.model.Model;
 
 import java.util.Objects;
 
-/** A native details/summary disclosure with escaped label and an arbitrary content slot. Bind to <details>. */
+/** A native details/summary disclosure with escaped label and an arbitrary content slot. Bind to {@code <details>}. */
 public class SwCollapsible extends Panel {
     public static final String CONTENT_ID = "content";
     private final CollapsibleBehavior appearance = new CollapsibleBehavior();

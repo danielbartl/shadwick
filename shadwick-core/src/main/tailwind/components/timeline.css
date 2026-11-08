@@ -1,0 +1,28 @@
+/* Ordered event text is authoritative; pseudo-elements are decorative markers/connectors. */
+@layer components {
+  .sw-timeline { min-inline-size: 0; margin: 0; padding: 0; list-style: none; }
+  .sw-timeline-event { position: relative; min-inline-size: 0; padding-inline-start: calc(var(--sw-timeline-marker-size) + var(--sw-timeline-marker-gap)); }
+  .sw-timeline-event:has(~ .sw-timeline-event:not([hidden])) { padding-block-end: var(--sw-timeline-event-gap); }
+  .sw-timeline-event::before {
+    content: ''; position: absolute; inset-inline-start: 0; inset-block-start: .35em;
+    box-sizing: border-box; inline-size: var(--sw-timeline-marker-size); block-size: var(--sw-timeline-marker-size);
+  }
+  .sw-timeline-event:has(~ .sw-timeline-event:not([hidden]))::after {
+    content: ''; position: absolute; inset-inline-start: calc((var(--sw-timeline-marker-size) - var(--sw-timeline-line-width)) / 2);
+    inset-block-start: calc(.35em + var(--sw-timeline-marker-size)); inset-block-end: 0;
+    border-inline-start-width: var(--sw-timeline-line-width); border-inline-start-style: var(--sw-timeline-line-style, solid);
+  }
+  .sw-timeline-heading { display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; }
+  .sw-timeline-title, .sw-timeline-time, .sw-timeline-description { min-inline-size: 0; overflow-wrap: anywhere; }
+  .sw-timeline-description { margin: 0; }
+  @media (forced-colors: active) {
+    .sw-timeline[role='list'] .sw-timeline-event::before { forced-color-adjust: none; background: CanvasText; border-color: CanvasText; }
+    .sw-timeline[role='list'] .sw-timeline-event[data-variant='outline']::before { background: Canvas; }
+    .sw-timeline .sw-timeline-event::after { border-color: CanvasText; }
+  }
+  @media print {
+    .sw-timeline-event, .sw-description-list-item { break-inside: avoid; }
+    .sw-timeline[role='list'] .sw-timeline-event::before { background: transparent; border-color: currentColor; }
+    .sw-timeline .sw-timeline-event::after { border-color: currentColor; }
+  }
+}

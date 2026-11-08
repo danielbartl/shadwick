@@ -13,9 +13,418 @@ Maven dependency and is done: no Node, no Tailwind, no CSS build on their side.
 - Java package: `dev.jbaby.shadwick`
 - License: Apache 2.0
 
-## Resume point — 2026-11-07
+## Resume point — 2026-11-08
 
-**Current checkpoint: landing-page demo visibility.** The hero now promotes Clover Studio and the live component
+**Current checkpoint: completed shortlist publication.** The user authorized committing and pushing all
+accumulated work and refreshing the documentation, landing page and live examples application. This publication
+includes the browser-suite cleanup, candidate API/serialization baseline and every completed pre-release component
+group: fieldsets/compound/money/percent/range fields, button groups/split buttons, record details/timelines,
+lazy-load panels, tags, avatar groups and steps. The version remains 0.1.0-SNAPSHOT; Maven Central publication,
+release notes, signing and release automation remain separate next work.
+
+The landing collection now has twenty groups, with guide/live-example links for every new family. Docs now cover
+64 guides/172 API types, and the public status copy reflects the completed collection without claiming a Maven
+Central release. The examples catalog includes all seven new routes and packaged View Wicket code sources.
+The later-phases roadmap below has been reconciled with completed components, hosting and agent resources.
+
+GitHub Pages is published by the existing Website workflow on main. Railway's existing GitHub integration watches
+core/examples changes and rebuilds the production application. Destinations: https://danielbartl.github.io/shadwick/
+and https://shadwick-production.up.railway.app/ (catalog /components; new routes /form-completion, /button-groups,
+/record-display, /lazy-load, /tag-input, /avatar-groups and /steps). Do not run Maven deploy or tag a release for
+this website/application refresh. The user's current authorization supersedes the earlier local-only checkpoints.
+
+Publication validation uses an isolated source copy under /tmp/shadwick-publish-build-zpauxj_h so the user's local
+example executables stay untouched. Maven verify passes all 1238 tests on Java 17 and 25 (1063 core/175 examples),
+including packaging the production executable. All 43 Node docs tests, 135 documentation browser cases and 25
+catalog browser cases pass. The production JAR includes the matching core, all seven example routes/markup and
+their packaged source, with the module name and 36 CSS bundles intact. The local publication smoke passes 108
+Chromium/Firefox checks: every skin, both layouts, desktop/light and 320px/dark, no-script landing, all new docs,
+production-mode routes, strict CSP, source views and working steps/tags/avatar actions. Node build/link checks
+pass for 67 HTML pages. Existing per-component/cleanup browser results remain recorded below.
+
+Logs: /tmp/shadwick-publish-*.log. Build manifest: /tmp/shadwick-publish-build.json. The reusable local/live smoke
+script is /tmp/shadwick-publish-smoke.cjs; artifacts/results are under /tmp/shadwick-publish-smoke-local and
+/tmp/shadwick-publish-smoke-live. After pushing, inspect the exact commit's Build/Website runs, verify the deployed
+landing collection/new guides and all new Railway routes, and record the publication outcome in the conversation.
+
+**Previous checkpoint: steps indicator (implemented and verified locally).** Added SwSteps, following Wicket
+Oat 76562314's ordered titles/current models and completed-step Ajax selection API/tests. Shadleaf ac29987 has
+no matching component; the existing field/timeline typography, density, semantic tokens and marker shapes provide
+the nine skin references. No dependency, new runtime or background work was added.
+
+SwSteps owns native ol/li markup with numbered stages, localized visible Completed/Current/Upcoming captions
+and aria-current=step on the current item. Null/negative current indices mean not started; indices at/past the
+end mean all completed. Null lists render empty; titles and labels are escaped. Read-only/current/future stages
+are spans. Optional completed-step Ajax links retain native Tab/Enter behavior and recheck current progress,
+bounds, captured title, callback availability and enabled hierarchy before invoking application code. Business
+rules, stage identity, validation, model updates, targets and focus navigation remain application-owned.
+
+Titles/current models snapshot for each render, with copied titles and explicit source detach even while hidden.
+Snapshots clear after a callback so model changes appear in the same response, without detaching source models
+mid-request. Labels accept String/model values; null/blank uses the localized default Steps. Four message keys
+ship in all nine languages. Without script, completed action anchors hide through the scripting media query and
+noscript copies show their status text, so there are no nonfunctional step links. Native application forms work.
+
+Container queries switch from stacked stages to columns at 32rem, including compact sidebars on wide screens.
+Long titles wrap; connectors use logical LTR/RTL positions. Sera uses square markers and Sketch keeps its irregular
+shape/dashed connectors. Forced colors use explicit member borders, completed fills and a heavier current border.
+Print uses a light color scheme and CanvasText so dark-theme captions/markers remain legible without backgrounds.
+The fixed-width compact demo initially expanded its grid track on mobile: use max-inline-size plus min-inline-size:0.
+Keyboard focus tests reach links with Shift+Tab; programmatic focus after a pointer click need not be focus-visible.
+
+The /steps catalog demo includes order status, validated native/Ajax progression, completed-step return without
+submission/draft loss, application-owned focus, completion/reset, replacement, boundary/disabled states and long
+titles. Documentation, catalog navigation/source view, README, agent routing and NOTICE are updated (64 guides,
+172 API types). The pre-release component shortlist is now complete. Remaining release work is changelog,
+signing/release automation and Maven Central publication; no release/deployment work was requested.
+
+Validation: all 1238 JVM tests pass on Java 17 and Java 25 (1063 core/175 examples), including 24 component cases,
+an application-package serialization case and five demo cases. All 60 Chromium/Firefox browser cases pass across
+nine skins, light desktop/dark 320px, all nine native no-script locales, validation, completed-step keyboard return,
+same-response updates, raw draft/focus preservation, replacement, horizontal/container-vertical layouts, boundary
+states, literal/long titles, strict CSP and embedded RTL/forced colors/reduced motion/printing. Axe runs in normal
+colors; forced-color borders/focus and black print captions have explicit assertions. Screenshots are under
+target/steps-screenshots/ in examples. All 43 Node docs tests and site/link checks pass (67 HTML pages). Fresh
+Java 17 Javadoc doclint all,-missing passes with the new SwSteps page present. The API baseline adds eight entries
+and removes none (2380 total). The packaged core JAR has 467 Java 17 classes, all 36 rebuilt CSS bundles and nine
+steps message bundles, with matching markup/licenses and no examples/tests leaked. Previous shortlist APIs/CSS
+remain present. Logs: /tmp/shadwick-steps-*.log; summary: /tmp/shadwick-steps-validation.json. Browser suffix:
+steps-final. Existing example executables were not overwritten/restarted. All work remains local/uncommitted.
+
+**Previous checkpoint: avatar groups (implemented and verified locally).** Added SwAvatarGroup<T>,
+AvatarGroupBehavior and Sw.Components/Sw.Behaviors.avatarGroup, following Wicket Oat 76562314's constructors,
+Size, avatars ListView, populateItem and factory API. Shadleaf ac29987 has no dedicated group; composition
+reuses its existing avatar anatomy and the nine Shadwick skins. No dependency or new runtime was added.
+
+Caller-owned native list/group markup supplies SwAvatar and optional named native links/buttons. Group sizes
+SMALL/DEFAULT/LARGE govern all children, including avatars constructed with another size. Logical overlap wraps
+with every row aligned at the same edge in LTR/RTL. Focused items rise above their neighbors. Background outlines
+separate members while retaining skin shapes and Sketch's rings; forced colors add explicit member borders and
+system focus colors. SwAvatar's existing cached/loading/error behavior remains unchanged outside the group.
+
+Member models snapshot into a copied list once per request and detach even while hidden. Null lists render empty.
+Population and source order stay application-owned, along with member visibility, authorization, overflow counts
+and subsets. Root ul/ol markup retains explicit role=list despite list-style:none; other roots default to group,
+and explicit roles/labelledby attributes survive. Group labels accept escaped strings/detachable models. Native
+links/buttons keep normal Tab and activation behavior; there is no toolbar keyboard system or automatic focus move.
+
+The /avatar-groups catalog example covers all three sizes, native member callbacks, an application-owned native
+show-more link, Ajax clear/restore/replacement, empty state, twenty wrapping members and a fixed behavior group.
+Member link names include their visible initials, e.g. View GH: Grace Hopper, with the nested avatar aria-hidden.
+Axe's label-in-name check strips parenthesized text before matching; do not put required initials only in brackets.
+Java subList implementations need copying before storing them in serializable page models. Documentation extends
+the existing avatar guide and updates catalog, README, agent routing and NOTICE (63 guides/171 API types).
+The sole remaining optional component shortlist item is a steps indicator. Release infrastructure still comprises
+changelog, signing/release automation and Maven Central publication; no release work was requested here.
+
+Validation: all 1206 JVM tests pass on Java 17 and Java 25 (1038 core/168 examples), including 12 component cases,
+an application-package serialization case and five demo cases. All 62 Chromium/Firefox browser cases pass across
+nine skins, light desktop/dark 320px, all nine native no-script locales, true delayed-image fallback, broken/cached
+images, native links/show-more, focus stacking/outlines, Ajax empty/restore/replacement, exact size/overlap geometry,
+wrapping, strict CSP and embedded RTL/forced colors/reduced motion. Axe runs before forced-color emulation; explicit
+border/focus checks and screenshots inspect forced colors. Screenshots: target/avatar-group-screenshots/ in examples.
+All 43 Node docs tests and site/link checks pass (66 HTML pages). Fresh Java 17 Javadoc doclint all,-missing passes
+with both new API pages present. The reviewed API baseline adds 28 entries and removes none (2372 total).
+The packaged core JAR contains 462 Java 17 classes and all 36 rebuilt CSS bundles, with matching licenses and no
+examples/tests leaked. Previous shortlist APIs and CSS markers remain present. Logs: /tmp/shadwick-avatars-*.log;
+summary: /tmp/shadwick-avatars-validation.json. Final browser suffix: avatars-final. Existing example executables
+were not overwritten/restarted. This group and all previous work remain local/uncommitted, with no publication.
+
+**Previous checkpoint: freeform tag input (implemented and verified locally).** Continued the user's
+pre-release shortlist with SwTagInput, TagInputBehavior and Sw.Behaviors.tagInput. Wicket Oat 76562314's
+List<String> constructors and comma conversion provide the API reference; Shadleaf ac29987 and the existing
+combobox anatomy provide the skin reference. The new progressive enhancement adds no dependency.
+
+The native text input owns the submitted value, conversion and Wicket validation, and remains visible without
+JavaScript. Conversion uses Java String.trim(), drops empty parts and exact duplicates in first-seen order,
+and returns a mutable list. Required comma-only input fails without changing the previous model. Model tags
+containing commas are rejected because the delimiter has no quoting syntax. Null/blank model entries are
+omitted on render without mutating the supplied list. Application validators own count/length/content rules.
+
+JavaScript adds chips and an ordinary unnamed textbox, synchronizing pending text to the native input on
+every edit. Enter/comma/blur commit; composition delays splitting and Enter never implicitly submits outside
+IME. Remove buttons have localized accessible names and normal Tab/Enter/Space behavior, plus directional
+arrows, Home/End and Delete/Backspace. Empty-editor Backspace focuses the last remove button first. Removing
+a tag preserves the draft. Text/attribute setters keep literal markup safe. Labels and description/error/hint
+relationships transfer to the editor; it has no combobox/listbox role. A separate polite status announces changes.
+
+In-place Ajax feedback preserves editor identity, focus and draft; explicit replacement uses the server model.
+Native reset restores rendered values, clears the draft and respects cancellation. External source input/change
+events refresh chips. Readonly/disabled/fieldset changes are mirrored with runtime mutation guards. Disconnected
+controls release listeners, timers and observers; cloned history markup restores synchronized drafts once.
+The global disabled observer must react only to fieldsets, otherwise editor.disabled writes cause a loop.
+Disabled chip text keeps full contrast with a muted control background; do not fade its whole wrapper.
+
+The /tag-input demo includes native/Ajax required forms with a three-tag validator, reset, fieldset toggling,
+replacement, presets, unrelated status refreshes, readonly/disabled and long/literal tags. Catalog navigation
+and View Wicket code include its sources. New guide, README, agent routing and NOTICE are updated (63 guides,
+169 documented API types). Remaining optional shortlist items are avatar groups and a steps indicator.
+Release infrastructure remains separate: changelog, signing/release automation and Maven Central publication.
+
+Validation: all 1186 JVM tests pass on Java 17 and Java 25 (1025 core/161 examples), including 26 component cases,
+an application-package serialization/validator case and five demo cases. All 62 Chromium/Firefox browser cases
+pass across nine skins, light desktop/dark 320px, all nine native no-script locales, pending draft submission,
+inline errors, reset/cancellation, replacement, external source changes, history clones, IME, keyboard, strict
+CSP, embedded RTL/forced colors/reduced motion and wrapping. Axe audits run in normal colors; forced colors use
+explicit border/focus assertions and screenshots, matching existing suites (Chromium computed color contrast
+does not describe its system-painted forced colors). IME tests dispatch a composition sequence directly;
+Playwright.fill may itself finish composition in Firefox. Screenshots are under target/tag-input-screenshots/.
+All 43 Node docs tests and site/link checks pass (66 HTML pages). Fresh Java 17 Javadoc doclint all,-missing passes
+with both new API pages present. The reviewed baseline adds 20 entries and removes none (2344 total entries).
+The packaged core JAR contains 456 Java 17 classes, all 36 rebuilt CSS bundles, nine tag message bundles and
+matching runtime/markup/licenses, without example/test leaks. Logs: /tmp/shadwick-tags-*.log; summary:
+/tmp/shadwick-tags-validation.json. Final browser report suffix: tags-final. Existing example executables were
+not overwritten/restarted. This and all previous groups remain local/uncommitted; no publication was requested.
+
+**Previous checkpoint: lazy-load panel (implemented and verified locally).** The user selected the next
+pre-release shortlist item. Added SwLazyLoadPanel<T extends Component> and Sw.Components.lazyLoad, following
+Wicket Oat 76562314's API/tests on the existing Wicket 10.11.0 AjaxLazyLoadPanel. Shadleaf ac29987's decorative
+skeleton structure and the existing nine skin implementations provide the visual reference. No dependency,
+background executor or JavaScript was added.
+
+The component renders the initial page without constructing its content, with configurable skeleton shape/count,
+one localized visible loading status and aria-busy. Its own page timer starts after 100ms, then Wicket uses the
+shortest interval among visible pending panels (one second by default). Existing ordinary Wicket lazy-panel timers
+retain their schedule. All completed/hidden panels let the shared timer stop and remove itself; newly added or
+shown panels can install one again. Initial intervals must fit 1ms..2147483647ms. The inherited isLoaded() can load
+content, so busy rendering reads a separate completion flag. onContentLoaded overrides must call super to clear it.
+
+The native noscript Load content link performs a normal request, checks readiness and loads the same content
+when ready; otherwise it remains available for another manual check. Loaded native forms work without script.
+Loading labels accept String/model values, fall back on localized text when null/blank and detach even when hidden
+or after completion. Factories validate the supplied CONTENT_ID. Expected service failures belong to application
+content; retry replaces the whole lazy panel. Unexpected exceptions retain Wicket's normal behavior, including its
+loaded flag being set before the factory runs. The wrapper does not swallow failures or silently launch jobs.
+
+The /lazy-load catalog demo includes deferred editable reports, a readiness gate, pending/loaded replacement,
+an expected failure, a busy retry button and native/Ajax report forms. View Wicket code includes the main source
+and both nested report/retry markup files. The new guide, README and agent routing describe lifecycle, ownership,
+native fallback, inherited hooks and retry boundaries (62 guides/167 API types). NOTICE records the adapted API.
+Remaining optional shortlist items are freeform tags, avatar groups and a steps indicator. Release infrastructure
+is still separate work; no other shortlist component was implemented in this group.
+
+Validation: all 1152 JVM tests pass on Java 17 and Java 25 (998 core/154 examples), including 26 component cases,
+an additional application-package serialization case and five demo cases. All 60 Chromium/Firefox browser cases
+pass across nine skins, light desktop/dark 320px, all nine native no-script locales, loaded form validation,
+shared readiness polling, replacement/retry, input/focus preservation, strict CSP and embedded RTL/forced colors/
+reduced motion. Browser tests hold the first Ajax request to inspect/screenshot actual loading content, rather
+than using sleeps. Placeholder and loaded/forced-color screenshots are under target/lazy-load-screenshots/ in
+the examples module. All 43 Node docs tests and final site/link checks pass (65 HTML pages). Java 17 Javadoc
+doclint all,-missing passes with the new API page confirmed using a fresh -DstaleDataPath.
+
+The reviewed baseline adds 14 entries and removes none (2324 total: 246 types/2013 members/65 metadata).
+The packaged core JAR has 451 Java 17 classes, all 36 rebuilt CSS bundles, nine lazy-load message bundles and
+matching placeholder markup/licenses, with no example/test leaks. Logs: /tmp/shadwick-lazy-*.log; summary
+/tmp/shadwick-lazy-validation.json. Final browser report suffix: lazy-final. Wicket may detach a panel more than
+once during replacement; models must support its normal idempotent detach contract. Test fixtures inspect the
+component tree instead of matching View Wicket code text, and serializable consumers use static fixture classes
+to avoid capturing a nonserializable test instance. Existing example executables were not overwritten/restarted.
+This group and all previous cleanup/API/form/action/details work remain local/uncommitted. No deployment, push
+or release was requested. Release work still comprises changelog, signing/release automation and Maven Central.
+
+**Previous checkpoint: description lists and timelines (implemented and verified locally).** The user continued
+the pre-release shortlist after button groups. Added SwDescriptionList, SwTimeline, DescriptionListBehavior,
+TimelineBehavior and TimelineEventBehavior, with matching Sw.Behaviors entry points. No dependency or script
+was added. References are Wicket Oat 76562314's APIs/tests and Shadleaf ac29987's card/field/separator structure,
+type and skin tokens; Shadleaf has no dedicated description-list or timeline component.
+
+SwDescriptionList owns native dl/div/dt/dd markup on a caller-supplied dl. It supports property-resource labels,
+escaped labels/values, null/blank em dash, exact fractional number display, localized dates/times and custom
+value factories using VALUE_ID. Custom values render on a span; composed links use a Panel. Container queries
+switch from stacked rows to columns at 28rem, so a compact sidebar remains stacked on desktop. Value models
+load once per request and detach even while hidden; unhandled value types retain application converters.
+
+SwTimeline preserves event order in ol/li markup, with optional descriptions/times and decorative marker
+variants. Its event list is copied once per request and detached even when hidden. Extractors are serializable;
+children retain display strings, not extracted temporal values. Time-zone settings default to UTC for instant-
+bearing values, preserving local wall/calendar values. HTML datetime values omit bracketed zone IDs and truncate
+submillisecond precision; unsupported values use readable spans. Status remains in text, not solely marker color.
+Native semantics, wrapping, logical positioning, forced-color markers and print outlines require no runtime.
+
+The /record-display demo combines full/compact customer details with activity, a composed native contact link,
+native/Ajax name editing, payment updates and clear/restore history. Existing catalog routing, navigation and
+View Wicket code include the Java, main markup and nested ContactLink markup. The two guides and agent routing
+cover the APIs (61 guides/166 API types). README and NOTICE are updated. The remaining optional shortlist starts
+with a lazy-load panel, followed by freeform tags, avatar groups and a steps indicator; those are not implemented
+by this group. Release infrastructure remains separate work.
+
+Validation: all 1118 JVM tests pass on Java 17 and Java 25 (971 core/147 examples), including 26 component cases
+and an additional application-package consumer case. All 60 Chromium/Firefox browser cases pass across nine
+skins, light desktop/dark 320px, all nine native no-script locales, responsive container widths, long/escaped
+values, keyboard links, strict CSP, Ajax updates/empty histories and embedded RTL/forced colors/print. A final
+four-case Vega browser recheck covers the explicit contact-link underline added after visual review. All 43
+Node docs tests and site/link checks pass (64 HTML pages). Java 17 Javadoc doclint all,-missing passes with the
+new API pages confirmed in target/reports/apidocs. Use -DstaleDataPath with a fresh path to bypass the plugin's
+cache; -Dmaven.javadoc.staleDataPath is not its property. Screenshot review covers desktop details, dark mobile
+history and forced-color RTL under shadwick-examples/target/record-display-screenshots/.
+
+The reviewed API baseline adds 38 entries and removes none (2310 entries: 245 types/2000 members/65 metadata).
+The packaged core JAR has 446 Java 17 classes, all 36 CSS bundles, matching markup/licenses and no example/test
+leaks. Logs: /tmp/shadwick-details-*.log; summary /tmp/shadwick-details-validation.json. Browser reports use
+details-final/details-reviewed suffixes. Run Maven phases serially against shared target directories: an early
+overlapping compile briefly removed classes during another test compilation; the serial reviewed runs are green.
+The synthetic WicketTester StartComponentInPage loses its temporary markup after serialization; serialization
+checks use actual resource-provider pages instead. Existing example executables were not overwritten/restarted.
+This group and previous cleanup/API/form/action work remain local/uncommitted. No deployment, push or release
+was requested. Release work still comprises changelog, signing/release automation and Maven Central publication.
+
+**Previous checkpoint: button groups and split buttons (implemented locally).** The user selected the next
+pre-release shortlist group after form completion. Added ButtonGroupBehavior, SwButtonGroup and SwSplitButton,
+with Sw.Behaviors.buttonGroup and Sw.Components.buttonGroup facades. No dependency or JavaScript was added.
+
+References: Wicket Oat 76562314's matching APIs/tests and Shadleaf ac29987's buttons, input groups, dropdown
+markup/runtime and nine skin definitions. Shadleaf has no dedicated button-group or split-button component.
+Groups retain ordinary Tab order and action semantics, accept native/Ajax buttons and links, connect logical
+horizontal/vertical borders, preserve skin corners/focus rings and account for Sketch's 2px border. Repeated
+items keep Oat's populateItem/of API; li wrappers are presentational because the parent has role=group.
+
+Split buttons compose a primary SwButton and an icon-only native dropdown trigger. Separate ButtonBehavior
+instances avoid sharing render-capture state. Both halves share variant/size; labels are escaped models and
+More actions is translated into all nine message languages. MenuAction supports destructive styling, disabled
+and hidden entries, rechecks availability before callbacks and detaches every label model, even hidden ones.
+Empty/unavailable menus disable their trigger. Both callbacks are Ajax commands and never submit a surrounding
+form; use a group containing SwSubmitButton for validated submission. Menu placement/focus/typeahead/closing
+reuse the existing dropdown runtime. Panel replacement resets the menu to closed.
+
+The /button-groups catalog demo includes horizontal/vertical actions, editable availability, Ajax replacement,
+all variants/sizes, empty/disabled menus, independent commands inside a required form and grouped native/Ajax
+submission/reset. Catalog navigation and View Wicket code include its sources. The guide and agent routing
+cover the APIs (59 guides/161 documented API types). NOTICE records the adapted APIs. Browser audits caught
+li/group semantics and native button backgrounds with embedded CSS: presentational wrappers and explicit
+ghost/link background/text tokens fix those issues without disabling accessibility checks. Compact demo groups
+fit Sera at 320px; group sizing/overflow remains application-owned rather than shrinking component labels.
+
+Validation: all 1085 JVM tests pass on Java 17 and Java 25 (944 core/141 examples); final targeted component,
+consumer and example checks also pass after demo sizing changes. All 58 new Chromium/Firefox cases pass across
+nine skins, light desktop/dark 320px, all nine no-script locales, keyboard/focus, native/Ajax/reset forms,
+replacement, strict CSP and embedded RTL/forced colors. All 54 existing dropdown/busy regressions pass across
+nine skins. All 36 final geometry rechecks pass for repeated horizontal/vertical joins with unequal labels in
+both browsers; vertical item controls fill their wrapper so differing text lengths keep a continuous edge.
+All 43 Node docs tests and site/link checks pass (62 HTML pages); Java 17 Javadoc doclint all,-missing passes
+with the new APIs included. Screenshots: shadwick-examples/target/button-group-screenshots/.
+
+The API baseline adds 40 entries and removes none (2272 total). The packaged core JAR has 433 Java 17 classes,
+36 CSS bundles, nine split-button message resources, matching markup/licenses and no example/test leaks.
+Logs: /tmp/shadwick-buttons-*.log; browser reports use buttons-final/buttons-geometry suffixes, with the existing
+54-case regression run in ShowcaseBrowserTest.xml. Existing example executables were not overwritten/restarted.
+This group and earlier cleanup/API/form work remain local/uncommitted. No deployment, push or release was
+requested. Next release checkpoint remains changelog, signing/release automation, then Maven Central.
+
+**Previous checkpoint: form completion (implemented and verified locally).** The user selected the additional
+first-release form group. Added SwFieldset, SwCustomField, SwMoneyField, SwPercentField and SwRangeField,
+plus BaseSwDecimalField as the shared decimal extension point. No new dependency or JavaScript is needed.
+
+SwFieldset is a native Border with escaped legend, description and disabled-body semantics. SwCustomField
+wraps a factory-owned FormComponentPanel, surfaces the first root/inner error, preserves nested descriptions
+and wires replacement children without duplicate behaviors. BaseSwField.currentError is now a protected hook;
+ordinary fields keep their existing in-place Ajax feedback, while compound inner validation re-renders the group.
+Money uses currency fraction digits and locale addon placement; percentages store 19 for 19%. Decimal conversion
+keeps exact BigDecimal values, rounds HALF_EVEN and rejects malformed groups, embedded/repeated units and junk.
+Native range defaults 0..100/step 1 are also enforced server-side, including decimal steps and direct native setters.
+Constraint/currency models detach. Initialize slider models to permitted values; no extra live-output runtime.
+
+References: matching Oat APIs/tests (local 9442a4f) and Shadleaf ac29987 fieldset/legend/input-group markup and
+nine skins. Reuse existing fieldset skin blocks where present; add the missing blocks to Vega/Lyra/Nova.
+Shadleaf has no slider; the new native control uses shared semantic colors, skin radii and system forced colors.
+The /form-completion catalog example composes native/Ajax quote forms, disabled groups, reset and a replaceable
+ReferenceInput panel, with both panel sources included in View Wicket code. Three guides and agent routing cover
+the APIs; docs now have 58 guides and 158 API types. NOTICE records the adapted APIs and fieldset styling.
+
+Browser checks found Firefox's automatic /favicon.ico request reached the root Studio mapper and normalized
+non-English/German catalog sessions to English. Serve that request as a static SVG resource and declare the
+catalog icon explicitly. A resource test and all nine no-script locale submissions verify the locale is retained.
+Host-owned example sizing now fits 320px embedded/RTL without changing embedded library resets. Compound browser
+tests wait for Wicket.channelManager.channels to empty after each replacement: visible markup precedes completion
+of the response's replacement/focus steps and typing earlier could be overwritten. Twenty repeated browser journeys
+pass with that lifecycle wait. Avoid replacing it with sleeps or weakening validation assertions.
+
+Validation: all 1059 JVM tests pass on Java 17 and Java 25 (923 core/136 examples), including 42 new core cases.
+The final reviewed core package reruns all 923 successfully. All 58 new Chromium/Firefox cases pass across nine
+skins, light desktop/dark mobile, nine native no-script locales, Ajax replacement, keyboard/reset/disabled groups,
+strict CSP and embedded RTL/forced colors. All 72 existing form-regression cases across nine skins and 123 docs
+browser cases pass; 43 Node docs tests and final site/link checks pass (61 HTML pages). Reviewed desktop, dark
+mobile and forced-color RTL screenshots under shadwick-examples/target/form-completion-screenshots/.
+Forced-color checks inspect native controls after an ordinary embedded/RTL axe audit: axe's authored-color
+contrast calculation does not model forced-color painting. No accessibility rule exclusions were added.
+Java 17 Javadoc doclint all,-missing passes with the six new API pages included. Use a fresh staleDataPath when
+forcing generation; the plugin's existing cache otherwise reused an older output despite the added sources.
+
+The reviewed API baseline has 2232 entries: 234 types, 1935 declared members and 63 enum/record metadata entries.
+This group adds 63 entries and removes none. The packaged core JAR has 422 Java 17 classes, all 36 rebuilt CSS
+bundles, matching markup/messages/licenses and automatic module name dev.jbaby.shadwick, with no example/test leaks.
+Logs: /tmp/shadwick-form-*.log; summary /tmp/shadwick-form-validation.json. Existing examples executables were
+not overwritten or restarted. This group and prior cleanup/API work remain local/uncommitted. No deployment,
+push or release was requested. Next checkpoint: changelog, signing/release automation, then Maven Central.
+
+**Previous checkpoint: first-release API/compatibility preparation (complete locally).** The user selected the
+next release-preparation group after browser cleanup. The compiled API audit covers 228 exported types and
+1878 declared members. The candidate baseline has 2169 entries, including generic signatures, protected hooks,
+type relationships, enum order, record components and scalar constant values. No Java API was renamed or removed.
+
+`PublicApiTest` checks the baseline in normal Maven tests, rejects private/package-private signature leaks,
+and caps every library class at Java 17 bytecode. Updating it requires the explicit `shadwick.api.update` flag;
+keep that out of ordinary commands/CI. `org.example.shadwick.ApiConsumerTest` exercises application-package
+fluent fields, inherited models, Ajax validation and serialized callbacks/chart method references.
+The baseline also matches a fresh Java 17 compilation outside target/, avoiding stale compiled declarations.
+
+Standard Javadoc initially failed on literal details/progress tags in SwCollapsible/SwProgress comments.
+Both now use code tags, and doclint `all,-missing` passes with Java 17 and the original Java 21 tool invocation.
+The library JAR now declares automatic module name `dev.jbaby.shadwick`, matching the namespace convention in
+the local Wicket Oat reference. Its previous filename-derived name was `shadwick`: snapshot module-path users
+must update their requires declaration. Classpath imports stay the same. This is not a tested JPMS deployment.
+
+`docs/guides/compatibility.md`, installation/README links and the contributor baseline procedure describe
+Java 17/Wicket 10.11.0, provided Servlet API 6.1.0, overload/null constraints, model/callback ownership,
+same-build serialization boundaries, markup/resources, browser coverage and Oat/Shadleaf migration limits.
+The searchable catalog and generated agent/Markdown exports include the new guide (55 guides/152 API types).
+
+Validation: all 1010 JVM tests pass on both Java 17 and Java 25 (881 core/129 examples). The finalized five API/
+consumer checks also pass independently on both JDKs. All 43 Node documentation tests, 117 documentation browser
+cases and final site build/link checks pass (58 HTML pages). The packaged core JAR has the declared module name,
+409 Java 17 classes, all 36 CSS bundles, matching scripts and LICENSE/NOTICE, with no showcase/test/build leakage.
+Logs: `/tmp/shadwick-api-*.log`; summary `/tmp/shadwick-api-review.json`. The examples executable was not rebuilt.
+API work and the earlier browser cleanup remain local/uncommitted. No release/push/publication was requested.
+Next checkpoint: changelog, signing and release automation, then Maven Central publication.
+
+**Previous checkpoint: browser-suite cleanup (local).** The user selected the release-preparation cleanup.
+Latest published-baseline Build run `42398275889` had 257 failures in 4004 browser cases. Most came from
+page-wide status selectors matching the catalog's search/copy announcements, plus a skip-link assertion
+that predated the main region's View Wicket code link. Scope demo receipts to their status paragraphs and
+assert the current keyboard order; retain the catalog's accessible announcements.
+
+The sidebar runtime now preserves focus already moved into a panel, nested menu or modal when deferred
+opening/scan callbacks run. Crossing the desktop/mobile breakpoint dismisses the sidebar's active tooltip,
+so the first Escape can close the mobile panel. Forced-color group labels explicitly use CanvasText instead
+of the skin's translucent label color. Regression coverage holds opening timers until a nested menu has
+focus, and checks desktop tooltip dismissal across a mobile resize. Keep the pointer outside the sidebar
+when exercising keyboard-only tooltip dismissal. Do not replace these checks with sleeps or axe exclusions.
+
+The heavily concurrent full run also exposed a calendar boundary: activating Next in the last allowed
+month disables the focused navigation button, allowing focus to fall outside the picker. Rendering now
+hands focus to the remaining enabled navigation button (or the current day if both are disabled), keeping
+Escape and trigger restoration intact. The existing keyboard picker scenario asserts this handoff.
+The theme-choice test helper waits for finite popup animations before pointer activation, preventing an
+in-flight opening transition from turning the click into a native outside dismissal.
+
+Final validation: all 1005 JVM tests (876 core/129 examples), 369 non-Showcase browser cases, 378
+sidebar/layout/user-menu cases, 360 calendar/theme cases across nine skins, 43 documentation tests and
+the rebuilt site's build/link checks pass. All 36 CSS bundles contain the forced-color label rule.
+A standalone Chromium/Firefox comparison across Vega/Mira/Sketch reproduces the three focus/tooltip/calendar
+regressions with the old runtime (18 failing controls) and passes all 18 with the fixed runtime.
+
+Every complete ShowcaseBrowserTest skin batch passes all 421 cases, with zero failures/errors/skips.
+The nine batches use the existing `-Dshadwick.browser.skins=<skin>` selector and suffix
+`-Dsurefire.reportNameSuffix=cleanup-green-<skin>`. Vega/Luma/Rhea/Sketch were rerun after the calendar/theme
+fixes with suffix `cleanup-green-<skin>-final`; Lyra/Nova/Maia/Mira/Sera use the original green reports.
+That is 3789 catalog executions plus 369 other browser cases (4158 executions; 4022 distinct full-matrix
+cases because the 17 skin-independent locale cases repeat in each batch). The all-skin calendar/theme
+follow-up verifies the final fixes in every skin, including those with earlier green complete batches.
+Final reports live in `shadwick-examples/target/surefire-reports/`; summary `/tmp/shadwick-cleanup-validation.json`.
+Changes remain local/uncommitted. No commit/push/publication was requested.
+Next roadmap checkpoint remains first-release API/compatibility preparation, then signing/release automation
+and Maven Central.
+
+**Previous checkpoint: landing-page demo visibility.** The hero now promotes Clover Studio and the live component
 catalog as its primary actions, with both destinations also in the main navigation. The static composition is
 labelled Component preview. Twelve catalog groups pair documentation with live examples and cover the recent
 chart/table work. The inline calendar moved out of the preferences column into a responsive chart/calendar/month
@@ -863,30 +1272,21 @@ wicket-extensions dependency was added after the user asked to continue with the
 9. **Visual breadth** (complete locally): all nine skins — Vega, Lyra, Nova, Maia, Mira, Luma, Rhea, Sera and Sketch.
 10. **Internationalization** (complete locally): English plus eight translated built-in message sets,
     locale-aware fallbacks and overrides, showcase language selection and Ajax/native verification.
-11. **Additional Wicket Oat controls** (implemented locally): busy buttons, linear/radial progress,
-    meters, star-rating display and editable rating fields, plus advanced tables (CSV export, column
-    chooser, expandable row details and inline edits). Other confirmed gaps include forms, workflows,
-    layouts, trees/CRUD, messaging, async content and extra chart types. Scope these deliberately.
-12. **Documentation and distribution:** searchable documentation is published (54 guides and source-based
-    API references). Clover Studio is hosted on Railway at `/`, with `/studio` retained as a compatibility route
-    and the source-backed catalog at `/components`. Agent skill/llms.txt/Markdown companions are published.
-    Chart expansion now precedes first-release preparation and Maven Central; horizontal bars, donuts, sparklines,
-    value labels, forecast joins, independent formatting and appearance options are implemented locally.
+11. **Pre-release component collection** (complete): busy buttons, linear/radial progress, meters,
+    ratings and advanced tables, plus fieldsets/custom fields, money/percent/range inputs, button groups/split
+    buttons, description lists/timelines, lazy-load panels, freeform tags, avatar groups and steps indicators.
+    Browser cleanup and the candidate API/serialization guard are implemented too. Broader workflow, color-field,
+    tree/CRUD, messaging and chart variants remain future scope, outside the completed pre-release shortlist.
+12. **Documentation and distribution:** searchable docs now cover 64 guides and 172 source-derived API types.
+    GitHub Pages serves the landing page, docs, agent skill, llms.txt and Markdown companions. Railway hosts Clover
+    Studio at `/`, with `/studio` as an alias and the source-backed catalog at `/components`. The landing collection
+    now links all completed shortlist families to their guides and runnable examples.
+13. **First Maven Central release** (next): changelog/release notes, signing and release automation, then publication.
+    The current version remains 0.1.0-SNAPSHOT. Publishing docs and the examples app does not publish the Maven artifact.
 
-The selected chart expansion checkpoints are complete locally, including light/dark series colors, curves/corners,
-tooltip/legend presentation and tick density. Next is first-release preparation/Maven Central.
-Pie/100%-stacked/reference lines can follow; radar/scatter/radial/heatmaps are later breadth.
-Horizontal bars, donuts, sparklines, value labels, forecast joins and independent axis/tooltip formats have been
-selected and implemented locally, along with chart appearance options.
-Native SVG remains the chart architecture.
-
-For broader Shadleaf parity after/alongside these groups:
-
-- All nine skins now have implementations, with shared light/dark token support.
-- Built-in messages now ship in nine languages; additional languages can use application resource bundles.
-- Component documentation is implemented locally. Host the runnable interactive Wicket showcase
-  alongside the static landing/documentation site.
-- Agent skill + llms.txt and a Maven Central release.
+The selected chart and pre-release component checkpoints are complete. Future chart breadth can include
+pie/100%-stacked/reference lines, radar/scatter/radial plots and heatmaps; native SVG remains the architecture.
+All nine skins and nine built-in message languages are implemented. Applications can add further resource bundles.
 
 Parity review references (checked against the published docs on 2026-11-04):
 
@@ -923,6 +1323,104 @@ locally. Next: a hosted interactive showcase, then tooling and release preparati
 - Record every decision under Conventions as soon as it is made.
 
 ## Conventions
+
+### Steps indicator (2026-11-08, implemented)
+
+Implement SwSteps with Wicket Oat 76562314's title/current models and completed-step Ajax selection API.
+Shadleaf ac29987 has no dedicated steps component; reuse existing numbered/field/timeline skin tokens.
+Use native ol/li, localized visible state captions, aria-current=step, inert spans for nonactions and a
+noscript display for completed actions. Adapt to container width and RTL; no new runtime/dependency.
+Snapshot titles/current for rendering, detach hidden models and recheck state/title/index at callbacks.
+Invalidate render snapshots after callbacks so same-response model changes appear. Application owns
+validation, navigation and Ajax targets. Preserve all previous local work and existing executables.
+
+### Avatar groups (2026-11-08, implemented)
+
+Implement SwAvatarGroup<T> with Wicket Oat 76562314's avatars ListView, populateItem, Size and of/facade API.
+Shadleaf ac29987 has no dedicated group; reuse its avatar anatomy and the existing nine skin shapes/sizes.
+Caller-owned list/group markup composes SwAvatar and optional named native links/buttons. Keep DOM order,
+ordinary focus behavior, logical RTL overlap and wrapping, with focused members raised above neighbors.
+Snapshot member models once per request and detach even while hidden. The application owns overflow counts,
+visible subsets and authorization. No dependency or new runtime. Preserve all earlier local work; shared Maven
+builds must run serially. Existing example executables must not be overwritten or restarted.
+
+### Freeform tag input (2026-11-08, implemented)
+
+The next user-selected shortlist item is SwTagInput. Use Wicket Oat 76562314's List<String> API and
+comma codec, with Shadleaf ac29987/existing combobox skin anatomy. A native text input owns submission,
+conversion and validation; JavaScript progressively adds chips and a draft editor. Synchronize drafts on
+every input so pending text submits without blur, preserve drafts during in-place Ajax error updates,
+and provide a usable no-script comma-separated field. Trim with Java String.trim semantics, deduplicate
+case-sensitively in insertion order, reject model tags containing commas, and require a nonempty list
+for required fields. Respect IME, readonly/disabled/fieldset state, reset cancellation and DOM replacement.
+Keep normal textbox/native button semantics rather than listbox/combobox ARIA. All earlier local changes
+must be preserved; run shared Maven builds serially and do not rebuild running example executables.
+
+### Lazy-load panel (2026-11-08, implemented)
+
+- Follow Wicket Oat 76562314's OatLazyLoadPanel API/tests on Wicket 10.11.0's AjaxLazyLoadPanel.
+  Reuse Shadleaf ac29987's decorative skeleton structure and existing nine-skin skeletons. No dependency,
+  background executor or new JavaScript. Use Wicket's single page timer, initially 100ms when installed here,
+  then the inherited per-panel polling interval; preserve timers installed by ordinary Wicket panels.
+- SwLazyLoadPanel owns aria-busy plus one localized loading status, decorative configurable skeletons and a
+  native noscript Load content link. Do not call side-effecting isLoaded() while rendering busy attributes.
+  Loading-label models detach even after content replaces the placeholder. Hooks overriding onContentLoaded
+  must call super. Factory content must use the supplied content ID.
+- Expected service failures are application-owned content, with retry implemented by replacing the entire
+  lazy panel. Preserve Wicket's unexpected-exception handling; do not swallow errors or imply background work.
+- Verify initial deferral, readiness polling/shared timer shutdown, multiple panels, replacement while pending,
+  hidden panels, native fallback, loaded forms, expected failures/retry, models and serialization. Check all
+  skins/locales, keyboard, strict CSP, RTL/embedded/forced colors/reduced motion. Add docs/demo and review the
+  additive API baseline. Keep earlier local work and example executables intact.
+
+### Description lists and timelines (2026-11-08, implemented)
+
+- Continue the next pre-release shortlist group only: native record details and ordered event histories.
+  Follow Wicket Oat 76562314's OatDescriptionList/OatTimeline APIs and PageBlocksTest/LaterRoadmapTest cases.
+  Shadleaf ac29987 has no matching components: reuse its card/field typography, separators and nine skin tokens.
+- Description lists use dl/div/dt/dd with escaped labels, property-resource lookup, empty-value em dash,
+  localized numbers/dates and caller-supplied value components. Container width controls stacked/two-column
+  layout. Timelines use ol/li/time, preserve supplied order and have optional text and marker variants.
+- Add component/behavior facades, no dependencies or JavaScript. Snapshot event lists per request, detach
+  caller models and retain only display strings in repeated children. Local date/time values stay local;
+  instant-bearing values use a configured zone (UTC default), with valid HTML datetime values without zone IDs.
+- Verify escaping, property models/resources, custom-value factories, locale/time-zone formatting, null/empty
+  histories, Ajax refresh and serialization. Check all nine skins, 320px, embedded/RTL, forced colors, print,
+  keyboard links/actions and no-script rendering. Add catalog examples/guides and review additive API changes.
+- Keep earlier local changes and existing executable examples intact. Remaining optional shortlist: lazy-load
+  panel, freeform tags, avatar groups and steps indicator; release infrastructure remains separate work.
+
+### Button groups and split buttons (2026-11-08, implemented)
+
+- Follow Wicket Oat 76562314's ButtonGroupBehavior/OatButtonGroup and OatSplitButton APIs/tests.
+  Shadleaf ac29987 has no dedicated group/split component: compose its existing button/menu anatomy and
+  nine skin identities. Reuse native popovers and the existing dropdown runtime; add no dependency or script.
+- ButtonGroupBehavior styles caller-owned controls with role=group and an optional model label.
+  SwButtonGroup repeats caller-owned item markup with the Oat populateItem/of API. Keep ordinary Tab order;
+  these are independent actions, not a toolbar or a toggle selection. Support logical horizontal/vertical joins.
+- SwSplitButton owns primary/trigger/menu markup, separate ButtonBehavior instances, localized More actions,
+  escaped model labels and serializable callbacks. Both actions are Ajax commands, never implicit form submits.
+  Compose SwSubmitButton in a group for validated submission. Disable unavailable menu actions server-side;
+  disable the trigger for an empty/unavailable menu. Detach all action models, including hidden actions.
+- Verify callbacks, disabled/hidden actions, dynamic/Ajax replacement, serialization, native form composition,
+  nine skins/locales, keyboard/focus, RTL, embedded bundles, forced colors and strict CSP. Update docs and the
+  reviewed additive API baseline. Preserve earlier local work and existing example executables.
+
+### Form completion (2026-11-08, implemented)
+
+- Add SwFieldset (native Border/legend/description), SwCustomField (factory-owned compound input),
+  SwMoneyField/SwPercentField (localized BigDecimal text inputs) and SwRangeField (single native slider).
+- References: Oat's matching classes/tests and Shadleaf ac29987's field-set/legend/input-group markup and
+  all nine skins. Shadleaf has no slider; use native range semantics and existing input tokens.
+- Preserve Oat's model shapes and 19-means-19% convention. Money uses currency fraction digits;
+  decimals round HALF_EVEN. Strict complete parsing rejects malformed grouping and embedded units.
+  Currency/percent tokens are accepted at edges. No masking, new dependency, or CSP exception.
+- Custom fields surface the first inner validation error, preserve caller ARIA descriptions and wire
+  dynamically added inputs without duplicate behaviors. Slider defaults are 0..100/step 1 and are
+  enforced on the server. Keep the native slider value/keyboard/reset behavior; no extra live-output runtime.
+- Add a composed catalog page and guides; verify models, conversion, normal/Ajax validation, reset,
+  serialization, nine skins/locales, RTL/forced colors and native fallbacks before updating the API baseline.
+- Retain the prior local cleanup/API work and running example JARs.
 
 ### Chart appearance (2026-11-07)
 

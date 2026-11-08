@@ -40,6 +40,8 @@ public abstract class BasePage extends WebPage {
     protected BasePage(PageParameters parameters) {
         super(parameters);
         pick(parameters);
+        add(new org.apache.wicket.markup.html.WebMarkupContainer("favicon").add(AttributeModifier.replace("href",
+                (IModel<String>) () -> urlFor(new org.apache.wicket.request.resource.PackageResourceReference(BasePage.class, "clover.svg"), null).toString())));
 
         // class="dark" on <html>, rendered on the server, so the page never flashes light first
         TransparentWebMarkupContainer html = new TransparentWebMarkupContainer("html");

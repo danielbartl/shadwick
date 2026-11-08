@@ -1,0 +1,26 @@
+<wicket:extend xmlns:wicket="http://wicket.apache.org">
+<div><h1 class="ex-title">Button groups &amp; split buttons</h1><p class="ex-lead">Connect related actions, or pair a primary action with a menu of alternatives.</p></div>
+<section class="ex-section" aria-labelledby="connected-heading">
+  <h2 id="connected-heading">Connected actions</h2><p class="ex-muted">Tab reaches each available action. A group keeps the buttons’ ordinary keyboard behavior.</p>
+  <div class="ex-row"><menu wicket:id="group"><li wicket:id="items"><button wicket:id="button"></button></li></menu><div wicket:id="vertical"><button wicket:id="pdf"></button><button wicket:id="csv"></button></div></div>
+</section>
+<section class="ex-section" aria-labelledby="split-heading">
+  <h2 id="split-heading">Save and related actions</h2><p class="ex-muted">The primary button saves immediately. Open More actions with Enter or an arrow key; Escape closes the menu and returns focus.</p>
+  <div class="ex-row"><div wicket:id="split"></div><button wicket:id="refresh"></button><button wicket:id="toggle"></button></div>
+  <p wicket:id="receipt" class="ex-muted" role="status"></p>
+  <div class="ex-row"><div wicket:id="disabled"></div><div wicket:id="empty"></div></div>
+</section>
+<section class="ex-section" aria-labelledby="variants-heading"><h2 id="variants-heading">Variants and sizes</h2>
+  <div class="ex-row"><div wicket:id="variants"><div wicket:id="example"></div></div></div>
+  <div class="ex-row"><div wicket:id="sizes"><div wicket:id="example"></div></div></div>
+</section>
+<section class="ex-section" aria-labelledby="form-heading"><h2 id="form-heading">Compose with form submission</h2>
+  <p class="ex-muted">The connected Save buttons validate the quote. Preview and its menu are independent Ajax commands and leave the form unsubmitted.</p>
+  <form wicket:id="form" class="ex-form" aria-label="Quote actions">
+    <div wicket:id="title"></div>
+    <div class="ex-row"><div wicket:id="formActions"><button wicket:id="nativeSave" type="submit">Save</button><button wicket:id="ajaxSave"></button><button wicket:id="reset" type="reset">Reset</button></div></div>
+    <div class="ex-row"><div wicket:id="commands"></div></div>
+    <p wicket:id="saved" class="ex-muted" role="status"></p>
+  </form>
+</section>
+</wicket:extend>

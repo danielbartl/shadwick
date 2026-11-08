@@ -1,8 +1,9 @@
 # Installation
 
-Requires Wicket 10 and Java 17. Keep Wicket modules aligned with the version declared in the
-[project POM](https://github.com/danielbartl/shadwick/blob/main/pom.xml). Until the first release, install it locally
-with `./mvnw install`, then:
+Built against Wicket 10.11.0 with Java 17 as the minimum. Keep Wicket modules aligned with the version declared in
+the [project POM](https://github.com/danielbartl/shadwick/blob/main/pom.xml).
+Read [Compatibility](./compatibility.md) for the candidate API and stored-page contracts. Until the first release,
+install it locally with `./mvnw install`, then:
 
 ```xml
 <dependency>

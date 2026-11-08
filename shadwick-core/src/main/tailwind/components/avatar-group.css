@@ -1,0 +1,40 @@
+@layer components {
+  .sw-avatar-group {
+    --sw-avatar-group-size: 2rem;
+    --sw-avatar-group-overlap: .5rem;
+    @apply m-0 inline-flex max-w-full list-none flex-wrap items-center gap-x-0 gap-y-2 p-1 align-middle;
+    box-sizing: border-box;
+    padding-inline-start: calc(var(--sw-avatar-group-overlap) + .25rem);
+  }
+  .sw-avatar-group[data-size='sm'] { --sw-avatar-group-size: 1.5rem; --sw-avatar-group-overlap: .375rem; }
+  .sw-avatar-group[data-size='lg'] { --sw-avatar-group-size: 2.5rem; --sw-avatar-group-overlap: .625rem; }
+  /* Each row starts at the same edge: the leading padding offsets every member's negative margin. */
+  .sw-avatar-group > .sw-avatar-group-item {
+    @apply relative m-0 inline-flex shrink-0 items-center p-0;
+    margin-inline-start: calc(-1 * var(--sw-avatar-group-overlap));
+    line-height: 0;
+  }
+  .sw-avatar-group > .sw-avatar-group-item:focus-within { @apply z-10; }
+  .sw-avatar-group > .sw-avatar-group-item[hidden] { display: none; }
+  .sw-avatar-group > .sw-avatar-group-item .sw-avatar {
+    inline-size: var(--sw-avatar-group-size);
+    block-size: var(--sw-avatar-group-size);
+    line-height: normal;
+    /* Keep each skin's shape and rings, including Sketch's hand-drawn border. */
+    outline: 2px solid var(--background);
+    outline-offset: 2px;
+  }
+  .sw-avatar-group:not([data-size='sm']) .sw-avatar > .sw-avatar-fallback { @apply text-sm; }
+  .sw-avatar-group[data-size='sm'] .sw-avatar > .sw-avatar-fallback { @apply text-xs; }
+  .sw-avatar-group .sw-avatar-group-count { @apply flex items-center justify-center text-sm text-muted-legible; }
+  .sw-avatar-group[data-size='sm'] .sw-avatar-group-count { @apply text-xs; }
+  .sw-avatar-group-item > :is(a, button) {
+    @apply relative inline-flex rounded-full border-0 bg-transparent p-0 outline-none;
+    color: inherit;
+  }
+  .sw-avatar-group-item > :is(a, button):focus-visible { @apply outline-2 outline-offset-4 outline-solid outline-ring; }
+  @media (forced-colors: active) {
+    .sw-avatar-group > .sw-avatar-group-item .sw-avatar { outline-color: Canvas; border: 1px solid CanvasText; box-sizing: border-box; }
+    .sw-avatar-group-item > :is(a, button):focus-visible { outline-color: Highlight; }
+  }
+}

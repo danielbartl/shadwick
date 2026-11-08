@@ -1,0 +1,27 @@
+/* Native range: existing semantic color tokens; Shadleaf has no range component. */
+@layer components {
+  .sw-range-input {
+    appearance: none; background: transparent; width: 100%; min-width: 0;
+    height: 2.75rem; margin: 0; cursor: pointer; accent-color: var(--primary);
+  }
+  .sw-range-input::-webkit-slider-runnable-track { height: .375rem; background: var(--muted); border-radius: var(--sw-range-radius); }
+  .sw-range-input::-moz-range-track { height: .375rem; background: var(--muted); border-radius: var(--sw-range-radius); }
+  .sw-range-input::-webkit-slider-thumb {
+    appearance: none; width: 1rem; height: 1rem; margin-top: -.3125rem;
+    background: var(--background); border: 2px solid var(--primary); border-radius: var(--sw-range-radius);
+  }
+  .sw-range-input::-moz-range-thumb {
+    width: 1rem; height: 1rem; box-sizing: border-box;
+    background: var(--background); border: 2px solid var(--primary); border-radius: var(--sw-range-radius);
+  }
+  .sw-range-input:focus-visible { outline: 2px solid var(--ring); outline-offset: 2px; border-radius: var(--sw-range-radius); }
+  .sw-range-input[aria-invalid='true'] { outline: 2px solid var(--destructive); outline-offset: 2px; }
+  .sw-range-input:disabled { opacity: .5; cursor: not-allowed; }
+  @media (forced-colors: active) {
+    .sw-range-input { appearance: auto; forced-color-adjust: auto; }
+    .sw-range-input::-webkit-slider-runnable-track { background: Canvas; border: 1px solid ButtonText; }
+    .sw-range-input::-moz-range-track { background: Canvas; border: 1px solid ButtonText; }
+    .sw-range-input::-webkit-slider-thumb { background: ButtonFace; border-color: ButtonText; }
+    .sw-range-input::-moz-range-thumb { background: ButtonFace; border-color: ButtonText; }
+  }
+}

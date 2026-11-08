@@ -31,6 +31,10 @@ final class ExampleSources {
             while (classes.find()) addMarkup(result, name + "$" + classes.group(1) + ".html");
             owner = owner.getSuperclass();
         } while (owner == AppLayoutPage.class);
+        if (page == FormCompletionPage.class) {
+            result.add(new File("ReferenceInput.java"));
+            addMarkup(result, "ReferenceInput.html");
+        }
         return List.copyOf(result);
     }
     private static void addMarkup(List<File> files, String name) {

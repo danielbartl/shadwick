@@ -21,3 +21,5 @@ add(new BookmarkablePageLink<>("home", HomePage.class)
 Variants: `DEFAULT`, `SECONDARY`, `OUTLINE`, `GHOST`, `DESTRUCTIVE`, `LINK`. Sizes: `DEFAULT`, `SMALL`, `LARGE`,
 `ICON`. An icon-only button needs an `aria-label`: in development mode, a button without an accessible name fails
 to render with a message saying how to fix it, and in deployment it is logged.
+
+For connected actions or a primary action with alternatives, see [button groups and split buttons](button-groups.md).

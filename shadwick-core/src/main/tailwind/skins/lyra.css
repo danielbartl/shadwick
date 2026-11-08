@@ -45,11 +45,11 @@
   }
 
   .sw-button[data-variant='ghost'] {
-    @apply hover:bg-muted hover:text-foreground dark:hover:bg-muted/50;
+    @apply bg-transparent text-foreground hover:bg-muted hover:text-foreground dark:hover:bg-muted/50;
   }
 
   .sw-button[data-variant='link'] {
-    @apply text-primary underline-offset-4 hover:underline;
+    @apply bg-transparent text-primary underline-offset-4 hover:underline;
   }
 
   /* text-destructive-legible (components/base.css): shadcn's text-destructive is under 4.5:1 on the tint. */
@@ -1978,4 +1978,69 @@
   .sw-table-empty-value { color: var(--muted-foreground); }
   .sw-table-editable[aria-disabled='true'] { text-decoration: none; }
   .sw-table-editable { text-decoration-line: underline; text-decoration-style: dotted; text-underline-offset: .25em; }
+}
+
+/* Fieldset geometry adapted from Shadleaf (Apache-2.0); native range geometry. */
+@layer components {
+  .sw-field-set {
+    @apply gap-4 has-[>.sw-radio-group]:gap-3
+      has-[>.sw-field[data-orientation='horizontal']]:gap-3;
+  }
+
+  .sw-field-legend {
+    @apply mb-2.5 font-medium;
+  }
+
+  .sw-field-legend:not([data-variant]),
+  .sw-field-legend[data-variant='legend'] {
+    @apply text-sm;
+  }
+
+  .sw-field-legend[data-variant='label'] {
+    @apply text-xs;
+  }
+  .sw-range-input { --sw-range-radius: 0; }
+}
+
+/* Connected controls keep this skin's outer corners, border weight and focus ring. */
+@layer components {
+  .sw-button-group { --sw-button-group-border-width: 1px; --sw-button-group-divider: var(--border); }
+  .sw-button-group .sw-button:not([data-variant]) {
+    --sw-button-group-divider: color-mix(in oklch, var(--primary-foreground) 25%, transparent);
+  }
+}
+
+/* Read-only details and event histories use this skin's type, spacing and border weight. */
+@layer components {
+  .sw-description-list { @apply text-xs text-foreground; }
+  .sw-description-list-item { @apply py-3 gap-x-6 gap-y-1; }
+  .sw-description-list-item + .sw-description-list-item { border-block-start: 1px solid var(--border); }
+  .sw-description-list-item > dt { @apply font-medium text-muted-legible; }
+  .sw-timeline {
+    @apply text-xs text-foreground;
+    --sw-timeline-marker-size: .625rem; --sw-timeline-marker-gap: .75rem;
+    --sw-timeline-event-gap: 1rem; --sw-timeline-line-width: 1px;
+  }
+  .sw-timeline-event::before { border: 1px solid var(--primary); border-radius: 0; background: var(--primary); }
+  .sw-timeline-event::after { border-color: var(--border); }
+  .sw-timeline-event[data-variant='secondary']::before { background: var(--muted-foreground); border-color: var(--muted-foreground); }
+  .sw-timeline-event[data-variant='outline']::before { background: var(--background); border-color: var(--foreground); }
+  .sw-timeline-event[data-variant='destructive']::before { background: var(--destructive); border-color: var(--destructive); }
+  .sw-timeline-heading { @apply gap-x-4 gap-y-1; }
+  .sw-timeline-title { @apply font-medium; }
+  .sw-timeline-time { @apply text-xs text-muted-legible; }
+  .sw-timeline-description { @apply mt-1 leading-relaxed text-muted-legible; }
+}
+
+/* Deferred content uses the existing skeletons with one legible status. */
+@layer components {
+  .sw-lazy-load-placeholder { @apply gap-2; }
+  .sw-lazy-load-status { @apply text-xs text-muted-legible; }
+}
+
+/* Numbered process steps use this skin's type, density and marker shape. */
+@layer components {
+  .sw-steps { @apply text-xs text-foreground; --sw-step-size: 1.75rem; --sw-step-gap: 1rem; --sw-step-content-gap: .75rem; --sw-step-line-width: 1px; }
+  .sw-step-number { @apply rounded-full font-medium tabular-nums; }
+  .sw-step-title { @apply font-medium; }
 }
