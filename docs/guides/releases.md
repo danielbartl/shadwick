@@ -140,9 +140,10 @@ is a separate action in Central Portal. Inspect that deployment's coordinates, s
 publishing. Do not rerun a successful staging job simply to obtain a second deployment; use its retained result.
 
 The **Publish validated release** workflow can perform the publication with the existing Central repository
-secrets, so credentials stay inside GitHub Actions. Run it from `main` with the staged tag and deployment UUID;
+secrets, so credentials stay inside GitHub Actions. Run it from `main` with the staged tag, deployment UUID and
+successful staging run ID (`staging_run`);
 leave `publish=false` first to inspect the status. It requires successful CI for the tagged source and the staged
-GitHub release bundle, checks the deployment ID and both exact Maven coordinates, and refuses an unvalidated
+workflow artifact bundle, checks the deployment ID and both exact Maven coordinates, and refuses an unvalidated
 deployment. After inspection, run it with `publish=true`. It publishes once and waits for `PUBLISHED`; retrying a
 deployment already publishing or published does not submit a second publication request.
 

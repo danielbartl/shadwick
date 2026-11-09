@@ -15,6 +15,33 @@ Maven dependency and is done: no Node, no Tailwind, no CSS build on their side.
 
 ## Resume point — 2026-11-09
 
+**Current checkpoint: real signed 0.1.0 staging verified; publication in progress.** All 15 jobs in Build
+42669752005 passed for b55de2946b28d573d3588325879e50a126c37e8c; the annotated v0.1.0 tag points there
+(tag object 199c490f05b24ae9cfa2598bc9a4dbe9b72c890c). Do not move the tag to a later checkpoint commit.
+
+Stage release 42673293180 succeeded on attempt 2. Attempt 1 had no jobs because of GitHub's major Actions
+outage (incident tp8cghg7tlc4); it uploaded nothing. Do not rerun the SUCCESSFUL staging attempt. The real
+Central deployment UUID is 37d2866e-ca38-4371-b5ea-bb8dfd5ad999 and reached VALIDATED, with autoPublish=false.
+A draft GitHub release and all seven assets exist. Artifacts: /tmp/shadwick-real-staged-v0.1.0. All five
+payload/checksum pairs match the signed bundle, both POMs match the tested source, and all five signatures
+verify with public signing fingerprint 2C2AD8BB3979FE4A4E2269241EF738AE00E644CF. Its public key was fetched
+from keys.openpgp.org (Ubuntu lookup returned 404); no private key was exported or imported locally.
+Verification record: target/real-staging-verification.json; log /tmp/shadwick-real-verification.log.
+
+The first status-only publish run 42675049754 failed before the Central request because a read-only GitHub
+token cannot see the draft release asset. The workflow now takes staging_run and reads the verified artifact
+from that successful Stage release run using Actions read permission, without broadening repository access.
+Use staging_run=42673293180, tag=v0.1.0 and deployment=37d2866e-ca38-4371-b5ea-bb8dfd5ad999.
+Publish validated release (publish.yml) is being run in status-only mode for that exact tag/deployment.
+After its coordinates/status check passes, publish that SAME deployment with publish=true. Then verify clean
+Maven resolution of parent/library, finalize the draft GitHub release with published notes, update availability
+text and move development to the next snapshot. The helper handles PUBLISHING/PUBLISHED retries without a
+second publish request. All release actions remain authorized; do not ask for renewed permission or credentials.
+Keep real secrets inside Actions. Source changes are complete and reviewed; the uncommitted checkpoint text
+is agent bookkeeping only. Post-publication script /tmp/shadwick-post-publication.py remains unapplied to main.
+
+## Previous tooltip verification checkpoint — 2026-11-09
+
 **Current blocker: verify the full-chart boundary fix for the tooltip failure.** Candidate Build run
 42640666017 completed with 4744 browser cases, 4743 passing and ChartFormatBrowserTest's German/RTL embedded
 Firefox case failing at its first tooltip sizing assertion (line 119). It is the same case as the previous
