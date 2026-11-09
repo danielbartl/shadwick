@@ -37,6 +37,10 @@ development-only `<wicket:panel>` wrappers out of native `details`/`summary` rel
 Create a Wicket page and matching HTML resource. This form uses explicit models, a required name and an
 Ajax submit button. The complete sources are compiled and exercised by the repository's documentation tests.
 
+Build the initial component tree in `onInitialize()`, starting with `super.onInitialize()`. Keep the page
+structure visible there, and put field configuration and submission handling in plainly named private methods.
+The complete example follows this structure.
+
 [Read the complete form example](../components/forms.md#complete-example).
 
 Place the Java and HTML in the same package on the classpath, for example `dev.example.QuickStartPage` and

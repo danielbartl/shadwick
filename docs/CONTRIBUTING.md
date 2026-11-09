@@ -57,6 +57,22 @@ accessibility checks when layout or interaction changes. Stop the owned preview 
 Generated `site/dist/` output is ignored and must not be edited or committed. The Website workflow builds the docs
 with the landing page; changing `docs/**` triggers it. Publishing the static guides does not deploy a Wicket server.
 
+## Readable Wicket composition
+
+Keep page constructors focused on parameters, models and state needed by layout hooks. Build the initial
+component tree in `onInitialize()`, starting with `super.onInitialize()`. The method should read as an overview:
+add the forms or named page sections, then delegate their configuration to private methods.
+
+Use purpose-based names such as `normalForm()`, `email()` and `saveProject()`. Factories return components;
+`add…` methods attach them. Keep section assembly, field configuration and command handling at separate levels.
+Return concrete component types when useful, and keep short, obvious configuration inline. Do not introduce
+shared builders or new protected hooks just to reduce repetition between small examples.
+
+Library components may need children before attachment: fluent setters, `getInput()`, dialog forms and content
+slots already support this. Preserve those eager or lazy contracts while extracting private factories. Keep
+component IDs, model ownership/detachment and callback behavior unchanged. Dynamic repeaters and replacement
+content remain in their appropriate Wicket hooks and event handlers.
+
 ## Candidate API compatibility
 
 The library's normal tests compare its compiled public/protected declarations with

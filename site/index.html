@@ -47,7 +47,7 @@
       <p class="hero-description">The look you love. The Java you know.<br>Beautiful, server-rendered components inspired by shadcn/ui,<br class="desktop-break"> made to feel right at home in Apache Wicket.</p>
       <div class="hero-actions">
         <a class="action action-primary demo-action" href="https://shadwick-production.up.railway.app/"><span><strong>Try Clover Studio</strong><small>Projects, tasks and invoices. All connected.</small></span><svg aria-hidden="true"><use href="./assets/icons.svg#arrow-up-right"/></svg></a>
-        <a class="action action-secondary demo-action" href="https://shadwick-production.up.railway.app/components"><span><strong>Explore live components</strong><small>Working examples, with Java &amp; markup.</small></span><svg aria-hidden="true"><use href="./assets/icons.svg#arrow-up-right"/></svg></a>
+        <a class="action action-secondary demo-action" href="https://shadwick-production.up.railway.app/components"><span><strong>Explore live components</strong><small>Readable Java, matching markup.</small></span><svg aria-hidden="true"><use href="./assets/icons.svg#arrow-up-right"/></svg></a>
       </div>
       <p class="hero-note"><a href="./docs/">Read the documentation</a><span aria-hidden="true">·</span><a href="#get-started">Start building</a><span aria-hidden="true">·</span><span>Nine skins. Light and dark.</span></p>
     </section>
@@ -145,13 +145,20 @@
     </section>
 
     <section class="code-section wrap section-space" aria-labelledby="code-title">
-      <div class="code-copy"><span class="eyebrow">Small API. Good instincts.</span><h2 id="code-title">Looks different.<br>Feels familiar.</h2><p>A button, a callback, and you’re on your way.<br>No new rendering model to learn.</p><a href="./docs/components/buttons/" class="text-link">Meet the Java API<svg aria-hidden="true"><use href="./assets/icons.svg#arrow-up-right"/></svg></a><div class="code-tags"><span><svg aria-hidden="true"><use href="./assets/icons.svg#check"/></svg>Server rendered</span><span><svg aria-hidden="true"><use href="./assets/icons.svg#check"/></svg>Strict CSP friendly</span><span><svg aria-hidden="true"><use href="./assets/icons.svg#check"/></svg>Models included</span></div></div>
-      <div class="code-window"><div class="code-window-header"><div class="window-dots" aria-hidden="true"><i></i><i></i><i></i></div><span>HomePage.java</span><button type="button" class="copy-button" data-copy="button-code" aria-label="Copy Java button example"><svg aria-hidden="true"><use href="./assets/icons.svg#copy"/></svg></button></div><pre tabindex="0"><code id="button-code"><span class="syntax-comment">// Your next great interface starts here.</span>
-add(SwButton.<span class="syntax-function">onClick</span>(
-    <span class="syntax-string">"save"</span>,
-    <span class="syntax-string">"Save changes"</span>,
-    target -&gt; <span class="syntax-function">save</span>()
-));</code></pre><div class="code-result"><code>&lt;button wicket:id="save"&gt;&lt;/button&gt;</code><span><span class="status-dot"></span>That’s a Wicket component.</span></div></div>
+      <div class="code-copy"><span class="eyebrow">Small API. Good instincts.</span><h2 id="code-title">Looks different.<br>Feels familiar.</h2><p>A page you can read at a glance.<br>Named components. Ordinary Wicket callbacks.</p><a href="./docs/components/buttons/" class="text-link">Meet the Java API<svg aria-hidden="true"><use href="./assets/icons.svg#arrow-up-right"/></svg></a><div class="code-tags"><span><svg aria-hidden="true"><use href="./assets/icons.svg#check"/></svg>Server rendered</span><span><svg aria-hidden="true"><use href="./assets/icons.svg#check"/></svg>Strict CSP friendly</span><span><svg aria-hidden="true"><use href="./assets/icons.svg#check"/></svg>Models included</span></div></div>
+      <div class="code-window"><div class="code-window-header"><div class="window-dots" aria-hidden="true"><i></i><i></i><i></i></div><span>HomePage.java</span><button type="button" class="copy-button" data-copy="button-code" aria-label="Copy Java button example"><svg aria-hidden="true"><use href="./assets/icons.svg#copy"/></svg></button></div><pre tabindex="0"><code id="button-code"><span class="syntax-comment">// The page structure, then the details.</span>
+@Override
+protected void <span class="syntax-function">onInitialize</span>() {
+    super.<span class="syntax-function">onInitialize</span>();
+    add(<span class="syntax-function">saveButton</span>());
+}
+
+private SwButton <span class="syntax-function">saveButton</span>() {
+    return SwButton.<span class="syntax-function">onClick</span>(
+        <span class="syntax-string">"save"</span>, <span class="syntax-string">"Save changes"</span>,
+        target -&gt; <span class="syntax-function">save</span>()
+    );
+}</code></pre><div class="code-result"><code>&lt;button wicket:id="save"&gt;&lt;/button&gt;</code><span><span class="status-dot"></span>That’s a Wicket component.</span></div></div>
     </section>
 
     <section class="catalog-section wrap section-space" aria-labelledby="catalog-title">

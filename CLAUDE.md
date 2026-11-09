@@ -13,7 +13,34 @@ Maven dependency and is done: no Node, no Tailwind, no CSS build on their side.
 - Java package: `dev.jbaby.shadwick`
 - License: Apache 2.0
 
-## Resume point — 2026-11-08
+## Resume point — 2026-11-09
+
+**Current checkpoint: readable Wicket composition publication.** The user authorized committing and pushing all
+accumulated changes and updating the documentation, landing page and live examples application. Initial page and
+example-panel assembly now uses onInitialize, with plainly named methods for forms, fields, sections and commands.
+BasePage no longer invokes the theme factory during superclass construction. Larger library components delegate
+setup to private methods while preserving eager/fluent/lazy contracts; the public API baseline is unchanged.
+Studio's invoice panel deliberately keeps its table available before attachment for copyPresentation.
+
+Quick-start Java, its printed form-guide fence and the portable skill asset remain identical. Contributor guidance,
+installation/forms docs, README, landing Java sample and catalog introduction describe the same structure.
+Publication checks found a reproducible pre-existing embedded/RTL chart tooltip issue at 320px: its value cap must
+include ps-2 padding. The CSS cap now does so. Native table and RTL label browser checks account for reduced motion
+and intentional collision hiding. No release version, dependency or Maven Central publication is part of this push.
+
+Validation passed 1239 JVM tests on Java 17, 21 and 25, including isolated Java 25/17 production packaging;
+150 Chromium/Firefox browser cases (90 readability and 60 chart/native-table publication cases); 43 Node docs tests
+and the 67-page site/link checks. The production-mode local smoke passes 208 checks across both browser engines,
+all skins/layouts, desktop/mobile, no-script pages, copied code, docs/assets and the source-bearing app routes. Logs: /tmp/shadwick-readability-* and /tmp/shadwick-publication-*. The isolated package
+build is recorded in /tmp/shadwick-publication-build.json; /tmp/shadwick-publication-smoke.cjs checks the landing,
+docs, source assets and production routes in Chromium/Firefox. Do not overwrite or restart unrelated local servers.
+
+Push main through the existing GitHub Website workflow and Railway GitHub integration. Verify the exact commit's
+workflow runs and live source views at https://danielbartl.github.io/shadwick/ and
+https://shadwick-production.up.railway.app/. The full CI browser matrix is much longer than the focused publication
+checks; report its actual status separately from a successful Website/Railway deployment.
+
+## Previous publication checkpoint — 2026-11-08
 
 **Current checkpoint: completed shortlist publication.** The user authorized committing and pushing all
 accumulated work and refreshing the documentation, landing page and live examples application. This publication

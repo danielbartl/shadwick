@@ -3,6 +3,7 @@ package dev.jbaby.shadwick.examples;
 import dev.jbaby.shadwick.Sw;
 import dev.jbaby.shadwick.behaviors.ButtonBehavior;
 import dev.jbaby.shadwick.components.SwButton;
+
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.link.BookmarkablePageLink;
 import org.apache.wicket.markup.html.link.Link;
@@ -16,60 +17,86 @@ import java.util.Locale;
 
 public class ButtonPage extends BasePage {
 
-    private final Label status = new Label("status", Model.of(""));
+    private Label status;
 
     public ButtonPage(PageParameters parameters) {
         super(parameters);
+    }
+
+    @Override
+    protected void onInitialize() {
+        super.onInitialize();
+        status = new Label("status", Model.of(""));
         status.setOutputMarkupId(true);
         add(status);
+        addButtonVariants();
+        addButtonSizes();
+        addDisabledButtons();
+    }
 
+    private void addButtonVariants() {
         // SwButton.onClick on <button>, one per variant
-        add(new ListView<>("buttons", List.of(ButtonBehavior.Variant.values())) {
-            @Override
-            protected void populateItem(ListItem<ButtonBehavior.Variant> item) {
-                ButtonBehavior.Variant variant = item.getModelObject();
-                item.add(SwButton.onClick("button", name(variant), target -> {
-                    status.setDefaultModelObject("Clicked " + name(variant) + ".");
-                    target.add(status);
-                }).setVariant(variant));
-            }
-        });
+        add(
+                new ListView<>("buttons", List.of(ButtonBehavior.Variant.values())) {
 
+                    @Override
+                    protected void populateItem(ListItem<ButtonBehavior.Variant> item) {
+                        ButtonBehavior.Variant variant = item.getModelObject();
+                        item.add(
+                                SwButton.onClick(
+                                                "button",
+                                                name(variant),
+                                                target -> {
+                                                    status.setDefaultModelObject(
+                                                            "Clicked " + name(variant) + ".");
+                                                    target.add(status);
+                                                })
+                                        .setVariant(variant));
+                    }
+                });
         // Sw.Behaviors.button() on any link, one per variant
-        add(new ListView<>("links", List.of(ButtonBehavior.Variant.values())) {
-            @Override
-            protected void populateItem(ListItem<ButtonBehavior.Variant> item) {
-                ButtonBehavior.Variant variant = item.getModelObject();
-                item.add(new BookmarkablePageLink<Void>("link", HomePage.class)
-                        .setBody(Model.of(name(variant)))
-                        .add(Sw.Behaviors.button(variant)));
-            }
-        });
+        add(
+                new ListView<>("links", List.of(ButtonBehavior.Variant.values())) {
 
+                    @Override
+                    protected void populateItem(ListItem<ButtonBehavior.Variant> item) {
+                        ButtonBehavior.Variant variant = item.getModelObject();
+                        item.add(
+                                new BookmarkablePageLink<Void>("link", HomePage.class)
+                                        .setBody(Model.of(name(variant)))
+                                        .add(Sw.Behaviors.button(variant)));
+                    }
+                });
+    }
+
+    private void addButtonSizes() {
         // Sizes
-        add(SwButton.onClick("small", "Small", target -> {
-        }).setSize(ButtonBehavior.Size.SMALL));
-        add(SwButton.onClick("default", "Default", target -> {
-        }));
-        add(SwButton.onClick("large", "Large", target -> {
-        }).setSize(ButtonBehavior.Size.LARGE));
+        add(SwButton.onClick("small", "Small", target -> {}).setSize(ButtonBehavior.Size.SMALL));
+        add(SwButton.onClick("default", "Default", target -> {}));
+        add(SwButton.onClick("large", "Large", target -> {}).setSize(ButtonBehavior.Size.LARGE));
         // An icon button needs an accessible name: its aria-label is in the markup
-        add(new SwButton("icon") {
-            @Override
-            public void onClick(org.apache.wicket.ajax.AjaxRequestTarget target) {
-                status.setDefaultModelObject("Clicked Add.");
-                target.add(status);
-            }
-        }.setSize(ButtonBehavior.Size.ICON).setVariant(ButtonBehavior.Variant.OUTLINE));
+        add(
+                new SwButton("icon") {
 
+                    @Override
+                    public void onClick(org.apache.wicket.ajax.AjaxRequestTarget target) {
+                        status.setDefaultModelObject("Clicked Add.");
+                        target.add(status);
+                    }
+                }.setSize(ButtonBehavior.Size.ICON).setVariant(ButtonBehavior.Variant.OUTLINE));
+    }
+
+    private void addDisabledButtons() {
         // Disabled: a <button> gets disabled, a link loses its href and gets aria-disabled
-        add(SwButton.onClick("disabledButton", "Disabled button", target -> {
-        }).setEnabled(false));
-        add(new Link<Void>("disabledLink") {
-            @Override
-            public void onClick() {
-            }
-        }.setBody(Model.of("Disabled link")).add(Sw.Behaviors.button(ButtonBehavior.Variant.OUTLINE)).setEnabled(false));
+        add(SwButton.onClick("disabledButton", "Disabled button", target -> {}).setEnabled(false));
+        add(
+                new Link<Void>("disabledLink") {
+
+                    @Override
+                    public void onClick() {}
+                }.setBody(Model.of("Disabled link"))
+                        .add(Sw.Behaviors.button(ButtonBehavior.Variant.OUTLINE))
+                        .setEnabled(false));
     }
 
     private static String name(ButtonBehavior.Variant variant) {

@@ -121,5 +121,6 @@
 
 @layer components {
  .sw-chart-legend-item { overflow-wrap:anywhere; max-width:100%; }
- .sw-chart-tooltip-value { flex-shrink:0; max-inline-size:60%; overflow-wrap:anywhere; }
+ /* Include the ps-2 padding in the cap so ordinary currency values stay on one line. */
+ .sw-chart-tooltip-value { flex-shrink:0; max-inline-size:calc(60% + .5rem); overflow-wrap:anywhere; }
 }

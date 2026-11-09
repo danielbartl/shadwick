@@ -25,6 +25,10 @@ The pre-release component shortlist is complete. Try the new [quote fields](http
 [avatar groups](https://shadwick-production.up.railway.app/avatar-groups) and [steps indicator](https://shadwick-production.up.railway.app/steps)
 in the live catalog. Release notes, signing/release automation and Maven Central publication are the next checkpoint.
 
+The examples build their initial component trees in `onInitialize()`, with named methods for forms, fields and
+actions. Start with the [complete form example](docs/components/forms.md#complete-example), then browse the
+matching source in the live catalog.
+
 ## Agent guidance
 
 Use the [Shadwick skill](shadwick/SKILL.md) with its supporting references and working Java/HTML templates.

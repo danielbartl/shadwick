@@ -105,7 +105,9 @@ class SparklineBrowserTest {
             p.setViewportSize(320, 950); p.locator("main").evaluate("n=>n.dir='rtl'");
             p.waitForCondition(() -> (Boolean) dense.evaluate(CLEAR_LABELS));
             var horizontal = chart(p, "Hours without hovering");
-            assertThat(horizontal.locator("[data-label-dir=rtl] text").first()).isVisible();
+            p.waitForCondition(() -> (Boolean) horizontal.evaluate(CLEAR_LABELS));
+            // Collision handling may hide the first label on a narrow plot. Check the visible direction.
+            assertThat(horizontal.locator("[data-label-dir=rtl] text:visible").first()).isVisible();
             assertThat(horizontal.locator("[data-label-dir=ltr] text").first()).isHidden();
             assertThat(p.locator(".sw-sparkline").first().locator(".sw-sparkline-last").evaluate("n=>{const dot=n.getBoundingClientRect(),root=n.closest('.sw-sparkline').getBoundingClientRect();return dot.left<root.left+10;}")).isEqualTo(true);
             dense.evaluate("n=>n.dataset.untouched='true'"); List<String> navigations = new ArrayList<>();

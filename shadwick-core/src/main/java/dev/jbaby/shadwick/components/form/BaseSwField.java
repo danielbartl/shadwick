@@ -1,7 +1,9 @@
 package dev.jbaby.shadwick.components.form;
 
 import com.github.openjson.JSONObject;
+
 import dev.jbaby.shadwick.Shadwick;
+
 import org.apache.wicket.AttributeModifier;
 import org.apache.wicket.Component;
 import org.apache.wicket.MarkupContainer;
@@ -36,33 +38,40 @@ import java.util.Objects;
 import java.util.Set;
 
 /**
- * Base class for every Shadwick form field: wraps a label, the underlying Wicket {@link FormComponent}, a description
- * and an inline error in shadcn's field markup ({@code sw-field}). Wires accessibility automatically - the input's
- * {@code aria-describedby} points at the description and the error, and {@code aria-invalid} on the input and
- * {@code data-invalid} on the field follow its validation state - so subclasses get this for free.
- * <p>
- * It is meant to be used like a plain Wicket form component:
+ * Base class for every Shadwick form field: wraps a label, the underlying Wicket {@link
+ * FormComponent}, a description and an inline error in shadcn's field markup ({@code sw-field}).
+ * Wires accessibility automatically - the input's {@code aria-describedby} points at the
+ * description and the error, and {@code aria-invalid} on the input and {@code data-invalid} on the
+ * field follow its validation state - so subclasses get this for free.
+ *
+ * <p>It is meant to be used like a plain Wicket form component:
+ *
  * <ul>
- * <li>The model is this panel's model, which the input reads and writes. Leave it out to inherit one from a parent
- * {@code CompoundPropertyModel}, keyed by the id.</li>
- * <li>Leave the label out to look it up in the {@code .properties} files with the id as the key (falling back to the
- * id itself), as Wicket does for {@code ${label}} in validation messages.</li>
- * <li>After an Ajax request that validated it, e.g. a submit, it shows an error that appeared, changed or went away by
- * itself, without {@code target.add(field)}: it updates its message and the error state in place, so the input keeps
- * its focus and what the user typed. Other Ajax requests leave the error it shows alone.</li>
- * <li>The panel renders its own tag with a markup id, so it can be re-rendered with {@code target.add(field)} too.</li>
- * <li>The wrapped form component is the panel's child {@code input}, so a test sets its value with
- * {@code formTester.setValue("email:input", ...)}; {@link #getInput()} returns it.</li>
- * <li>Validators and {@link AjaxFormComponentUpdatingBehavior}s passed to {@link #add(Behavior...)} are added to the
- * input, as they only work there; any other behavior applies to the panel's own tag. {@link #addToInput} adds one to
- * the input, e.g. an {@code AttributeModifier} for {@code autocomplete}.</li>
+ *   <li>The model is this panel's model, which the input reads and writes. Leave it out to inherit
+ *       one from a parent {@code CompoundPropertyModel}, keyed by the id.
+ *   <li>Leave the label out to look it up in the {@code .properties} files with the id as the key
+ *       (falling back to the id itself), as Wicket does for {@code ${label}} in validation
+ *       messages.
+ *   <li>After an Ajax request that validated it, e.g. a submit, it shows an error that appeared,
+ *       changed or went away by itself, without {@code target.add(field)}: it updates its message
+ *       and the error state in place, so the input keeps its focus and what the user typed. Other
+ *       Ajax requests leave the error it shows alone.
+ *   <li>The panel renders its own tag with a markup id, so it can be re-rendered with {@code
+ *       target.add(field)} too.
+ *   <li>The wrapped form component is the panel's child {@code input}, so a test sets its value
+ *       with {@code formTester.setValue("email:input", ...)}; {@link #getInput()} returns it.
+ *   <li>Validators and {@link AjaxFormComponentUpdatingBehavior}s passed to {@link
+ *       #add(Behavior...)} are added to the input, as they only work there; any other behavior
+ *       applies to the panel's own tag. {@link #addToInput} adds one to the input, e.g. an {@code
+ *       AttributeModifier} for {@code autocomplete}.
  * </ul>
  *
  * @param <T> the model object type
  * @param <C> the concrete {@link FormComponent} type this field wraps
  * @param <F> the concrete field type, returned by the fluent setters
  */
-public abstract class BaseSwField<T, C extends FormComponent<T>, F extends BaseSwField<T, C, F>> extends GenericPanel<T> {
+public abstract class BaseSwField<T, C extends FormComponent<T>, F extends BaseSwField<T, C, F>>
+        extends GenericPanel<T> {
 
     /** The id of the wrapped form component, a child of this panel. */
     public static final String INPUT_ID = "input";
@@ -72,78 +81,46 @@ public abstract class BaseSwField<T, C extends FormComponent<T>, F extends BaseS
     private final Label label;
     private final Label descriptionLabel;
     private final Label error;
+
     // What the page shows: the error (null for none), and whether a form component inside
     // a multi-input input showed its own error
     private String shownError;
     private boolean shownInnerError;
     private boolean errorRendered;
+
     // The fields whose input's model was updated in this request. Kept with the request,
     // not in a field: a FileUploadField sets its model to null as it is detached, after
     // this panel, which would count for the next request.
-    private static final MetaDataKey<Set<BaseSwField<?, ?, ?>>> INPUT_UPDATED = new MetaDataKey<>() {
-    };
+    private static final MetaDataKey<Set<BaseSwField<?, ?, ?>>> INPUT_UPDATED =
+            new MetaDataKey<>() {};
 
     /**
      * @param id the component id, also the resource key for a missing label
      * @param label the label, or {@code null} to look it up by {@code id}
-     * @param model the model, or {@code null} to inherit one from a parent {@code CompoundPropertyModel}
+     * @param model the model, or {@code null} to inherit one from a parent {@code
+     *     CompoundPropertyModel}
      * @param description help text shown below the input, or {@code null}
      */
-    public BaseSwField(String id, IModel<String> label, IModel<T> model, IModel<String> description) {
+    public BaseSwField(
+            String id, IModel<String> label, IModel<T> model, IModel<String> description) {
         super(id, model);
         this.description = description;
         setOutputMarkupId(true);
-
-        // The field's element in shadcn's markup. Transparent, so the label, input, description and error inside it
-        // are children of this panel, with short paths such as "email:input".
-        TransparentWebMarkupContainer container = new TransparentWebMarkupContainer("container");
-        container.add(AttributeModifier.replace("data-invalid", (IModel<String>) () -> currentError() != null ? "true" : null));
+        TransparentWebMarkupContainer container = newFieldContainer();
         add(container);
-
-        this.label = new Label("label", label != null ? label : new StringResourceModel(id, this).setDefaultValue(id));
-        this.label.add(new Behavior() {
-            @Override
-            public void onComponentTag(Component component, ComponentTag tag) {
-                // Only a <label> takes "for"; group fields label themselves with a <legend>
-                if ("label".equalsIgnoreCase(tag.getName())) {
-                    tag.put("for", getLabelTarget().getMarkupId());
-                }
-            }
-        });
+        this.label = newLabel(id, label);
         add(this.label);
-
-        descriptionLabel = new Label("description", (IModel<String>) this::getDescriptionText) {
-            @Override
-            protected void onConfigure() {
-                super.onConfigure();
-                setVisible(hasDescription());
-            }
-        };
-        descriptionLabel.setOutputMarkupId(true);
+        descriptionLabel = newDescription();
         add(descriptionLabel);
-
-        // Always on the page, empty while the field is valid, so a message that appears in
-        // it after an Ajax request is announced (role="status" in the markup)
-        error = new Label("error", (IModel<String>) () -> text(currentError())) {
-            @Override
-            protected void onAfterRender() {
-                super.onAfterRender();
-                FeedbackMessage message = currentError();
-                if (message != null) {
-                    message.markRendered();
-                }
-                shownError = text(message);
-                shownInnerError = hasInnerError();
-                errorRendered = true;
-            }
-        };
-        error.setOutputMarkupId(true);
+        error = newError();
+        // Keep an empty status region present so Ajax validation messages are announced.
         add(error);
     }
 
     /**
-     * Creates the wrapped form component. Called lazily - on the first {@link #getInput()} or, at the latest, in
-     * {@link #onInitialize()} - so fields a subclass sets in its own constructor are already available here.
+     * Creates the wrapped form component. Called lazily - on the first {@link #getInput()} or, at
+     * the latest, in {@link #onInitialize()} - so fields a subclass sets in its own constructor are
+     * already available here.
      *
      * @param id the component id to use ({@link #INPUT_ID})
      * @param model the model to use; it reads and writes this panel's model
@@ -151,28 +128,22 @@ public abstract class BaseSwField<T, C extends FormComponent<T>, F extends BaseS
     protected abstract C newInput(String id, IModel<T> model);
 
     /**
-     * The wrapped form component, for what this field doesn't offer itself: e.g. a form validator comparing two
-     * fields, {@code new EqualPasswordInputValidator(password.getInput(), repeat.getInput())}.
+     * The wrapped form component, for what this field doesn't offer itself: e.g. a form validator
+     * comparing two fields, {@code new EqualPasswordInputValidator(password.getInput(),
+     * repeat.getInput())}.
      */
     public C getInput() {
         if (input == null) {
             input = newInput(INPUT_ID, new InputModel());
-            input.setLabel(getLabel());
-            input.setOutputMarkupId(true);
-            // Link the input to its description and error for screen readers
-            input.add(AttributeModifier.replace("aria-describedby", (IModel<String>) this::getDescribedBy));
-            input.add(AttributeModifier.replace("aria-invalid", (IModel<String>) () -> currentError() != null ? "true" : "false"));
-            // Not the native "required", which would make the browser block the submit
-            // with its own message before Wicket's validation could show one inline
-            input.add(AttributeModifier.replace("aria-required", (IModel<String>) () -> input.isRequired() ? "true" : null));
+            configureInput();
             add(input);
         }
         return input;
     }
 
     /**
-     * What the {@code <label>} is for: the input, unless the user types somewhere else, e.g. in the text box of a
-     * widget that keeps its value in a hidden input. Its markup id must be rendered.
+     * What the {@code <label>} is for: the input, unless the user types somewhere else, e.g. in the
+     * text box of a widget that keeps its value in a hidden input. Its markup id must be rendered.
      */
     protected Component getLabelTarget() {
         return getInput();
@@ -181,29 +152,77 @@ public abstract class BaseSwField<T, C extends FormComponent<T>, F extends BaseS
     @Override
     protected void onInitialize() {
         super.onInitialize();
-        getInput(); // create it now if no fluent call or subclass has done so yet
+        // create it now if no fluent call or subclass has done so yet
+        getInput();
     }
 
-    private String getDescribedBy() {
-        String describedBy = hasDescription() ? descriptionLabel.getMarkupId() + " " + error.getMarkupId() : error.getMarkupId();
-        String additional = getAdditionalDescribedByMarkupIds();
-        return Strings.isEmpty(additional) ? describedBy : describedBy + " " + additional;
+    private TransparentWebMarkupContainer newFieldContainer() {
+        // Transparent children keep short paths such as "email:input".
+        TransparentWebMarkupContainer container = new TransparentWebMarkupContainer("container");
+        container.add(
+                AttributeModifier.replace(
+                        "data-invalid",
+                        (IModel<String>) () -> currentError() != null ? "true" : null));
+        return container;
     }
 
-    /** Extra description elements owned by a specialized field, such as input-group units. */
-    protected String getAdditionalDescribedByMarkupIds() { return null; }
+    private Label newLabel(String id, IModel<String> label) {
+        Label component =
+                new Label(
+                        "label",
+                        label != null
+                                ? label
+                                : new StringResourceModel(id, this).setDefaultValue(id));
+        component.add(
+                new Behavior() {
 
-    private String getDescriptionText() {
-        return description != null ? Objects.toString(description.getObject(), "") : "";
+                    @Override
+                    public void onComponentTag(Component component, ComponentTag tag) {
+                        // Only a <label> takes "for"; group fields label themselves with a <legend>
+                        if ("label".equalsIgnoreCase(tag.getName())) {
+                            tag.put("for", getLabelTarget().getMarkupId());
+                        }
+                    }
+                });
+        return component;
+    }
+
+    private Label newDescription() {
+        Label component =
+                new Label("description", (IModel<String>) this::getDescriptionText) {
+
+                    @Override
+                    protected void onConfigure() {
+                        super.onConfigure();
+                        setVisible(hasDescription());
+                    }
+                };
+        component.setOutputMarkupId(true);
+        return component;
+    }
+
+    private Label newError() {
+        Label component =
+                new Label("error", (IModel<String>) () -> text(currentError())) {
+
+                    @Override
+                    protected void onAfterRender() {
+                        super.onAfterRender();
+                        FeedbackMessage message = currentError();
+                        if (message != null) {
+                            message.markRendered();
+                        }
+                        shownError = text(message);
+                        shownInnerError = hasInnerError();
+                        errorRendered = true;
+                    }
+                };
+        component.setOutputMarkupId(true);
+        return component;
     }
 
     private boolean hasDescription() {
         return !Strings.isEmpty(getDescriptionText());
-    }
-
-    /** The inline error; compound fields may surface an inner input's error here. */
-    protected FeedbackMessage currentError() {
-        return getInput().getFeedbackMessages().first(FeedbackMessage.ERROR);
     }
 
     private static String text(FeedbackMessage error) {
@@ -212,19 +231,47 @@ public abstract class BaseSwField<T, C extends FormComponent<T>, F extends BaseS
 
     // Whether a form component inside the input, made of several, has an error
     private boolean hasInnerError() {
-        Boolean found = getInput().visitChildren(FormComponent.class, (Component inner, IVisit<Boolean> visit) -> {
-            if (inner.hasErrorMessage()) {
-                visit.stop(true);
-            }
-        });
+        Boolean found =
+                getInput()
+                        .visitChildren(
+                                FormComponent.class,
+                                (Component inner, IVisit<Boolean> visit) -> {
+                                    if (inner.hasErrorMessage()) {
+                                        visit.stop(true);
+                                    }
+                                });
         return found != null;
+    }
+
+    private String getDescriptionText() {
+        return description != null ? Objects.toString(description.getObject(), "") : "";
+    }
+
+    private String getDescribedBy() {
+        String describedBy =
+                hasDescription()
+                        ? descriptionLabel.getMarkupId() + " " + error.getMarkupId()
+                        : error.getMarkupId();
+        String additional = getAdditionalDescribedByMarkupIds();
+        return Strings.isEmpty(additional) ? describedBy : describedBy + " " + additional;
+    }
+
+    /** Extra description elements owned by a specialized field, such as input-group units. */
+    protected String getAdditionalDescribedByMarkupIds() {
+        return null;
+    }
+
+    /** The inline error; compound fields may surface an inner input's error here. */
+    protected FeedbackMessage currentError() {
+        return getInput().getFeedbackMessages().first(FeedbackMessage.ERROR);
     }
 
     @Override
     public void renderHead(IHeaderResponse response) {
         super.renderHead(response);
         Shadwick.renderResources(response);
-        response.render(JavaScriptHeaderItem.forReference(Shadwick.SHADWICK_JS)); // Shadwick.fieldFeedback
+        // Shadwick.fieldFeedback
+        response.render(JavaScriptHeaderItem.forReference(Shadwick.SHADWICK_JS));
     }
 
     @Override
@@ -232,7 +279,9 @@ public abstract class BaseSwField<T, C extends FormComponent<T>, F extends BaseS
         super.onEvent(event);
         // Wicket broadcasts the AjaxRequestTarget to every component before responding,
         // and maybe more than once, when a handler sends it on
-        if (!(event.getPayload() instanceof AjaxRequestTarget target) || !errorRendered || !isVisibleInHierarchy()) {
+        if (!(event.getPayload() instanceof AjaxRequestTarget target)
+                || !errorRendered
+                || !isVisibleInHierarchy()) {
             return;
         }
         FeedbackMessage message = currentError();
@@ -255,7 +304,8 @@ public abstract class BaseSwField<T, C extends FormComponent<T>, F extends BaseS
         String text = text(message);
         if (Objects.equals(text, shownError) || isRenderedBy(target)) {
             if (message != null) {
-                message.markRendered(); // the same error is still shown
+                // the same error is still shown
+                message.markRendered();
             }
             return;
         }
@@ -265,9 +315,16 @@ public abstract class BaseSwField<T, C extends FormComponent<T>, F extends BaseS
             message.markRendered();
         }
         shownError = text;
-        target.appendJavaScript("Shadwick.fieldFeedback(" + JSONObject.quote(getMarkupId()) + ","
-                + JSONObject.quote(error.getMarkupId()) + "," + JSONObject.quote(text != null ? text : "") + ","
-                + (message != null) + ")");
+        target.appendJavaScript(
+                "Shadwick.fieldFeedback("
+                        + JSONObject.quote(getMarkupId())
+                        + ","
+                        + JSONObject.quote(error.getMarkupId())
+                        + ","
+                        + JSONObject.quote(text != null ? text : "")
+                        + ","
+                        + (message != null)
+                        + ")");
     }
 
     // Whether the input's form validated it in this request, which a button with
@@ -285,7 +342,9 @@ public abstract class BaseSwField<T, C extends FormComponent<T>, F extends BaseS
     // Whether this field is rendered with a component the target has, e.g. its form
     private boolean isRenderedBy(AjaxRequestTarget target) {
         for (Component added : target.getComponents()) {
-            if (added == this || added instanceof MarkupContainer container && container.contains(this, true)) {
+            if (added == this
+                    || added instanceof MarkupContainer container
+                            && container.contains(this, true)) {
                 return true;
             }
         }
@@ -312,8 +371,8 @@ public abstract class BaseSwField<T, C extends FormComponent<T>, F extends BaseS
     }
 
     /**
-     * The markup ids the input's {@code aria-describedby} lists, for a subclass whose input is made of several inputs,
-     * so each can point at the description and the error.
+     * The markup ids the input's {@code aria-describedby} lists, for a subclass whose input is made
+     * of several inputs, so each can point at the description and the error.
      */
     protected final String getDescribedByMarkupIds() {
         return getDescribedBy();
@@ -339,13 +398,13 @@ public abstract class BaseSwField<T, C extends FormComponent<T>, F extends BaseS
     }
 
     // Fluent API, typed to the concrete field so calls chain with its own setters
-
     /**
-     * Behaviors that only work on a form component are added to the {@link #getInput() input}: validators,
-     * {@link AjaxFormComponentUpdatingBehavior}s (which include {@code OnChangeAjaxBehavior} and
-     * {@code AjaxFormChoiceComponentUpdatingBehavior}), {@link FormComponentUpdatingBehavior}s and
-     * {@link AjaxFormValidatingBehavior}s. Any other behavior applies to this panel's own tag, as with any component;
-     * add one to the input with {@link #addToInput}.
+     * Behaviors that only work on a form component are added to the {@link #getInput() input}:
+     * validators, {@link AjaxFormComponentUpdatingBehavior}s (which include {@code
+     * OnChangeAjaxBehavior} and {@code AjaxFormChoiceComponentUpdatingBehavior}), {@link
+     * FormComponentUpdatingBehavior}s and {@link AjaxFormValidatingBehavior}s. Any other behavior
+     * applies to this panel's own tag, as with any component; add one to the input with {@link
+     * #addToInput}.
      */
     @Override
     public F add(Behavior... behaviors) {
@@ -360,13 +419,15 @@ public abstract class BaseSwField<T, C extends FormComponent<T>, F extends BaseS
     }
 
     private static boolean isForInput(Behavior behavior) {
-        return behavior instanceof IValidator<?> || behavior instanceof AjaxFormComponentUpdatingBehavior
-                || behavior instanceof FormComponentUpdatingBehavior || behavior instanceof AjaxFormValidatingBehavior;
+        return behavior instanceof IValidator<?>
+                || behavior instanceof AjaxFormComponentUpdatingBehavior
+                || behavior instanceof FormComponentUpdatingBehavior
+                || behavior instanceof AjaxFormValidatingBehavior;
     }
 
     /**
-     * Adds behaviors to the {@link #getInput() input} rather than to this panel, e.g.
-     * {@code addToInput(AttributeModifier.replace("autocomplete", "email"))}.
+     * Adds behaviors to the {@link #getInput() input} rather than to this panel, e.g. {@code
+     * addToInput(AttributeModifier.replace("autocomplete", "email"))}.
      */
     public F addToInput(Behavior... behaviors) {
         getInput().add(behaviors);
@@ -380,9 +441,9 @@ public abstract class BaseSwField<T, C extends FormComponent<T>, F extends BaseS
 
     /**
      * The type the input converts what the user typed to, as {@code TextField}'s {@code type}: e.g.
-     * {@code Integer.class} for a field over an {@code IModel<Integer>}. Not needed with a
-     * {@code CompoundPropertyModel} or {@code PropertyModel}, which know the property's type, nor with a model that
-     * holds a value already; for an empty plain {@code Model}, set it.
+     * {@code Integer.class} for a field over an {@code IModel<Integer>}. Not needed with a {@code
+     * CompoundPropertyModel} or {@code PropertyModel}, which know the property's type, nor with a
+     * model that holds a value already; for an empty plain {@code Model}, set it.
      */
     public F setType(Class<?> type) {
         getInput().setType(type);
@@ -425,9 +486,9 @@ public abstract class BaseSwField<T, C extends FormComponent<T>, F extends BaseS
     }
 
     /**
-     * The input's model: reads and writes this panel's model, which may be one inherited from a parent
-     * {@code CompoundPropertyModel}. Passes on that model's object class too - or else the class of the value it holds
-     * - so text fields can resolve their type for conversion.
+     * The input's model: reads and writes this panel's model, which may be one inherited from a
+     * parent {@code CompoundPropertyModel}. Passes on that model's object class too - or else the
+     * class of the value it holds - so text fields can resolve their type for conversion.
      */
     private final class InputModel implements IObjectClassAwareModel<T> {
 
@@ -440,8 +501,11 @@ public abstract class BaseSwField<T, C extends FormComponent<T>, F extends BaseS
         public void setObject(T object) {
             IModel<T> model = getModel();
             if (model == null) {
-                throw new IllegalStateException("Form field '" + getPageRelativePath() + "' has no model: pass one "
-                        + "to its constructor, or add it to a container with a CompoundPropertyModel");
+                throw new IllegalStateException(
+                        "Form field '"
+                                + getPageRelativePath()
+                                + "' has no model: pass one to its constructor, or add it to a"
+                                + " container with a CompoundPropertyModel");
             }
             model.setObject(object);
             inputUpdated();
@@ -450,11 +514,31 @@ public abstract class BaseSwField<T, C extends FormComponent<T>, F extends BaseS
         @Override
         @SuppressWarnings("unchecked")
         public Class<T> getObjectClass() {
-            if (getModel() instanceof IObjectClassAwareModel<?> aware && aware.getObjectClass() != null) {
+            if (getModel() instanceof IObjectClassAwareModel<?> aware
+                    && aware.getObjectClass() != null) {
                 return (Class<T>) aware.getObjectClass();
             }
             T object = getModelObject();
             return object != null ? (Class<T>) object.getClass() : null;
         }
+    }
+
+    private void configureInput() {
+        input.setLabel(getLabel());
+        input.setOutputMarkupId(true);
+        // Link the input to its description and error for screen readers
+        input.add(
+                AttributeModifier.replace(
+                        "aria-describedby", (IModel<String>) this::getDescribedBy));
+        input.add(
+                AttributeModifier.replace(
+                        "aria-invalid",
+                        (IModel<String>) () -> currentError() != null ? "true" : "false"));
+        // Not the native "required", which would make the browser block the submit
+        // with its own message before Wicket's validation could show one inline
+        input.add(
+                AttributeModifier.replace(
+                        "aria-required",
+                        (IModel<String>) () -> input.isRequired() ? "true" : null));
     }
 }

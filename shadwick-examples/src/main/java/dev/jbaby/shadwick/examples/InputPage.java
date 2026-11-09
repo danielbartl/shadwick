@@ -8,6 +8,7 @@ import dev.jbaby.shadwick.components.form.SwPasswordField;
 import dev.jbaby.shadwick.components.form.SwSearchField;
 import dev.jbaby.shadwick.components.form.SwTelField;
 import dev.jbaby.shadwick.components.form.SwUrlField;
+
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.form.Button;
 import org.apache.wicket.markup.html.form.Form;
@@ -24,44 +25,106 @@ public class InputPage extends BasePage {
 
     public InputPage(PageParameters parameters) {
         super(parameters);
+    }
+
+    @Override
+    protected void onInitialize() {
+        super.onInitialize();
+        add(normalForm());
+        add(ajaxForm());
+    }
+
+    private Form<Settings> normalForm() {
         Label saved = new Label("saved", Model.of(""));
-        Form<Settings> form = new Form<>("form", new CompoundPropertyModel<>(new Settings())) {
-            @Override
-            protected void onSubmit() {
-                saved.setDefaultModelObject("Saved " + getModelObject().email + "; seats " + getModelObject().seats + ".");
-            }
-        };
+        Form<Settings> form =
+                new Form<>("form", new CompoundPropertyModel<>(new Settings())) {
+
+                    @Override
+                    protected void onSubmit() {
+                        saved.setDefaultModelObject(
+                                "Saved "
+                                        + getModelObject().email
+                                        + "; seats "
+                                        + getModelObject().seats
+                                        + ".");
+                    }
+                };
         addFields(form);
         form.add(new Button("save").add(Sw.Behaviors.button()));
         form.add(saved);
-        add(form);
+        return form;
+    }
 
+    private Form<Settings> ajaxForm() {
         Label ajaxSaved = new Label("saved", Model.of(""));
         ajaxSaved.setOutputMarkupId(true);
-        Form<Settings> ajaxForm = new Form<>("ajaxForm", new CompoundPropertyModel<>(new Settings()));
+        Form<Settings> ajaxForm =
+                new Form<>("ajaxForm", new CompoundPropertyModel<>(new Settings()));
         addFields(ajaxForm);
-        ajaxForm.add(SwSubmitButton.onSubmit("save", "Save settings", target -> {
-            ajaxSaved.setDefaultModelObject("Saved " + ajaxForm.getModelObject().email + "; seats " + ajaxForm.getModelObject().seats + ".");
-            target.add(ajaxSaved);
-        }));
+        ajaxForm.add(
+                SwSubmitButton.onSubmit(
+                        "save",
+                        "Save settings",
+                        target -> {
+                            ajaxSaved.setDefaultModelObject(
+                                    "Saved "
+                                            + ajaxForm.getModelObject().email
+                                            + "; seats "
+                                            + ajaxForm.getModelObject().seats
+                                            + ".");
+                            target.add(ajaxSaved);
+                        }));
         ajaxForm.add(ajaxSaved);
-        add(ajaxForm);
+        return ajaxForm;
     }
 
     private static void addFields(Form<Settings> form) {
-        form.add(new SwEmailField("email").setRequired(true).setPlaceholder("you@example.com"));
-        form.add(new SwPasswordField("password").setDescription("Required by default. Never rendered back into HTML."));
-        form.add(new SwSearchField("search").setPlaceholder("Search projects")
-                .addValidator(StringValidator.maximumLength(40)));
-        form.add(new SwTelField("telephone").setDescription("International numbers and punctuation are allowed."));
-        form.add(new SwUrlField("website").setPlaceholder("https://example.com"));
-        form.add(new SwNumberField<Integer>("seats").setRequired(true).setMin(1).setMax(10).setStep(1)
-                .setDescription("From 1 to 10 seats."));
-        form.add(new SwNumberField<BigDecimal>("budget").setMin(BigDecimal.ZERO).setMax(new BigDecimal("1000"))
-                .setStep(new BigDecimal("0.5")).setDescription("Decimal input; step is a browser hint."));
+        form.add(email(), password(), search(), telephone(), website(), seats(), budget());
+    }
+
+    private static SwEmailField email() {
+        return new SwEmailField("email").setRequired(true).setPlaceholder("you@example.com");
+    }
+
+    private static SwPasswordField password() {
+        return new SwPasswordField("password")
+                .setDescription("Required by default. Never rendered back into HTML.");
+    }
+
+    private static SwSearchField search() {
+        return new SwSearchField("search")
+                .setPlaceholder("Search projects")
+                .addValidator(StringValidator.maximumLength(40));
+    }
+
+    private static SwTelField telephone() {
+        return new SwTelField("telephone")
+                .setDescription("International numbers and punctuation are allowed.");
+    }
+
+    private static SwUrlField website() {
+        return new SwUrlField("website").setPlaceholder("https://example.com");
+    }
+
+    private static SwNumberField<Integer> seats() {
+        return new SwNumberField<Integer>("seats")
+                .setRequired(true)
+                .setMin(1)
+                .setMax(10)
+                .setStep(1)
+                .setDescription("From 1 to 10 seats.");
+    }
+
+    private static SwNumberField<BigDecimal> budget() {
+        return new SwNumberField<BigDecimal>("budget")
+                .setMin(BigDecimal.ZERO)
+                .setMax(new BigDecimal("1000"))
+                .setStep(new BigDecimal("0.5"))
+                .setDescription("Decimal input; step is a browser hint.");
     }
 
     public static class Settings implements Serializable {
+
         public String email;
         public String password;
         public String search;
@@ -72,5 +135,7 @@ public class InputPage extends BasePage {
     }
 
     @Override
-    protected String getTitle() { return "Inputs"; }
+    protected String getTitle() {
+        return "Inputs";
+    }
 }

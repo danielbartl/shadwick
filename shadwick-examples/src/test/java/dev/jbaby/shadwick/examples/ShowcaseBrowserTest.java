@@ -9,6 +9,7 @@ import com.microsoft.playwright.BrowserType;
 import com.microsoft.playwright.Locator;
 import com.microsoft.playwright.Page;
 import com.microsoft.playwright.Playwright;
+import com.microsoft.playwright.options.ReducedMotion;
 import com.microsoft.playwright.options.AriaRole;
 import com.microsoft.playwright.options.ForcedColors;
 import com.microsoft.playwright.options.FilePayload;
@@ -2907,7 +2908,7 @@ class ShowcaseBrowserTest {
 
     @ParameterizedTest @MethodSource("everySkinAndMode")
     void advancedTableNativeDetailsEditingAndColumnChoicesWorkWithoutScript(String skin, String mode) {
-        check("advanced-tables", skin, mode, new Browser.NewContextOptions().setJavaScriptEnabled(false), tab -> {
+        check("advanced-tables", skin, mode, new Browser.NewContextOptions().setJavaScriptEnabled(false).setReducedMotion(ReducedMotion.REDUCE), tab -> {
             Locator row = tab.locator(".sw-table > tbody > tr:not(.sw-table-row-details)").filter(new Locator.FilterOptions().setHasText("Customer portal"));
             row.locator(".sw-table-details-button").click(); assertThat(tab.locator(".ex-work-details")).containsText("TASK-1001");
             row.locator(".sw-table-editable").click(); row.locator("input.sw-input").fill("0");

@@ -10,25 +10,58 @@ import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.request.mapper.parameter.PageParameters;
 
 final class CatalogNavigation extends Panel {
+
     CatalogNavigation(String id, Class<? extends Page> current, PageParameters parameters) {
         super(id);
-        var overview = new BookmarkablePageLink<Void>("overview", HomePage.class, CatalogPages.preferences(parameters));
-        if (current == HomePage.class) overview.add(AttributeModifier.replace("aria-current", "page"));
+        this.current = current;
+        this.parameters = parameters;
+    }
+
+    @Override
+    protected void onInitialize() {
+        super.onInitialize();
+        var overview =
+                new BookmarkablePageLink<Void>(
+                        "overview", HomePage.class, CatalogPages.preferences(parameters));
+        if (current == HomePage.class)
+            overview.add(AttributeModifier.replace("aria-current", "page"));
         add(overview);
-        add(new ListView<>("groups", CatalogPages.GROUPS) {
-            @Override protected void populateItem(ListItem<CatalogPages.Group> group) {
-                group.add(new Label("groupTitle", group.getModelObject().title()));
-                group.add(new ListView<>("examples", group.getModelObject().examples()) {
-                    @Override protected void populateItem(ListItem<CatalogPages.Example> item) {
-                        var example = item.getModelObject();
-                        item.add(AttributeModifier.replace("data-catalog-search", example.title() + " " + example.description()));
-                        var link = new BookmarkablePageLink<Void>("link", example.page(), CatalogPages.preferences(parameters));
-                        link.add(new Label("label", example.title()));
-                        if (current == example.page()) link.add(AttributeModifier.replace("aria-current", "page"));
-                        item.add(link);
+        add(
+                new ListView<>("groups", CatalogPages.GROUPS) {
+
+                    @Override
+                    protected void populateItem(ListItem<CatalogPages.Group> group) {
+                        group.add(new Label("groupTitle", group.getModelObject().title()));
+                        group.add(
+                                new ListView<>("examples", group.getModelObject().examples()) {
+
+                                    @Override
+                                    protected void populateItem(
+                                            ListItem<CatalogPages.Example> item) {
+                                        var example = item.getModelObject();
+                                        item.add(
+                                                AttributeModifier.replace(
+                                                        "data-catalog-search",
+                                                        example.title()
+                                                                + " "
+                                                                + example.description()));
+                                        var link =
+                                                new BookmarkablePageLink<Void>(
+                                                        "link",
+                                                        example.page(),
+                                                        CatalogPages.preferences(parameters));
+                                        link.add(new Label("label", example.title()));
+                                        if (current == example.page())
+                                            link.add(
+                                                    AttributeModifier.replace(
+                                                            "aria-current", "page"));
+                                        item.add(link);
+                                    }
+                                });
                     }
                 });
-            }
-        });
     }
+
+    private final Class<? extends Page> current;
+    private final PageParameters parameters;
 }
