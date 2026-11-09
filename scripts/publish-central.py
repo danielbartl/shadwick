@@ -15,14 +15,17 @@ BASE_URL = 'https://central.sonatype.com/api/v1/publisher'
 def validate_status(status, deployment, version):
     if status.get('deploymentId') != deployment:
         raise ValueError('Central returned a different deployment ID')
+    state = status.get('deploymentState')
+    if state not in {'VALIDATED', 'PUBLISHING', 'PUBLISHED'}:
+        raise ValueError(f'Deployment is not ready for publication: {state}')
     expected = {f'pkg:maven/dev.jbaby/{artifact}@{version}'
                 for artifact in ['shadwick-parent', 'shadwick']}
     actual = {purl.split('?', 1)[0] for purl in status.get('purls', [])}
     if actual != expected:
-        raise ValueError(f'Deployment coordinates differ from the release: {sorted(actual)}')
-    state = status.get('deploymentState')
-    if state not in {'VALIDATED', 'PUBLISHING', 'PUBLISHED'}:
-        raise ValueError(f'Deployment is not ready for publication: {state}')
+        # Central can omit package metadata after accepting publication. These states never trigger a write.
+        if not actual and state in {'PUBLISHING', 'PUBLISHED'}:
+            return state
+        raise ValueError(f'Deployment coordinates differ from the release ({state}): {sorted(actual)}')
     return state
 
 

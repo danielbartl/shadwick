@@ -15,7 +15,7 @@ Maven dependency and is done: no Node, no Tailwind, no CSS build on their side.
 
 ## Resume point — 2026-11-09
 
-**Current checkpoint: real signed 0.1.0 staging verified; publication in progress.** All 15 jobs in Build
+**Current checkpoint: real signed 0.1.0 staging verified; publication status being confirmed.** All 15 jobs in Build
 42669752005 passed for b55de2946b28d573d3588325879e50a126c37e8c; the annotated v0.1.0 tag points there
 (tag object 199c490f05b24ae9cfa2598bc9a4dbe9b72c890c). Do not move the tag to a later checkpoint commit.
 
@@ -33,7 +33,13 @@ token cannot see the draft release asset. The workflow now takes staging_run and
 from that successful Stage release run using Actions read permission, without broadening repository access.
 Use staging_run=42673293180, tag=v0.1.0 and deployment=37d2866e-ca38-4371-b5ea-bb8dfd5ad999.
 Publish validated release (publish.yml) is being run in status-only mode for that exact tag/deployment.
-After its coordinates/status check passes, publish that SAME deployment with publish=true. Then verify clean
+Status-only run 42675513209 succeeded and reported VALIDATED with the exact parent/library coordinates and
+no errors/warnings. Publish run 42675715655 then failed on an empty package list during status handling; a
+follow-up status-only run 42676141786 had the same empty-list check failure. Do NOT send another blind publish
+request: the original request may already have been accepted. The helper now allows missing package metadata
+only for PUBLISHING/PUBLISHED states, which never trigger a publish write, and retains strict coordinate checks
+for VALIDATED and every response that actually reports coordinates. Three new tests make 26 tooling tests;
+all pass. Run status-only first with the corrected helper to see the actual deployment state, then verify clean
 Maven resolution of parent/library, finalize the draft GitHub release with published notes, update availability
 text and move development to the next snapshot. The helper handles PUBLISHING/PUBLISHED retries without a
 second publish request. All release actions remain authorized; do not ask for renewed permission or credentials.

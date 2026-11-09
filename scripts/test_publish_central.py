@@ -58,6 +58,25 @@ class PublicationChecksTest(unittest.TestCase):
             central.publish_deployment(request, DEPLOYMENT, '0.1.0', publish=True, pause=Mock(), attempts=2)
         self.assertEqual(request.call_count, 3)
 
+    def test_missing_metadata_after_publication_is_accepted_does_not_repeat_the_write(self):
+        publishing = {**status('PUBLISHING'), 'purls': []}
+        published = {**status('PUBLISHED'), 'purls': []}
+        request = Mock(side_effect=[status(), None, publishing, published])
+        result = central.publish_deployment(request, DEPLOYMENT, '0.1.0', publish=True, pause=Mock())
+        self.assertEqual(result['deploymentState'], 'PUBLISHED')
+        self.assertEqual([call.args[0] for call in request.call_args_list].count(f'/deployment/{DEPLOYMENT}'), 1)
+
+    def test_retry_with_missing_metadata_only_reads_an_already_publishing_deployment(self):
+        request = Mock(side_effect=[{**status('PUBLISHING'), 'purls': []}, status('PUBLISHED')])
+        central.publish_deployment(request, DEPLOYMENT, '0.1.0', publish=True)
+        self.assertTrue(all(call.args[0].startswith('/status?') for call in request.call_args_list))
+
+    def test_reported_wrong_coordinates_are_rejected_even_during_publication(self):
+        request = Mock(return_value=status('PUBLISHING', version='0.2.0'))
+        with self.assertRaisesRegex(ValueError, 'coordinates differ'):
+            central.publish_deployment(request, DEPLOYMENT, '0.1.0', publish=True)
+        self.assertEqual(request.call_count, 1)
+
 
 if __name__ == '__main__':
     unittest.main()
