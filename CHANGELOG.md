@@ -1,9 +1,13 @@
 # Changelog
 
-## 0.1.0 — frozen release candidate (publication pending)
+## Unreleased
 
-Candidate coordinates: `dev.jbaby:shadwick:0.1.0`. The release candidate is frozen at `0.1.0`.
-The Wicket 11 / Java 21 migration is included; Maven Central publication is pending.
+Development continues on `0.2.0-SNAPSHOT`.
+
+## 0.1.0 — 2026-11-09
+
+Published coordinates: `dev.jbaby:shadwick:0.1.0`.
+The initial release includes the Wicket 11 / Java 21 migration.
 
 - Server-rendered Wicket components and behaviors for forms, choices, calendars, overlays, menus, navigation,
   layouts, tables, charts, record displays and feedback.

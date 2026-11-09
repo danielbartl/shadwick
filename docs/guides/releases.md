@@ -1,8 +1,14 @@
 # Release preparation
 
-The frozen first-release candidate is `dev.jbaby:shadwick:0.1.0`, targeting Wicket 11.0.0, Java 21+ and Servlet 6.1+.
-The candidate version is `0.1.0`; nothing is published to Maven Central. The packaging/signing workflow
-uses Java 21, and the planned release tag is `v0.1.0`.
+The first release, `dev.jbaby:shadwick:0.1.0`, is published on Maven Central, targeting Wicket 11.0.0, Java 21+
+and Servlet 6.1+. The packaging/signing workflow uses Java 21; the immutable release tag is `v0.1.0`.
+The review below records the pre-publication freeze. Development now continues on the next snapshot.
+
+The [tagged source](https://github.com/danielbartl/shadwick/tree/v0.1.0) passed the complete
+[Build workflow with 15 jobs](https://github.com/danielbartl/shadwick/actions/runs/42669752005). All five real signatures
+were verified against the public signing key, and all five public Central payloads match the signed staging
+export. A Java 21 consumer resolved the parent and library into an empty Maven repository, compiled the
+`SwAppLayout` and heatmap APIs, and loaded packaged CSS, JavaScript and markup from the released JAR.
 
 ## Migrated platform baseline
 
@@ -13,10 +19,10 @@ Docker, website and release builds. The examples use Spring Boot 4.1.2 / Spring 
 fresh-session/page-store deployment requirements. Native/Ajax forms, serialization, resource loading and strict
 CSP remain part of migration verification.
 
-Parent/child versions are frozen at `0.1.0`, the declared SCM tag is `v0.1.0`, and the output timestamp is
-fixed at `2026-11-09T14:47:43Z`. The release notes and installation examples match the candidate; the Git tag
-has not been created. During this freeze, changes are limited to reviewed release-blocking fixes. The metadata
-gate deliberately rejects snapshots and requires Wicket 11+ / Java 21+ / Servlet 6.1+ before staging the first release.
+At the freeze, parent/child versions were `0.1.0`, the declared SCM tag was `v0.1.0`, and the output timestamp
+was fixed at `2026-11-09T14:47:43Z`. The tag now preserves that reviewed source. During the freeze, changes
+were limited to reviewed release-blocking fixes. The metadata gate rejects snapshots and requires
+Wicket 11+ / Java 21+ / Servlet 6.1+ before staging.
 
 ## Frozen candidate review — 9 November 2026
 
@@ -33,25 +39,24 @@ to exclude pages left by earlier builds.
 | Verification | Result |
 | --- | --- |
 | Java 21 and Java 25 release builds | 1,396 JVM tests pass on each JDK: 1,218 library and 178 examples. |
-| Release tooling | All 23 Python checks pass; metadata, binary, sources and Javadoc checks pass. |
+| Release tooling | All 26 Python checks pass; metadata, binary, sources and Javadoc checks pass. |
 | Documentation | All 43 Node tests pass; the generated 68-page site passes its checks. |
 | Packaged consumer | An external Java 21 consumer compiles against the exported JAR, renders heatmap/radial charts, round-trips its page and serves packaged CSS/JavaScript over Wicket resource URLs. |
 | Signing rehearsal | The parent/library bundle passes payload/checksum checks and verification of all five detached signatures, using a disposable test key with uploads disabled. The test key was removed. |
 
 The preceding migration run passed 249 focused Chromium/Firefox cases and a real Java 21 Docker smoke test.
-Those results cover the production implementation retained by this freeze; the complete browser CI job must
-still pass for the final committed candidate. Disposable-key output is not a publishable signed release.
+The complete browser CI job subsequently passed for the tagged release commit. The disposable-key rehearsal
+was followed by validated real-key staging; the disposable-key bundle was not published.
 
-The remaining release steps are to commit/push the candidate, obtain successful full CI for that commit,
-configure real signing/Central credentials, create the tag, stage and inspect the real signed deployment, then
-publish. This review did not create a Git tag, upload artifacts or publish the release.
+At review completion, commit/push, full CI, credentials, tagging, staging and publication were still pending.
+Those steps were completed afterward for the published 0.1.0 release. The review itself created no tag or upload.
 
 The first full candidate CI run subsequently passed 4,743 of 4,744 browser cases. A narrow German/RTL tooltip
 assertion in Firefox exposed a sizing bug: wider axis glyphs left the tooltip too little of the plot width and
 wrapped ordinary currency values unnecessarily. Cartesian tooltips now use the full chart-width limit,
 including its axis area; long values still wrap. A wider-axis regression reproduces the old failure locally
 in both browsers. The complete suite runs across nine showcase skin jobs and four component-class shards, with the failing
-case checked first and diagnostic reports retained. Tagging still requires successful full CI for the fix.
+case checked first and diagnostic reports retained. The tagged fix passed the complete 15-job Build workflow before staging.
 
 ## Published scope
 

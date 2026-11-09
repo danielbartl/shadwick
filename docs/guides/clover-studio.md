@@ -11,8 +11,8 @@ catalog is at `/components` for focused API examples with their Java and markup.
 From the repository root:
 
 ```sh
-./mvnw -B package
-java -jar shadwick-examples/target/shadwick-examples-0.1.0.jar
+./mvnw -B install -pl shadwick-core -am -DskipTests
+./mvnw -B -pl shadwick-examples spring-boot:run
 ```
 
 Open `http://localhost:8080/`. The `PORT` environment variable changes the server port.

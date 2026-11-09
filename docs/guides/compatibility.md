@@ -1,8 +1,7 @@
 # Compatibility
 
-Shadwick's first release is being prepared. The frozen release candidate is `0.1.0`; it is not yet on Maven Central.
-The development baseline is now Wicket 11 and Java 21; release publication remains a separate step.
-The candidate API is recorded and checked during the normal Maven test run.
+Shadwick `0.1.0` is published on Maven Central, with a Wicket 11 / Java 21 baseline.
+The released public/protected API is recorded and checked during the normal Maven test run.
 
 ## Java and Wicket
 
@@ -30,7 +29,7 @@ the Docker build/runtime and release/site workflows use Java 21. The library rem
 explains additional changes for applications using Wicket integrations. In particular, Wicket 11's authenticated
 cryptography cannot decrypt Wicket 10 encrypted URLs or stored pages. Deploy with fresh sessions/page stores and
 regenerate encrypted links; do not mix Wicket 10 and 11 artifacts or expect serialized pages to cross the upgrade.
-Shadwick's public/protected declarations remain checked by the existing candidate baseline.
+Shadwick's public/protected declarations remain checked by the existing 0.1 baseline.
 
 Shadwick fields retain server-side inline validation: their common input configuration removes Wicket 11's
 automatically derived native `required`/`pattern` attributes and label-derived placeholder. Explicit placeholders
@@ -40,7 +39,7 @@ assigned with `setMarkupId`. Native skip-link fragments still support escaped Un
 
 ## Java API
 
-The candidate baseline includes public types, constructors, methods and fields, plus protected subclass hooks.
+The 0.1 baseline includes public types, constructors, methods and fields, plus protected subclass hooks.
 It records generic signatures, superclass/interface relationships, enum order, record components and scalar
 constant values such as `CONTENT_ID`. Compiler-generated bridges and private/package-private implementation
 classes are excluded. Public low-level utilities are included so their removal also receives a review.

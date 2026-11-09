@@ -8,17 +8,16 @@ The website build renders these Markdown sources at `/docs/` in the existing Git
 The website adds API references generated from the [Java API source](../shadwick-core/src/main/java/dev/jbaby/shadwick/).
 Those sources provide declared constructors, methods and hooks when reading the Markdown directly.
 
-The pre-release component collection is implemented, including compound and numeric fields, connected actions,
-record details, timelines, lazy panels, tags, avatar groups and process steps. The project is a
-locally installable `0.1.0` release candidate; the Wicket 11 / Java 21 migration is verified and publication is pending. See
-[Compatibility](guides/compatibility.md) for the candidate API and Java/Wicket requirements.
+The initial component collection includes compound and numeric fields, connected actions,
+record details, timelines, lazy panels, tags, avatar groups and process steps. Shadwick `0.1.0` is available from Maven Central with Wicket 11 and Java 21+. See
+[Compatibility](guides/compatibility.md) for the released API and Java/Wicket requirements.
 
 ## Getting started
 
-- [Release preparation](guides/releases.md) — Candidate artifacts, signing and manual Central staging.
+- [Release preparation](guides/releases.md) — Release artifacts, signing, Central staging and publication.
 - [Installation](guides/installation.md) — Install Shadwick, configure Wicket and run your first form.
 - [Wicket integration](guides/wicket-integration.md) — Models, markup ownership, Ajax, forms, resources and application responsibilities.
-- [Compatibility](guides/compatibility.md) — Java/Wicket requirements, the candidate API, stored pages and browser coverage.
+- [Compatibility](guides/compatibility.md) — Java/Wicket requirements, the released API, stored pages and browser coverage.
 - [Agent guidance](guides/agent-guidance.md) — Use the portable coding skill, working templates and machine-readable guides.
 - [Clover Studio](guides/clover-studio.md) — Run the connected agency workspace and try the project-to-payment journey.
 - [Skins](guides/skins.md) — Choose from nine geometries with shared light and dark color tokens.

@@ -2,8 +2,8 @@
 
 Built against Wicket 11.0.0 with Java 21 as the minimum and Jakarta Servlet 6.1+ at runtime. Keep Wicket modules aligned with the version declared in
 the [project POM](https://github.com/danielbartl/shadwick/blob/main/pom.xml).
-Read [Compatibility](./compatibility.md) for the candidate API and stored-page contracts. Until the first release,
-install it locally with `./mvnw install`, then:
+Read [Compatibility](./compatibility.md) for the released API and stored-page contracts.
+Shadwick `0.1.0` is available from Maven Central. Add the dependency:
 
 ```xml
 <dependency>
@@ -53,8 +53,8 @@ component resources and behavior, not an HTTP server or authentication system.
 From this repository:
 
 ```sh
-./mvnw -B verify
-java -jar shadwick-examples/target/shadwick-examples-0.1.0.jar
+./mvnw -B install -pl shadwick-core -am -DskipTests
+./mvnw -B -pl shadwick-examples spring-boot:run
 ```
 
 Open `http://localhost:8080`. The examples have skin, appearance and language controls. Their demo data is for

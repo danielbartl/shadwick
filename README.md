@@ -14,16 +14,16 @@ renaming `Oat` to `Sw`.
 > **Status: Forms, overlays, app shell, disclosures, attachment displays and data tables implemented.** Buttons, button groups/split buttons, native input fields, custom selects, comboboxes, calendars/date pickers, month views, SVG charts, choices, toggles,
 > freeform tag inputs, input groups, dialogs, menus, toasts, layouts, tabs, accordions, collapsibles, attachment cards/galleries, sortable/editable data tables with CSV export, row details and column choices, pagination, description lists, timelines, lazy-loaded panels, avatar groups, steps indicators, display components and feedback,
 > in nine skins (vega, lyra, nova, maia, mira, luma, rhea, sera, sketch), light and dark. Standalone and embedded CSS bundles. Busy buttons, progress/meter controls and star ratings. Built-in messages in nine languages.
-> Not yet on Maven Central.
+> Available on Maven Central as `dev.jbaby:shadwick:0.1.0`.
 
 Read the [component documentation](docs/README.md) for focused guides, matching markup, accessibility notes and
 API references generated from the Java source. The existing README anchors below link to those guides.
 
-The pre-release component shortlist is complete. Try the new [quote fields](https://shadwick-production.up.railway.app/form-completion),
+The initial component collection is available. Try the new [quote fields](https://shadwick-production.up.railway.app/form-completion),
 [button groups](https://shadwick-production.up.railway.app/button-groups), [record details and activity](https://shadwick-production.up.railway.app/record-display),
 [lazy panels](https://shadwick-production.up.railway.app/lazy-load), [freeform tags](https://shadwick-production.up.railway.app/tag-input),
 [avatar groups](https://shadwick-production.up.railway.app/avatar-groups) and [steps indicator](https://shadwick-production.up.railway.app/steps)
-in the live catalog. The release candidate is frozen at `0.1.0`. The Wicket 11 / Java 21 migration is included; Maven Central publication is pending.
+in the live catalog. Shadwick `0.1.0` is published on Maven Central, including the Wicket 11 / Java 21 migration.
 See [release preparation](docs/guides/releases.md) and the [changelog](CHANGELOG.md).
 
 The examples build their initial component trees in `onInitialize()`, with named methods for forms, fields and
@@ -40,7 +40,7 @@ source-derived API references. No agent configuration is changed by this reposit
 ## Getting started
 
 Built against Wicket 11.0.0 with Java 21 as the minimum and Jakarta Servlet 6.1 at runtime. Read [Compatibility](docs/guides/compatibility.md) for the
-candidate API and stored-page contracts. Until the first release, install it locally with `./mvnw install`, then:
+released API and stored-page contracts. Add the published Maven dependency:
 
 ```xml
 <dependency>
@@ -368,8 +368,8 @@ jar ships only the finished CSS.
 Run the showcase to explore the components with skin, light/dark and language controls:
 
 ```sh
-./mvnw install -DskipTests
-java -jar shadwick-examples/target/shadwick-examples-0.1.0.jar
+./mvnw -B install -pl shadwick-core -am -DskipTests
+./mvnw -B -pl shadwick-examples spring-boot:run
 ```
 
 Open **http://localhost:8080/** for **Clover Studio**, a working agency workspace: create and edit

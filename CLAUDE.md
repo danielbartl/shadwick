@@ -15,6 +15,53 @@ Maven dependency and is done: no Node, no Tailwind, no CSS build on their side.
 
 ## Resume point — 2026-11-09
 
+**Current checkpoint: Shadwick 0.1.0 is published and verified. Development is 0.2.0-SNAPSHOT / SCM HEAD.**
+The immutable annotated v0.1.0 tag points to b55de2946b28d573d3588325879e50a126c37e8c (tag object
+199c490f05b24ae9cfa2598bc9a4dbe9b72c890c). Both dev.jbaby:shadwick-parent:0.1.0 and dev.jbaby:shadwick:0.1.0
+are publicly available on Maven Central. The public GitHub release is
+https://github.com/danielbartl/shadwick/releases/tag/v0.1.0 (published 2026-11-09T18:54:25Z, not a draft/prerelease).
+Do not retag, restage or republish this immutable version.
+
+Release Build 42669752005 passed all 15 jobs: Java 21/25 with 1396 JVM cases each (1218 core / 178 examples),
+all nine showcase skin jobs and all four automatically partitioned component browser jobs. Full browser coverage
+was retained. The final narrow embedded RTL tooltip fix bounds Cartesian tooltips to their complete chart
+container, including the y-axis area. A widened-axis regression fails in both engines before the fix and passes
+afterward; no assertion was weakened or public API changed. API baseline SHA256 remains
+0cbd0737d2cd1da9b073c6ada2a100f80863691331adb71d02433dec4330ce4d, without regeneration during release fixes.
+
+Stage run 42673293180 succeeded on attempt 2 with real credentials/signing. All five real signatures verified
+against public key 2C2AD8BB3979FE4A4E2269241EF738AE00E644CF fetched from keys.openpgp.org; no private key was
+copied to local verification. The signed bundle, all five reference payloads/checksums and the exact source POMs
+match. Central deployment 37d2866e-ca38-4371-b5ea-bb8dfd5ad999 is PUBLISHED (status run 42677470483).
+All five public Maven Central payloads match the verified staging bytes. A Java 21 consumer in a completely
+empty Maven repository resolved the parent/library, compiled SwAppLayout and heatmap APIs, loaded CSS/JS/markup
+from the released JAR and confirmed it was not using reactor classes. Records: target/real-staging-verification.json,
+target/central-availability.json, target/central-consumer-verification.json; source paths under /tmp/shadwick-real-*
+and /tmp/shadwick-central-*. All seven assets are attached to the public GitHub release.
+
+The release survived two infrastructure/tooling issues without duplicate uploads/publication: GitHub's Actions
+outage caused staging attempt 1 to fail before any job; retrying the same run succeeded. The publication workflow
+now reads the successful Stage artifact with Actions read permission because draft-release assets require more
+access. Central drops package metadata during PUBLISHING/PUBLISHED; the helper retains exact coordinate checks
+before any VALIDATED publish write and only polls/reads already publishing or published deployments. One publish
+request was made; subsequent requests were status-only. Nine publication tests and three sharding tests bring
+the tooling suite to 26 tests, all passing. The old failed publication run reflects the polling issue, not a failed release.
+
+README, installation/compatibility/release/Studio guides, changelog, release notes, docs chip, landing setup and
+machine-readable availability now describe published 0.1.0. Parent/child versions are 0.2.0-SNAPSHOT / SCM HEAD;
+published dependency examples stay 0.1.0. Examples startup commands use core install + spring-boot:run, avoiding
+version-dependent filenames. Snapshot verification passes 1396 JVM tests on Java 21; the documented startup
+command passed health/catalog/charts on an owned ephemeral port and its process was stopped. All 43 Node docs
+tests, 26 Python checks and generated 68-page site checks pass. Normal Website/Railway integrations track main;
+inspect the publication commit's deployments when resuming. Keep signing/Central credentials in repository secrets.
+
+The latest component question was answered: OatAppLayout's counterpart is dev.jbaby.shadwick.components.SwAppLayout,
+documented in docs/components/app-layout.md and additionally compiled by the public Central consumer check.
+Initial release publication is complete. Future work belongs to the next snapshot and user-selected roadmap increments;
+calendar heatmaps, custom/diverging bands and stacked radial series are later scope, not additions to 0.1.0.
+
+## Previous publication execution checkpoint — 2026-11-09
+
 **Current checkpoint: real signed 0.1.0 staging verified; publication status being confirmed.** All 15 jobs in Build
 42669752005 passed for b55de2946b28d573d3588325879e50a126c37e8c; the annotated v0.1.0 tag points there
 (tag object 199c490f05b24ae9cfa2598bc9a4dbe9b72c890c). Do not move the tag to a later checkpoint commit.
