@@ -126,6 +126,11 @@ class ChartFormatBrowserTest {
             assertThat(c.locator(".sw-chart-tooltip-label")).hasText("01.04.2026");
             assertThat(c.locator(".sw-chart-tooltip-value")).hasText(Pattern.compile("12\\.345,67\\s*€"));
             tooltipFits(c);
+            // Embedded hosts can use wider axis glyphs; the tooltip may also use the chart's axis area.
+            var axis = c.locator(".sw-chart-y-axis");
+            axis.evaluate("n=>n.style.letterSpacing='1.5px'");
+            tooltipFits(c);
+            axis.evaluate("n=>n.style.removeProperty('letter-spacing')");
             assertThat(c.locator("[data-chart-status]")).containsText("12.345,67");
             plot.press("ArrowLeft"); assertThat(c.locator(".sw-chart-tooltip-item")).hasCount(0);
             assertThat(c.locator("[data-chart-status]")).hasText("01.05.2026");

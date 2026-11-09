@@ -15,7 +15,7 @@ Maven dependency and is done: no Node, no Tailwind, no CSS build on their side.
 
 ## Resume point — 2026-11-09
 
-**Current blocker: verify the content-width fix for the CI-only tooltip failure.** Candidate Build run
+**Current blocker: verify the full-chart boundary fix for the tooltip failure.** Candidate Build run
 42640666017 completed with 4744 browser cases, 4743 passing and ChartFormatBrowserTest's German/RTL embedded
 Firefox case failing at its first tooltip sizing assertion (line 119). It is the same case as the previous
 7d578c7 run. Local Chromium/Firefox rechecks pass; do not treat that as clearing the CI failure. No v0.1.0 tag,
@@ -35,11 +35,17 @@ onto two lines. The screenshot confirms actual wrapping and excessive name fragm
 loading race or an assertion tolerance issue. Reports are in /tmp/shadwick-tooltip-ci-artifacts and the local
 comparison is /tmp/shadwick-tooltip-local-values.log.
 
-The CSS fix promotes width:max-content from the horizontal-only tooltip rule to the shared tooltip rule, keeping
-the existing max-width bounds and long-value wrapping. There is no Java/API change or relaxed assertion.
-Fresh Java 21 release verification passes all 1396 JVM cases and archive checks; 23 Python tests pass. All 16
-ChartFormatBrowserTest cases pass locally, then the fix needs a complete successful parallel CI run before
-tagging/staging. All four real release secrets are available. The old automation-only Build 42653560650 was
+The first width:max-content change (0484eb4 / Build 42668223639) still fails the same CI case with identical
+geometry: the tooltip is already at its plot-width limit because the y-axis has wider glyphs on that host.
+The corrected CSS makes the Cartesian .sw-chart-container an inline query container and bounds its tooltip
+to that full chart width, including the axis area. Horizontal charts keep their existing plot query container;
+non-Cartesian tooltip rules are restored to their original behavior. No Java/API change or relaxed assertion.
+The existing German/RTL case now also widens the axis glyph spacing. That regression fails in BOTH local engines
+before this boundary fix (/tmp/shadwick-tooltip-wide-axis-before.log) and passes in both afterward
+(/tmp/shadwick-tooltip-wide-axis-after.log), including existing long-value/Ajax checks. This local reproduction
+supersedes reliance on the earlier ordinary-font pass. The 23 tooling tests and actionlint pass; refresh release
+verification/full parallel CI for this corrected candidate before tagging/staging. All four real release
+secrets are available. The old automation-only Build 42653560650 was
 cancelled because its browser implementation was superseded by the confirmed failure/diagnostic run.
 
 Post-publication availability edits are prepared ONLY in a temporary copy, not main:

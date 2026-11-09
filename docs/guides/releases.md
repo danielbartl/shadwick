@@ -47,9 +47,10 @@ configure real signing/Central credentials, create the tag, stage and inspect th
 publish. This review did not create a Git tag, upload artifacts or publish the release.
 
 The first full candidate CI run subsequently passed 4,743 of 4,744 browser cases. A narrow German/RTL tooltip
-assertion in Firefox exposed a content-sizing bug: the tooltip shrank enough to wrap ordinary currency values
-unnecessarily. Tooltips now use their content width within the existing chart-width limit; long values still
-wrap. The complete suite runs across nine showcase skin jobs and four component-class shards, with the failing
+assertion in Firefox exposed a sizing bug: wider axis glyphs left the tooltip too little of the plot width and
+wrapped ordinary currency values unnecessarily. Cartesian tooltips now use the full chart-width limit,
+including its axis area; long values still wrap. A wider-axis regression reproduces the old failure locally
+in both browsers. The complete suite runs across nine showcase skin jobs and four component-class shards, with the failing
 case checked first and diagnostic reports retained. Tagging still requires successful full CI for the fix.
 
 ## Published scope
