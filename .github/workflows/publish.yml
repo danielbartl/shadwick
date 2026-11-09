@@ -1,0 +1,79 @@
+name: Publish validated release
+
+on:
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: Existing staged release tag, for example v0.1.0
+        required: true
+        type: string
+      deployment:
+        description: Validated Central deployment UUID reported by Stage release
+        required: true
+        type: string
+      publish:
+        description: Publish after checking the deployment; leave false to inspect status only
+        default: false
+        type: boolean
+
+permissions:
+  contents: read
+  actions: read
+
+concurrency:
+  group: publish-release-${{ inputs.tag }}
+  cancel-in-progress: false
+
+jobs:
+  publish:
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+          fetch-depth: 0
+
+      - name: Check publication helpers
+        run: python3 -m unittest discover -s scripts -p test_publish_central.py
+
+      - name: Check the staged release and its completed CI
+        env:
+          RELEASE_TAG: ${{ inputs.tag }}
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+        run: |
+          set -euo pipefail
+          git worktree add --detach "$RUNNER_TEMP/release-source" "refs/tags/$RELEASE_TAG"
+          python3 "$RUNNER_TEMP/release-source/scripts/check-release.py" metadata --tag "$RELEASE_TAG"
+          release_sha=$(git rev-parse "refs/tags/$RELEASE_TAG^{commit}")
+          git merge-base --is-ancestor "$release_sha" origin/main
+          gh api --method GET "repos/$GH_REPO/actions/workflows/build.yml/runs" \
+            -f head_sha="$release_sha" -f event=push -f branch=main -f per_page=100 \
+            --jq '.workflow_runs | sort_by(.created_at) | last | select(.status == "completed" and .conclusion == "success") | .id' > "$RUNNER_TEMP/publish-ci-run"
+          test -s "$RUNNER_TEMP/publish-ci-run"
+          gh release download "$RELEASE_TAG" --pattern central-bundle.zip --dir "$RUNNER_TEMP/staged"
+          python3 "$RUNNER_TEMP/release-source/scripts/check-release.py" bundle --bundle "$RUNNER_TEMP/staged/central-bundle.zip"
+
+      - name: Check or publish the validated Central deployment
+        env:
+          CENTRAL_USERNAME: ${{ secrets.CENTRAL_USERNAME }}
+          CENTRAL_PASSWORD: ${{ secrets.CENTRAL_PASSWORD }}
+          RELEASE_TAG: ${{ inputs.tag }}
+          CENTRAL_DEPLOYMENT: ${{ inputs.deployment }}
+          PUBLISH_RELEASE: ${{ inputs.publish }}
+        run: |
+          set -euo pipefail
+          test -n "$CENTRAL_USERNAME"
+          test -n "$CENTRAL_PASSWORD"
+          arguments=(--deployment "$CENTRAL_DEPLOYMENT" --version "${RELEASE_TAG#v}")
+          if [ "$PUBLISH_RELEASE" = true ]; then arguments+=(--publish); fi
+          python3 scripts/publish-central.py "${arguments[@]}" > "$RUNNER_TEMP/central-publication.json"
+          cat "$RUNNER_TEMP/central-publication.json" >> "$GITHUB_STEP_SUMMARY"
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: central-publication-${{ inputs.tag }}
+          path: ${{ runner.temp }}/central-publication.json
+          if-no-files-found: error

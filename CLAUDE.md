@@ -15,15 +15,27 @@ Maven dependency and is done: no Node, no Tailwind, no CSS build on their side.
 
 ## Resume point — 2026-11-09
 
-**Current checkpoint: release execution authorized; candidate ready to commit/push and run full CI.** The user
-accepted the next release steps after the local freeze. GitHub access is available, origin/main matches the
-local parent commit, and v0.1.0 does not exist remotely. The repository currently has none of the four required
-release secrets; no matching release environment variables or user Maven settings are available locally.
-The user has been asked to configure Central publishing credentials and the real signing key securely in
-GitHub repository secrets while CI runs. Do not print or request secret values in chat. Stage only after full
-Build CI passes for the final candidate commit and real credentials/public key setup is complete. Tagging,
-staging and publication are authorized by the user's request; additional permission is not needed within that
-scope. If credentials remain unavailable, complete commit/push/CI and clearly report the remaining dependency.
+**Current checkpoint: 0.1.0 release execution in progress.** The frozen candidate was committed/pushed as
+97f08a3b06ed7d94e12efe48a0dda3e31c7461b3. Build run 42640666017 has successful Java 21/25 jobs; its full
+browser job is still running (the preceding browser run took over two hours). Website run 42640666016 passed,
+Railway deployed the same commit successfully, and live landing/release docs/health/new chart markup/CSP were
+verified. The preceding CI failure's exact ChartFormat keyboard/touch test also passes locally in Chromium
+and Firefox; log /tmp/shadwick-release-chart-format.log. Worktree was clean after the candidate push.
+
+The user has now configured all four required secrets; their names/updated timestamps were verified through
+GitHub. Values stay in Actions. Stage only after the full Build workflow passes for the candidate SHA; do not
+tag a newer automation-only commit instead. Tagging, staging and publication are authorized by the user's
+request; further permission is not needed within that scope. No v0.1.0 tag or Central upload exists yet.
+
+A companion Publish validated release workflow uses repository credentials inside Actions for the final Portal
+publication. It checks CI for the immutable tagged source and its staged bundle, checks deployment ID and exact
+parent/library coordinates, supports status-only inspection, and publishes once with bounded status polling.
+Six Python tests cover mismatches, unvalidated/failed states, status-only operation, retries and polling timeout;
+all 20 release-tooling tests pass. These changes affect automation/docs only; the frozen candidate SHA stays
+97f08a3. Before publishing, inspect the actual signed staging result, use the real deployment UUID from that
+run, and run the publication workflow in status-only mode. Verify Central resolution, finalize GitHub release,
+then update public availability text and move development to the next snapshot. Local status files in
+target/release-{review,execution}.json are ignored generated records and may be older than GitHub's live state.
 
 ## Previous local freeze checkpoint — 2026-11-09
 

@@ -132,6 +132,13 @@ The Central configuration uses `autoPublish=false`. The workflow stages a valida
 is a separate action in Central Portal. Inspect that deployment's coordinates, signatures and contents before
 publishing. Do not rerun a successful staging job simply to obtain a second deployment; use its retained result.
 
+The **Publish validated release** workflow can perform the publication with the existing Central repository
+secrets, so credentials stay inside GitHub Actions. Run it from `main` with the staged tag and deployment UUID;
+leave `publish=false` first to inspect the status. It requires successful CI for the tagged source and the staged
+GitHub release bundle, checks the deployment ID and both exact Maven coordinates, and refuses an unvalidated
+deployment. After inspection, run it with `publish=true`. It publishes once and waits for `PUBLISHED`; retrying a
+deployment already publishing or published does not submit a second publication request.
+
 After Central reports publication, resolve both coordinates from a fresh local Maven repository to verify
 availability. Finalize the draft GitHub release from the existing tag using the versioned release notes and the retained
 artifacts. Update the candidate/not-on-Central language in README, installation/compatibility/docs index, landing
