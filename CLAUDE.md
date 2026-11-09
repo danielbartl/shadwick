@@ -15,7 +15,7 @@ Maven dependency and is done: no Node, no Tailwind, no CSS build on their side.
 
 ## Resume point — 2026-11-09
 
-**Current blocker: full browser CI found one reproducible CI-only tooltip failure.** Candidate Build run
+**Current blocker: verify the content-width fix for the CI-only tooltip failure.** Candidate Build run
 42640666017 completed with 4744 browser cases, 4743 passing and ChartFormatBrowserTest's German/RTL embedded
 Firefox case failing at its first tooltip sizing assertion (line 119). It is the same case as the previous
 7d578c7 run. Local Chromium/Firefox rechecks pass; do not treat that as clearing the CI failure. No v0.1.0 tag,
@@ -28,8 +28,19 @@ discovered component-class shards, preserving every existing browser class and a
 class alone ran 3653 cases in 5587 seconds; the total run took 2h33m. The narrow failing case runs first in one
 shard for quick diagnostics; failure reports/screenshots are retained. No coverage was disabled or relaxed.
 Three sharding tests make 23 release-tooling tests; actionlint and those tests pass. Production code/API is still
-unchanged by these diagnostics. Next: collect the fast CI measurements, fix the actual layout or timing cause,
-then require the full parallel Build run to pass before tagging/staging. All four release secrets are available.
+unchanged by those diagnostics. Diagnostic commit 1cef6a3 / Build 42667028727 reproduced the failure immediately
+in components-0 (job 129333325574), rather than waiting for the serial full run. CI's geometry shows fonts loaded,
+no overlap/overflow, but a 151.97px tooltip and 85.97px value box that wraps the ordinary 12.345,67 NBSP euro value
+onto two lines. The screenshot confirms actual wrapping and excessive name fragmentation; this is not a font
+loading race or an assertion tolerance issue. Reports are in /tmp/shadwick-tooltip-ci-artifacts and the local
+comparison is /tmp/shadwick-tooltip-local-values.log.
+
+The CSS fix promotes width:max-content from the horizontal-only tooltip rule to the shared tooltip rule, keeping
+the existing max-width bounds and long-value wrapping. There is no Java/API change or relaxed assertion.
+Fresh Java 21 release verification passes all 1396 JVM cases and archive checks; 23 Python tests pass. All 16
+ChartFormatBrowserTest cases pass locally, then the fix needs a complete successful parallel CI run before
+tagging/staging. All four real release secrets are available. The old automation-only Build 42653560650 was
+cancelled because its browser implementation was superseded by the confirmed failure/diagnostic run.
 
 Post-publication availability edits are prepared ONLY in a temporary copy, not main:
 /tmp/shadwick-post-publication.py and /tmp/shadwick-published-docs.json. The temporary 68-page site checks pass.

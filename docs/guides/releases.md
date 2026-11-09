@@ -33,7 +33,7 @@ to exclude pages left by earlier builds.
 | Verification | Result |
 | --- | --- |
 | Java 21 and Java 25 release builds | 1,396 JVM tests pass on each JDK: 1,218 library and 178 examples. |
-| Release tooling | All 14 Python checks pass; metadata, binary, sources and Javadoc checks pass. |
+| Release tooling | All 23 Python checks pass; metadata, binary, sources and Javadoc checks pass. |
 | Documentation | All 43 Node tests pass; the generated 68-page site passes its checks. |
 | Packaged consumer | An external Java 21 consumer compiles against the exported JAR, renders heatmap/radial charts, round-trips its page and serves packaged CSS/JavaScript over Wicket resource URLs. |
 | Signing rehearsal | The parent/library bundle passes payload/checksum checks and verification of all five detached signatures, using a disposable test key with uploads disabled. The test key was removed. |
@@ -47,8 +47,10 @@ configure real signing/Central credentials, create the tag, stage and inspect th
 publish. This review did not create a Git tag, upload artifacts or publish the release.
 
 The first full candidate CI run subsequently passed 4,743 of 4,744 browser cases. A narrow German/RTL tooltip
-assertion in Firefox remains a release blocker. The complete suite now runs across nine showcase skin jobs
-and four component-class shards, with the failing case checked first and diagnostic reports retained.
+assertion in Firefox exposed a content-sizing bug: the tooltip shrank enough to wrap ordinary currency values
+unnecessarily. Tooltips now use their content width within the existing chart-width limit; long values still
+wrap. The complete suite runs across nine showcase skin jobs and four component-class shards, with the failing
+case checked first and diagnostic reports retained. Tagging still requires successful full CI for the fix.
 
 ## Published scope
 

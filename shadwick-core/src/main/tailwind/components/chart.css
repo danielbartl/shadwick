@@ -45,7 +45,7 @@
   .sw-chart-x-axis:not([data-axis-enhanced]) > [data-native-hidden],.sw-chart-x-axis[data-axis-enhanced] > [data-tick-hidden] { visibility:hidden; }
   .sw-chart-container[data-orientation='horizontal'] { display:block; }
   .sw-chart-plot[data-orientation='horizontal'] { display:grid; grid-template-columns:minmax(0,min(36%,12rem)) minmax(0,1fr); align-items:center; gap:.375rem 1rem; height:auto; container-type:inline-size; }
-  .sw-chart-plot[data-orientation='horizontal'] .sw-chart-tooltip-content { width:max-content; max-width:calc(100cqi - 1rem); }
+  .sw-chart-plot[data-orientation='horizontal'] .sw-chart-tooltip-content { max-width:calc(100cqi - 1rem); }
   .sw-chart-container[data-y-axis='false'] > .sw-chart-plot[data-orientation='horizontal'] { grid-template-columns:minmax(0,1fr); }
   .sw-chart-category { @apply min-w-0 py-1 text-xs text-muted-foreground; overflow-wrap:anywhere; }
   .sw-chart-row { position:relative; min-width:0; }
@@ -65,7 +65,7 @@
   .sw-chart-legend-content[data-align='end'] { justify-content:flex-end; }
   .sw-chart-legend-item { @apply flex min-w-0 items-center gap-1.5; }
   .sw-chart-legend-indicator { @apply size-2 shrink-0; background:var(--sw-series-color); }
-  .sw-chart-tooltip-content { @apply pointer-events-none absolute z-20 grid gap-1.5; inset-block-start:.5rem; inset-inline-end:.5rem; max-width:calc(100% - 1rem); }
+  .sw-chart-tooltip-content { @apply pointer-events-none absolute z-20 grid gap-1.5; inset-block-start:.5rem; inset-inline-end:.5rem; width:max-content; max-width:calc(100% - 1rem); }
   .sw-chart-tooltip-content[hidden] { display:none; }
   .sw-chart-tooltip-label { @apply font-medium; overflow-wrap:anywhere; }
   .sw-chart-tooltip-items { @apply grid gap-1.5; }

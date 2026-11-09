@@ -21,7 +21,7 @@ The Wicket 11 / Java 21 migration is included; Maven Central publication is pend
 - Searchable documentation, a source-backed component catalog, Clover Studio and portable agent guidance/templates.
 - Human-readable lifecycle composition, a reviewed public/protected API baseline and serialization round-trip checks.
 - Wicket 11.0.0 / Java 21 baseline, Java 21/25 CI, Java 21 Docker/runtime builds and Servlet 6.1 hosts; preserved inline validation and explicit placeholders.
-- Corrected narrow embedded RTL chart tooltip sizing; browser coverage for native table controls and label collision handling.
+- Corrected intrinsic chart tooltip sizing in narrow embedded RTL layouts, keeping ordinary currency values on one line and long values contained; browser coverage for native table controls and label collision handling.
 
 Requires Java 21+, Wicket 11.0.0 and Jakarta Servlet 6.1+. The library remains independent of Spring Boot.
 Stored Wicket pages/sessions are not a cross-build migration format. See the
