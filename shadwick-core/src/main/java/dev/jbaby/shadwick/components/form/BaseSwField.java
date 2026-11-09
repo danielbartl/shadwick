@@ -526,6 +526,11 @@ public abstract class BaseSwField<T, C extends FormComponent<T>, F extends BaseS
     private void configureInput() {
         input.setLabel(getLabel());
         input.setOutputMarkupId(true);
+        // Wicket 11 derives native constraints and a placeholder from validators/the label.
+        // Preserve inline server validation and explicit placeholders. Later addToInput
+        // modifiers can still opt into native attributes for an application-owned flow.
+        input.add(AttributeModifier.remove("required"), AttributeModifier.remove("pattern"),
+                AttributeModifier.remove("placeholder"));
         // Link the input to its description and error for screen readers
         input.add(
                 AttributeModifier.replace(

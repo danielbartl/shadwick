@@ -13,7 +13,7 @@ appearance comes from packaged CSS and small component runtimes. Consumers do no
 ## Find the right source
 
 - Start with the application's Java/Wicket versions, dependency configuration and existing base page. The current
-  library targets Java 17+ and Wicket 10. Check the [installation guide](https://danielbartl.github.io/shadwick/docs/guides/installation/index.md)
+  library targets Java 21+, Wicket 11 and Jakarta Servlet 6.1+. Check the [installation guide](https://danielbartl.github.io/shadwick/docs/guides/installation/index.md)
   for current coordinates and availability; do not assume a snapshot is downloadable from Maven Central.
 - Use [component routing](references/components.md) to find a family and its guide. Read only the relevant guide
   and API signatures. The [documentation index](https://danielbartl.github.io/shadwick/llms.txt) links to Markdown

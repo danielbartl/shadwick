@@ -204,6 +204,8 @@ body {
 .ex-page-number { color:var(--muted-foreground); font: .75rem monospace; }
 .ex-page-projects .ex-muted { margin-inline-start:auto; }
 
+.ex-heatmaps { grid-template-columns:repeat(auto-fit,minmax(min(100%,34rem),1fr)); }
+
 .ex-chart-card { min-width:0; padding:1.5rem; border:1px solid var(--border); border-radius:var(--radius); }
 
 /* Locale controls work with native form submission as well as JavaScript. */

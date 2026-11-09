@@ -15,6 +15,400 @@ Maven dependency and is done: no Node, no Tailwind, no CSS build on their side.
 
 ## Resume point — 2026-11-09
 
+**Current checkpoint: release execution authorized; candidate ready to commit/push and run full CI.** The user
+accepted the next release steps after the local freeze. GitHub access is available, origin/main matches the
+local parent commit, and v0.1.0 does not exist remotely. The repository currently has none of the four required
+release secrets; no matching release environment variables or user Maven settings are available locally.
+The user has been asked to configure Central publishing credentials and the real signing key securely in
+GitHub repository secrets while CI runs. Do not print or request secret values in chat. Stage only after full
+Build CI passes for the final candidate commit and real credentials/public key setup is complete. Tagging,
+staging and publication are authorized by the user's request; additional permission is not needed within that
+scope. If credentials remain unavailable, complete commit/push/CI and clearly report the remaining dependency.
+
+## Previous local freeze checkpoint — 2026-11-09
+
+**Current checkpoint: initial 0.1.0 candidate reviewed and frozen locally.** The user accepted the review/freeze
+step after the Wicket 11 migration. Parent and child POM versions are now 0.1.0, declared SCM tag v0.1.0 and
+project.build.outputTimestamp 2026-11-09T14:47:43Z. No Git tag has been created. README, changelog, installation,
+compatibility/release/Studio guides, docs version chip and landing page use 0.1.0 while retaining explicit
+publication-pending status. The existing candidate API baseline passes normally without regeneration; its SHA256
+is 0cbd0737d2cd1da9b073c6ada2a100f80863691331adb71d02433dec4330ce4d. Feature scope and declarations are frozen;
+only reviewed release-blocking fixes belong in this candidate. Chart breadth is later scope.
+
+Review covered the accumulated chart changes, lifecycle composition, snapshots/detachment/serialization,
+Wicket 11 fields and release/archive workflows. Two release tooling gaps were fixed: check-release.py now checks
+the binary JAR's embedded Maven group/artifact/version, and collect removes stale managed candidate exports
+only after checking all entries, retaining/refusing unrelated files. Three regression tests bring the Python
+suite to 14. A clean Javadoc rebuild removes pages left by earlier Java/module layouts in the reused output;
+the signed rehearsal builds in a fresh source copy. No production API, Java or browser implementation changed
+during this review/freeze.
+
+Fresh 0.1.0 release builds pass all 1396 JVM tests on each of Java 21 and 25 (1218 core / 178 examples).
+All 14 Python checks and 43 Node docs tests pass; 68-page site checks pass (65 guides / 180 API types).
+An external Java 21 consumer uses only target/release/shadwick-0.1.0.jar plus dependencies (no source/test class
+directories), compiles public heatmap/radial fluent APIs, renders native markup/data, round-trips its Wicket
+page and fetches three packaged CSS/JS URLs with HTTP 200. Metadata and binary/source/Javadoc checks pass.
+The previous migration's 249 focused browser cases and actual Java 21 Docker smoke remain applicable; this
+freeze did not rerun the full browser CI job.
+
+A separate source copy rehearsed -Prelease,central deploy -DskipUpload=true with a newly generated disposable
+key, empty settings, no Central credentials and local artifact installation skipped. The resulting bundle has
+exactly the five expected parent/library payloads; checksums and all five detached signatures verify. Test key
+material was removed in finally. This is test output, not real release signing or an upload. The Central plugin
+requires online Maven even for bundle-only operation; offline Maven skips its publish goal, so does not produce
+a bundle. Do not use the test bundle for publication. Logs: /tmp/shadwick-freeze-{verify21,verify25,release-tests,
+docs,site,consumer,signing,signing-build,repackage21}.log. Temporary build locations are recorded in
+/tmp/shadwick-freeze-{java25,consumer,signing}.json. Unsigned reference files and SHA256SUMS are in target/release.
+
+All accumulated work remains local and uncommitted. No commit, push, deployment, Git tag or Central publication
+was performed during this task. Next: commit/push, successful full CI for that commit, real signing/Central
+credentials and public key setup, then annotated tag/stage/inspect/publish through the prepared workflow.
+See docs/guides/releases.md and docs/releases/0.1.0.md for the freeze record and release steps.
+
+## Previous Wicket 11 migration checkpoint — 2026-11-09
+
+**Current checkpoint: Wicket 11 / Java migration (implemented and verified locally).** The user explicitly requested
+Wicket 11, Java and any required companion migrations after heatmaps. The parent now aligns Wicket core,
+extensions/tester and transitives to 11.0.0 and compiles all modules with --release 21. Java 21 is the minimum;
+Java 25 remains the second CI/test JDK. Servlet API 6.1.0 was already provided-scope. Existing Spring Boot 4.1.2 /
+Spring 7.0.10 / Tomcat 11.0.27 and JUnit 6 already meet Wicket 11's companion requirements and stay at their
+existing versions. The library still has no Spring dependency. No unrelated dependency or Ajax-engine opt-in.
+Official references checked: https://wicket.apache.org/versions/wicket-11.x/ and the migration guide linked there
+(https://cwiki.apache.org/confluence/spaces/WICKET/pages/462815957/Migration%2Bto%2BWicket%2B11).
+
+The library compiled directly. Behavioral fixes preserve the pre-release field contract: Wicket 11 derives native
+required/pattern attributes and a placeholder from a text field's validators/label; BaseSwField.configureInput now
+removes those defaults before later application behaviors. Required ARIA/server validation, explicit placeholders
+and optional later addToInput native-constraint modifiers remain intact. Two new core tests cover suppression and
+explicit opt-in. Wicket 11 rejects colons in assigned markup IDs; an AppShell fixture now uses results.2026, while
+native escaped Unicode/colon skip-link fragments remain supported. No public/protected declaration changed in this
+migration; the existing candidate API baseline passes normally without regeneration. No LDM detach override,
+removed auth/include class, request-delegate unwrap or old crypt import needed migration in production sources.
+
+Wicket11IntegrationTest adds two examples-module tests with the new ApplicationKeyCryptFactory/CryptoMapper:
+encrypted bookmarkable URLs preserve Unicode parameters, strict CSP and native server-side form validation;
+serialized pages retain Ajax validation and submission callbacks. The fixture uses the default namespace route
+(the framework intentionally leaves mounted bookmarkable URLs readable) and tests stripped production markup.
+Existing model/serialization/native/Ajax and resource tests pass on both JDKs. DocumentationExamplesTest now compiles
+printed Java with --release 21; PublicApiTest enforces classfile major <=65. The build matrix is 21/25; website,
+release staging and both Docker stages use Java 21. Release metadata also rejects Servlet <6.1, alongside the
+existing Java/Wicket gates, with an added negative test. README, changelog, installation/compatibility/form/Studio/
+release/contribution guides, candidate release notes, portable skill, docs chips and landing requirements are updated.
+
+Verification: all 1396 JVM tests pass on Java 21 and Java 25 (1218 core / 178 examples). The four new cases are two
+core field-contract tests and two encrypted-URL/serialized-form integration cases. All 249 focused browser cases
+pass: 241 in the migration regression run plus eight busy-button duplicate/cancellation/transport-failure cases.
+Coverage includes all-skin catalog/form views, Chromium/Firefox native/Ajax forms, multilingual/no-script paths,
+resource loading and CSP, uploads, overlays/feedback/focus, sticky matrix scrolling, chart families, Studio/history/
+local CRUD/download workflows, lazy content and tags. Showcase/Studio skin filtering was vega,sketch; dedicated
+catalog/form parameterizations retain their own coverage. This is the selected migration suite, not a claim that
+the entire CI browser job ran locally. All 43 Node docs tests, 11 Python release-gate tests and 68-page site checks
+pass (65 guides / 180 API types). Binary/source/Javadoc payload checks pass on both JDKs, and unsigned reference
+artifacts were exported to target/release. Current version stays 0.1.0-SNAPSHOT / SCM HEAD.
+
+The real Docker image shadwick:wicket11-migration builds successfully with Temurin 21. A temporary deployment-mode
+container ran on Temurin 21.0.13 as user shadwick, passed /healthz, /, /components, /form and /charts, retained strict
+nonce CSP and served localized dark catalog resources. Its localhost port was ephemeral and the owned container
+was removed in finally; the local image remains available. Existing user servers/containers were not restarted.
+Logs: /tmp/shadwick-wicket11-*.log, including verify21/verify25, browser (241), busy (8), docker/container-smoke,
+docs/site/release-tests/deps/artifacts. Isolated Java 25 build: /tmp/shadwick-wicket11-java25.json.
+
+Keep all accumulated release/chart/migration work local until publication is requested. No tag, push, deployment,
+signing/upload or Central release was created. The migration prerequisite is complete. Next release work: review
+and freeze the candidate, arrange real signing/Central credentials, publish a candidate commit with successful CI,
+then cut/tag/stage/publish 0.1.0 through the prepared manual workflow. Wicket 10 encrypted links and persisted
+pages/sessions cannot cross this upgrade; deployment requires fresh sessions/page stores and regenerated encrypted
+links as documented. Calendar heatmaps, custom/diverging bands, stacked radial series and other chart breadth are
+later scope, outside this migration.
+
+## Previous heatmap checkpoint — 2026-11-09
+
+**Current checkpoint: heatmaps (implemented and verified locally).** The user
+explicitly selected heatmaps after radial charts. SwHeatmapChart<T> binds a row list/model and serializable row
+label extractor; typed HeatmapColumn<T>.of(String/model, valueExtractor) registers ordered numeric columns.
+The native semantic table is both the heatmap and its exact data: SVG tiles sit behind readable value spans,
+with scoped row/column headers, native cell titles, missing-cell aria labels and no duplicate data disclosure.
+Rows/columns preserve input/registration order and duplicate names. Labels must be nonblank; at least one column
+is required, and duplicate registration of the same column instance fails. One-row/column matrices are valid.
+
+One shared five-band sequential palette represents low-to-high numeric values. Automatic bounds include the
+observed extrema and zero, with 0–1 for all-zero/unmeasured inputs. Explicit Number/model ranges must be defined,
+finite, strictly increasing and contain all observations; unlike auto bounds they can exclude zero. Values/bounds
+have magnitude at most 1e100 and may be signed. BigDecimal boundaries/comparisons preserve exact thresholds and
+very small values; intervals are lower-inclusive/upper-exclusive except the final maximum. No clamping, per-row
+normalization or aggregation. Colors use one of five existing chart tokens. Default visible value pills preserve
+text contrast; setShowValues(false) hides values visually but retains their native accessible text. Null cells stay
+empty, with a dashed tile and cross plus localized “Not measured”; observed zero stays known. Empty reports and
+all-unmeasured matrices have distinct native states. Range models detach when released, including swapped/shared
+references. Data/header/range/column-label models detach and measurement extractors read once per slot/request.
+Constructors retain configuration; onInitialize/super plus plainly named helpers own composition/rendering.
+
+A small independent heatmap-chart.js runtime adds one native scroll-region focus stop, pointer/touch cell detail,
+2D clamped arrows (Left/Right follows RTL), Home/End within a row, Control+Home/End across the matrix and Escape.
+Table-backed tooltips/live announcements name the row, column, measurement and original formatted value. Native
+cell titles are removed only while enhanced and restored on cleanup. Ajax/replaced/cloned roots shed listeners
+and duplicate status nodes. CSS keeps cells readable, scrolls matrices locally and retains sticky row headers at
+the logical start; keyboard scroll margins keep cells clear of those headers. Tooltip-disabled matrices keep
+native scrolling, titles and values. All nine skins/language bundles, both CSS bundles and forced-color handling
+are present. Initial embedded-CSS checks caught a Tailwind radius reference; it now uses the library radius token.
+
+The /charts examples cover weekly workload, hidden values, signed changes, long labels with native tooltips,
+tiny/zero/missing reports, one-cell and empty states. Refresh workload matrix changes rows, column/value labels,
+modeled bounds, palette and visible values in one Ajax refresh. Wider heatmap-specific example grids keep the full
+week visible on desktop, while mobile scrolls. README, guide/catalog, landing copy, changelog, candidate release
+notes and the additive API baseline are updated. The chart gallery introduction also includes heatmaps.
+
+Verification: all 1392 JVM tests pass on Java 17 and 25 (1216 core / 176 examples; 21 new heatmap cases). Binary,
+sources and Javadoc checks pass for both builds, including the corrected embedded CSS. The 43 Node docs tests and
+68-page site checks pass (65 guides / 180 API types). All 40 final heatmap browser cases pass: 36 Chromium/Firefox
+skin/light-desktop/dark-mobile axe cases (including desktop column visibility), two embedded 320px RTL keyboard/
+touch/sticky-header/resize/Ajax/cloning/forced-color cases and two German no-script cases. Twelve existing percent/
+radar/radial interaction/native regressions also pass. The first appearance run prompted a wider gallery layout;
+all 40 heatmap cases pass again with the final layout. Desktop/mobile screenshots were reviewed.
+Screenshots: shadwick-examples/target/heatmap-chart-screenshots.
+Logs: /tmp/shadwick-heatmap-*.log; isolated Java 25 build: /tmp/shadwick-heatmap-java25.json. Final browser log:
+/tmp/shadwick-heatmap-browser-final.log. The source-backed gallery layout files changed after full JVM verification;
+both Java 17 and isolated Java 25 artifacts were repackaged with the final resources (package17/package25 logs).
+
+Keep all accumulated chart/release work local until publication is requested. Development remains 0.1.0-SNAPSHOT /
+Java 17 / Wicket 10.11.0 / SCM HEAD. The selected chart-family increments are complete. Next release checkpoint:
+Wicket 11 / Java 21 / Servlet 6.1 migration and compatibility checks before the initial release. Calendar heatmaps,
+diverging/custom thresholds, editable cells, per-row scales, stacked radial series, radar per-dimension maxima,
+bubble sizes, fitted scatter lines and brushes remain later scope.
+
+## Previous radial chart checkpoint — 2026-11-09
+
+**Current checkpoint: radial bar charts (implemented and verified locally).** The user explicitly
+selected radial charts after the completed radar increment. SwRadialChart<T> uses a list model and serializable
+category/value extractors to draw concentric radial bars on one common zero-based scale. Input order puts the first
+row outside; duplicate categories, zeros and nulls keep their ring positions. Arc angle encodes value/max, rather
+than area or a share of an aggregate total. Full circles use two SVG arcs. Start/sweep angles support full, half and
+three-quarter diagrams; RTL mirrors all geometry. Inner-radius/gap fractions, optional rounded caps, track/legend/
+tooltip visibility and per-row palette callbacks are ordinary fluent options. Flat ends are the default; rounded
+caps are decorative and can exaggerate tiny values. Stacked/grouped radial series and center content remain later scope.
+
+Automatic maximum rounds up; Number/model maxima are positive/finite/defined and reject values above the bound.
+Exact decimal validation and ratio calculation preserve bounds and geometry below double range. Measurements are
+finite/nonnegative and at most 1e100. Missing values retain empty native cells and explicit “Not measured” legend/
+tooltip/title text. Measured zero reports draw tracks on automatic 0–1 bounds; entirely unmeasured and empty inputs
+have separate native states. Single rows work as gauges. Shared formatters receive original Numbers and skip nulls;
+all owned models detach, snapshots read each data/extractor slot once and constructor composition follows AGENTS.md:
+configuration in constructors, onInitialize/super plus plainly named private composition/render helpers.
+
+The existing chart.js runtime supplies one plot focus stop, ring/legend hover and touch, Home/End/Escape, RTL
+Left/Right and outer-to-inner Up/Down, exact-table-backed tooltips/live announcements and Ajax/cloning cleanup.
+The only runtime additions in this increment are radial Up/Down support and optional per-cell palette tokens for
+radial tooltip indicators; other charts keep header tokens. Native SVG/full legends/tables work without script.
+All nine language bundles and skin/bundle CSS are present, including forced-color styling. No new runtime or dependency.
+
+The /charts gallery includes full/three-quarter/quiet half-circle comparisons, automatic support hours, measured/
+pending/zero/tiny reports, a single launch gauge and empty/unknown states. Refresh radial report updates categories,
+colors, value header, modeled maximum and sweep through one Ajax replacement. Tiny decimal examples use a custom
+formatter so their precision remains visible. README, chart guide/catalog, landing copy, changelog, candidate release
+notes and the additive API baseline are updated.
+
+Verification: 1371 JVM tests pass on Java 17 and 25 (1195 core / 176 examples; 23 new radial cases), with binary,
+sources and Javadoc checks on both builds. All 43 Node docs tests and 68-page site checks pass (65 guides / 178 API
+types). All 52 Chromium/Firefox browser cases pass: 40 radial cases (36 skin/light-desktop/dark-mobile axe checks,
+two embedded 320px RTL keyboard/touch/resize/Ajax/cloning/forced-color cases, two German no-script cases), plus
+12 existing percent/radar/reference interaction/native regressions. Desktop/mobile screenshots were reviewed;
+full rings, partial sweeps and wrapping legends fit their cards. Screenshots: shadwick-examples/target/radial-chart-screenshots.
+Logs: /tmp/shadwick-radial-*.log; isolated Java 25 build: /tmp/shadwick-radial-java25.json.
+
+Keep all accumulated chart/release work local until publication is requested. Development remains 0.1.0-SNAPSHOT /
+Java 17 / Wicket 10.11.0 / SCM HEAD. The initial release still requires Wicket 11 / Java 21 / Servlet 6.1 migration
+and compatibility checks. Suggested next chart family: heatmaps. Independent per-ring bounds, signed/stacked radial
+scales, center content, per-dimension radar maxima, bubble sizes, fitted scatter lines and brushes are later scope.
+
+## Previous radar chart checkpoint — 2026-11-09
+
+**Current checkpoint: radar charts (implemented and verified locally).** The user selected
+another chart increment after scatter plots. SwRadarChart<T> and RadarSeries<T> compare named series on one ordered
+set of dimensions and a shared zero-based scale. Native SVG polygons use linear radii, equally spaced rings and
+fixed-size dots. A readable HTML dimension key pairs full wrapping names with native-size numbered spokes, including
+RTL. Complete series can fill; missing values leave only adjacent measured edges, including the last/first seam,
+and no fill. Missing values remain empty table cells and announce “Not measured”; measured zeros remain real data.
+
+Automatic scales round up; fixed Number/model maxima reject values above the bound. Exact BigDecimal validation
+rejects negative underflow and bounds hidden by double rounding. Decimal ratios preserve geometry below double
+range. Values are finite/nonnegative and at most 1e100; fixed maxima must also be positive and defined. Empty,
+fewer-than-three-dimension and entirely unmeasured inputs have distinct native states and retain available tables.
+Series offer palette colors, dashed outlines, native-pixel widths/dots and fill opacity. One shared formatter receives
+original Numbers. Data/title/header/maximum/series-label models detach; request snapshots avoid extractor rereads.
+Construction follows AGENTS.md: parameters/configuration in constructors, component assembly in onInitialize after
+super, with clearly named private render/composition helpers. No new charting dependency or radar-only runtime.
+
+The shared chart.js supports optional dimension-key hover/touch listeners and highlights, one keyboard plot stop,
+Home/End/Escape, RTL Left/Right, table-backed tooltips/live announcements and listener cleanup after Ajax/cloning.
+Existing Cartesian behavior stays covered by percent/reference regressions; scatter keeps its independent runtime.
+All nine library message languages and skin/bundle CSS are present. The /charts examples cover fixed/automatic
+scales, incomplete profiles, long names, zero/short/unknown/empty states and Refresh assessment, which updates the
+live data dimensions, series label/color and modeled maximum together. README, chart guide, API catalog, landing
+copy, changelog, candidate release notes and the additive API baseline are updated.
+
+Verification: all 1348 JVM tests pass on Java 17 and 25 (1172 core / 176 examples; 25 new radar cases). Binary,
+sources and Javadoc checks pass for both builds. The 43 Node docs tests and the 68-page site build/link checks pass,
+covering 65 guides and 177 API types. All 40 radar browser cases pass in Chromium/Firefox: 36 appearance/axe cases
+across nine skins and light desktop/dark mobile, two embedded 320px RTL keyboard/touch/resize/Ajax/cloning/forced-color
+cases, and two German no-script cases. Twelve existing percent/reference/scatter interaction/native regressions
+also pass. The first run's two failures were an overly broad test selector matching both the series group and dots;
+those interaction cases pass after narrowing it to the SVG group (plus explicit RTL-number visibility checks).
+No implementation change was needed after the browser run. Desktop/mobile screenshots were reviewed.
+Logs: /tmp/shadwick-radar-*.log, with the two interaction reruns in /tmp/shadwick-radar-interaction.log; isolated
+Java 25 build: /tmp/shadwick-radar-java25.json. Screenshots: shadwick-examples/target/radar-chart-screenshots.
+
+Keep this increment and the accumulated release/chart work local until publication is requested. Development stays
+0.1.0-SNAPSHOT on Java 17 / Wicket 10.11.0 / SCM HEAD. Initial release still requires the Wicket 11 / Java 21 /
+Servlet 6.1 migration and compatibility checks. Suggested next chart family: radial charts, then heatmaps.
+Per-dimension maxima, signed/stacked radar scales, scoring, bubble sizes, fitted scatter lines and brushes are later scope.
+
+## Previous scatter chart checkpoint — 2026-11-09
+
+**Current checkpoint: scatter plots (implemented locally).** The user selected the next chart family after
+references. SwScatterChart is a separate native numeric-X/Y component. Each typed ScatterSeries owns its data
+model and serializable point-name/X/Y extractors, allowing independent dataset lengths/types. Explicit palette
+colors, circle/square/diamond shapes and native-pixel radii distinguish series. Both axes use numeric positions,
+nice ticks and padding for flat domains; zero inclusion is opt-in. Signed values work. Missing pairs do not plot
+or change domains, but all original cells/duplicate coordinates remain in the four-column table. Names/axis
+labels are required; coordinates are finite with magnitude at most 1e100. Independent formats preserve original
+Number values for measurement callbacks. Chart/series models detach and the request snapshot avoids rereads.
+
+The constructor stores configuration; onInitialize/super assembles the figure through a private factory.
+Named methods own domains, markers, axes, grid, legend and data table. Marker SVGs retain their size under resize
+and RTL, with larger hit circles and a focus outline on the plot. A small scatter-only runtime supplies one focus
+stop, series/input-order navigation, native-title fallback, table-backed tooltips, overlap elevation and numeric
+X-label collision handling. It removes observers/listeners on replacement and recognizes cloned/reordered active
+markers by their row IDs. Generic chart.js explicitly leaves scatter roots to this runtime. All nine skins and
+nine translated built-in label sets are included. No charting dependency or CSP exception was added.
+
+The /charts gallery shows independent project teams, signed changes, overlapping points, tooltip-disabled axes,
+single points, missing pairs and empty data, plus a separately refreshed report that changes data/shapes/colors.
+The chart guide/catalog, README, landing copy, changelog and draft release notes cover the feature and boundaries.
+All 1323 JVM tests pass on Java 17 and 25 (1147 core / 176 examples; 28 new scatter cases). All 40 scatter browser
+cases pass in Chromium/Firefox across nine skins, desktop/light and mobile/dark, RTL/touch/resize/overlaps/Ajax,
+forced colors, cloning and German no-script data. Twelve existing reference/percentage/appearance regressions also
+pass. Native marker-size checks use the SVG geometry and screen transform, avoiding engine-specific DOM rectangle
+bounds. Screenshots were reviewed under shadwick-examples/target/scatter-chart-screenshots. The 43 Node docs tests,
+archive checks and 68-page site checks pass (65 guides / 175 API types); the API baseline is additive.
+Logs: /tmp/shadwick-scatter-*.log; isolated Java 25 build: /tmp/shadwick-scatter-java25.json.
+All changes remain local/uncommitted at 0.1.0-SNAPSHOT / Wicket 10.11.0. Complete the separate Wicket 11 / Java 21 /
+Servlet 6.1 migration before the initial release. Suggested next chart family: radar charts, then radial/heatmap
+breadth. Bubble sizes, fitted/connecting scatter lines, brushes and scatter references are later scope.
+
+## Previous reference chart checkpoint — 2026-11-09
+
+**Current checkpoint: reference lines and bands (implemented locally).** The user selected the next increment
+after 100% stacks. ChartReference.line/band supply named numeric goals/ranges through constants or detachable
+label/value models; SwChart.addReference owns their lifecycle. Configurable palette/neutral colors, dashed/solid
+lines, band opacity, visibility and domain extension remain ordinary fluent methods. Null values omit a reference;
+hidden references skip reads while all their models detach. Visible bounds are finite, labels nonblank and bands
+strictly increasing; percent charts require exact bounds within 0–1. Duplicate registration fails clearly.
+
+Absolute charts extend their domain by default; opting out clips geometry to the final rounded axis while retaining
+captions. Percent axes stay fixed. Bands render behind data, with lines in a pointer-transparent overlay above
+ordinary/native rounded bars; horizontal guides repeat per row and mirror in RTL. Captions name values/ranges
+outside the plot and join its accessible description. They work without script and with axes/grid/series legends
+hidden. Empty data keeps its empty state plus known captions. Reported rows, tooltips, joins and percentage totals
+remain separate. Helpers own reference snapshotting, validation, bands, lines and captions. No new client runtime,
+dependency or CSP exception was added; the existing nine skin bundles provide styling and all nine languages
+translate the reference-list label. The reviewed API adds ChartReference and addReference without removing declarations.
+
+The /charts page shows revenue targets, horizontal delivery goals, percent-share references and independently
+refreshed vertical/horizontal target reports. Guide/catalog, README, landing copy, changelog and draft release notes
+cover the additions. All 1295 JVM tests pass on Java 17 and 25 (1119 core / 176 examples, including 24 new reference
+cases). All 52 Chromium/Firefox cases pass: 40 reference cases across all skins, desktop/light, mobile/dark,
+embedded RTL/touch/keyboard/Ajax/forced colors and German no-script data, plus 12 existing percentage, forecast
+and appearance regressions. Screenshots were visually reviewed under shadwick-examples/target/reference-chart-screenshots.
+The 43 Node docs tests, archive checks and 68-page site checks pass (65 guides / 173 API types).
+Logs: /tmp/shadwick-reference-*.log; isolated Java 25 build: /tmp/shadwick-reference-java25.json.
+All work remains local/uncommitted at 0.1.0-SNAPSHOT / Wicket 10.11.0. The initial release still waits for our
+Wicket 11 / Java 21 / Servlet 6.1 migration and compatibility verification. Suggested next chart family: scatter
+plots, with radar/radial/heatmap breadth later.
+
+## Previous percent chart checkpoint — 2026-11-09
+
+**Current checkpoint: 100% stacked charts (implemented locally).** The user selected the next chart increment
+after pies. SwChart.StackMode.PERCENT normalizes named bar/area stacks independently per category and type;
+ABSOLUTE stays the default. Decimal weights preserve ratios for integral/decimal inputs, including positive
+values below double range. Percentage geometry is separate from original values/text. Numeric axes default to
+localized 0–100% on a fixed 0–1 domain; explicit numeric-axis overrides still win. Tables, tooltips, native titles
+and value labels retain original formatted values, and highest labels still rank original amounts.
+
+Percent mode requires explicitly named nonnegative bar/area stacks; line, unstacked and blank-stack series fail
+clearly. Nulls remain missing/excluded from totals. Zero-total stacks have no marks and break area paths, while
+the original zero/missing cells remain available in tooltips/tables. Existing absolute signed stacks retain their
+behavior. Forecast joins borrow defined normalized coordinates, skipping zero-total source rows and preserving
+gaps. Initial SwChart figure assembly now uses onInitialize/super and a private figure factory; no public eager
+child API is removed. The reviewed API additions are StackMode/setStackMode and the lifecycle override.
+
+The /charts page adds vertical/horizontal bars and areas, with a zero-total month and a missing report, plus
+three live Ajax views. Its factories keep configuration behind clear names and assembly in onInitialize.
+Guide/catalog, README, changelog and draft release notes cover the new option and boundaries. All 1271 JVM tests
+pass on Java 17 and 25 (1095 core / 176 examples, including 23 new percent cases). The focused chart/forecast/API
+run passes 136 cases; 43 Node docs tests, 10 release-gate tests, archive checks and the 68-page site checks pass.
+All 52 Chromium/Firefox browser cases pass: 40 percent cases across all nine skins, desktop/light, mobile/dark,
+embedded RTL/touch/keyboard/Ajax/forced colors and German no-script output, plus 12 existing forecast,
+horizontal and appearance regressions. Desktop/mobile screenshots were visually reviewed under
+shadwick-examples/target/percent-chart-screenshots. Logs: /tmp/shadwick-percent-*.log;
+Java 25 isolated build: /tmp/shadwick-percent-java25.json. Changes remain local/uncommitted, with no new dependency,
+runtime, CSS or CSP exception. Keep development at 0.1.0-SNAPSHOT / Wicket 10.11.0 until the separate Wicket 11
+migration is verified before the initial release. The next chart increment is reference lines/bands.
+
+## Previous pie chart checkpoint — 2026-11-09
+
+**Current checkpoint: chart expansion before the Wicket 11 release migration.** The user wants the initial
+Shadwick release to follow the Wicket 11 upgrade and selected further chart work meanwhile. Apache's official
+announcement confirms Wicket 11.0.0 was released on 2026-11-01, requiring Java 21 and Servlet 6.1:
+https://wicket.apache.org/news/2026/11/01/wicket-11.0.0-released.html. No dependency upgrade has been made yet;
+Java 17 / Wicket 10.11.0 remains the verified development baseline. Versions/SCM are restored to
+0.1.0-SNAPSHOT / HEAD. Retain the release tooling; metadata checks now require stable Wicket 11+ and Java 21+
+as well as a matching non-snapshot version/tag. Do not tag or stage the Wicket 10 build.
+
+The next chart increment adds SwDonutChart.Shape.PIE (DONUT remains the default). Pie geometry uses native filled
+SVG sectors, with a two-arc full disk for one positive part and no invented radial line for visually negligible
+shares. Formatting, grouping/Other, exact original rows/totals, translations and the existing donut interaction
+runtime are shared. Pie totals stay in the table footer rather than a center overlay. Initial figure assembly
+now uses onInitialize with super first; rendering delegates to named plot/segment/center/legend/table methods.
+The reviewed API diff only adds Shape, setShape and the lifecycle override. No eager public child contract is removed.
+
+The /charts showcase adds grouped/all, single, zero and live pie examples. The chart guide/catalog, changelog and
+draft release notes describe the additions. Full release-profile verification passes 1248 JVM tests on Java 17
+and 25 (1072 core / 176 examples); the 10 release-gate tests, 43 Node docs tests, archive checks and 68-page site
+checks pass. All 44 Chromium/Firefox browser cases pass: 40 pie cases across all nine skins, desktop/light,
+mobile/dark, embedded RTL/touch/keyboard/Ajax/forced colors and native German no-script tables, plus four shared
+donut interaction/native regressions. Desktop and mobile pie screenshots were visually reviewed under
+shadwick-examples/target/pie-chart-screenshots. No dependency, runtime or CSP exception was added.
+Logs: /tmp/shadwick-pie-*.log; Java 25 isolated build: /tmp/shadwick-pie-java25.json.
+
+Next chart candidates: 100%-stacked bars/areas, then reference lines/bands, then radar/scatter/radial/heatmap
+breadth. Complete the Wicket 11 migration and update JDK/container requirements, CI/staging JDKs, compatibility
+docs and browser/serialization checks before cutting 0.1.0. All current work remains local and uncommitted.
+
+## Previous release preparation checkpoint — 2026-11-09
+
+**Current checkpoint: initial release preparation (local).** The candidate version is now 0.1.0 with planned
+SCM tag v0.1.0. No tag, GitHub release or Central deployment has been created. Release notes/changelog,
+the release guide, source/Javadoc packaging, environment-based signing and a manual staging workflow are ready.
+The workflow requires successful full CI for the exact main commit, uploads with autoPublish=false, waits for
+Central validation and prepares a draft GitHub release. Only the parent POM and library artifacts are published;
+the examples application is excluded. README/landing/docs retain accurate publication-pending language.
+
+Release-profile verification passes all 1239 JVM tests on Java 17 and 25, along with the archive checks.
+Two Java 17 builds produce identical SHA256SUMS. A disposable signing key verified all five detached signatures
+and the actual Central bundle using skipUpload=true, with installation disabled; nothing was uploaded.
+The release gate regression tests (8), Node docs tests (43), site build/link checks (68 HTML pages) and actionlint
+pass. Validation logs live under /tmp/shadwick-release-*. The Java 17 candidate is recorded in
+/tmp/shadwick-release-candidate.json; target/release contains unsigned reference artifacts, not production signatures.
+
+Next: review/commit/push the candidate, configure CENTRAL_USERNAME, CENTRAL_PASSWORD, MAVEN_GPG_KEY and
+MAVEN_GPG_PASSPHRASE through secure repository settings, wait for complete CI on that commit, then create the
+tag and manually stage. Confirm the public signing key is available to Central. Public Portal publication,
+finalizing the draft, confirming clean Maven resolution and updating live release-status copy follow staging.
+The previous published commit 7d578c7 has successful Java/Website checks; its full browser job was still running
+when preparation was checked. That older run does not replace CI for the candidate commit.
+
+## Previous readability publication checkpoint — 2026-11-09
+
 **Current checkpoint: readable Wicket composition publication.** The user authorized committing and pushing all
 accumulated changes and updating the documentation, landing page and live examples application. Initial page and
 example-panel assembly now uses onInitialize, with plainly named methods for forms, fields, sections and commands.
@@ -1113,6 +1507,15 @@ Output: `target/classes/dev/jbaby/shadwick/css/shadwick-<skin>.css`
 - The jar contains compiled CSS/JS only — no `package.json`, `node_modules`
   or Tailwind sources.
 
+### Readable Wicket composition
+
+Apply [AGENTS.md](AGENTS.md) and the detailed conventions in
+[docs/CONTRIBUTING.md](docs/CONTRIBUTING.md#readable-wicket-composition) to future library and example work.
+Constructors retain parameters/models/configuration; initial page/panel trees belong in onInitialize after super.
+Composition methods name sections/fields/actions and delegate their details to plainly named private methods.
+Preserve eager/lazy library contracts for setters, getters and slots before attachment. Do not call overridable
+factories from superclass constructors or introduce new abstractions merely to shorten setup code.
+
 ### Wicket integration
 
 - Settings from `Shadwick.install(...)` are stored as Application metadata.
@@ -1293,7 +1696,8 @@ wicket-extensions dependency was added after the user asked to continue with the
 
 8. **Advanced controls and visualization** (complete at family level locally): custom select, combobox
    with server-side search, calendar/date picker, month view and SVG charts are implemented.
-   Charts cover horizontal/vertical bars, lines/areas, composed/stacked series, donuts with exact totals/shares,
+   Charts cover horizontal/vertical bars, lines/areas, composed/stacked and 100% stacked series,
+   donuts/pies with exact totals/shares, numeric reference lines/bands, independent X/Y scatter series, shared-scale radar profiles, concentric radial bars, labeled heatmaps,
    decorative sparklines and configurable value labels,
    axes/grid where applicable, legends, tooltips and native data tables.
 9. **Visual breadth** (complete locally): all nine skins — Vega, Lyra, Nova, Maia, Mira, Luma, Rhea, Sera and Sketch.
@@ -1304,15 +1708,20 @@ wicket-extensions dependency was added after the user asked to continue with the
     buttons, description lists/timelines, lazy-load panels, freeform tags, avatar groups and steps indicators.
     Browser cleanup and the candidate API/serialization guard are implemented too. Broader workflow, color-field,
     tree/CRUD, messaging and chart variants remain future scope, outside the completed pre-release shortlist.
-12. **Documentation and distribution:** searchable docs now cover 64 guides and 172 source-derived API types.
+12. **Documentation and distribution:** searchable docs now cover 65 guides and 180 source-derived API types.
     GitHub Pages serves the landing page, docs, agent skill, llms.txt and Markdown companions. Railway hosts Clover
     Studio at `/`, with `/studio` as an alias and the source-backed catalog at `/components`. The landing collection
     now links all completed shortlist families to their guides and runnable examples.
-13. **First Maven Central release** (next): changelog/release notes, signing and release automation, then publication.
+13. **First Maven Central release** (platform migration complete locally): 0.1.0 notes, reproducible source/Javadoc
+    artifacts, signing and manual staging automation are implemented and rehearsed. Wicket 11.0.0 / Java 21 /
+    Servlet 6.1 migration is verified locally on Java 21/25 and in the Java 21 container. Remaining: secure credentials,
+    successful CI for the candidate commit, release tag, Central staging/publication and public availability checks.
     The current version remains 0.1.0-SNAPSHOT. Publishing docs and the examples app does not publish the Maven artifact.
 
-The selected chart and pre-release component checkpoints are complete. Future chart breadth can include
-pie/100%-stacked/reference lines, radar/scatter/radial plots and heatmaps; native SVG remains the architecture.
+The selected chart and pre-release component checkpoints are complete. Pie/100% stacks, reference lines/bands,
+scatter/radar plots, concentric radial bars and labeled heatmaps are implemented locally. Future breadth can include
+calendar heatmaps, custom/diverging thresholds, stacked radial series and scatter bubbles/brushes.
+Native SVG remains the rendering architecture, with heatmap tiles embedded in the semantic matrix table.
 All nine skins and nine built-in message languages are implemented. Applications can add further resource bundles.
 
 Parity review references (checked against the published docs on 2026-11-04):

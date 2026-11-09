@@ -12,7 +12,7 @@ From the repository root:
 
 ```sh
 ./mvnw -B package
-java -jar shadwick-examples/target/shadwick-examples-0.1.0-SNAPSHOT.jar
+java -jar shadwick-examples/target/shadwick-examples-0.1.0.jar
 ```
 
 Open `http://localhost:8080/`. The `PORT` environment variable changes the server port.
@@ -24,7 +24,7 @@ GitHub Pages continues to serve the static marketing site and these guides.
 
 The repository includes a root `Dockerfile` and `railway.json`. Connect the GitHub repository to a Railway
 service with the repository root as its root directory. Railway builds both Maven modules and the compiled
-CSS in the build stage, then runs the executable examples JAR as an unprivileged user on Java 17.
+CSS in the build stage, then runs the executable examples JAR as an unprivileged user on Java 21.
 Keep the Dockerfile's start command; it selects Wicket's deployment mode and the `railway` Spring profile.
 Railway supplies `PORT`, so no build command, start command or fixed port needs to be entered manually.
 The Maven and npm cache mounts use literal IDs scoped to the Shadwick Railway service. When deploying

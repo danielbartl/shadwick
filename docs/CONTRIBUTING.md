@@ -33,7 +33,7 @@ need application-owned models or services. Avoid HTML as a layout tool in the so
 
 The installation and form guides print the exact files in `examples/`. A `snippet` provenance comment immediately
 precedes each complete code fence. The build compares the fence to that file and rejects drift. The examples test
-compiles these Java files using the build JDK with `--release 17`, loads their matching HTML and exercises native
+compiles these Java files using the build JDK with `--release 21`, loads their matching HTML and exercises native
 and Ajax validation/submission. Update the source file and the printed fence together.
 
 ## Verify
@@ -59,19 +59,72 @@ with the landing page; changing `docs/**` triggers it. Publishing the static gui
 
 ## Readable Wicket composition
 
-Keep page constructors focused on parameters, models and state needed by layout hooks. Build the initial
-component tree in `onInitialize()`, starting with `super.onInitialize()`. The method should read as an overview:
-add the forms or named page sections, then delegate their configuration to private methods.
+Write component code so a reader can understand the page structure first, then navigate by method name into
+one field, section or action. This convention applies to new code and refactoring in the library and examples.
+The aim is easy navigation and understanding; a lower line count is not the measure of success.
 
-Use purpose-based names such as `normalForm()`, `email()` and `saveProject()`. Factories return components;
-`add…` methods attach them. Keep section assembly, field configuration and command handling at separate levels.
-Return concrete component types when useful, and keep short, obvious configuration inline. Do not introduce
-shared builders or new protected hooks just to reduce repetition between small examples.
+### Choose the lifecycle deliberately
 
-Library components may need children before attachment: fluent setters, `getInput()`, dialog forms and content
-slots already support this. Preserve those eager or lazy contracts while extracting private factories. Keep
-component IDs, model ownership/detachment and callback behavior unchanged. Dynamic repeaters and replacement
-content remain in their appropriate Wicket hooks and event handlers.
+| Location | Responsibility |
+| --- | --- |
+| Constructor | Store parameters, models and configuration; validate invariants; initialize state needed by layout hooks. |
+| `onInitialize()` | Call `super.onInitialize()` first, then assemble the initial component tree once per component instance. |
+| `onConfigure()` | Recompute visibility and enabled state from current models and application state. |
+| Repeater hooks and event handlers | Populate dynamic items and perform the replacements or updates appropriate to that interaction. |
+
+Prefer `onInitialize()` for page and application-panel composition. It runs after subclass construction and makes
+parent/page context available. Do not invoke overridable component factories from a superclass constructor: an
+override may depend on subclass fields that have not been initialized yet. Let Wicket invoke lifecycle hooks.
+Keep changing state out of one-time initialization, and do not rebuild the initial tree on every render.
+
+Library components may intentionally expose children before attachment. Fluent setters, `getInput()`, dialog
+forms and content slots already support eager or lazy access. Preserve those contracts and extract private
+factories around the existing timing. Moving creation to `onInitialize()` is a behavioral change even when the
+public signatures stay the same. Keep existing getters returning the same child instance.
+
+### Keep one level of detail in each method
+
+`onInitialize()` should read as a short overview of the forms or sections. A form method names its fields and
+buttons; field factories contain binding, validation, descriptions and behaviors. Substantial callbacks delegate
+to named action methods. Keep small, obvious expressions inline when extracting them adds no useful meaning.
+
+This illustrative fragment shows the structure; its model and field/button factories belong to the page:
+
+```java
+@Override
+protected void onInitialize() {
+    super.onInitialize();
+    add(profileForm());
+}
+
+private Form<Profile> profileForm() {
+    Form<Profile> form = new Form<>("form", profileModel);
+    form.add(name(), email(), saveButton());
+    return form;
+}
+```
+
+See [QuickStartPage.java](examples/QuickStartPage.java) for a complete, compiled example, and the
+[form guide](components/forms.md#complete-example) for matching markup.
+
+### Make names and ownership clear
+
+- Use names that explain purpose: `profileForm()`, `email()`, `addNavigation()` and `saveProject()`.
+- Factories return components; methods named `add…` attach them. Keep attachment ownership apparent at the call site.
+- Keep factories private unless subclass customization is an intentional part of the API. Return concrete component
+  types when callers need their configuration methods.
+- Keep components local unless another method, callback or documented API needs the reference. Pass dependencies
+  explicitly instead of promoting unrelated locals to page fields merely to extract a method.
+- Keep models serializable and detachable. Extracting a callback must preserve its original component/form context,
+  including where feedback is reported and which components are refreshed.
+- Put related methods near their composition entry point. Use one statement per line, readable fluent chains and
+  comments that explain lifecycle or interaction decisions.
+- Prefer ordinary Wicket composition and small private methods. Avoid shared builders, general-purpose base classes,
+  boolean-heavy configuration helpers or new protected hooks solely to hide a few lines of setup.
+
+Preserve component IDs, matching markup, model ownership/detachment, fluent configuration, validation order,
+serialization, Ajax target scope and focus behavior. Use the existing relevant tests; add lifecycle regression
+coverage when changing initialization behavior, rather than tests that merely restate the extracted private methods.
 
 ## Candidate API compatibility
 
@@ -95,7 +148,7 @@ git diff -- shadwick-core/src/test/resources/dev/jbaby/shadwick/compatibility/ap
 ```
 
 Keep the update flag out of CI and normal test commands. A baseline update accepts declarations; it is not a
-release, a version bump or authorization to publish. The guard runs automatically in the existing Java 17/25 CI
+release, a version bump or authorization to publish. The guard runs automatically in the existing Java 21/25 CI
 matrix without an additional dependency. The consumer tests compile in an external package and exercise
 serialized models/callbacks through real Wicket form and chart usage.
 
@@ -105,8 +158,9 @@ Standard Javadoc is also checked during first-release preparation:
 ./mvnw -B -pl shadwick-core org.apache.maven.plugins:maven-javadoc-plugin:3.12.0:javadoc -Ddoclint=all,-missing
 ```
 
-Malformed tags and links must be fixed rather than disabling doclint. The later release automation checkpoint
-will attach source/Javadoc artifacts and configure signing/publication.
+Malformed tags and links must be fixed rather than disabling doclint. The `release` profile attaches source/Javadoc
+artifacts; the separate `central` profile signs and stages them. Follow [release preparation](guides/releases.md)
+for the manual workflow, required credentials and local bundle dry run.
 
 ## Agent resources
 

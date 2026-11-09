@@ -1,13 +1,14 @@
 # Compatibility
 
-Shadwick's first release is being prepared. The current version is `0.1.0-SNAPSHOT`; it is not yet on Maven Central.
+Shadwick's first release is being prepared. The frozen release candidate is `0.1.0`; it is not yet on Maven Central.
+The development baseline is now Wicket 11 and Java 21; release publication remains a separate step.
 The candidate API is recorded and checked during the normal Maven test run.
 
 ## Java and Wicket
 
-The library compiles with `--release 17` and is built against Apache Wicket `10.11.0`. CI tests Java 17 and Java 25.
+The library compiles with `--release 21` and is built against Apache Wicket `11.0.0`. CI tests Java 21 and Java 25.
 Use matching versions of `wicket-core`, `wicket-extensions` and any other Wicket modules in your application.
-The reviewed target is Wicket 10.11.0; compatibility with other Wicket versions needs its own verification.
+The reviewed target is Wicket 11.0.0; compatibility with other Wicket versions needs its own verification.
 
 The library's automatic module name is `dev.jbaby.shadwick`. This stabilizes its identity for applications that
 use automatic modules; the library does not yet declare a `module-info.java` or claim a tested JPMS deployment.
@@ -19,6 +20,24 @@ application supplies the Servlet API at runtime. Spring Boot,
 Playwright, axe, Node and Tailwind are not library runtime dependencies. Compiled CSS, browser scripts, markup,
 translations and their licenses travel in the library JAR. Read [Installation](./installation.md) for setup.
 
+## Moving from the pre-release Wicket 10 build
+
+Upgrade the build and runtime JDK to Java 21+, align every Wicket module to 11.0.0 and use a Servlet 6.1+
+container (for example Tomcat 11). The examples already use Spring Boot 4.1.2, Spring 7 and Tomcat 11;
+the Docker build/runtime and release/site workflows use Java 21. The library remains independent of Spring.
+
+[Wicket's migration guide](https://cwiki.apache.org/confluence/spaces/WICKET/pages/462815957/Migration%2Bto%2BWicket%2B11)
+explains additional changes for applications using Wicket integrations. In particular, Wicket 11's authenticated
+cryptography cannot decrypt Wicket 10 encrypted URLs or stored pages. Deploy with fresh sessions/page stores and
+regenerate encrypted links; do not mix Wicket 10 and 11 artifacts or expect serialized pages to cross the upgrade.
+Shadwick's public/protected declarations remain checked by the existing candidate baseline.
+
+Shadwick fields retain server-side inline validation: their common input configuration removes Wicket 11's
+automatically derived native `required`/`pattern` attributes and label-derived placeholder. Explicit placeholders
+still work, and applications can opt into native constraints with later `addToInput(AttributeModifier...)` behaviors.
+Wicket-managed markup IDs now reject colons; use letters, digits, underscores, hyphens or dots for component IDs
+assigned with `setMarkupId`. Native skip-link fragments still support escaped Unicode and colon IDs in caller markup.
+
 ## Java API
 
 The candidate baseline includes public types, constructors, methods and fields, plus protected subclass hooks.
@@ -29,7 +48,7 @@ classes are excluded. Public low-level utilities are included so their removal a
 The baseline is a review guard: a change to an exported declaration requires an explicit update after assessing
 its effect on application code. It is not proof of arbitrary cross-version binary or behavioral compatibility.
 The normal checks also reject private/package-private types leaking through exported signatures and bytecode
-newer than Java 17. Consumer tests in a separate application package exercise fluent form fields, inherited
+newer than Java 21. Consumer tests in a separate application package exercise fluent form fields, inherited
 models, validation, serializable callbacks and chart factories.
 
 Existing Wicket methods remain available through inheritance. Shadwick's own fluent setters return the concrete
@@ -79,5 +98,4 @@ and chart APIs. Moving an application involves reviewing its imports, enum choic
 Shadwick does not promise binary compatibility or a complete drop-in migration from either reference.
 
 Release contributors should read the API-baseline procedure in the repository's documentation contribution guide
-before changing an exported declaration. Signing, release automation and Maven Central publication follow this
-compatibility checkpoint.
+before changing an exported declaration. The [release preparation guide](releases.md) describes artifact/signing validation and manual Central staging.

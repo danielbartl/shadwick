@@ -193,6 +193,10 @@ CTOR public dev.jbaby.shadwick.components.TableQuery(org.apache.wicket.request.m
 CTOR public dev.jbaby.shadwick.components.TableQuery(org.apache.wicket.request.mapper.parameter.PageParameters,java.lang.String,java.lang.String,java.lang.String)
 CTOR public dev.jbaby.shadwick.components.chart.SwChart(java.lang.String,org.apache.wicket.model.IModel<? extends java.util.List<T>>,dev.jbaby.shadwick.util.SerializableFunction<T, ?>)
 CTOR public dev.jbaby.shadwick.components.chart.SwDonutChart(java.lang.String,org.apache.wicket.model.IModel<? extends java.util.List<T>>,dev.jbaby.shadwick.util.SerializableFunction<T, java.lang.String>,dev.jbaby.shadwick.util.SerializableFunction<T, ? extends java.lang.Number>)
+CTOR public dev.jbaby.shadwick.components.chart.SwHeatmapChart(java.lang.String,org.apache.wicket.model.IModel<? extends java.util.List<T>>,dev.jbaby.shadwick.util.SerializableFunction<T, java.lang.String>)
+CTOR public dev.jbaby.shadwick.components.chart.SwRadarChart(java.lang.String,org.apache.wicket.model.IModel<? extends java.util.List<T>>,dev.jbaby.shadwick.util.SerializableFunction<T, java.lang.String>)
+CTOR public dev.jbaby.shadwick.components.chart.SwRadialChart(java.lang.String,org.apache.wicket.model.IModel<? extends java.util.List<T>>,dev.jbaby.shadwick.util.SerializableFunction<T, java.lang.String>,dev.jbaby.shadwick.util.SerializableFunction<T, ? extends java.lang.Number>)
+CTOR public dev.jbaby.shadwick.components.chart.SwScatterChart(java.lang.String)
 CTOR public dev.jbaby.shadwick.components.chart.SwSparkline(java.lang.String,org.apache.wicket.model.IModel<? extends java.util.List<? extends java.lang.Number>>)
 CTOR public dev.jbaby.shadwick.components.form.BaseSwDecimalField(java.lang.String,org.apache.wicket.model.IModel<java.lang.String>,org.apache.wicket.model.IModel<java.math.BigDecimal>,org.apache.wicket.model.IModel<java.lang.String>)
 CTOR public dev.jbaby.shadwick.components.form.BaseSwField(java.lang.String,org.apache.wicket.model.IModel<java.lang.String>,org.apache.wicket.model.IModel<T>,org.apache.wicket.model.IModel<java.lang.String>)
@@ -520,12 +524,15 @@ ENUM dev.jbaby.shadwick.components.SwUserMenu$Placement [SIDEBAR, HEADER]
 ENUM dev.jbaby.shadwick.components.chart.ChartSeries$Curve [LINEAR, STEP, MONOTONE, NATURAL, STEP_BEFORE, STEP_AFTER, STEP_MIDDLE]
 ENUM dev.jbaby.shadwick.components.chart.ChartSeries$Type [BAR, LINE, AREA]
 ENUM dev.jbaby.shadwick.components.chart.ChartSeries$ValueLabels [NONE, LAST, HIGHEST_AND_LAST, ALL]
+ENUM dev.jbaby.shadwick.components.chart.ScatterSeries$Shape [CIRCLE, SQUARE, DIAMOND]
 ENUM dev.jbaby.shadwick.components.chart.SwChart$CategoryFormat [DAY, MONTH_SHORT, MONTH, MONTH_YEAR, DATE, TIME]
 ENUM dev.jbaby.shadwick.components.chart.SwChart$Indicator [AUTO, DOT, LINE, DASHED]
 ENUM dev.jbaby.shadwick.components.chart.SwChart$LegendAlignment [START, CENTER, END]
 ENUM dev.jbaby.shadwick.components.chart.SwChart$LegendPosition [TOP, BOTTOM]
 ENUM dev.jbaby.shadwick.components.chart.SwChart$Orientation [VERTICAL, HORIZONTAL]
+ENUM dev.jbaby.shadwick.components.chart.SwChart$StackMode [ABSOLUTE, PERCENT]
 ENUM dev.jbaby.shadwick.components.chart.SwChart$ValueFormat [NUMBER, INTEGER, COMPACT, PERCENT, CURRENCY]
+ENUM dev.jbaby.shadwick.components.chart.SwDonutChart$Shape [DONUT, PIE]
 FIELD protected final dev.jbaby.shadwick.behaviors.CalendarBehavior dev.jbaby.shadwick.components.form.BaseSwCalendar.calendar
 FIELD public static final dev.jbaby.shadwick.AccessibilityChecks dev.jbaby.shadwick.AccessibilityChecks.FAIL
 FIELD public static final dev.jbaby.shadwick.AccessibilityChecks dev.jbaby.shadwick.AccessibilityChecks.OFF
@@ -703,6 +710,9 @@ FIELD public static final dev.jbaby.shadwick.components.chart.ChartSeries$ValueL
 FIELD public static final dev.jbaby.shadwick.components.chart.ChartSeries$ValueLabels dev.jbaby.shadwick.components.chart.ChartSeries$ValueLabels.HIGHEST_AND_LAST
 FIELD public static final dev.jbaby.shadwick.components.chart.ChartSeries$ValueLabels dev.jbaby.shadwick.components.chart.ChartSeries$ValueLabels.LAST
 FIELD public static final dev.jbaby.shadwick.components.chart.ChartSeries$ValueLabels dev.jbaby.shadwick.components.chart.ChartSeries$ValueLabels.NONE
+FIELD public static final dev.jbaby.shadwick.components.chart.ScatterSeries$Shape dev.jbaby.shadwick.components.chart.ScatterSeries$Shape.CIRCLE
+FIELD public static final dev.jbaby.shadwick.components.chart.ScatterSeries$Shape dev.jbaby.shadwick.components.chart.ScatterSeries$Shape.DIAMOND
+FIELD public static final dev.jbaby.shadwick.components.chart.ScatterSeries$Shape dev.jbaby.shadwick.components.chart.ScatterSeries$Shape.SQUARE
 FIELD public static final dev.jbaby.shadwick.components.chart.SwChart$CategoryFormat dev.jbaby.shadwick.components.chart.SwChart$CategoryFormat.DATE
 FIELD public static final dev.jbaby.shadwick.components.chart.SwChart$CategoryFormat dev.jbaby.shadwick.components.chart.SwChart$CategoryFormat.DAY
 FIELD public static final dev.jbaby.shadwick.components.chart.SwChart$CategoryFormat dev.jbaby.shadwick.components.chart.SwChart$CategoryFormat.MONTH
@@ -720,11 +730,15 @@ FIELD public static final dev.jbaby.shadwick.components.chart.SwChart$LegendPosi
 FIELD public static final dev.jbaby.shadwick.components.chart.SwChart$LegendPosition dev.jbaby.shadwick.components.chart.SwChart$LegendPosition.TOP
 FIELD public static final dev.jbaby.shadwick.components.chart.SwChart$Orientation dev.jbaby.shadwick.components.chart.SwChart$Orientation.HORIZONTAL
 FIELD public static final dev.jbaby.shadwick.components.chart.SwChart$Orientation dev.jbaby.shadwick.components.chart.SwChart$Orientation.VERTICAL
+FIELD public static final dev.jbaby.shadwick.components.chart.SwChart$StackMode dev.jbaby.shadwick.components.chart.SwChart$StackMode.ABSOLUTE
+FIELD public static final dev.jbaby.shadwick.components.chart.SwChart$StackMode dev.jbaby.shadwick.components.chart.SwChart$StackMode.PERCENT
 FIELD public static final dev.jbaby.shadwick.components.chart.SwChart$ValueFormat dev.jbaby.shadwick.components.chart.SwChart$ValueFormat.COMPACT
 FIELD public static final dev.jbaby.shadwick.components.chart.SwChart$ValueFormat dev.jbaby.shadwick.components.chart.SwChart$ValueFormat.CURRENCY
 FIELD public static final dev.jbaby.shadwick.components.chart.SwChart$ValueFormat dev.jbaby.shadwick.components.chart.SwChart$ValueFormat.INTEGER
 FIELD public static final dev.jbaby.shadwick.components.chart.SwChart$ValueFormat dev.jbaby.shadwick.components.chart.SwChart$ValueFormat.NUMBER
 FIELD public static final dev.jbaby.shadwick.components.chart.SwChart$ValueFormat dev.jbaby.shadwick.components.chart.SwChart$ValueFormat.PERCENT
+FIELD public static final dev.jbaby.shadwick.components.chart.SwDonutChart$Shape dev.jbaby.shadwick.components.chart.SwDonutChart$Shape.DONUT
+FIELD public static final dev.jbaby.shadwick.components.chart.SwDonutChart$Shape dev.jbaby.shadwick.components.chart.SwDonutChart$Shape.PIE
 FIELD public static final int dev.jbaby.shadwick.components.chart.SwDonutChart.DEFAULT_MAX_SEGMENTS = 5
 FIELD public static final java.lang.String dev.jbaby.shadwick.components.SwAttachment.ACTIONS_ID = "actions"
 FIELD public static final java.lang.String dev.jbaby.shadwick.components.SwAttachment.MEDIA_ID = "mediaContent"
@@ -752,6 +766,7 @@ FIELD public static final org.apache.wicket.request.resource.JavaScriptResourceR
 FIELD public static final org.apache.wicket.request.resource.JavaScriptResourceReference dev.jbaby.shadwick.behaviors.TagInputBehavior.TAG_INPUT_JS
 FIELD public static final org.apache.wicket.request.resource.JavaScriptResourceReference dev.jbaby.shadwick.components.chart.SwChart.CHART_JS
 FIELD public static final org.apache.wicket.request.resource.JavaScriptResourceReference dev.jbaby.shadwick.components.chart.SwDonutChart.DONUT_JS
+FIELD public static final org.apache.wicket.request.resource.JavaScriptResourceReference dev.jbaby.shadwick.components.chart.SwScatterChart.SCATTER_JS
 METHOD protected abstract C dev.jbaby.shadwick.components.form.BaseSwField.newInput(java.lang.String,org.apache.wicket.model.IModel<T>)
 METHOD protected abstract int dev.jbaby.shadwick.components.form.BaseSwDecimalField.getMaxFractionDigits()
 METHOD protected abstract int dev.jbaby.shadwick.components.form.BaseSwDecimalField.getMinFractionDigits()
@@ -914,7 +929,17 @@ METHOD protected void dev.jbaby.shadwick.components.SwUserMenu.onDetach()
 METHOD protected void dev.jbaby.shadwick.components.SwUserMenu.onSignedOut()
 METHOD protected void dev.jbaby.shadwick.components.SwUserMenu.signOut()
 METHOD protected void dev.jbaby.shadwick.components.chart.SwChart.onDetach()
+METHOD protected void dev.jbaby.shadwick.components.chart.SwChart.onInitialize()
 METHOD protected void dev.jbaby.shadwick.components.chart.SwDonutChart.onDetach()
+METHOD protected void dev.jbaby.shadwick.components.chart.SwDonutChart.onInitialize()
+METHOD protected void dev.jbaby.shadwick.components.chart.SwHeatmapChart.onDetach()
+METHOD protected void dev.jbaby.shadwick.components.chart.SwHeatmapChart.onInitialize()
+METHOD protected void dev.jbaby.shadwick.components.chart.SwRadarChart.onDetach()
+METHOD protected void dev.jbaby.shadwick.components.chart.SwRadarChart.onInitialize()
+METHOD protected void dev.jbaby.shadwick.components.chart.SwRadialChart.onDetach()
+METHOD protected void dev.jbaby.shadwick.components.chart.SwRadialChart.onInitialize()
+METHOD protected void dev.jbaby.shadwick.components.chart.SwScatterChart.onDetach()
+METHOD protected void dev.jbaby.shadwick.components.chart.SwScatterChart.onInitialize()
 METHOD protected void dev.jbaby.shadwick.components.chart.SwSparkline.onComponentTag(org.apache.wicket.markup.ComponentTag)
 METHOD protected void dev.jbaby.shadwick.components.form.BaseSwCalendar.onDetach()
 METHOD protected void dev.jbaby.shadwick.components.form.BaseSwCalendar.onInitialize()
@@ -1430,6 +1455,11 @@ METHOD public dev.jbaby.shadwick.components.SwUserMenu$MenuLink dev.jbaby.shadwi
 METHOD public dev.jbaby.shadwick.components.SwUserMenu$MenuLink dev.jbaby.shadwick.components.SwUserMenu.addLink(org.apache.wicket.model.IModel<java.lang.String>,java.lang.Class<? extends org.apache.wicket.Page>,org.apache.wicket.request.mapper.parameter.PageParameters)
 METHOD public dev.jbaby.shadwick.components.TableQuery dev.jbaby.shadwick.components.SwDataTable.getQuery()
 METHOD public dev.jbaby.shadwick.components.TableQuery dev.jbaby.shadwick.components.TableQuery.qualified(java.lang.String)
+METHOD public dev.jbaby.shadwick.components.chart.ChartReference dev.jbaby.shadwick.components.chart.ChartReference.setColor(int)
+METHOD public dev.jbaby.shadwick.components.chart.ChartReference dev.jbaby.shadwick.components.chart.ChartReference.setDashed(boolean)
+METHOD public dev.jbaby.shadwick.components.chart.ChartReference dev.jbaby.shadwick.components.chart.ChartReference.setExtendDomain(boolean)
+METHOD public dev.jbaby.shadwick.components.chart.ChartReference dev.jbaby.shadwick.components.chart.ChartReference.setFillOpacity(double)
+METHOD public dev.jbaby.shadwick.components.chart.ChartReference dev.jbaby.shadwick.components.chart.ChartReference.setVisible(boolean)
 METHOD public dev.jbaby.shadwick.components.chart.ChartSeries<T> dev.jbaby.shadwick.components.chart.ChartSeries.setBarRadius(double)
 METHOD public dev.jbaby.shadwick.components.chart.ChartSeries<T> dev.jbaby.shadwick.components.chart.ChartSeries.setBarRadius(double,double,double,double)
 METHOD public dev.jbaby.shadwick.components.chart.ChartSeries<T> dev.jbaby.shadwick.components.chart.ChartSeries.setColor(int)
@@ -1443,6 +1473,15 @@ METHOD public dev.jbaby.shadwick.components.chart.ChartSeries<T> dev.jbaby.shadw
 METHOD public dev.jbaby.shadwick.components.chart.ChartSeries<T> dev.jbaby.shadwick.components.chart.ChartSeries.setStack(java.lang.String)
 METHOD public dev.jbaby.shadwick.components.chart.ChartSeries<T> dev.jbaby.shadwick.components.chart.ChartSeries.setStrokeWidth(double)
 METHOD public dev.jbaby.shadwick.components.chart.ChartSeries<T> dev.jbaby.shadwick.components.chart.ChartSeries.setValueLabels(dev.jbaby.shadwick.components.chart.ChartSeries$ValueLabels)
+METHOD public dev.jbaby.shadwick.components.chart.RadarSeries<T> dev.jbaby.shadwick.components.chart.RadarSeries.setColor(int)
+METHOD public dev.jbaby.shadwick.components.chart.RadarSeries<T> dev.jbaby.shadwick.components.chart.RadarSeries.setDashed(boolean)
+METHOD public dev.jbaby.shadwick.components.chart.RadarSeries<T> dev.jbaby.shadwick.components.chart.RadarSeries.setDots(boolean)
+METHOD public dev.jbaby.shadwick.components.chart.RadarSeries<T> dev.jbaby.shadwick.components.chart.RadarSeries.setFillOpacity(double)
+METHOD public dev.jbaby.shadwick.components.chart.RadarSeries<T> dev.jbaby.shadwick.components.chart.RadarSeries.setStrokeWidth(double)
+METHOD public dev.jbaby.shadwick.components.chart.ScatterSeries<T> dev.jbaby.shadwick.components.chart.ScatterSeries.setColor(int)
+METHOD public dev.jbaby.shadwick.components.chart.ScatterSeries<T> dev.jbaby.shadwick.components.chart.ScatterSeries.setPointRadius(double)
+METHOD public dev.jbaby.shadwick.components.chart.ScatterSeries<T> dev.jbaby.shadwick.components.chart.ScatterSeries.setShape(dev.jbaby.shadwick.components.chart.ScatterSeries$Shape)
+METHOD public dev.jbaby.shadwick.components.chart.SwChart<T> dev.jbaby.shadwick.components.chart.SwChart.addReference(dev.jbaby.shadwick.components.chart.ChartReference)
 METHOD public dev.jbaby.shadwick.components.chart.SwChart<T> dev.jbaby.shadwick.components.chart.SwChart.addSeries(dev.jbaby.shadwick.components.chart.ChartSeries<T>)
 METHOD public dev.jbaby.shadwick.components.chart.SwChart<T> dev.jbaby.shadwick.components.chart.SwChart.setAxisCategoryFormat(dev.jbaby.shadwick.components.chart.SwChart$CategoryFormat)
 METHOD public dev.jbaby.shadwick.components.chart.SwChart<T> dev.jbaby.shadwick.components.chart.SwChart.setAxisCategoryFormat(dev.jbaby.shadwick.util.SerializableBiFunction<java.lang.Object, java.util.Locale, java.lang.String>)
@@ -1467,6 +1506,7 @@ METHOD public dev.jbaby.shadwick.components.chart.SwChart<T> dev.jbaby.shadwick.
 METHOD public dev.jbaby.shadwick.components.chart.SwChart<T> dev.jbaby.shadwick.components.chart.SwChart.setShowTooltipLabel(boolean)
 METHOD public dev.jbaby.shadwick.components.chart.SwChart<T> dev.jbaby.shadwick.components.chart.SwChart.setShowXAxis(boolean)
 METHOD public dev.jbaby.shadwick.components.chart.SwChart<T> dev.jbaby.shadwick.components.chart.SwChart.setShowYAxis(boolean)
+METHOD public dev.jbaby.shadwick.components.chart.SwChart<T> dev.jbaby.shadwick.components.chart.SwChart.setStackMode(dev.jbaby.shadwick.components.chart.SwChart$StackMode)
 METHOD public dev.jbaby.shadwick.components.chart.SwChart<T> dev.jbaby.shadwick.components.chart.SwChart.setTimeZone(java.time.ZoneId)
 METHOD public dev.jbaby.shadwick.components.chart.SwChart<T> dev.jbaby.shadwick.components.chart.SwChart.setTitle(java.lang.String)
 METHOD public dev.jbaby.shadwick.components.chart.SwChart<T> dev.jbaby.shadwick.components.chart.SwChart.setTitle(org.apache.wicket.model.IModel<java.lang.String>)
@@ -1485,6 +1525,7 @@ METHOD public dev.jbaby.shadwick.components.chart.SwDonutChart<T> dev.jbaby.shad
 METHOD public dev.jbaby.shadwick.components.chart.SwDonutChart<T> dev.jbaby.shadwick.components.chart.SwDonutChart.setCurrency(java.util.Currency)
 METHOD public dev.jbaby.shadwick.components.chart.SwDonutChart<T> dev.jbaby.shadwick.components.chart.SwDonutChart.setGroupSmallSegments(boolean)
 METHOD public dev.jbaby.shadwick.components.chart.SwDonutChart<T> dev.jbaby.shadwick.components.chart.SwDonutChart.setMaxSegments(int)
+METHOD public dev.jbaby.shadwick.components.chart.SwDonutChart<T> dev.jbaby.shadwick.components.chart.SwDonutChart.setShape(dev.jbaby.shadwick.components.chart.SwDonutChart$Shape)
 METHOD public dev.jbaby.shadwick.components.chart.SwDonutChart<T> dev.jbaby.shadwick.components.chart.SwDonutChart.setShowLegend(boolean)
 METHOD public dev.jbaby.shadwick.components.chart.SwDonutChart<T> dev.jbaby.shadwick.components.chart.SwDonutChart.setShowTooltip(boolean)
 METHOD public dev.jbaby.shadwick.components.chart.SwDonutChart<T> dev.jbaby.shadwick.components.chart.SwDonutChart.setTitle(java.lang.String)
@@ -1495,6 +1536,82 @@ METHOD public dev.jbaby.shadwick.components.chart.SwDonutChart<T> dev.jbaby.shad
 METHOD public dev.jbaby.shadwick.components.chart.SwDonutChart<T> dev.jbaby.shadwick.components.chart.SwDonutChart.setValueFormat(dev.jbaby.shadwick.util.SerializableBiFunction<java.lang.Number, java.util.Locale, java.lang.String>)
 METHOD public dev.jbaby.shadwick.components.chart.SwDonutChart<T> dev.jbaby.shadwick.components.chart.SwDonutChart.setValueHeader(java.lang.String)
 METHOD public dev.jbaby.shadwick.components.chart.SwDonutChart<T> dev.jbaby.shadwick.components.chart.SwDonutChart.setValueHeader(org.apache.wicket.model.IModel<java.lang.String>)
+METHOD public dev.jbaby.shadwick.components.chart.SwHeatmapChart<T> dev.jbaby.shadwick.components.chart.SwHeatmapChart.addColumn(dev.jbaby.shadwick.components.chart.HeatmapColumn<T>)
+METHOD public dev.jbaby.shadwick.components.chart.SwHeatmapChart<T> dev.jbaby.shadwick.components.chart.SwHeatmapChart.setAutoScale()
+METHOD public dev.jbaby.shadwick.components.chart.SwHeatmapChart<T> dev.jbaby.shadwick.components.chart.SwHeatmapChart.setColor(int)
+METHOD public dev.jbaby.shadwick.components.chart.SwHeatmapChart<T> dev.jbaby.shadwick.components.chart.SwHeatmapChart.setCurrency(java.util.Currency)
+METHOD public dev.jbaby.shadwick.components.chart.SwHeatmapChart<T> dev.jbaby.shadwick.components.chart.SwHeatmapChart.setRange(java.lang.Number,java.lang.Number)
+METHOD public dev.jbaby.shadwick.components.chart.SwHeatmapChart<T> dev.jbaby.shadwick.components.chart.SwHeatmapChart.setRange(org.apache.wicket.model.IModel<? extends java.lang.Number>,org.apache.wicket.model.IModel<? extends java.lang.Number>)
+METHOD public dev.jbaby.shadwick.components.chart.SwHeatmapChart<T> dev.jbaby.shadwick.components.chart.SwHeatmapChart.setRowHeader(java.lang.String)
+METHOD public dev.jbaby.shadwick.components.chart.SwHeatmapChart<T> dev.jbaby.shadwick.components.chart.SwHeatmapChart.setRowHeader(org.apache.wicket.model.IModel<java.lang.String>)
+METHOD public dev.jbaby.shadwick.components.chart.SwHeatmapChart<T> dev.jbaby.shadwick.components.chart.SwHeatmapChart.setShowLegend(boolean)
+METHOD public dev.jbaby.shadwick.components.chart.SwHeatmapChart<T> dev.jbaby.shadwick.components.chart.SwHeatmapChart.setShowTooltip(boolean)
+METHOD public dev.jbaby.shadwick.components.chart.SwHeatmapChart<T> dev.jbaby.shadwick.components.chart.SwHeatmapChart.setShowValues(boolean)
+METHOD public dev.jbaby.shadwick.components.chart.SwHeatmapChart<T> dev.jbaby.shadwick.components.chart.SwHeatmapChart.setTitle(java.lang.String)
+METHOD public dev.jbaby.shadwick.components.chart.SwHeatmapChart<T> dev.jbaby.shadwick.components.chart.SwHeatmapChart.setTitle(org.apache.wicket.model.IModel<java.lang.String>)
+METHOD public dev.jbaby.shadwick.components.chart.SwHeatmapChart<T> dev.jbaby.shadwick.components.chart.SwHeatmapChart.setValueFormat(dev.jbaby.shadwick.components.chart.SwChart$ValueFormat)
+METHOD public dev.jbaby.shadwick.components.chart.SwHeatmapChart<T> dev.jbaby.shadwick.components.chart.SwHeatmapChart.setValueFormat(dev.jbaby.shadwick.util.SerializableBiFunction<java.lang.Number, java.util.Locale, java.lang.String>)
+METHOD public dev.jbaby.shadwick.components.chart.SwHeatmapChart<T> dev.jbaby.shadwick.components.chart.SwHeatmapChart.setValueHeader(java.lang.String)
+METHOD public dev.jbaby.shadwick.components.chart.SwHeatmapChart<T> dev.jbaby.shadwick.components.chart.SwHeatmapChart.setValueHeader(org.apache.wicket.model.IModel<java.lang.String>)
+METHOD public dev.jbaby.shadwick.components.chart.SwRadarChart<T> dev.jbaby.shadwick.components.chart.SwRadarChart.addSeries(dev.jbaby.shadwick.components.chart.RadarSeries<T>)
+METHOD public dev.jbaby.shadwick.components.chart.SwRadarChart<T> dev.jbaby.shadwick.components.chart.SwRadarChart.setAutoScale()
+METHOD public dev.jbaby.shadwick.components.chart.SwRadarChart<T> dev.jbaby.shadwick.components.chart.SwRadarChart.setCategoryHeader(java.lang.String)
+METHOD public dev.jbaby.shadwick.components.chart.SwRadarChart<T> dev.jbaby.shadwick.components.chart.SwRadarChart.setCategoryHeader(org.apache.wicket.model.IModel<java.lang.String>)
+METHOD public dev.jbaby.shadwick.components.chart.SwRadarChart<T> dev.jbaby.shadwick.components.chart.SwRadarChart.setCurrency(java.util.Currency)
+METHOD public dev.jbaby.shadwick.components.chart.SwRadarChart<T> dev.jbaby.shadwick.components.chart.SwRadarChart.setLevels(int)
+METHOD public dev.jbaby.shadwick.components.chart.SwRadarChart<T> dev.jbaby.shadwick.components.chart.SwRadarChart.setMaximum(java.lang.Number)
+METHOD public dev.jbaby.shadwick.components.chart.SwRadarChart<T> dev.jbaby.shadwick.components.chart.SwRadarChart.setMaximum(org.apache.wicket.model.IModel<? extends java.lang.Number>)
+METHOD public dev.jbaby.shadwick.components.chart.SwRadarChart<T> dev.jbaby.shadwick.components.chart.SwRadarChart.setShowGrid(boolean)
+METHOD public dev.jbaby.shadwick.components.chart.SwRadarChart<T> dev.jbaby.shadwick.components.chart.SwRadarChart.setShowLegend(boolean)
+METHOD public dev.jbaby.shadwick.components.chart.SwRadarChart<T> dev.jbaby.shadwick.components.chart.SwRadarChart.setShowTooltip(boolean)
+METHOD public dev.jbaby.shadwick.components.chart.SwRadarChart<T> dev.jbaby.shadwick.components.chart.SwRadarChart.setTitle(java.lang.String)
+METHOD public dev.jbaby.shadwick.components.chart.SwRadarChart<T> dev.jbaby.shadwick.components.chart.SwRadarChart.setTitle(org.apache.wicket.model.IModel<java.lang.String>)
+METHOD public dev.jbaby.shadwick.components.chart.SwRadarChart<T> dev.jbaby.shadwick.components.chart.SwRadarChart.setValueFormat(dev.jbaby.shadwick.components.chart.SwChart$ValueFormat)
+METHOD public dev.jbaby.shadwick.components.chart.SwRadarChart<T> dev.jbaby.shadwick.components.chart.SwRadarChart.setValueFormat(dev.jbaby.shadwick.util.SerializableBiFunction<java.lang.Number, java.util.Locale, java.lang.String>)
+METHOD public dev.jbaby.shadwick.components.chart.SwRadialChart<T> dev.jbaby.shadwick.components.chart.SwRadialChart.setAutoScale()
+METHOD public dev.jbaby.shadwick.components.chart.SwRadialChart<T> dev.jbaby.shadwick.components.chart.SwRadialChart.setCategoryHeader(java.lang.String)
+METHOD public dev.jbaby.shadwick.components.chart.SwRadialChart<T> dev.jbaby.shadwick.components.chart.SwRadialChart.setCategoryHeader(org.apache.wicket.model.IModel<java.lang.String>)
+METHOD public dev.jbaby.shadwick.components.chart.SwRadialChart<T> dev.jbaby.shadwick.components.chart.SwRadialChart.setColor(dev.jbaby.shadwick.util.SerializableFunction<T, java.lang.Integer>)
+METHOD public dev.jbaby.shadwick.components.chart.SwRadialChart<T> dev.jbaby.shadwick.components.chart.SwRadialChart.setCurrency(java.util.Currency)
+METHOD public dev.jbaby.shadwick.components.chart.SwRadialChart<T> dev.jbaby.shadwick.components.chart.SwRadialChart.setGap(double)
+METHOD public dev.jbaby.shadwick.components.chart.SwRadialChart<T> dev.jbaby.shadwick.components.chart.SwRadialChart.setInnerRadius(double)
+METHOD public dev.jbaby.shadwick.components.chart.SwRadialChart<T> dev.jbaby.shadwick.components.chart.SwRadialChart.setMaximum(java.lang.Number)
+METHOD public dev.jbaby.shadwick.components.chart.SwRadialChart<T> dev.jbaby.shadwick.components.chart.SwRadialChart.setMaximum(org.apache.wicket.model.IModel<? extends java.lang.Number>)
+METHOD public dev.jbaby.shadwick.components.chart.SwRadialChart<T> dev.jbaby.shadwick.components.chart.SwRadialChart.setRounded(boolean)
+METHOD public dev.jbaby.shadwick.components.chart.SwRadialChart<T> dev.jbaby.shadwick.components.chart.SwRadialChart.setShowLegend(boolean)
+METHOD public dev.jbaby.shadwick.components.chart.SwRadialChart<T> dev.jbaby.shadwick.components.chart.SwRadialChart.setShowTooltip(boolean)
+METHOD public dev.jbaby.shadwick.components.chart.SwRadialChart<T> dev.jbaby.shadwick.components.chart.SwRadialChart.setShowTracks(boolean)
+METHOD public dev.jbaby.shadwick.components.chart.SwRadialChart<T> dev.jbaby.shadwick.components.chart.SwRadialChart.setStartAngle(double)
+METHOD public dev.jbaby.shadwick.components.chart.SwRadialChart<T> dev.jbaby.shadwick.components.chart.SwRadialChart.setSweepAngle(double)
+METHOD public dev.jbaby.shadwick.components.chart.SwRadialChart<T> dev.jbaby.shadwick.components.chart.SwRadialChart.setTitle(java.lang.String)
+METHOD public dev.jbaby.shadwick.components.chart.SwRadialChart<T> dev.jbaby.shadwick.components.chart.SwRadialChart.setTitle(org.apache.wicket.model.IModel<java.lang.String>)
+METHOD public dev.jbaby.shadwick.components.chart.SwRadialChart<T> dev.jbaby.shadwick.components.chart.SwRadialChart.setValueFormat(dev.jbaby.shadwick.components.chart.SwChart$ValueFormat)
+METHOD public dev.jbaby.shadwick.components.chart.SwRadialChart<T> dev.jbaby.shadwick.components.chart.SwRadialChart.setValueFormat(dev.jbaby.shadwick.util.SerializableBiFunction<java.lang.Number, java.util.Locale, java.lang.String>)
+METHOD public dev.jbaby.shadwick.components.chart.SwRadialChart<T> dev.jbaby.shadwick.components.chart.SwRadialChart.setValueHeader(java.lang.String)
+METHOD public dev.jbaby.shadwick.components.chart.SwRadialChart<T> dev.jbaby.shadwick.components.chart.SwRadialChart.setValueHeader(org.apache.wicket.model.IModel<java.lang.String>)
+METHOD public dev.jbaby.shadwick.components.chart.SwScatterChart dev.jbaby.shadwick.components.chart.SwScatterChart.addSeries(dev.jbaby.shadwick.components.chart.ScatterSeries<?>)
+METHOD public dev.jbaby.shadwick.components.chart.SwScatterChart dev.jbaby.shadwick.components.chart.SwScatterChart.setIncludeZero(boolean)
+METHOD public dev.jbaby.shadwick.components.chart.SwScatterChart dev.jbaby.shadwick.components.chart.SwScatterChart.setPointHeader(java.lang.String)
+METHOD public dev.jbaby.shadwick.components.chart.SwScatterChart dev.jbaby.shadwick.components.chart.SwScatterChart.setPointHeader(org.apache.wicket.model.IModel<java.lang.String>)
+METHOD public dev.jbaby.shadwick.components.chart.SwScatterChart dev.jbaby.shadwick.components.chart.SwScatterChart.setShowGrid(boolean)
+METHOD public dev.jbaby.shadwick.components.chart.SwScatterChart dev.jbaby.shadwick.components.chart.SwScatterChart.setShowLegend(boolean)
+METHOD public dev.jbaby.shadwick.components.chart.SwScatterChart dev.jbaby.shadwick.components.chart.SwScatterChart.setShowTooltip(boolean)
+METHOD public dev.jbaby.shadwick.components.chart.SwScatterChart dev.jbaby.shadwick.components.chart.SwScatterChart.setShowXAxis(boolean)
+METHOD public dev.jbaby.shadwick.components.chart.SwScatterChart dev.jbaby.shadwick.components.chart.SwScatterChart.setShowYAxis(boolean)
+METHOD public dev.jbaby.shadwick.components.chart.SwScatterChart dev.jbaby.shadwick.components.chart.SwScatterChart.setTitle(java.lang.String)
+METHOD public dev.jbaby.shadwick.components.chart.SwScatterChart dev.jbaby.shadwick.components.chart.SwScatterChart.setTitle(org.apache.wicket.model.IModel<java.lang.String>)
+METHOD public dev.jbaby.shadwick.components.chart.SwScatterChart dev.jbaby.shadwick.components.chart.SwScatterChart.setXCurrency(java.util.Currency)
+METHOD public dev.jbaby.shadwick.components.chart.SwScatterChart dev.jbaby.shadwick.components.chart.SwScatterChart.setXLabel(java.lang.String)
+METHOD public dev.jbaby.shadwick.components.chart.SwScatterChart dev.jbaby.shadwick.components.chart.SwScatterChart.setXLabel(org.apache.wicket.model.IModel<java.lang.String>)
+METHOD public dev.jbaby.shadwick.components.chart.SwScatterChart dev.jbaby.shadwick.components.chart.SwScatterChart.setXTickCount(int)
+METHOD public dev.jbaby.shadwick.components.chart.SwScatterChart dev.jbaby.shadwick.components.chart.SwScatterChart.setXValueFormat(dev.jbaby.shadwick.components.chart.SwChart$ValueFormat)
+METHOD public dev.jbaby.shadwick.components.chart.SwScatterChart dev.jbaby.shadwick.components.chart.SwScatterChart.setXValueFormat(dev.jbaby.shadwick.util.SerializableBiFunction<java.lang.Number, java.util.Locale, java.lang.String>)
+METHOD public dev.jbaby.shadwick.components.chart.SwScatterChart dev.jbaby.shadwick.components.chart.SwScatterChart.setYCurrency(java.util.Currency)
+METHOD public dev.jbaby.shadwick.components.chart.SwScatterChart dev.jbaby.shadwick.components.chart.SwScatterChart.setYLabel(java.lang.String)
+METHOD public dev.jbaby.shadwick.components.chart.SwScatterChart dev.jbaby.shadwick.components.chart.SwScatterChart.setYLabel(org.apache.wicket.model.IModel<java.lang.String>)
+METHOD public dev.jbaby.shadwick.components.chart.SwScatterChart dev.jbaby.shadwick.components.chart.SwScatterChart.setYTickCount(int)
+METHOD public dev.jbaby.shadwick.components.chart.SwScatterChart dev.jbaby.shadwick.components.chart.SwScatterChart.setYValueFormat(dev.jbaby.shadwick.components.chart.SwChart$ValueFormat)
+METHOD public dev.jbaby.shadwick.components.chart.SwScatterChart dev.jbaby.shadwick.components.chart.SwScatterChart.setYValueFormat(dev.jbaby.shadwick.util.SerializableBiFunction<java.lang.Number, java.util.Locale, java.lang.String>)
 METHOD public dev.jbaby.shadwick.components.chart.SwSparkline dev.jbaby.shadwick.components.chart.SwSparkline.setColor(int)
 METHOD public dev.jbaby.shadwick.components.chart.SwSparkline dev.jbaby.shadwick.components.chart.SwSparkline.setFilled(boolean)
 METHOD public dev.jbaby.shadwick.components.chart.SwSparkline dev.jbaby.shadwick.components.chart.SwSparkline.setShowLastPoint(boolean)
@@ -1706,6 +1823,12 @@ METHOD public static <T> dev.jbaby.shadwick.components.chart.ChartSeries<T> dev.
 METHOD public static <T> dev.jbaby.shadwick.components.chart.ChartSeries<T> dev.jbaby.shadwick.components.chart.ChartSeries.bar(org.apache.wicket.model.IModel<java.lang.String>,dev.jbaby.shadwick.util.SerializableFunction<T, ? extends java.lang.Number>)
 METHOD public static <T> dev.jbaby.shadwick.components.chart.ChartSeries<T> dev.jbaby.shadwick.components.chart.ChartSeries.line(java.lang.String,dev.jbaby.shadwick.util.SerializableFunction<T, ? extends java.lang.Number>)
 METHOD public static <T> dev.jbaby.shadwick.components.chart.ChartSeries<T> dev.jbaby.shadwick.components.chart.ChartSeries.line(org.apache.wicket.model.IModel<java.lang.String>,dev.jbaby.shadwick.util.SerializableFunction<T, ? extends java.lang.Number>)
+METHOD public static <T> dev.jbaby.shadwick.components.chart.HeatmapColumn<T> dev.jbaby.shadwick.components.chart.HeatmapColumn.of(java.lang.String,dev.jbaby.shadwick.util.SerializableFunction<T, ? extends java.lang.Number>)
+METHOD public static <T> dev.jbaby.shadwick.components.chart.HeatmapColumn<T> dev.jbaby.shadwick.components.chart.HeatmapColumn.of(org.apache.wicket.model.IModel<java.lang.String>,dev.jbaby.shadwick.util.SerializableFunction<T, ? extends java.lang.Number>)
+METHOD public static <T> dev.jbaby.shadwick.components.chart.RadarSeries<T> dev.jbaby.shadwick.components.chart.RadarSeries.of(java.lang.String,dev.jbaby.shadwick.util.SerializableFunction<T, ? extends java.lang.Number>)
+METHOD public static <T> dev.jbaby.shadwick.components.chart.RadarSeries<T> dev.jbaby.shadwick.components.chart.RadarSeries.of(org.apache.wicket.model.IModel<java.lang.String>,dev.jbaby.shadwick.util.SerializableFunction<T, ? extends java.lang.Number>)
+METHOD public static <T> dev.jbaby.shadwick.components.chart.ScatterSeries<T> dev.jbaby.shadwick.components.chart.ScatterSeries.of(java.lang.String,org.apache.wicket.model.IModel<? extends java.util.List<T>>,dev.jbaby.shadwick.util.SerializableFunction<T, java.lang.String>,dev.jbaby.shadwick.util.SerializableFunction<T, ? extends java.lang.Number>,dev.jbaby.shadwick.util.SerializableFunction<T, ? extends java.lang.Number>)
+METHOD public static <T> dev.jbaby.shadwick.components.chart.ScatterSeries<T> dev.jbaby.shadwick.components.chart.ScatterSeries.of(org.apache.wicket.model.IModel<java.lang.String>,org.apache.wicket.model.IModel<? extends java.util.List<T>>,dev.jbaby.shadwick.util.SerializableFunction<T, java.lang.String>,dev.jbaby.shadwick.util.SerializableFunction<T, ? extends java.lang.Number>,dev.jbaby.shadwick.util.SerializableFunction<T, ? extends java.lang.Number>)
 METHOD public static <T> void dev.jbaby.shadwick.components.table.SwCsvExport.download(org.apache.wicket.request.cycle.RequestCycle,org.apache.wicket.markup.repeater.data.IDataProvider<T>,java.util.List<? extends org.apache.wicket.extensions.markup.html.repeater.data.table.IColumn<T, ?>>,java.lang.String,java.util.Locale)
 METHOD public static <T> void dev.jbaby.shadwick.components.table.SwCsvExport.write(org.apache.wicket.markup.repeater.data.IDataProvider<T>,java.util.List<? extends org.apache.wicket.extensions.markup.html.repeater.data.table.IColumn<T, ?>>,java.util.Locale,java.io.OutputStream) throws java.io.IOException
 METHOD public static boolean dev.jbaby.shadwick.components.SwFeedbackPanel.isFence(org.apache.wicket.Component)
@@ -1938,12 +2061,20 @@ METHOD public static dev.jbaby.shadwick.components.SwThemeToggle$Presentation de
 METHOD public static dev.jbaby.shadwick.components.SwThemeToggle$Presentation[] dev.jbaby.shadwick.components.SwThemeToggle$Presentation.values()
 METHOD public static dev.jbaby.shadwick.components.SwUserMenu$Placement dev.jbaby.shadwick.components.SwUserMenu$Placement.valueOf(java.lang.String)
 METHOD public static dev.jbaby.shadwick.components.SwUserMenu$Placement[] dev.jbaby.shadwick.components.SwUserMenu$Placement.values()
+METHOD public static dev.jbaby.shadwick.components.chart.ChartReference dev.jbaby.shadwick.components.chart.ChartReference.band(java.lang.String,java.lang.Number,java.lang.Number)
+METHOD public static dev.jbaby.shadwick.components.chart.ChartReference dev.jbaby.shadwick.components.chart.ChartReference.band(java.lang.String,org.apache.wicket.model.IModel<? extends java.lang.Number>,org.apache.wicket.model.IModel<? extends java.lang.Number>)
+METHOD public static dev.jbaby.shadwick.components.chart.ChartReference dev.jbaby.shadwick.components.chart.ChartReference.band(org.apache.wicket.model.IModel<java.lang.String>,org.apache.wicket.model.IModel<? extends java.lang.Number>,org.apache.wicket.model.IModel<? extends java.lang.Number>)
+METHOD public static dev.jbaby.shadwick.components.chart.ChartReference dev.jbaby.shadwick.components.chart.ChartReference.line(java.lang.String,java.lang.Number)
+METHOD public static dev.jbaby.shadwick.components.chart.ChartReference dev.jbaby.shadwick.components.chart.ChartReference.line(java.lang.String,org.apache.wicket.model.IModel<? extends java.lang.Number>)
+METHOD public static dev.jbaby.shadwick.components.chart.ChartReference dev.jbaby.shadwick.components.chart.ChartReference.line(org.apache.wicket.model.IModel<java.lang.String>,org.apache.wicket.model.IModel<? extends java.lang.Number>)
 METHOD public static dev.jbaby.shadwick.components.chart.ChartSeries$Curve dev.jbaby.shadwick.components.chart.ChartSeries$Curve.valueOf(java.lang.String)
 METHOD public static dev.jbaby.shadwick.components.chart.ChartSeries$Curve[] dev.jbaby.shadwick.components.chart.ChartSeries$Curve.values()
 METHOD public static dev.jbaby.shadwick.components.chart.ChartSeries$Type dev.jbaby.shadwick.components.chart.ChartSeries$Type.valueOf(java.lang.String)
 METHOD public static dev.jbaby.shadwick.components.chart.ChartSeries$Type[] dev.jbaby.shadwick.components.chart.ChartSeries$Type.values()
 METHOD public static dev.jbaby.shadwick.components.chart.ChartSeries$ValueLabels dev.jbaby.shadwick.components.chart.ChartSeries$ValueLabels.valueOf(java.lang.String)
 METHOD public static dev.jbaby.shadwick.components.chart.ChartSeries$ValueLabels[] dev.jbaby.shadwick.components.chart.ChartSeries$ValueLabels.values()
+METHOD public static dev.jbaby.shadwick.components.chart.ScatterSeries$Shape dev.jbaby.shadwick.components.chart.ScatterSeries$Shape.valueOf(java.lang.String)
+METHOD public static dev.jbaby.shadwick.components.chart.ScatterSeries$Shape[] dev.jbaby.shadwick.components.chart.ScatterSeries$Shape.values()
 METHOD public static dev.jbaby.shadwick.components.chart.SwChart$CategoryFormat dev.jbaby.shadwick.components.chart.SwChart$CategoryFormat.valueOf(java.lang.String)
 METHOD public static dev.jbaby.shadwick.components.chart.SwChart$CategoryFormat[] dev.jbaby.shadwick.components.chart.SwChart$CategoryFormat.values()
 METHOD public static dev.jbaby.shadwick.components.chart.SwChart$Indicator dev.jbaby.shadwick.components.chart.SwChart$Indicator.valueOf(java.lang.String)
@@ -1954,8 +2085,12 @@ METHOD public static dev.jbaby.shadwick.components.chart.SwChart$LegendPosition 
 METHOD public static dev.jbaby.shadwick.components.chart.SwChart$LegendPosition[] dev.jbaby.shadwick.components.chart.SwChart$LegendPosition.values()
 METHOD public static dev.jbaby.shadwick.components.chart.SwChart$Orientation dev.jbaby.shadwick.components.chart.SwChart$Orientation.valueOf(java.lang.String)
 METHOD public static dev.jbaby.shadwick.components.chart.SwChart$Orientation[] dev.jbaby.shadwick.components.chart.SwChart$Orientation.values()
+METHOD public static dev.jbaby.shadwick.components.chart.SwChart$StackMode dev.jbaby.shadwick.components.chart.SwChart$StackMode.valueOf(java.lang.String)
+METHOD public static dev.jbaby.shadwick.components.chart.SwChart$StackMode[] dev.jbaby.shadwick.components.chart.SwChart$StackMode.values()
 METHOD public static dev.jbaby.shadwick.components.chart.SwChart$ValueFormat dev.jbaby.shadwick.components.chart.SwChart$ValueFormat.valueOf(java.lang.String)
 METHOD public static dev.jbaby.shadwick.components.chart.SwChart$ValueFormat[] dev.jbaby.shadwick.components.chart.SwChart$ValueFormat.values()
+METHOD public static dev.jbaby.shadwick.components.chart.SwDonutChart$Shape dev.jbaby.shadwick.components.chart.SwDonutChart$Shape.valueOf(java.lang.String)
+METHOD public static dev.jbaby.shadwick.components.chart.SwDonutChart$Shape[] dev.jbaby.shadwick.components.chart.SwDonutChart$Shape.values()
 METHOD public static double dev.jbaby.shadwick.util.RangeValues.clamp(double,double,double)
 METHOD public static double dev.jbaby.shadwick.util.RangeValues.finite(java.lang.Number,java.lang.String)
 METHOD public static java.lang.String dev.jbaby.shadwick.behaviors.ThemeBehavior.validateStorageKey(java.lang.String)
@@ -2106,6 +2241,10 @@ METHOD public void dev.jbaby.shadwick.components.SwSteps.renderHead(org.apache.w
 METHOD public void dev.jbaby.shadwick.components.SwThemeToggle.renderHead(org.apache.wicket.markup.head.IHeaderResponse)
 METHOD public void dev.jbaby.shadwick.components.chart.SwChart.renderHead(org.apache.wicket.markup.head.IHeaderResponse)
 METHOD public void dev.jbaby.shadwick.components.chart.SwDonutChart.renderHead(org.apache.wicket.markup.head.IHeaderResponse)
+METHOD public void dev.jbaby.shadwick.components.chart.SwHeatmapChart.renderHead(org.apache.wicket.markup.head.IHeaderResponse)
+METHOD public void dev.jbaby.shadwick.components.chart.SwRadarChart.renderHead(org.apache.wicket.markup.head.IHeaderResponse)
+METHOD public void dev.jbaby.shadwick.components.chart.SwRadialChart.renderHead(org.apache.wicket.markup.head.IHeaderResponse)
+METHOD public void dev.jbaby.shadwick.components.chart.SwScatterChart.renderHead(org.apache.wicket.markup.head.IHeaderResponse)
 METHOD public void dev.jbaby.shadwick.components.chart.SwSparkline.onComponentTagBody(org.apache.wicket.markup.MarkupStream,org.apache.wicket.markup.ComponentTag)
 METHOD public void dev.jbaby.shadwick.components.form.BaseSwField.onEvent(org.apache.wicket.event.IEvent<?>)
 METHOD public void dev.jbaby.shadwick.components.form.BaseSwField.renderHead(org.apache.wicket.markup.head.IHeaderResponse)
@@ -2246,6 +2385,10 @@ TYPE public class dev.jbaby.shadwick.components.SwUserMenu extends org.apache.wi
 TYPE public class dev.jbaby.shadwick.components.chart.ChartSeries<T> extends java.lang.Object implements [java.io.Serializable]
 TYPE public class dev.jbaby.shadwick.components.chart.SwChart<T> extends org.apache.wicket.markup.html.panel.Panel implements []
 TYPE public class dev.jbaby.shadwick.components.chart.SwDonutChart<T> extends org.apache.wicket.markup.html.panel.Panel implements []
+TYPE public class dev.jbaby.shadwick.components.chart.SwHeatmapChart<T> extends org.apache.wicket.markup.html.panel.Panel implements []
+TYPE public class dev.jbaby.shadwick.components.chart.SwRadarChart<T> extends org.apache.wicket.markup.html.panel.Panel implements []
+TYPE public class dev.jbaby.shadwick.components.chart.SwRadialChart<T> extends org.apache.wicket.markup.html.panel.Panel implements []
+TYPE public class dev.jbaby.shadwick.components.chart.SwScatterChart extends org.apache.wicket.markup.html.panel.Panel implements []
 TYPE public class dev.jbaby.shadwick.components.chart.SwSparkline extends org.apache.wicket.markup.html.WebComponent implements []
 TYPE public class dev.jbaby.shadwick.components.form.Html5TextField<T> extends org.apache.wicket.markup.html.form.TextField<T> implements []
 TYPE public class dev.jbaby.shadwick.components.form.NotShownInlineFilter extends java.lang.Object implements [org.apache.wicket.feedback.IFeedbackMessageFilter]
@@ -2300,6 +2443,10 @@ TYPE public final class dev.jbaby.shadwick.Shadwick extends java.lang.Object imp
 TYPE public final class dev.jbaby.shadwick.Sw extends java.lang.Object implements []
 TYPE public final class dev.jbaby.shadwick.components.PageWindow extends java.lang.Object implements []
 TYPE public final class dev.jbaby.shadwick.components.TableQuery extends java.lang.Object implements [java.io.Serializable]
+TYPE public final class dev.jbaby.shadwick.components.chart.ChartReference extends java.lang.Object implements [java.io.Serializable]
+TYPE public final class dev.jbaby.shadwick.components.chart.HeatmapColumn<T> extends java.lang.Object implements [java.io.Serializable]
+TYPE public final class dev.jbaby.shadwick.components.chart.RadarSeries<T> extends java.lang.Object implements [java.io.Serializable]
+TYPE public final class dev.jbaby.shadwick.components.chart.ScatterSeries<T> extends java.lang.Object implements [java.io.Serializable]
 TYPE public final class dev.jbaby.shadwick.components.form.DisabledDates extends java.lang.Object implements [java.io.Serializable]
 TYPE public final class dev.jbaby.shadwick.components.form.Html5Converters extends java.lang.Object implements []
 TYPE public final class dev.jbaby.shadwick.components.table.SwCsvExport extends java.lang.Object implements []
@@ -2372,10 +2519,13 @@ TYPE public static final enum dev.jbaby.shadwick.components.SwUserMenu$Placement
 TYPE public static final enum dev.jbaby.shadwick.components.chart.ChartSeries$Curve extends java.lang.Enum<dev.jbaby.shadwick.components.chart.ChartSeries$Curve> implements []
 TYPE public static final enum dev.jbaby.shadwick.components.chart.ChartSeries$Type extends java.lang.Enum<dev.jbaby.shadwick.components.chart.ChartSeries$Type> implements []
 TYPE public static final enum dev.jbaby.shadwick.components.chart.ChartSeries$ValueLabels extends java.lang.Enum<dev.jbaby.shadwick.components.chart.ChartSeries$ValueLabels> implements []
+TYPE public static final enum dev.jbaby.shadwick.components.chart.ScatterSeries$Shape extends java.lang.Enum<dev.jbaby.shadwick.components.chart.ScatterSeries$Shape> implements []
 TYPE public static final enum dev.jbaby.shadwick.components.chart.SwChart$CategoryFormat extends java.lang.Enum<dev.jbaby.shadwick.components.chart.SwChart$CategoryFormat> implements []
 TYPE public static final enum dev.jbaby.shadwick.components.chart.SwChart$Indicator extends java.lang.Enum<dev.jbaby.shadwick.components.chart.SwChart$Indicator> implements []
 TYPE public static final enum dev.jbaby.shadwick.components.chart.SwChart$LegendAlignment extends java.lang.Enum<dev.jbaby.shadwick.components.chart.SwChart$LegendAlignment> implements []
 TYPE public static final enum dev.jbaby.shadwick.components.chart.SwChart$LegendPosition extends java.lang.Enum<dev.jbaby.shadwick.components.chart.SwChart$LegendPosition> implements []
 TYPE public static final enum dev.jbaby.shadwick.components.chart.SwChart$Orientation extends java.lang.Enum<dev.jbaby.shadwick.components.chart.SwChart$Orientation> implements []
+TYPE public static final enum dev.jbaby.shadwick.components.chart.SwChart$StackMode extends java.lang.Enum<dev.jbaby.shadwick.components.chart.SwChart$StackMode> implements []
 TYPE public static final enum dev.jbaby.shadwick.components.chart.SwChart$ValueFormat extends java.lang.Enum<dev.jbaby.shadwick.components.chart.SwChart$ValueFormat> implements []
+TYPE public static final enum dev.jbaby.shadwick.components.chart.SwDonutChart$Shape extends java.lang.Enum<dev.jbaby.shadwick.components.chart.SwDonutChart$Shape> implements []
 TYPE public static final record dev.jbaby.shadwick.components.SwMonthView$Day extends java.lang.Record implements [java.io.Serializable]

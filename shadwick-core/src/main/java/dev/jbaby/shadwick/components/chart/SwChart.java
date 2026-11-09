@@ -4,6 +4,8 @@ import dev.jbaby.shadwick.Shadwick;
 import dev.jbaby.shadwick.behaviors.StyledBehavior;
 import dev.jbaby.shadwick.util.*;
 import java.io.Serializable;
+import java.math.BigDecimal;
+import java.math.MathContext;
 import java.time.*;
 import java.time.format.*;
 import java.time.temporal.*;
@@ -24,12 +26,14 @@ public class SwChart<T> extends Panel {
     public enum ValueFormat { NUMBER, INTEGER, COMPACT, PERCENT, CURRENCY }
     public enum CategoryFormat { DAY, MONTH_SHORT, MONTH, MONTH_YEAR, DATE, TIME }
     public enum Orientation { VERTICAL, HORIZONTAL }
+    public enum StackMode { ABSOLUTE, PERCENT }
     public enum Indicator { AUTO, DOT, LINE, DASHED }
     public enum LegendPosition { TOP, BOTTOM }
     public enum LegendAlignment { START, CENTER, END }
     private final IModel<? extends List<T>> data;
     private final SerializableFunction<T, ?> category;
     private final List<ChartSeries<T>> series = new ArrayList<>();
+    private final List<ChartReference> references = new ArrayList<>();
     private IModel<String> title = Model.of("Chart"), categoryHeader = Model.of("Category");
     private SerializableBiFunction<Number, Locale, String> valueFormat;
     private SerializableBiFunction<Object, Locale, String> categoryFormat;
@@ -47,14 +51,18 @@ public class SwChart<T> extends Panel {
     private LegendAlignment legendAlignment = LegendAlignment.CENTER;
     private int valueTickCount = 5, maxCategoryTicks = 8, minCategoryTickGap = 5;
     private Orientation orientation = Orientation.VERTICAL;
+    private StackMode stackMode = StackMode.ABSOLUTE;
     private transient Snapshot snapshot;
-    private record Row(String category, String axisCategory, String tooltipLabel, List<Double> values,
+    private record Row(String category, String axisCategory, String tooltipLabel, List<Double> values, List<Double> plotValues,
                        List<String> text, List<String> tooltipText) implements Serializable {}
     private record ValueFormatting(ValueFormat named, Currency currency,
                                    SerializableBiFunction<Number, Locale, String> custom) implements Serializable {}
     private record CategoryFormatting(CategoryFormat named,
                                       SerializableBiFunction<Object, Locale, String> custom) implements Serializable {}
-    private record Snapshot(List<Row> rows, List<String> labels, double[][] low, double[][] high, double[] ticks, int[] joins)
+    private record Reference(String label, double lower, double upper, String text, boolean band, int color,
+                             boolean dashed, double opacity, boolean extendDomain) implements Serializable {}
+    private record Snapshot(List<Row> rows, List<String> labels, double[][] low, double[][] high, double[] ticks, int[] joins,
+                            List<Reference> references)
             implements Serializable {}
     private record LabelSelection(Set<Integer> rows, int last, int highest) {}
     private record ValueLabel(int series, int row, String text, double x, double y, int side, int priority) {}
@@ -64,12 +72,21 @@ public class SwChart<T> extends Panel {
         this.data = Objects.requireNonNull(data);
         this.category = Objects.requireNonNull(category);
         setOutputMarkupId(true);
+    }
+
+    @Override
+    protected void onInitialize() {
+        super.onInitialize();
+        add(figure());
+    }
+
+    private WebMarkupContainer figure() {
         var figure = new WebMarkupContainer("figure");
         figure.add(new StyledBehavior("sw-chart"));
         figure.setOutputMarkupId(true);
-        add(figure);
         figure.add(new Label("content", (IModel<String>) () -> renderChart(figure.getMarkupId()))
                         .setEscapeModelStrings(false));
+        return figure;
     }
 
     public SwChart<T> addSeries(ChartSeries<T> value) {
@@ -77,9 +94,23 @@ public class SwChart<T> extends Panel {
         return this;
     }
 
+    /** Add a numeric target or range. Its models detach with this chart. */
+    public SwChart<T> addReference(ChartReference value) {
+        Objects.requireNonNull(value);
+        if (references.contains(value)) throw new IllegalArgumentException("A chart reference must be registered exactly once");
+        references.add(value);
+        return this;
+    }
+
     /** Horizontal charts draw bar series, with categories down the page and values across it. */
     public SwChart<T> setOrientation(Orientation value) {
         orientation = Objects.requireNonNull(value);
+        return this;
+    }
+
+    /** Normalize each named bar/area stack per category. Percent stacks require nonnegative values. */
+    public SwChart<T> setStackMode(StackMode value) {
+        stackMode = Objects.requireNonNull(value);
         return this;
     }
 
@@ -318,6 +349,13 @@ public class SwChart<T> extends Panel {
                 override.currency == null ? currency : override.currency, override.custom);
     }
 
+    private String axisValue(double value) {
+        if (axisValueFormat != null) return format(value, axisValueFormat);
+        if (stackMode == StackMode.PERCENT)
+            return ChartValues.format(value, getLocale(), ValueFormat.PERCENT, null, null);
+        return format(value);
+    }
+
     private Snapshot snapshot() {
         if (snapshot != null)
             return snapshot;
@@ -327,15 +365,18 @@ public class SwChart<T> extends Panel {
             throw new IllegalStateException("A chart needs at least one series");
         if (orientation == Orientation.HORIZONTAL && series.stream().anyMatch(s -> s.type != ChartSeries.Type.BAR))
             throw new IllegalStateException("Horizontal charts support bar series only");
+        validateStackMode();
         var sources = validateJoins();
         var labels = series.stream().map(s -> Objects.toString(s.label.getObject(), "")).toList();
         if (labels.stream().anyMatch(String::isBlank))
             throw new IllegalStateException("Every chart series needs a label");
+        List<Reference> guides = referenceSnapshot();
         var rows = new ArrayList<Row>();
         List<T> items = data.getObject();
         if (items != null)
             for (T item : items) {
                 var values = new ArrayList<Double>();
+                var weights = new ArrayList<BigDecimal>();
                 var text = new ArrayList<String>();
                 var tooltipText = new ArrayList<String>();
                 for (var s : series) {
@@ -344,6 +385,7 @@ public class SwChart<T> extends Panel {
                     if (!Double.isFinite(d) || Math.abs(d) > 1e100)
                         throw new IllegalArgumentException("Chart values must be finite, with magnitude at most 1e100");
                     values.add(value == null ? null : d);
+                    if (stackMode == StackMode.PERCENT) weights.add(normalizationWeight(value));
                     String formatted = format(value);
                     text.add(formatted);
                     tooltipText.add(tooltipValueFormat == null ? formatted : format(value, tooltipValueFormat));
@@ -356,7 +398,9 @@ public class SwChart<T> extends Panel {
                 String label = tooltipLabelFormat != null
                         ? category(rawLabel, tooltipLabelFormat.named, tooltipLabelFormat.custom)
                         : tooltipLabel == null ? formattedCategory : category(rawLabel);
-                rows.add(new Row(formattedCategory, axisCategory, label, Collections.unmodifiableList(values),
+                List<Double> original = Collections.unmodifiableList(values);
+                List<Double> plot = stackMode == StackMode.PERCENT ? normalizedValues(weights) : original;
+                rows.add(new Row(formattedCategory, axisCategory, label, original, plot,
                         List.copyOf(text), List.copyOf(tooltipText)));
             }
         double[][] low = new double[series.size()][rows.size()], high = new double[series.size()][rows.size()];
@@ -364,13 +408,13 @@ public class SwChart<T> extends Panel {
         for (int r = 0; r < rows.size(); r++) {
             Map<String, double[]> stacks = new HashMap<>();
             for (int s = 0; s < series.size(); s++) {
-                Double v = rows.get(r).values.get(s);
+                Double v = rows.get(r).plotValues.get(s);
                 if (v == null)
                     continue;
                 ChartSeries<T> part = series.get(s);
                 double base = 0;
                 if (part.stack != null && part.type != ChartSeries.Type.LINE) {
-                    double[] sum = stacks.computeIfAbsent(part.type + ":" + part.stack, k -> new double[2]);
+                    double[] sum = stacks.computeIfAbsent(stackKey(part), k -> new double[2]);
                     int sign = v < 0 ? 0 : 1;
                     base = sum[sign];
                     sum[sign] += v;
@@ -387,18 +431,103 @@ public class SwChart<T> extends Panel {
             ChartSeries<T> source = series.get(s).join;
             if (source == null) continue;
             int first = 0;
-            while (first < rows.size() && rows.get(first).values.get(s) == null) first++;
+            while (first < rows.size() && rows.get(first).plotValues.get(s) == null) first++;
             if (first == rows.size()) continue;
             int from = sources.get(source);
             for (int r = first - 1; r >= 0; r--) {
-                if (rows.get(r).values.get(from) == null) continue;
+                if (rows.get(r).plotValues.get(from) == null) continue;
                 joins[s] = r;
                 // Borrow the plotted coordinates, not another value in the stack or the original data.
                 low[s][r] = low[from][r]; high[s][r] = high[from][r];
                 break;
             }
         }
-        return snapshot = new Snapshot(List.copyOf(rows), labels, low, high, ticks(min, max, valueTickCount), joins);
+        if (stackMode == StackMode.ABSOLUTE) {
+            for (Reference guide : guides) {
+                if (!guide.extendDomain) continue;
+                min = Math.min(min, guide.lower);
+                max = Math.max(max, guide.upper);
+            }
+        }
+        double[] axis = stackMode == StackMode.PERCENT ? ticks(0, 1, valueTickCount) : ticks(min, max, valueTickCount);
+        return snapshot = new Snapshot(List.copyOf(rows), labels, low, high, axis, joins, guides);
+    }
+
+    private List<Reference> referenceSnapshot() {
+        List<Reference> result = new ArrayList<>();
+        for (ChartReference reference : references) {
+            if (!reference.visible) continue;
+            Number lower = reference.lower.getObject();
+            Number upper = reference.upper == null ? lower : reference.upper.getObject();
+            if (lower == null || upper == null) continue;
+            BigDecimal from = referenceAmount(lower), to = referenceAmount(upper);
+            if (reference.upper != null && from.compareTo(to) >= 0)
+                throw new IllegalArgumentException("A reference band's lower value must be less than its upper value");
+            String label = reference.label.getObject();
+            if (label == null || label.isBlank()) throw new IllegalStateException("A chart reference needs a label");
+            String text = referenceValue(lower);
+            if (reference.upper != null) text += " – " + referenceValue(upper);
+            result.add(new Reference(label, from.doubleValue(), to.doubleValue(), text, reference.upper != null,
+                    reference.color, reference.dashed, reference.opacity, reference.extendDomain));
+        }
+        return List.copyOf(result);
+    }
+
+    private BigDecimal referenceAmount(Number value) {
+        double number = value.doubleValue();
+        if (!Double.isFinite(number) || Math.abs(number) > 1e100)
+            throw new IllegalArgumentException("Reference values must be finite, with magnitude at most 1e100");
+        BigDecimal amount = decimal(value);
+        if (amount.abs().compareTo(BigDecimal.ONE.scaleByPowerOfTen(100)) > 0)
+            throw new IllegalArgumentException("Reference values must be finite, with magnitude at most 1e100");
+        if (stackMode == StackMode.PERCENT && (amount.signum() < 0 || amount.compareTo(BigDecimal.ONE) > 0))
+            throw new IllegalArgumentException("Percent chart references must be between 0 and 1");
+        return amount;
+    }
+
+    private String referenceValue(Number value) {
+        return stackMode == StackMode.PERCENT
+                ? ChartValues.format(value, getLocale(), ValueFormat.PERCENT, null, null) : format(value);
+    }
+
+    private void validateStackMode() {
+        if (stackMode != StackMode.PERCENT) return;
+        for (ChartSeries<T> part : series) {
+            if (part.type == ChartSeries.Type.LINE || part.stack == null || part.stack.isBlank())
+                throw new IllegalStateException("100% stacks require bar/area series with a nonblank stack name");
+        }
+    }
+
+    private static BigDecimal normalizationWeight(Number value) {
+        if (value == null) return null;
+        BigDecimal weight = decimal(value);
+        if (weight.signum() < 0)
+            throw new IllegalArgumentException("100% stacks require nonnegative values");
+        return weight;
+    }
+
+    private static BigDecimal decimal(Number value) {
+        try { return value instanceof BigDecimal decimal ? decimal : new BigDecimal(value.toString()); }
+        catch (NumberFormatException ignored) { return BigDecimal.valueOf(value.doubleValue()); }
+    }
+
+    private static String stackKey(ChartSeries<?> part) {
+        return part.type + ":" + part.stack;
+    }
+
+    private List<Double> normalizedValues(List<BigDecimal> weights) {
+        Map<String, BigDecimal> totals = new HashMap<>();
+        for (int s = 0; s < series.size(); s++) {
+            BigDecimal weight = weights.get(s);
+            if (weight != null) totals.merge(stackKey(series.get(s)), weight, BigDecimal::add);
+        }
+        List<Double> result = new ArrayList<>();
+        for (int s = 0; s < series.size(); s++) {
+            BigDecimal weight = weights.get(s), total = totals.get(stackKey(series.get(s)));
+            result.add(weight == null || total.signum() == 0 ? null
+                    : weight.divide(total, MathContext.DECIMAL128).doubleValue());
+        }
+        return Collections.unmodifiableList(result);
     }
     private IdentityHashMap<ChartSeries<T>, Integer> validateJoins() {
         var indexes = new IdentityHashMap<ChartSeries<T>, Integer>();
@@ -425,7 +554,7 @@ public class SwChart<T> extends Panel {
         return indexes;
     }
     private static boolean plotted(Snapshot snap, int series, int row) {
-        return snap.rows.get(row).values.get(series) != null || snap.joins[series] == row;
+        return snap.rows.get(row).plotValues.get(series) != null || snap.joins[series] == row;
     }
     static double[] ticks(double min, double max) {
         return ticks(min, max, 5);
@@ -482,6 +611,7 @@ public class SwChart<T> extends Panel {
             b.append("<p class=\"sw-chart-empty\" role=\"status\">")
                     .append(escape(getString("SwChart.empty", null, "No data to display.")))
                     .append("</p>");
+            renderReferenceCaptions(b, id, snap);
             return b.toString();
         }
         b.append("<p class=\"sw-chart-sr-only\" id=\"")
@@ -499,6 +629,7 @@ public class SwChart<T> extends Panel {
             renderHorizontalPlot(b, id, snap);
         else
             renderVerticalPlot(b, id, snap, name);
+        renderReferenceCaptions(b, id, snap);
         if (legend && legendPosition == LegendPosition.BOTTOM) renderLegend(b, snap);
         b.append("<details class=\"sw-chart-data\"><summary>")
                 .append(escape(getString("SwChart.data", null, "View data")))
@@ -552,10 +683,73 @@ public class SwChart<T> extends Panel {
     }
 
     private void interactionAttributes(StringBuilder b) {
-        b.append(" data-tooltip-label-visible=\"").append(tooltipLabelVisible).append("\" data-tooltip-indicator-visible=\"")
+        b.append(" data-stack-mode=\"").append(stackMode.name().toLowerCase(Locale.ROOT))
+                .append("\" data-tooltip-label-visible=\"").append(tooltipLabelVisible).append("\" data-tooltip-indicator-visible=\"")
                 .append(tooltipIndicatorVisible).append("\" data-tooltip-indicator=\"")
                 .append(tooltipIndicator.name().toLowerCase(Locale.ROOT)).append("\" data-tooltip-cursor=\"")
                 .append(tooltipCursor).append('"');
+    }
+
+    private static String plotDescription(String id, Snapshot snap) {
+        return id + "-help" + (snap.references.isEmpty() ? "" : " " + id + "-references");
+    }
+
+    private static String referenceColor(Reference reference) {
+        return reference.color == 0 ? "" : " sw-chart-series-" + reference.color;
+    }
+
+    private void renderReferenceCaptions(StringBuilder b, String id, Snapshot snap) {
+        if (snap.references.isEmpty()) return;
+        b.append("<ul class=\"sw-chart-references\" id=\"").append(id).append("-references\" aria-label=\"")
+                .append(escape(getString("SwChart.references"))).append("\">");
+        for (Reference reference : snap.references) {
+            b.append("<li class=\"sw-chart-reference-item").append(referenceColor(reference))
+                    .append("\"><span class=\"sw-chart-reference-indicator\" aria-hidden=\"true\" data-kind=\"")
+                    .append(reference.band ? "band" : "line").append('"');
+            if (!reference.band && reference.dashed) b.append(" data-dashed=\"true\"");
+            b.append("></span><span class=\"sw-chart-reference-name\">").append(escape(reference.label))
+                    .append("</span> <span class=\"sw-chart-reference-value\">").append(escape(reference.text)).append("</span></li>");
+        }
+        b.append("</ul>");
+    }
+
+    private void renderReferenceBands(StringBuilder b, Snapshot snap, int height) {
+        double minimum = snap.ticks[0], maximum = snap.ticks[snap.ticks.length - 1];
+        for (Reference reference : snap.references) {
+            if (!reference.band) continue;
+            double lower = Math.max(minimum, reference.lower), upper = Math.min(maximum, reference.upper);
+            if (lower >= upper) continue;
+            b.append("<rect class=\"sw-chart-reference-band").append(referenceColor(reference))
+                    .append("\" aria-hidden=\"true\" fill-opacity=\"").append(num(reference.opacity)).append('"');
+            if (orientation == Orientation.HORIZONTAL)
+                b.append(" x=\"").append(num(x(lower, snap.ticks))).append("\" y=\"0\" width=\"")
+                        .append(num(x(upper, snap.ticks) - x(lower, snap.ticks))).append("\" height=\"").append(height);
+            else
+                b.append(" x=\"0\" y=\"").append(num(y(upper, snap.ticks))).append("\" width=\"1000\" height=\"")
+                        .append(num(y(lower, snap.ticks) - y(upper, snap.ticks)));
+            b.append("\"/>");
+        }
+    }
+
+    private void renderReferenceLines(StringBuilder b, Snapshot snap, int height) {
+        List<Reference> lines = snap.references.stream().filter(reference -> !reference.band
+                && reference.lower >= snap.ticks[0] && reference.lower <= snap.ticks[snap.ticks.length - 1]).toList();
+        if (lines.isEmpty()) return;
+        b.append("<svg class=\"sw-chart-reference-overlay\" viewBox=\"0 0 1000 ").append(height)
+                .append("\" preserveAspectRatio=\"none\" aria-hidden=\"true\" focusable=\"false\">");
+        for (Reference reference : lines) {
+            b.append("<line class=\"sw-chart-reference-line").append(referenceColor(reference)).append('"');
+            if (orientation == Orientation.HORIZONTAL)
+                b.append(" x1=\"").append(num(x(reference.lower, snap.ticks))).append("\" x2=\"")
+                        .append(num(x(reference.lower, snap.ticks))).append("\" y1=\"0\" y2=\"").append(height);
+            else
+                b.append(" x1=\"0\" x2=\"1000\" y1=\"").append(num(y(reference.lower, snap.ticks)))
+                        .append("\" y2=\"").append(num(y(reference.lower, snap.ticks)));
+            b.append('"');
+            if (reference.dashed) b.append(" stroke-dasharray=\"5 5\"");
+            b.append("/>");
+        }
+        b.append("</svg>");
     }
 
     private void renderVerticalPlot(StringBuilder b, String id, Snapshot snap, String name) {
@@ -567,15 +761,14 @@ public class SwChart<T> extends Panel {
         if (yAxis) {
             b.append("<div class=\"sw-chart-y-axis\" aria-hidden=\"true\">");
             for (int i = snap.ticks.length - 1; i >= 0; i--)
-                b.append("<span>").append(escape(axisValueFormat == null ? format(snap.ticks[i])
-                        : format(snap.ticks[i], axisValueFormat))).append("</span>");
+                b.append("<span>").append(escape(axisValue(snap.ticks[i]))).append("</span>");
             b.append("</div>");
         }
         b.append("<div class=\"sw-chart-plot\" role=\"group\" aria-labelledby=\"")
                 .append(id)
                 .append("-title\" aria-describedby=\"")
-                .append(id)
-                .append("-help\" data-tooltip=\"")
+                .append(escape(plotDescription(id, snap)))
+                .append("\" data-tooltip=\"")
                 .append(tooltip).append('"');
         interactionAttributes(b);
         b.append('>');
@@ -585,6 +778,7 @@ public class SwChart<T> extends Panel {
                 .append("\">");
         if (series.stream().anyMatch(part -> part.curve == ChartSeries.Curve.NATURAL))
             b.append("<defs><clipPath id=\"").append(escape(id)).append("-natural-clip\"><rect width=\"1000\" height=\"240\"/></clipPath></defs>");
+        renderReferenceBands(b, snap, 240);
         if (grid)
             for (double tick : snap.ticks)
                 b.append("<line class=\"sw-chart-grid\" x1=\"0\" x2=\"1000\" y1=\"")
@@ -603,7 +797,7 @@ public class SwChart<T> extends Panel {
                 int slot = barGroups.indexOf(barGroup(s));
                 double width = 720.0 / count / barGroups.size();
                 for (int r = 0; r < count; r++)
-                    if (snap.rows.get(r).values.get(s) != null) {
+                    if (snap.rows.get(r).plotValues.get(s) != null) {
                         double top = y(Math.max(snap.low[s][r], snap.high[s][r]), snap.ticks),
                                bottom = y(Math.min(snap.low[s][r], snap.high[s][r]), snap.ticks);
                         double left = (r + .14) * 1000 / count + slot * width;
@@ -655,7 +849,7 @@ public class SwChart<T> extends Panel {
                             .append("/>");
                     if (part.dots || end == start)
                         for (int r = start; r <= end; r++)
-                            if (snap.rows.get(r).values.get(s) != null)
+                            if (snap.rows.get(r).plotValues.get(s) != null)
                                 b.append("<circle class=\"sw-chart-dot\" cx=\"")
                                         .append(num((r + .5) * 1000 / count))
                                         .append("\" cy=\"")
@@ -688,6 +882,7 @@ public class SwChart<T> extends Panel {
                     .append("</title></rect>");
         b.append("</svg>");
         renderNativeBars(b, id, nativeBars, 240);
+        renderReferenceLines(b, snap, 240);
         renderValueLabels(b, labels, 240);
         b.append("<div class=\"sw-chart-tooltip-content\" role=\"tooltip\" hidden></div></div>");
         if (xAxis) {
@@ -735,7 +930,7 @@ public class SwChart<T> extends Panel {
         b.append("<div class=\"sw-chart-container\" data-orientation=\"horizontal\" data-y-axis=\"")
                 .append(yAxis)
                 .append("\"><div class=\"sw-chart-plot\" data-orientation=\"horizontal\" role=\"group\" aria-labelledby=\"")
-                .append(id).append("-title\" aria-describedby=\"").append(id).append("-help\" data-tooltip=\"")
+                .append(id).append("-title\" aria-describedby=\"").append(escape(plotDescription(id, snap))).append("\" data-tooltip=\"")
                 .append(tooltip).append('"');
         interactionAttributes(b);
         b.append('>');
@@ -748,6 +943,7 @@ public class SwChart<T> extends Panel {
             b.append("<div class=\"sw-chart-row\"><svg class=\"sw-chart-row-svg\" viewBox=\"0 0 1000 ")
                     .append(height).append("\" width=\"100%\" height=\"").append(height)
                     .append("\" preserveAspectRatio=\"none\" aria-hidden=\"true\">");
+            renderReferenceBands(b, snap, height);
             for (double tick : snap.ticks) {
                 if (!grid && tick != 0) continue;
                 b.append("<line class=\"").append(tick == 0 ? "sw-chart-baseline" : "sw-chart-grid")
@@ -755,7 +951,7 @@ public class SwChart<T> extends Panel {
                         .append(num(x(tick, snap.ticks))).append("\" y1=\"0\" y2=\"").append(height).append("\"/>");
             }
             for (int s = 0; s < series.size(); s++) {
-                if (row.values.get(s) == null) continue;
+                if (row.plotValues.get(s) == null) continue;
                 double start = x(Math.min(snap.low[s][r], snap.high[s][r]), snap.ticks),
                        end = x(Math.max(snap.low[s][r], snap.high[s][r]), snap.ticks);
                 int top = 8 + groups.indexOf(barGroup(s)) * 20;
@@ -781,6 +977,7 @@ public class SwChart<T> extends Panel {
                     .append("\" x=\"0\" y=\"0\" width=\"1000\" height=\"").append(height).append("\"><title>")
                     .append(escape(nativeTip(snap, r))).append("</title></rect></svg>");
             renderNativeBars(b, id, nativeBars, height);
+            renderReferenceLines(b, snap, height);
             renderValueLabels(b, labels, height);
             b.append("</div>");
         }
@@ -788,8 +985,7 @@ public class SwChart<T> extends Panel {
             if (yAxis) b.append("<span aria-hidden=\"true\"></span>");
             b.append("<div class=\"sw-chart-value-axis\" aria-hidden=\"true\">");
             for (double tick : snap.ticks)
-                b.append("<span><span>").append(escape(axisValueFormat == null ? format(tick)
-                        : format(tick, axisValueFormat))).append("</span></span>");
+                b.append("<span><span>").append(escape(axisValue(tick))).append("</span></span>");
             b.append("</div>");
         }
         b.append("<div class=\"sw-chart-tooltip-content\" role=\"tooltip\" hidden></div></div></div>");
@@ -848,7 +1044,7 @@ public class SwChart<T> extends Panel {
             if (mode != ChartSeries.ValueLabels.NONE) {
                 for (int r = 0; r < snap.rows.size(); r++) {
                     Double value = snap.rows.get(r).values.get(s);
-                    if (value == null) continue;
+                    if (snap.rows.get(r).plotValues.get(s) == null) continue;
                     last = r;
                     if (highest < 0 || value > snap.rows.get(highest).values.get(s)) highest = r;
                     if (mode == ChartSeries.ValueLabels.ALL) selected.add(r);
@@ -983,6 +1179,7 @@ public class SwChart<T> extends Panel {
         title.detach();
         categoryHeader.detach();
         series.forEach(s -> s.label.detach());
+        references.forEach(ChartReference::detach);
         super.onDetach();
     }
 }

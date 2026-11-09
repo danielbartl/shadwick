@@ -33,6 +33,14 @@
     "example": "HomePage"
   },
   {
+    "slug": "guides/releases",
+    "title": "Release preparation",
+    "group": "Getting started",
+    "description": "Prepare, verify, sign and stage the initial Maven Central release.",
+    "apis": [],
+    "example": "HomePage"
+  },
+  {
     "slug": "guides/clover-studio",
     "title": "Clover Studio",
     "group": "Getting started",
@@ -356,10 +364,18 @@
     "slug": "components/charts",
     "title": "Charts",
     "group": "Data and planning",
-    "description": "Native SVG charts with custom colors/corners/curves, independent formats, forecasts, donuts, sparklines and accessible data.",
+    "description": "Heatmaps, native SVG radial bars, radar/scatter plots, reference lines/bands, 100% stacks, custom appearance, formats, forecasts, donuts/pies, sparklines and accessible data.",
     "apis": [
       "shadwick-core/src/main/java/dev/jbaby/shadwick/components/chart/SwChart.java",
       "shadwick-core/src/main/java/dev/jbaby/shadwick/components/chart/ChartSeries.java",
+      "shadwick-core/src/main/java/dev/jbaby/shadwick/components/chart/ChartReference.java",
+      "shadwick-core/src/main/java/dev/jbaby/shadwick/components/chart/SwScatterChart.java",
+      "shadwick-core/src/main/java/dev/jbaby/shadwick/components/chart/ScatterSeries.java",
+      "shadwick-core/src/main/java/dev/jbaby/shadwick/components/chart/SwHeatmapChart.java",
+      "shadwick-core/src/main/java/dev/jbaby/shadwick/components/chart/HeatmapColumn.java",
+      "shadwick-core/src/main/java/dev/jbaby/shadwick/components/chart/SwRadialChart.java",
+      "shadwick-core/src/main/java/dev/jbaby/shadwick/components/chart/SwRadarChart.java",
+      "shadwick-core/src/main/java/dev/jbaby/shadwick/components/chart/RadarSeries.java",
       "shadwick-core/src/main/java/dev/jbaby/shadwick/components/chart/SwDonutChart.java",
       "shadwick-core/src/main/java/dev/jbaby/shadwick/components/chart/SwSparkline.java"
     ],

@@ -200,6 +200,33 @@ class WicketIdiomsFieldTest {
     }
 
     @Test
+    void wicket11NativeTextAttributesDoNotBypassInlineServerValidation() {
+        var field = new SwTextField<>("code", "Reference", Model.of(""))
+                .setRequired(true).addValidator(new org.apache.wicket.validation.validator.PatternValidator("[A-Z]+"));
+        tester.startComponentInPage(field);
+        TagTester input = tester.getTagByWicketId("input");
+        assertThat(input.getAttribute("required")).isNull();
+        assertThat(input.getAttribute("pattern")).isNull();
+        assertThat(input.getAttribute("placeholder")).isNull();
+        assertThat(input.getAttribute("aria-required")).isEqualTo("true");
+        assertThat(field.getInput().isRequired()).isTrue();
+        assertThat(field.getInput().getValidators()).hasSize(1);
+    }
+
+    @Test
+    void applicationsCanExplicitlyOptIntoNativeAttributesAfterFieldConfiguration() {
+        var field = new SwTextField<>("code", "Reference", Model.of(""))
+                .setRequired(true).addValidator(new org.apache.wicket.validation.validator.PatternValidator("[A-Z]+"))
+                .setPlaceholder("ABC")
+                .addToInput(AttributeModifier.replace("required", "required"), AttributeModifier.replace("pattern", "[A-Z]+"));
+        tester.startComponentInPage(field);
+        TagTester input = tester.getTagByWicketId("input");
+        assertThat(input.getAttribute("required")).isEqualTo("required");
+        assertThat(input.getAttribute("pattern")).isEqualTo("[A-Z]+");
+        assertThat(input.getAttribute("placeholder")).isEqualTo("ABC");
+    }
+
+    @Test
     void theInputIsAChildOfTheFieldWithAShortPath() {
         SwTextField<String> field = new SwTextField<>("email", "Email", Model.of(""));
         tester.startComponentInPage(field);

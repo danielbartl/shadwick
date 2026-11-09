@@ -1,5 +1,5 @@
 # syntax=docker/dockerfile:1
-FROM eclipse-temurin:17-jdk-jammy AS build
+FROM eclipse-temurin:21-jdk-jammy AS build
 WORKDIR /workspace
 COPY mvnw pom.xml LICENSE NOTICE ./
 COPY .mvn/ .mvn/
@@ -11,7 +11,7 @@ RUN --mount=type=cache,id=s/794b0087-a4ca-44ff-8ecd-375e87f53a24-/root/.m2,targe
     ./mvnw -B -pl shadwick-examples -am -DskipTests package \
     && cp shadwick-examples/target/shadwick-examples-*.jar /tmp/app.jar
 
-FROM eclipse-temurin:17-jre-jammy AS runtime
+FROM eclipse-temurin:21-jre-jammy AS runtime
 WORKDIR /app
 RUN groupadd --system shadwick \
     && useradd --system --gid shadwick --home-dir /app shadwick \

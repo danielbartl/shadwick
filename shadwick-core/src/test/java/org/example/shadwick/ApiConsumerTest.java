@@ -26,7 +26,7 @@ import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-/** Compiles and runs as an application outside every library package, using Java 17 source syntax. */
+/** Compiles and runs as an application outside every library package, using Java 21 source syntax. */
 class ApiConsumerTest {
     private final WicketTester tester = new WicketTester();
 

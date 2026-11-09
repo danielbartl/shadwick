@@ -21,7 +21,10 @@ form.add(SwSubmitButton.onSubmit("save", "Save", target -> service.save(profile)
 ```
 
 After an Ajax submit, the fields show their errors themselves: no `target.add(...)` needed, and the input keeps its
-focus and what the user typed.
+focus and what the user typed. Shadwick keeps `required` and pattern validation on the server so browser popups
+do not bypass those inline messages. Wicket 11's derived native constraints and label-derived placeholder are
+removed by the field's initial input behaviors. Use `setPlaceholder(...)` for an explicit hint; applications that
+need native constraints can add them explicitly with later `addToInput(AttributeModifier...)` behaviors.
 
 ## Complete example
 

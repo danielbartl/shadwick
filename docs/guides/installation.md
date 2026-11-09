@@ -1,6 +1,6 @@
 # Installation
 
-Built against Wicket 10.11.0 with Java 17 as the minimum. Keep Wicket modules aligned with the version declared in
+Built against Wicket 11.0.0 with Java 21 as the minimum and Jakarta Servlet 6.1+ at runtime. Keep Wicket modules aligned with the version declared in
 the [project POM](https://github.com/danielbartl/shadwick/blob/main/pom.xml).
 Read [Compatibility](./compatibility.md) for the candidate API and stored-page contracts. Until the first release,
 install it locally with `./mvnw install`, then:
@@ -9,7 +9,7 @@ install it locally with `./mvnw install`, then:
 <dependency>
     <groupId>dev.jbaby</groupId>
     <artifactId>shadwick</artifactId>
-    <version>0.1.0-SNAPSHOT</version>
+    <version>0.1.0</version>
 </dependency>
 ```
 
@@ -54,7 +54,7 @@ From this repository:
 
 ```sh
 ./mvnw -B verify
-java -jar shadwick-examples/target/shadwick-examples-0.1.0-SNAPSHOT.jar
+java -jar shadwick-examples/target/shadwick-examples-0.1.0.jar
 ```
 
 Open `http://localhost:8080`. The examples have skin, appearance and language controls. Their demo data is for

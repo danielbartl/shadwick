@@ -28,7 +28,7 @@ class DocumentationExamplesTest {
         try(var manager=compiler.getStandardFileManager(null,null,null);var files=Files.list(sources)) {
             var javaFiles=files.filter(p->p.toString().endsWith(".java")).map(Path::toFile).toList();
             var units=manager.getJavaFileObjectsFromFiles(javaFiles);
-            var options=List.of("--release","17","-proc:none","-classpath",System.getProperty("surefire.test.class.path",System.getProperty("java.class.path")),"-d",classes.toString());
+            var options=List.of("--release","21","-proc:none","-classpath",System.getProperty("surefire.test.class.path",System.getProperty("java.class.path")),"-d",classes.toString());
             assertThat(compiler.getTask(errors,manager,null,options,null,units).call()).as(errors.toString()).isTrue();
         }
         Files.copy(sources.resolve("QuickStartPage.html"),classes.resolve("dev/example/QuickStartPage.html"));

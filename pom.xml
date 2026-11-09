@@ -5,7 +5,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>dev.jbaby</groupId>
 	<artifactId>shadwick-parent</artifactId>
-	<version>0.1.0-SNAPSHOT</version>
+	<version>0.1.0</version>
 	<packaging>pom</packaging>
 	<name>shadwick-parent</name>
 	<description>Parent for Shadwick, shadcn/ui-style UI components for Apache Wicket</description>
@@ -30,7 +30,7 @@
 		child.scm.url.inherit.append.path="false">
 		<connection>scm:git:https://github.com/danielbartl/shadwick.git</connection>
 		<developerConnection>scm:git:ssh://git@github.com/danielbartl/shadwick.git</developerConnection>
-		<tag>HEAD</tag>
+		<tag>v0.1.0</tag>
 		<url>https://github.com/danielbartl/shadwick</url>
 	</scm>
 
@@ -40,11 +40,12 @@
 	</modules>
 
 	<properties>
-		<maven.compiler.release>17</maven.compiler.release>
+		<maven.compiler.release>21</maven.compiler.release>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+		<project.build.outputTimestamp>2026-11-09T14:47:43Z</project.build.outputTimestamp>
 
-		<wicket.version>10.11.0</wicket.version>
+		<wicket.version>11.0.0</wicket.version>
 		<!-- Only used by shadwick-examples; the library itself doesn't depend on Spring -->
 		<spring-boot.version>4.1.2</spring-boot.version>
 
@@ -59,6 +60,10 @@
 		<maven-jar-plugin.version>3.5.1</maven-jar-plugin.version>
 		<maven-install-plugin.version>3.2.0</maven-install-plugin.version>
 		<maven-deploy-plugin.version>3.2.0</maven-deploy-plugin.version>
+		<maven-source-plugin.version>3.4.0</maven-source-plugin.version>
+		<maven-javadoc-plugin.version>3.12.0</maven-javadoc-plugin.version>
+		<maven-gpg-plugin.version>3.2.8</maven-gpg-plugin.version>
+		<central-publishing-maven-plugin.version>0.12.0</central-publishing-maven-plugin.version>
 		<frontend-maven-plugin.version>2.0.2</frontend-maven-plugin.version>
 		<!-- Only for CI: installs Playwright's Chromium (.github/workflows/build.yml) -->
 		<exec-maven-plugin.version>3.6.4</exec-maven-plugin.version>
@@ -140,6 +145,21 @@
 					<version>${maven-deploy-plugin.version}</version>
 				</plugin>
 				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-source-plugin</artifactId>
+					<version>${maven-source-plugin.version}</version>
+				</plugin>
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-javadoc-plugin</artifactId>
+					<version>${maven-javadoc-plugin.version}</version>
+				</plugin>
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-gpg-plugin</artifactId>
+					<version>${maven-gpg-plugin.version}</version>
+				</plugin>
+				<plugin>
 					<groupId>com.github.eirslett</groupId>
 					<artifactId>frontend-maven-plugin</artifactId>
 					<version>${frontend-maven-plugin.version}</version>
@@ -157,5 +177,44 @@
 			</plugins>
 		</pluginManagement>
 	</build>
+
+	<profiles>
+		<!-- Select release as well: it attaches the library's sources and Javadoc. -->
+		<profile>
+			<id>central</id>
+			<build>
+				<plugins>
+					<plugin>
+						<groupId>org.apache.maven.plugins</groupId>
+						<artifactId>maven-gpg-plugin</artifactId>
+						<configuration>
+							<signer>bc</signer>
+							<bestPractices>true</bestPractices>
+						</configuration>
+						<executions>
+							<execution>
+								<id>sign-release</id>
+								<phase>verify</phase>
+								<goals><goal>sign</goal></goals>
+							</execution>
+						</executions>
+					</plugin>
+					<plugin>
+						<groupId>org.sonatype.central</groupId>
+						<artifactId>central-publishing-maven-plugin</artifactId>
+						<version>${central-publishing-maven-plugin.version}</version>
+						<extensions>true</extensions>
+						<configuration>
+							<publishingServerId>central</publishingServerId>
+							<autoPublish>false</autoPublish>
+							<waitUntil>validated</waitUntil>
+							<outputDirectory>${maven.multiModuleProjectDirectory}/target/central-publishing</outputDirectory>
+							<stagingDirectory>${maven.multiModuleProjectDirectory}/target/central-staging</stagingDirectory>
+						</configuration>
+					</plugin>
+				</plugins>
+			</build>
+		</profile>
+	</profiles>
 
 </project>

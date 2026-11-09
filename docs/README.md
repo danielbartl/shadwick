@@ -9,12 +9,13 @@ The website adds API references generated from the [Java API source](../shadwick
 Those sources provide declared constructors, methods and hooks when reading the Markdown directly.
 
 The pre-release component collection is implemented, including compound and numeric fields, connected actions,
-record details, timelines, lazy panels, tags, avatar groups and process steps. The project remains a locally
-installable `0.1.0-SNAPSHOT`; Maven Central publication follows release preparation. See
+record details, timelines, lazy panels, tags, avatar groups and process steps. The project is a
+locally installable `0.1.0` release candidate; the Wicket 11 / Java 21 migration is verified and publication is pending. See
 [Compatibility](guides/compatibility.md) for the candidate API and Java/Wicket requirements.
 
 ## Getting started
 
+- [Release preparation](guides/releases.md) — Candidate artifacts, signing and manual Central staging.
 - [Installation](guides/installation.md) — Install Shadwick, configure Wicket and run your first form.
 - [Wicket integration](guides/wicket-integration.md) — Models, markup ownership, Ajax, forms, resources and application responsibilities.
 - [Compatibility](guides/compatibility.md) — Java/Wicket requirements, the candidate API, stored pages and browser coverage.

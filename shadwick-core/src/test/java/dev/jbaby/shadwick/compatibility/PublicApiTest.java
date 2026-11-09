@@ -51,11 +51,11 @@ class PublicApiTest {
     }
 
     @Test
-    void everyLibraryClassCanBeLoadedOnJava17() throws Exception {
+    void everyLibraryClassCanBeLoadedOnJava21() throws Exception {
         for (Path path : classFiles()) try (var input = new DataInputStream(Files.newInputStream(path))) {
             assertThat(input.readInt()).as("class magic: %s", path).isEqualTo(0xCAFEBABE);
             input.readUnsignedShort();
-            assertThat(input.readUnsignedShort()).as("Java 17 bytecode ceiling: %s", path).isLessThanOrEqualTo(61);
+            assertThat(input.readUnsignedShort()).as("Java 21 bytecode ceiling: %s", path).isLessThanOrEqualTo(65);
         }
     }
 

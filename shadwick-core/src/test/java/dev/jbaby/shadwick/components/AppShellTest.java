@@ -54,7 +54,7 @@ class AppShellTest {
         final SkipLinkBehavior behavior = Sw.Behaviors.skipLink(main);
         final WebMarkupContainer skip = new WebMarkupContainer("skip");
         public SkipPage() {
-            main.setMarkupId("results:2026"); skip.add(behavior); add(skip, main);
+            main.setMarkupId("results.2026"); skip.add(behavior); add(skip, main);
             add(new SwSkipLink("buttonSkip", "button"));
             WebMarkupContainer control = new WebMarkupContainer("control"); control.setMarkupId("button");
             add(control, new SwSkipLink("nativeSkip", control));
@@ -67,7 +67,7 @@ class AppShellTest {
     }
     @Test void componentTargetsGetAnIdAndFocusabilityThatSurvivesAjax() {
         SkipPage page = tester.startPage(SkipPage.class);
-        assertThat(tester.getTagByWicketId("skip").getAttribute("href")).isEqualTo("#results%3A2026");
+        assertThat(tester.getTagByWicketId("skip").getAttribute("href")).isEqualTo("#results.2026");
         assertThat(tester.getTagByWicketId("main").getAttribute("tabindex")).isEqualTo("-1");
         assertThat(tester.getTagByWicketId("control").getAttribute("tabindex")).isNull();
         tester.clickLink("main:refresh");

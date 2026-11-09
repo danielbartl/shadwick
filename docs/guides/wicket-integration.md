@@ -25,6 +25,21 @@ Use component classes such as `sw-card-content` for caller-owned parts. Consumer
 `Sw.Behaviors` exposes behavior factories; `Sw.Components` exposes callback-driven factories where available.
 A behavior does not turn an ordinary link into an Ajax callback or create a form model for it.
 
+## Readable page composition
+
+Keep constructors focused on parameters, models and configuration. Build the initial page or panel component tree
+in `onInitialize()`, calling `super.onInitialize()` first. Let that method show the forms or sections at a glance;
+use plainly named private methods for field configuration and substantial actions. Factories such as `email()`
+return components, while `addNavigation()` makes attachment explicit.
+
+Do not call overridable factories from superclass constructors: subclass state is not ready yet. Keep dynamic
+visibility and enabled state in `onConfigure()`, and populate or replace changing content in its appropriate
+repeater or interaction hook. Library APIs that expose children before attachment retain their documented eager
+or lazy behavior, including fluent field configuration, `getInput()` and dialog/content slots.
+
+The [complete form example](../components/forms.md#complete-example) demonstrates the structure. Contributors
+should follow the [detailed composition conventions](https://github.com/danielbartl/shadwick/blob/main/docs/CONTRIBUTING.md#readable-wicket-composition).
+
 ## Models and lifecycle
 
 Pass `IModel<T>` for application data. Explicit models are useful for a small form; `CompoundPropertyModel`

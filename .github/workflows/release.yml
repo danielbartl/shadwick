@@ -1,0 +1,112 @@
+name: Stage release
+
+on:
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: Existing release tag, for example v0.1.0
+        required: true
+        type: string
+
+permissions:
+  contents: write
+  actions: read
+
+concurrency:
+  group: stage-release-${{ inputs.tag }}
+  cancel-in-progress: false
+
+jobs:
+  stage:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          ref: ${{ inputs.tag }}
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Check the tag, source metadata and completed CI
+        env:
+          RELEASE_TAG: ${{ inputs.tag }}
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+        run: |
+          set -euo pipefail
+          python3 scripts/check-release.py metadata --tag "$RELEASE_TAG"
+          test "$(git rev-parse HEAD)" = "$(git rev-parse "refs/tags/$RELEASE_TAG^{commit}")"
+          git merge-base --is-ancestor HEAD origin/main
+          release_sha=$(git rev-parse HEAD)
+          gh api --method GET "repos/$GH_REPO/actions/workflows/build.yml/runs" \
+            -f head_sha="$release_sha" -f event=push -f branch=main -f per_page=100 \
+            --jq '.workflow_runs | sort_by(.created_at) | last | select(.status == "completed" and .conclusion == "success") | .id' > "$RUNNER_TEMP/release-ci-run"
+          test -s "$RUNNER_TEMP/release-ci-run"
+          echo "CI run $(cat "$RUNNER_TEMP/release-ci-run") passed for $release_sha"
+
+      - name: Set up Java 21 and Central credentials
+        uses: actions/setup-java@v6
+        with:
+          distribution: temurin
+          java-version: '21'
+          cache: maven
+          server-id: central
+          server-username: CENTRAL_USERNAME
+          server-password: CENTRAL_PASSWORD
+
+      - uses: actions/cache@v6
+        with:
+          path: ~/.npm
+          key: npm-${{ runner.os }}-${{ hashFiles('shadwick-core/package-lock.json') }}
+
+      - name: Check release credential availability
+        env:
+          CENTRAL_USERNAME: ${{ secrets.CENTRAL_USERNAME }}
+          CENTRAL_PASSWORD: ${{ secrets.CENTRAL_PASSWORD }}
+          MAVEN_GPG_KEY: ${{ secrets.MAVEN_GPG_KEY }}
+          MAVEN_GPG_PASSPHRASE: ${{ secrets.MAVEN_GPG_PASSPHRASE }}
+        run: |
+          set -euo pipefail
+          for variable in CENTRAL_USERNAME CENTRAL_PASSWORD MAVEN_GPG_KEY MAVEN_GPG_PASSPHRASE; do
+            if [ -z "${!variable}" ]; then echo "Missing release secret: $variable" >&2; exit 1; fi
+          done
+
+      - name: Build, sign and stage with Central validation
+        env:
+          CENTRAL_USERNAME: ${{ secrets.CENTRAL_USERNAME }}
+          CENTRAL_PASSWORD: ${{ secrets.CENTRAL_PASSWORD }}
+          MAVEN_GPG_KEY: ${{ secrets.MAVEN_GPG_KEY }}
+          MAVEN_GPG_PASSPHRASE: ${{ secrets.MAVEN_GPG_PASSPHRASE }}
+        run: ./mvnw -B -Prelease,central -pl shadwick-core -am clean deploy
+
+      - name: Check and export the staged payload
+        run: |
+          python3 scripts/check-release.py bundle --bundle target/central-publishing/central-bundle.zip
+          python3 scripts/check-release.py collect
+
+      - name: Preserve the signed bundle and unsigned reference artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: shadwick-${{ inputs.tag }}-central
+          if-no-files-found: error
+          path: |
+            target/central-publishing/central-bundle.zip
+            target/release/*
+
+      - name: Prepare the draft GitHub release
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+          RELEASE_TAG: ${{ inputs.tag }}
+        run: |
+          set -euo pipefail
+          gh release create "$RELEASE_TAG" --verify-tag --draft \
+            --title "Shadwick ${RELEASE_TAG#v}" \
+            --notes-file "docs/releases/${RELEASE_TAG#v}.md" \
+            target/release/* target/central-publishing/central-bundle.zip
+
+      - name: Record the staging result
+        env:
+          RELEASE_TAG: ${{ inputs.tag }}
+        run: |
+          printf '## %s staged\n\nCentral validation passed and a draft GitHub release is prepared. Publish the validated deployment in Central Portal, confirm availability, then finalize the draft release.\n' "$RELEASE_TAG" >> "$GITHUB_STEP_SUMMARY"

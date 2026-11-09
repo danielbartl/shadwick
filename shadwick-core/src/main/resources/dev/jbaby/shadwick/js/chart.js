@@ -66,7 +66,7 @@ function scan(){
   labelStates.forEach((state,root)=>{if(!root.isConnected||root.querySelector('.sw-chart-plot')!==state.plot){state.destroy();labelStates.delete(root);}});
   states.forEach((state,root)=>{if(!root.isConnected||root.querySelector('.sw-chart-plot')!==state.plot){state.destroy();states.delete(root);}});
   document.querySelectorAll('.sw-chart').forEach(root=>{
-    if(root.classList.contains('sw-donut-chart'))return;
+    if(root.classList.contains('sw-donut-chart')||root.classList.contains('sw-scatter-chart'))return;
     enhanceLabels(root);
     enhanceAxes(root);
     if(states.has(root))return;
@@ -80,14 +80,15 @@ function scan(){
     const tipLabel=row=>row.cells[0].dataset.tooltipLabel??row.cells[0].textContent;
     const tipValue=(row,s)=>row.cells[s+1].dataset.tooltipValue??row.cells[s+1].textContent;
     const bands=Array.from(plot.querySelectorAll('.sw-chart-hit'));
-    const horizontal=plot.dataset.orientation==='horizontal';
+    const key=root.querySelector('[data-chart-key]'),keys=key?Array.from(key.querySelectorAll('[data-chart-index]')):[];
+    const horizontal=plot.dataset.orientation==='horizontal',radial=plot.dataset.orientation==='radial';
     if(!rows.length||!tooltip||rows.length!==bands.length||rows.some(row=>row.cells.length!==header.cells.length))return;
     const cleanups=[];
     const listen=(node,type,handler)=>{node.addEventListener(type,handler);cleanups.push(()=>node.removeEventListener(type,handler));};
     let active=-1;
     plot.querySelectorAll(':scope > [data-chart-status]').forEach(node=>node.remove());
     plot.tabIndex=0;
-    const hide=()=>{tooltip.hidden=true;bands.forEach(band=>band.removeAttribute('data-active'));};
+    const hide=()=>{tooltip.hidden=true;[...bands,...keys].forEach(node=>node.removeAttribute('data-active'));};
     hide();
     const titles=bands.map(band=>({band,title:band.querySelector('title')}));
     titles.forEach(({title})=>title?.remove());
@@ -102,7 +103,7 @@ function scan(){
       const items=document.createElement('div');items.className='sw-chart-tooltip-items';tooltip.append(items);
       headers.forEach((header,s)=>{
         const value=tipValue(row,s);if(value==='')return;
-        const item=document.createElement('div');item.className='sw-chart-tooltip-item '+header.dataset.color;
+        const item=document.createElement('div');item.className='sw-chart-tooltip-item '+(row.cells[s+1].dataset.color??header.dataset.color);
         const indicator=document.createElement('span');indicator.className='sw-chart-tooltip-indicator';indicator.setAttribute('aria-hidden','true');
         const kind=plot.dataset.tooltipIndicator||'auto';
         if(kind==='auto'&&header.dataset.dashed)indicator.dataset.dashed='true';
@@ -114,6 +115,7 @@ function scan(){
       });
       tooltip.hidden=false;
       bands.forEach((band,i)=>band.toggleAttribute('data-active',i===active));
+      keys.forEach(node=>node.toggleAttribute('data-active',Number(node.dataset.chartIndex)===active));
       if(document.activeElement===plot)status.textContent=[tipLabel(row),...headers.flatMap((header,s)=>tipValue(row,s)===''?[]:[header.textContent+': '+tipValue(row,s)])].join('; ');
     };
     const status=document.createElement('span');status.className='sw-chart-sr-only';status.setAttribute('data-chart-status','');status.setAttribute('role','status');status.setAttribute('aria-atomic','true');plot.append(status);
@@ -122,6 +124,15 @@ function scan(){
     listen(plot,'pointermove',event=>{const band=event.target.closest?.('.sw-chart-hit');if(band&&band!==bands[active])show(Number(band.dataset.index));else if(band&&tooltip.hidden)show(Number(band.dataset.index));});
     listen(plot,'pointerdown',event=>{const band=event.target.closest?.('.sw-chart-hit');if(band){show(Number(band.dataset.index));plot.focus({preventScroll:true});}});
     listen(plot,'pointerleave',()=>{if(document.activeElement!==plot)hide();});
+    if(key){
+      key.dataset.chartKeyEnhanced='true';
+      const item=event=>{const node=event.target.closest?.('[data-chart-index]'),index=Number(node?.dataset.chartIndex);
+        return node&&key.contains(node)&&Number.isInteger(index)&&index>=0&&index<rows.length?node:null;};
+      listen(key,'pointermove',event=>{const node=item(event);if(node&&(Number(node.dataset.chartIndex)!==active||tooltip.hidden))show(Number(node.dataset.chartIndex));});
+      listen(key,'pointerdown',event=>{const node=item(event);if(node&&event.button===0){event.preventDefault();show(Number(node.dataset.chartIndex));plot.focus({preventScroll:true});}});
+      listen(key,'pointerleave',()=>{if(document.activeElement!==plot)hide();});
+      cleanups.push(()=>delete key.dataset.chartKeyEnhanced);
+    }
     listen(plot,'keydown',event=>{
       if(event.altKey||event.ctrlKey||event.metaKey)return;
       const rtl=getComputedStyle(plot).direction==='rtl';
@@ -129,8 +140,8 @@ function scan(){
       switch(event.key){
         case 'ArrowRight':if(horizontal)return;show(active+step);break;
         case 'ArrowLeft':if(horizontal)return;show(active-step);break;
-        case 'ArrowDown':if(!horizontal)return;show(active+1);break;
-        case 'ArrowUp':if(!horizontal)return;show(active-1);break;
+        case 'ArrowDown':if(!horizontal&&!radial)return;show(active+1);break;
+        case 'ArrowUp':if(!horizontal&&!radial)return;show(active-1);break;
         case 'Home':show(0);break;
         case 'End':show(rows.length-1);break;
         case 'Escape':if(tooltip.hidden)return;hide();break;

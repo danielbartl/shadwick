@@ -23,7 +23,8 @@ The pre-release component shortlist is complete. Try the new [quote fields](http
 [button groups](https://shadwick-production.up.railway.app/button-groups), [record details and activity](https://shadwick-production.up.railway.app/record-display),
 [lazy panels](https://shadwick-production.up.railway.app/lazy-load), [freeform tags](https://shadwick-production.up.railway.app/tag-input),
 [avatar groups](https://shadwick-production.up.railway.app/avatar-groups) and [steps indicator](https://shadwick-production.up.railway.app/steps)
-in the live catalog. Release notes, signing/release automation and Maven Central publication are the next checkpoint.
+in the live catalog. The release candidate is frozen at `0.1.0`. The Wicket 11 / Java 21 migration is included; Maven Central publication is pending.
+See [release preparation](docs/guides/releases.md) and the [changelog](CHANGELOG.md).
 
 The examples build their initial component trees in `onInitialize()`, with named methods for forms, fields and
 actions. Start with the [complete form example](docs/components/forms.md#complete-example), then browse the
@@ -38,14 +39,14 @@ source-derived API references. No agent configuration is changed by this reposit
 
 ## Getting started
 
-Built against Wicket 10.11.0 with Java 17 as the minimum. Read [Compatibility](docs/guides/compatibility.md) for the
+Built against Wicket 11.0.0 with Java 21 as the minimum and Jakarta Servlet 6.1 at runtime. Read [Compatibility](docs/guides/compatibility.md) for the
 candidate API and stored-page contracts. Until the first release, install it locally with `./mvnw install`, then:
 
 ```xml
 <dependency>
     <groupId>dev.jbaby</groupId>
     <artifactId>shadwick</artifactId>
-    <version>0.1.0-SNAPSHOT</version>
+    <version>0.1.0</version>
 </dependency>
 ```
 
@@ -171,7 +172,7 @@ Server-rendered monthly plans with locale-aware weeks and custom day slots.
 
 ### Charts
 
-Native SVG bars, lines, areas and donuts with grouped/stacked series, forecast joins, independent formats, light/dark colors, curves/corners, value labels and exact data; decorative sparklines for cards and tables.
+Native SVG bars, lines and areas with grouped/stacked and 100% stacked series, reference lines/bands and forecast joins; donuts, pies, scatter/radar plots, concentric radial bars and labeled heatmaps. Chart options include independent formats, light/dark colors, curves/corners, value labels and exact data; decorative sparklines fit cards and tables.
 
 [Charts](docs/components/charts.md)
 
@@ -368,7 +369,7 @@ Run the showcase to explore the components with skin, light/dark and language co
 
 ```sh
 ./mvnw install -DskipTests
-java -jar shadwick-examples/target/shadwick-examples-0.1.0-SNAPSHOT.jar
+java -jar shadwick-examples/target/shadwick-examples-0.1.0.jar
 ```
 
 Open **http://localhost:8080/** for **Clover Studio**, a working agency workspace: create and edit

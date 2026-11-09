@@ -18,6 +18,9 @@ import org.apache.wicket.util.string.Strings;
 
 /** Server-rendered part-to-whole chart, with an exact table and optional keyboard/pointer tooltips. */
 public class SwDonutChart<T> extends Panel {
+    /** Part-to-whole geometry; both shapes share the same exact data and interactions. */
+    public enum Shape { DONUT, PIE }
+
     public static final int DEFAULT_MAX_SEGMENTS = 5;
     public static final JavaScriptResourceReference DONUT_JS = new JavaScriptResourceReference(Shadwick.class, "js/donut-chart.js");
     private final IModel<? extends List<T>> data;
@@ -27,6 +30,7 @@ public class SwDonutChart<T> extends Panel {
     private SerializableBiFunction<Number, Locale, String> valueFormat;
     private SwChart.ValueFormat namedFormat = SwChart.ValueFormat.NUMBER;
     private Currency currency;
+    private Shape shape = Shape.DONUT;
     private int maxSegments = DEFAULT_MAX_SEGMENTS;
     private boolean groupSmallSegments = true, legend = true, tooltip = true;
     private transient Snapshot snapshot;
@@ -42,12 +46,24 @@ public class SwDonutChart<T> extends Panel {
         this.category = Objects.requireNonNull(category);
         this.value = Objects.requireNonNull(value);
         setOutputMarkupId(true);
+    }
+
+    @Override
+    protected void onInitialize() {
+        super.onInitialize();
+        add(figure());
+    }
+
+    private WebMarkupContainer figure() {
         var figure = new WebMarkupContainer("figure");
         figure.add(new StyledBehavior("sw-chart sw-donut-chart"));
         figure.setOutputMarkupId(true);
-        add(figure);
         figure.add(new Label("content", (IModel<String>) () -> renderChart(figure.getMarkupId())).setEscapeModelStrings(false));
+        return figure;
     }
+
+    /** Default DONUT shows a center total; PIE draws filled sectors with the total in the data table. */
+    public SwDonutChart<T> setShape(Shape value) { shape = Objects.requireNonNull(value); return this; }
 
     public SwDonutChart<T> setTitle(String value) { return setTitle(Model.of(value)); }
     public SwDonutChart<T> setTitle(IModel<String> value) { title = Objects.requireNonNull(value); return this; }
@@ -143,27 +159,71 @@ public class SwDonutChart<T> extends Panel {
         String name = escape(s.title);
         StringBuilder b = new StringBuilder("<figcaption class=\"sw-chart-title\" id=\"").append(id).append("-title\">").append(name).append("</figcaption>");
         if (s.rows.isEmpty()) return b.append("<p class=\"sw-chart-empty\" role=\"status\">").append(escape(getString("SwDonutChart.empty"))).append("</p>").toString();
+        appendPlot(b, s, id);
+        if (s.parts.isEmpty()) b.append("<p class=\"sw-donut-note\" role=\"status\">").append(escape(getString("SwDonutChart.noPositiveValues"))).append("</p>");
+        appendLegend(b, s);
+        if (s.grouped) b.append("<p class=\"sw-donut-note\">").append(escape(getString("SwDonutChart.grouped"))).append("</p>");
+        appendDataTable(b, s, id);
+        return b.toString();
+    }
+
+    private void appendPlot(StringBuilder b, Snapshot s, String id) {
         b.append("<p class=\"sw-chart-sr-only\" id=\"").append(id).append("-help\">")
                 .append(escape(getString(tooltip && !s.parts.isEmpty() ? "SwDonutChart.instructions" : "SwDonutChart.dataInstructions"))).append("</p>")
                 .append("<div class=\"sw-chart-plot sw-donut-plot\" role=\"group\" aria-labelledby=\"").append(id).append("-title\" aria-describedby=\"")
-                .append(id).append("-help\" data-tooltip=\"").append(tooltip).append("\">")
-                .append("<svg class=\"sw-donut-svg\" viewBox=\"0 0 240 240\" aria-hidden=\"true\"><circle class=\"sw-donut-track\" cx=\"120\" cy=\"120\" r=\"96\"/>");
+                .append(id).append("-help\" data-shape=\"").append(shape == Shape.PIE ? "pie" : "donut")
+                .append("\" data-tooltip=\"").append(tooltip).append("\">");
+        b.append("<svg class=\"sw-donut-svg\" viewBox=\"0 0 240 240\" aria-hidden=\"true\">");
+        if (shape == Shape.PIE) b.append("<circle class=\"sw-pie-track\" cx=\"120\" cy=\"120\" r=\"112\"/>");
+        else b.append("<circle class=\"sw-donut-track\" cx=\"120\" cy=\"120\" r=\"96\"/>");
         double offset = 0;
         for (int i = 0; i < s.parts.size(); i++) {
             Part part = s.parts.get(i);
             double length = part.value.divide(s.total, MathContext.DECIMAL128).doubleValue() * 100;
-            double gap = s.parts.size() > 1 ? Math.min(.6, length * .15) : 0;
-            b.append("<circle class=\"sw-donut-segment sw-chart-series-").append(part.color).append("\" data-index=\"").append(i)
+            if (shape == Shape.PIE) appendPieSegment(b, part, i, offset, length, s.parts.size() == 1);
+            else appendDonutSegment(b, part, i, offset, length, s.parts.size() > 1);
+            offset += length;
+        }
+        b.append("</svg>");
+        if (shape == Shape.DONUT) appendCenterTotal(b, s);
+        b.append("<div class=\"sw-chart-tooltip-content\" role=\"tooltip\" hidden></div></div>");
+    }
+
+    private void appendDonutSegment(StringBuilder b, Part part, int index, double offset, double length, boolean separated) {
+        double gap = separated ? Math.min(.6, length * .15) : 0;
+        b.append("<circle class=\"sw-donut-segment sw-chart-series-").append(part.color).append("\" data-index=\"").append(index)
                     .append("\" cx=\"120\" cy=\"120\" r=\"96\" pathLength=\"100\" stroke-dasharray=\"").append(num(length - gap)).append(' ').append(num(100 - length + gap))
                     .append("\" stroke-dashoffset=\"").append(num(-offset - gap / 2)).append("\" transform=\"rotate(-90 120 120)\"><title>")
                     .append(escape(part.category + ": " + part.text + " (" + part.share + ")")).append("</title></circle>");
-            offset += length;
+    }
+
+    private void appendPieSegment(StringBuilder b, Part part, int index, double offset, double length, boolean whole) {
+        b.append("<path class=\"sw-donut-segment sw-pie-segment sw-chart-series-").append(part.color)
+                .append("\" data-index=\"").append(index).append("\" d=\"");
+        if (length < 1e-12) {
+            // Preserve the part in the legend without inventing a visible radial line for a rounded-away share.
+            b.append("M120 120");
+        } else if (whole || length >= 100) {
+            // One SVG arc cannot describe a full circle when its two endpoints coincide.
+            b.append("M120 8 A112 112 0 1 1 120 232 A112 112 0 1 1 120 8 Z");
+        } else {
+            double start = Math.toRadians(offset * 3.6 - 90);
+            double end = Math.toRadians((offset + length) * 3.6 - 90);
+            b.append("M120 120 L").append(num(120 + 112 * Math.cos(start))).append(' ').append(num(120 + 112 * Math.sin(start)))
+                    .append(" A112 112 0 ").append(length > 50 ? '1' : '0').append(" 1 ")
+                    .append(num(120 + 112 * Math.cos(end))).append(' ').append(num(120 + 112 * Math.sin(end))).append(" Z");
         }
+        b.append("\"><title>").append(escape(part.category + ": " + part.text + " (" + part.share + ")")).append("</title></path>");
+    }
+
+    private void appendCenterTotal(StringBuilder b, Snapshot s) {
         String size = s.totalText.codePointCount(0, s.totalText.length()) > 14 ? "small" : s.totalText.length() > 8 ? "medium" : "large";
-        b.append("</svg><div class=\"sw-donut-center\"><span class=\"sw-donut-total\" data-size=\"").append(size).append("\" title=\"")
+        b.append("<div class=\"sw-donut-center\"><span class=\"sw-donut-total\" data-size=\"").append(size).append("\" title=\"")
                 .append(escape(s.totalText)).append("\">").append(escape(s.totalText)).append("</span><span class=\"sw-donut-total-label\">")
-                .append(escape(s.totalLabel)).append("</span></div><div class=\"sw-chart-tooltip-content\" role=\"tooltip\" hidden></div></div>");
-        if (s.parts.isEmpty()) b.append("<p class=\"sw-donut-note\" role=\"status\">").append(escape(getString("SwDonutChart.noPositiveValues"))).append("</p>");
+                .append(escape(s.totalLabel)).append("</span></div>");
+    }
+
+    private void appendLegend(StringBuilder b, Snapshot s) {
         b.append("<ul class=\"sw-donut-legend\" aria-label=\"").append(escape(getString("SwDonutChart.legend"))).append('"').append(legend ? "" : " hidden").append('>');
         for (int i = 0; i < s.parts.size(); i++) {
             Part part = s.parts.get(i);
@@ -173,16 +233,18 @@ public class SwDonutChart<T> extends Panel {
                     .append(escape(part.share)).append("</span></li>");
         }
         b.append("</ul>");
-        if (s.grouped) b.append("<p class=\"sw-donut-note\">").append(escape(getString("SwDonutChart.grouped"))).append("</p>");
+    }
+
+    private void appendDataTable(StringBuilder b, Snapshot s, String id) {
         b.append("<details class=\"sw-chart-data\"><summary>").append(escape(getString("SwDonutChart.data")))
                 .append("</summary><div class=\"sw-chart-table-scroll\" tabindex=\"0\" role=\"region\" aria-labelledby=\"").append(id).append("-title\">")
-                .append("<table class=\"sw-table\"><caption class=\"sw-chart-sr-only\">").append(name).append("</caption><thead><tr><th scope=\"col\">")
+                .append("<table class=\"sw-table\"><caption class=\"sw-chart-sr-only\">").append(escape(s.title)).append("</caption><thead><tr><th scope=\"col\">")
                 .append(escape(s.categoryHeader)).append("</th><th scope=\"col\">").append(escape(s.valueHeader)).append("</th><th scope=\"col\">")
                 .append(escape(getString("SwDonutChart.share"))).append("</th></tr></thead><tbody>");
         for (Row row : s.rows) b.append("<tr><th scope=\"row\">").append(escape(row.category)).append("</th><td>").append(escape(row.text))
                 .append("</td><td>").append(escape(row.share)).append("</td></tr>");
-        return b.append("</tbody><tfoot><tr><th scope=\"row\">").append(escape(s.totalLabel)).append("</th><td>").append(escape(s.totalText))
-                .append("</td><td>").append(escape(share(s.total, s.total))).append("</td></tr></tfoot></table></div></details>").toString();
+        b.append("</tbody><tfoot><tr><th scope=\"row\">").append(escape(s.totalLabel)).append("</th><td>").append(escape(s.totalText))
+                .append("</td><td>").append(escape(share(s.total, s.total))).append("</td></tr></tfoot></table></div></details>");
     }
     @Override public void renderHead(IHeaderResponse response) {
         super.renderHead(response); response.render(JavaScriptHeaderItem.forReference(DONUT_JS));

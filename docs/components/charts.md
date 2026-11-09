@@ -135,11 +135,382 @@ With script, focus the plot and use Up/Down, Home/End and Escape. In RTL, labels
 mirrors; row order and Up/Down navigation stay the same. Native SVG titles and the exact data table also work without
 script. Formatting, legends, tooltips, skin colors, model detachment and `target.add(chart)` work in either orientation.
 
+## 100% stacked bars and areas
+
+Use `setStackMode(SwChart.StackMode.PERCENT)` to compare how each category is divided, independently of its total:
+
+```java
+add(new SwChart<>("mix", visitsModel, Visit::month)
+        .setTitle("Device share by month")
+        .setCategoryHeader("Month")
+        .setStackMode(SwChart.StackMode.PERCENT)
+        .addSeries(ChartSeries.bar("Desktop", Visit::desktop).setStack("devices"))
+        .addSeries(ChartSeries.bar("Mobile", Visit::mobile).setStack("devices")));
+```
+
+Bind it to `<div wicket:id="mix"></div>`. The same mode works for `ChartSeries.area(...)` and horizontal bars
+using `setOrientation(HORIZONTAL)`. Each named stack is normalized independently within each category. Bar and
+area stacks are separate, even when their names match. A category with counts 30/70 and one with counts 300/700
+have the same visual split. `StackMode.ABSOLUTE` is the default and restores ordinary value-based geometry.
+
+Every series in percent mode must be a bar or area with a nonblank stack name. Lines and unstacked series fail
+clearly rather than mixing original units with a proportion scale. Values must be nonnegative; ordinary absolute
+stacks still support negative values. Decimal arithmetic computes the proportions before conversion to drawing
+coordinates, including positive values too small for a `double` to represent directly.
+
+Null values remain missing and are excluded from the denominator; a remaining positive value can fill the stack.
+A zero stays an original zero. When a stack's total is zero, it has no plotted percentage: bars are absent and
+areas break at that category. Its original zero and missing cells remain available in the table and tooltip.
+This does not connect an area across missing/zero-total reports. Empty models retain the normal empty state.
+
+The numeric domain is fixed at 0–1 and its default labels are localized percentages from 0% to 100%, independently
+of the shared value format. `setValueTickCount(...)` still requests an approximate tick count. An explicit
+`setAxisValueFormat(...)` takes precedence and receives fractions, such as `0.25` for 25%. Clearing that override
+restores the mode's default axis format.
+
+Tooltips, native SVG titles, value labels and the complete data table retain the original formatted amounts;
+currency/custom shared formats continue to apply there. Highest-value labels still select by original amount,
+rather than largest share. Existing custom tooltip formats, colors, corners, curves and legend options work in
+percent mode. Forecast area joins borrow the source's normalized boundary without adding its value again.
+Models detach normally, and `target.add(chart)` recomputes each category after Ajax updates. Both orientations and
+area geometry render without JavaScript; no new client runtime or chart dependency is needed.
+
+## Reference lines and bands
+
+Add named targets and numeric ranges with `ChartReference`, imported from `dev.jbaby.shadwick.components.chart`:
+
+```java
+chart.addReference(ChartReference.line("Quarter target", 350).setColor(3));
+chart.addReference(ChartReference.band("Planning range", 150, 250).setColor(2));
+```
+
+References follow the numeric axis: horizontal guides on vertical charts, and vertical guides repeated beside
+each row of horizontal bars. Bands sit behind the data; lines use a separate overlay above ordinary and rounded
+bars, without intercepting pointer/touch events. A visible list below the plot names each reference and its value
+or range. It stays readable on narrow screens and in RTL; the plot's accessible description includes it. References
+work with the series legend, axes, grid or enhanced tooltips hidden, and need no JavaScript.
+
+By default a reference extends an absolute chart's numeric domain so its target/range is visible. The ordinary
+tick rounding then applies. `setExtendDomain(false)` leaves the data scale unchanged and clips geometry to the
+final numeric axis: an outside line is omitted and a partly visible band is trimmed. Its named caption remains
+available. An empty data model keeps the normal empty state and reference captions, without inventing a plot.
+
+For `StackMode.PERCENT`, references use fractions: `0.5` means 50%, and a band from `0.4` to `0.6` marks 40–60%.
+Their values must stay within 0–1, even when domain extension is enabled; the percentage domain remains fixed.
+Reference captions use the chart's shared value formatter in absolute mode and localized percentage formatting
+in percent mode. Numeric-axis overrides can shorten tick labels without shortening the reference captions.
+Reference formatting receives the original `Number`, preserving decimal precision for custom formatters.
+
+Lines are dashed by default; `setDashed(false)` makes one solid. `setColor(0)` uses the neutral default and values
+1–5 select chart palette tokens. Bands support `setFillOpacity(0..1)`, default `0.12`. Dashed styling applies to
+lines and fill opacity to bands. Values must be finite with magnitude at most `1e100`; a band's lower value must
+be strictly less than its upper value. Each defined, visible reference needs a nonblank label. Negative references
+are valid on absolute charts, including comparisons with a zero baseline.
+
+For changing goals, bind the values and optionally the label to Wicket models:
+
+```java
+IModel<Integer> goal = Model.of(300);
+IModel<Integer> lower = Model.of(150);
+IModel<Integer> upper = Model.of(250);
+chart.addReference(ChartReference.line("Target", goal));
+chart.addReference(ChartReference.band("Planning range", lower, upper));
+```
+
+Both factories also accept `IModel<String>` as the label. Update the models and call `target.add(chart)` to refresh
+geometry, domain and captions together. A null line value, or either missing band bound, omits that reference for
+the request. `setVisible(false)` also omits it without reading its label/value models. All reference models still
+detach with the chart. Add each reference object once per chart.
+
+References are guides, so they stay separate from the original data table and series tooltips. They do not add
+categories or series, alter missing-value gaps, or contribute to percentage totals or forecast joins. Their named
+captions provide the configured values using the same formatting rules without changing reported data.
+
+## Scatter plots
+
+`SwScatterChart` positions each point by two numeric coordinates. Each `ScatterSeries<T>` owns its dataset and
+serializable name/X/Y extractors, so independent series do not need artificial categories or matching row counts:
+
+```java
+add(new SwScatterChart("relationships")
+        .setTitle("Effort and revenue")
+        .setXLabel("Effort (hours)")
+        .setYLabel("Revenue")
+        .setPointHeader("Project")
+        .setYCurrency(Currency.getInstance("EUR"))
+        .addSeries(ScatterSeries.of("Design", designModel,
+                Project::name, Project::hours, Project::revenue))
+        .addSeries(ScatterSeries.of("Engineering", engineeringModel,
+                Project::name, Project::hours, Project::revenue)
+                .setShape(ScatterSeries.Shape.SQUARE)));
+```
+
+Bind it to `<div wicket:id="relationships"></div>`. Import both classes from
+`dev.jbaby.shadwick.components.chart`. Point names and series labels must be nonblank; series labels accept a
+String or `IModel<String>`. Register each series object once. Datasets may have different row counts and input
+types. Their coordinate units must match the chart's axis labels.
+
+Both axes have numeric domains derived from complete coordinate pairs; row order does not control spacing.
+Axes round to readable ticks and pad a single/flat coordinate so it stays drawable. They do not force zero into
+the range by default. Use `setIncludeZero(true)` when the origin supplies useful context. Signed coordinates are
+supported. Values must be finite with magnitude at most `1e100`; drawing coordinates use double precision.
+
+A null X or Y leaves that measurement unplotted, and its original cells remain in the exact table. Orphan
+coordinates do not stretch the domains. Empty datasets show an empty state; datasets with no complete pairs show
+a separate message and retain their known cells. Duplicate coordinates and names are not deduplicated. Series
+and input order remain intact, with no automatic sorting, interpolation, joining or statistical fit.
+
+`ScatterSeries.Shape.CIRCLE` is the default; `SQUARE` and `DIAMOND` distinguish series without relying only on color.
+`setColor(1..5)` selects a chart token; zero uses the next token automatically. `setPointRadius(2..12)` controls the
+radius in native pixels, default four. Marker size stays fixed as the graph resizes. Pointer/touch hit regions are
+larger than the visible markers. The selected point is raised above overlapping markers while enhanced exploration
+is active; keyboard navigation and the table reach points that share a position.
+
+X and Y formats are independent. Use `setXValueFormat(...)` / `setYValueFormat(...)` with `SwChart.ValueFormat`
+or serializable `(number, locale) -> text` callbacks; `setXCurrency(...)` / `setYCurrency(...)` select currency
+formatting. Formats apply to that axis, its table column, native titles and tooltips. Measurement callbacks receive
+the original `Number`, including decimal precision; numeric ticks are computed doubles. Missing coordinates stay
+empty without invoking a formatter. Returning null from a formatter produces empty text; passing a null custom
+formatter restores the default number format for that coordinate. Strings are escaped, and browser tooltips read
+the formatted table cells using `textContent`.
+
+`setXTickCount(2..20)` / `setYTickCount(2..20)` request approximate counts, default five. With script, overlapping
+numeric X labels are hidden after resizing, font loading or direction changes; the table retains all coordinates.
+Without script, a smaller native subset remains on narrow charts. Long Y labels are visually truncated; exact
+formatted values remain available in the table/tooltips. `setShowGrid`, `setShowXAxis`, `setShowYAxis`,
+`setShowLegend` and `setShowTooltip` control their respective parts. Axis-label and point-header setters accept
+String or `IModel<String>` values.
+
+Enhanced plots have one focus stop. Arrow keys visit complete points in series/input order, Home/End jump to the
+first/last point, and Escape dismisses the tooltip. Left/Right follows RTL direction; Up/Down follows input order.
+This is sequence navigation, rather than a geometric nearest-point search. RTL mirrors the X geometry and numeric
+axis while preserving readable text. Native SVG titles, shape legends and the full four-column data table work
+without JavaScript. Built-in table/empty/instruction labels cover all nine library languages.
+
+Update each series' data/label models or marker configuration and call `target.add(chart)` for Ajax refresh.
+Snapshotting reads each configured series dataset once and each point extractor once per input row per request.
+All chart and series models detach normally. Replacement
+removes the old listeners, resize/direction observers and font callbacks. Initial component assembly uses
+`onInitialize()`, and scatter interactions have their own small runtime. The first scatter increment does not
+add bubbles, connecting/trend lines, brushes or the category chart's reference/stack options.
+
+## Heatmaps
+
+`SwHeatmapChart<T>` compares rows and named numeric columns on one shared, five-band intensity scale:
+
+```java
+add(new SwHeatmapChart<>("workload", teamsModel, TeamWeek::name)
+        .setTitle("Weekly team workload")
+        .setRowHeader("Team")
+        .setValueHeader("Hours")
+        .setRange(0, 50)
+        .addColumn(HeatmapColumn.of("Monday", TeamWeek::monday))
+        .addColumn(HeatmapColumn.of("Tuesday", TeamWeek::tuesday))
+        .addColumn(HeatmapColumn.of("Wednesday", TeamWeek::wednesday)));
+```
+
+Bind it to `<div wicket:id="workload"></div>` and import both classes from
+`dev.jbaby.shadwick.components.chart`. Constructors store configuration and models; initial component assembly
+happens in `onInitialize()` after `super`. Each `HeatmapColumn` owns a String/model label and serializable value
+extractor. Register at least one column; the same column instance cannot be registered twice. Input row order,
+column registration order and duplicate labels stay intact. Titles, row headers, value headers and row/column
+labels must be nonblank. Title/header setters accept String and `IModel<String>` values.
+
+The matrix is a native table with scoped row and column headers, and SVG tiles behind its formatted values.
+The color diagram and its exact data are the same table. Values are visible by default on readable backgrounds;
+`setShowValues(false)` hides them visually while preserving their native accessible text, tooltips and original
+measurements. Native cell titles provide hover detail without JavaScript. Null cells remain empty values and get
+a dashed outline, a cross and localized “Not measured” text for tooltips/accessibility. Zero is an observed value
+and never receives the missing mark. Known values with an empty/null custom formatter output remain known.
+
+Measurements may be signed, must be finite and have magnitude at most `1e100`. Automatic bounds include the
+observed minimum/maximum and zero. An all-zero or wholly unmeasured matrix uses 0–1. `setRange(lower, upper)` or
+`setRange(lowerModel, upperModel)` fixes shared bounds; both must be defined, finite, within the same magnitude
+limit and strictly increasing. An explicit range can exclude zero when all observations fit inside it. Any value
+outside the configured range fails clearly, rather than being clamped. `setAutoScale()` releases the range models
+and restores automatic bounds. Replaced models detach when no longer owned, including when bounds are swapped.
+
+Five equal-width numeric intervals map to increasing opacity of one palette color. Band comparisons use exact
+BigDecimal boundaries, including tiny decimals below double range. Intervals include their lower bound and exclude
+their upper bound, except the last interval also includes the overall maximum. The legend shows all five numeric
+ranges; their printed formatting can round close boundaries. Negative values use the same low-to-high sequential
+scale, so a negative-only report's zero is at the high end. No automatic divergence, per-row normalization or
+aggregation is applied. Use comparable units across the matrix, and transform domain-specific scores in the app.
+
+`setColor(1..5)` chooses a skin palette token (default one). `setShowLegend(false)` hides the bands and missing
+key; `setShowTooltip(false)` keeps native values/titles and scroll behavior while disabling enhanced exploration.
+`setValueFormat(NUMBER/INTEGER/COMPACT/PERCENT)`, custom `(number, locale) -> ...` formatting and `setCurrency(...)`
+follow the shared chart conventions. Custom callbacks receive original Number measurements and BigDecimal legend
+boundaries; they skip null measurements. Choose formatting precise enough for close or tiny observations.
+
+The matrix keeps readable cell sizes and scrolls inside its figure on narrow screens. Row headers stay visible
+at the logical start as columns scroll. Long names and values wrap. The scroll region has one native focus stop;
+individual cells do not add tab stops. With script, hover/tap any cell or focus the region to explore it with:
+
+| Key | Action |
+| --- | --- |
+| Left / Right | Adjacent column within the same row, following RTL |
+| Up / Down | Adjacent row, preserving the column |
+| Home / End | First / last column of the current row |
+| Control+Home / Control+End | First / last cell of the matrix |
+| Escape | Close the tooltip while keeping focus |
+
+Navigation clamps at the edges and scrolls the active cell into view. Table-backed tooltips and live announcements
+identify the row, column, measurement name and formatted value. Without enhancement, native table navigation,
+scrolling, exact values and missing markers still work. All nine built-in languages include the component labels
+and instructions. Color is supplemented by visible values, range labels, missing symbols and accessible table data.
+
+An empty data model has a native empty state. Entirely unmeasured matrices keep their labels/cells with a separate
+message. One row or one column is valid. Update the data, column-label, header or range models and call
+`target.add(chart)` to refresh the matrix and legend. Snapshots read data/extractors once per configured slot per
+request; owned models detach, and replaced browser listeners are cleaned up. Heatmaps use a small separate runtime
+for matrix navigation; the existing Cartesian/radial/radar interaction runtime remains independent.
+Calendar/contribution layouts, custom thresholds, diverging palettes, per-row scales, aggregation and editable or
+selectable cells remain later scope.
+
+## Radial bar charts
+
+`SwRadialChart<T>` draws concentric bars for independent named measurements on one common zero-based scale:
+
+```java
+add(new SwRadialChart<>("goals", goalsModel, Goal::name, Goal::score)
+        .setTitle("Delivery goals")
+        .setValueHeader("Score")
+        .setMaximum(100)
+        .setStartAngle(135)
+        .setSweepAngle(270)
+        .setRounded(true));
+```
+
+Bind it to `<div wicket:id="goals"></div>`. Import `SwRadialChart` from
+`dev.jbaby.shadwick.components.chart`. The first row is the outermost ring; input order, duplicates, zero and
+missing measurements retain their positions. Arc angle encodes value divided by the shared maximum. Each ring
+has a different circumference, so compare angles rather than arc area or physical length. Use comparable units;
+normalize measurements with different units or per-category goals in the application before plotting them.
+There is no aggregate total or part-to-whole percentage calculation.
+
+The default starts at the top and sweeps clockwise through a full circle. `setStartAngle(-360..360)` measures
+clockwise degrees from three o'clock, with `-90` at the top. `setSweepAngle(...)` accepts positive angles up to
+`360`; use start `180` and sweep `180` for an upper half-circle. Partial sweeps keep the same square plot and
+caption. RTL mirrors the complete geometry; the HTML legend and values follow document direction.
+
+Measurements must be finite, nonnegative and at most `1e100`. Null means not measured; zero is observed.
+Both keep a hit ring and legend entry when other measured rows exist, even though neither draws a colored bar.
+Tooltips and native titles explicitly identify missing measurements, and their table cells stay empty. An all-zero
+report shows tracks on an automatic 0–1 scale. An entirely unmeasured report has its own native message and table;
+an empty report has an empty state. A single row works as a gauge on the same shared-scale contract.
+
+Automatic scaling rounds the largest measurement up to a readable bound. `setMaximum(Number)` fixes the bound;
+`setMaximum(IModel<? extends Number>)` follows an application-owned changing bound. A fixed maximum must be
+positive, finite, at most `1e100` and defined. Values above it fail clearly rather than being clamped.
+`setAutoScale()` restores the automatic maximum and releases the previous bound model. Decimal ratios are
+calculated before conversion to geometry, including values below double range. Very small arcs can be invisible;
+the legend, keyboard and original table still reach their measurements. Choose a custom formatter when the
+standard number format rounds a tiny measurement to zero.
+
+The plot and caption name its shared zero and maximum. For fractional values such as `0.75`, use
+`setMaximum(1).setValueFormat(SwChart.ValueFormat.PERCENT)` to display a percentage scale. Raw scores such as
+`75` use `setMaximum(100)` and ordinary numeric formatting. Shared `setValueFormat(NUMBER/INTEGER/COMPACT/PERCENT)`
+and custom `(number, locale) -> ...` formatting follow `SwChart`; `setCurrency(Currency)` selects currency.
+Formatters receive original Numbers and skip null measurements. Empty custom output does not turn known data
+into missing data. Titles and category/value table headers accept String or model values through `setTitle`,
+`setCategoryHeader` and `setValueHeader`.
+
+Palette colors cycle through tokens 1–5 in input order. `setColor(row -> row.color())` can keep colors tied to
+application category keys through data updates; returned zero/null uses the row's automatic color. Invalid tokens
+fail clearly. `setColor(null)` clears the callback. `setInnerRadius(0..0.85)` chooses the inner radius as a fraction
+of the outer radius (default `0.35`), and `setGap(0..0.8)` chooses the empty fraction of each radial band (default
+`0.2`). Tracks and bars scale with the diagram. `setRounded(true)` adds decorative end caps; they extend beyond
+the encoded centerline endpoints and can exaggerate tiny values. Flat ends are the default. Full circles use two
+SVG arcs, including when a value exactly reaches its maximum.
+
+Use `setShowTracks(false)`, `setShowLegend(false)` or `setShowTooltip(false)` to hide those presentation parts.
+The exact table remains available. Without enhancement, native SVG titles, tracks/bars, the legend and the table
+still work. With script, hover/tap a ring or its legend entry, or focus the single plot stop and use arrow keys,
+Home/End and Escape. Up/Down follows outer-to-inner order; Left/Right follows RTL. Full hit rings keep zero,
+missing and tiny measurements reachable. Legend entries wrap long names and values without adding focus stops.
+Built-in labels cover all nine library languages. The existing shared chart runtime supplies table-backed
+tooltips, color indicators, live announcements and Ajax/cloning cleanup.
+
+Update the data/header/maximum models and call `target.add(chart)` to replace the report, geometry and legend
+together. Data and callbacks are read once per configured slot per request, and owned models detach. Constructors
+store parameters/configuration; initial component assembly happens in `onInitialize()` after `super`. Use a small
+set of categories so rings remain distinguishable. Stacked/grouped radial series, signed ranges, independent
+per-ring bounds, center content and animated gauges remain later scope.
+
+## Radar charts
+
+`SwRadarChart<T>` compares named series across a common ordered list of dimensions:
+
+```java
+add(new SwRadarChart<>("profile", capabilitiesModel, Capability::name)
+        .setTitle("Team capability profile")
+        .setMaximum(100)
+        .addSeries(RadarSeries.of("Current", Capability::current))
+        .addSeries(RadarSeries.of("Target", Capability::target)
+                .setDashed(true).setFillOpacity(0).setDots(false)));
+```
+
+Bind it to `<div wicket:id="profile"></div>` and import both classes from
+`dev.jbaby.shadwick.components.chart`. Every spoke uses the same zero-based numeric scale. Use comparable units
+or normalize unlike measures in the application before plotting them. The input order is the spoke order;
+dimensions and series are not sorted or deduplicated. Titles, dimension names and series labels must be nonblank.
+Series labels accept String or `IModel<String>` values, and extractors are serializable.
+
+Spokes start at the top and proceed clockwise; numbered native-size labels match the full dimension names in the
+HTML key below the plot. Long names wrap there rather than becoming clipped or tiny SVG text. RTL mirrors the
+geometry and numbers together, while the text remains readable. The dimension key also supports enhanced hover
+and touch exploration. Use a small set of comparable dimensions for a readable profile.
+
+Measurements must be finite, nonnegative and at most `1e100`. A null is missing, while zero is an observed value
+at the center. A complete series draws a closed polygon. An incomplete one has no fill and draws only edges
+between adjacent measured dimensions, including the last/first pair; it never bridges a missing dimension or
+substitutes an invented zero. Dots keep known isolated values visible. All original values and empty cells remain
+in the exact table; tooltips/native titles explicitly identify missing measurements.
+
+At least three dimensions are needed for a radar plot. Fewer dimensions retain their table with an explanatory
+message. An empty model and a model with no measurements have distinct native states. An all-zero model draws
+the measured center values on an automatic 0–1 scale, rather than becoming missing data.
+
+The default automatic maximum rounds the largest measurement up to a readable bound. `setMaximum(Number)` fixes
+the scale; `setMaximum(IModel<? extends Number>)` supports changing bounds. A configured maximum must be positive,
+finite and at most `1e100`, with no missing model value. Values exceeding it fail rather than being silently
+clamped. `setAutoScale()` restores automatic scaling. Replaced/cleared maximum models detach when released.
+Decimal ratios are calculated before conversion to geometry, including positive values below double range.
+
+`setLevels(2..10)` selects equally spaced polygon rings, default four. Radius is linear in value; polygon area is
+not a separate measurement. The scale caption gives the formatted zero and maximum, while the table and tooltip
+give exact formatted series values. `setShowGrid(false)` hides rings/spokes; dimension numbers and the key remain.
+`setShowLegend(false)` hides the series legend, and `setShowTooltip(false)` disables enhanced exploration.
+
+Each `RadarSeries` supports palette tokens through `setColor(1..5)` (zero selects the next automatically),
+`setDashed`, `setDots`, `setFillOpacity(0..1)` and `setStrokeWidth(0..20)` in native pixels. Defaults are solid
+two-pixel outlines, dots and `0.15` fill opacity. Dots remain three pixels in radius as the chart resizes. Filled
+areas stay behind the outlines; transparent dimension sectors provide the hit regions.
+
+Shared number/currency/custom formatting follows `setValueFormat(...)` and `setCurrency(...)`, with the same
+locale-aware choices as `SwChart`. Formatters receive original `Number` measurements, preserving decimal
+precision; missing measurements remain empty without invoking the formatter. A custom formatter's empty/null
+output does not turn a known value into missing data. Chart titles and table dimension headers accept String or
+`IModel<String>` values through `setTitle` and `setCategoryHeader`.
+
+With script, focus the plot and use Left/Right, Home/End and Escape to explore dimensions in input order; Left/Right
+follows RTL. Hover/tap the diagram or dimension key to inspect every series at that dimension. The shared chart
+runtime supplies one plot focus stop, table-backed tooltips and live announcements. Without script, the diagram,
+numbered key, native SVG titles, legend and exact table still work. Built-in labels cover all nine library languages.
+
+Update the data, series-label or maximum models and call `target.add(chart)` to refresh geometry, dimension key,
+scale and data together. Snapshots read data/extractors once per configured slot per request, all owned models
+detach, and replaced listeners are removed. Component assembly happens in `onInitialize()` after `super`.
+Per-dimension maxima, signed radial scales, stacked radar series and statistical scoring remain application-owned
+or later scope; the initial component uses one shared comparable scale.
+
 ## Formatting and interaction
 
 `setValueFormat(NUMBER/INTEGER/COMPACT/PERCENT)` uses the session locale. `setCurrency(Currency)` selects currency
 formatting. For custom output use `setValueFormat((number, locale) -> ...)` or `setCategoryFormat((value, locale)
  -> ...)`. These shared formats supply the data table, value labels and, by default, axes and tooltips.
+Percent mode uses its own default percentage format for the numeric axis.
 
 Use separate formats when the overview needs shorter text than the detail:
 
@@ -352,16 +723,51 @@ exploration also work on the legend, so tiny slices remain reachable. Built-in l
 Use `target.add(donut)` for Ajax refresh; data is snapshotted once per request, models detach and replaced listeners
 are removed. The chart uses the existing skins and strict CSP, with no charting dependency or inline styles.
 
+## Pie charts
+
+For a filled pie, use the same component with `setShape(SwDonutChart.Shape.PIE)`:
+
+```java
+add(new SwDonutChart<>("shares", regionsModel, Region::name, Region::revenue)
+        .setShape(SwDonutChart.Shape.PIE)
+        .setTitle("Revenue shares")
+        .setCategoryHeader("Region")
+        .setValueHeader("Revenue")
+        .setCurrency(Currency.getInstance("EUR")));
+```
+
+Bind it to `<div wicket:id="shares"></div>`. `Shape.DONUT` remains the default. Pie slices are native SVG
+sectors with the same grouping, formatting, localized legend, keyboard/pointer/touch exploration and exact table.
+A single positive part fills the disk. Zero/missing values create no slices, and a zero-total pie shows a muted
+disk and the no-positive-values message. Very small shares can round away visually; each part remains reachable
+through its legend entry and present in the exact table. Pies have no center label; the table footer retains the
+total and its configured label. Both shapes work without JavaScript and support `target.add(chart)` refreshes.
+
 The **Charts** showcase (`/charts`) includes vertical and horizontal grouped/stacked bars, client rankings, lines,
 stacked areas, a composed currency chart, negative values/gaps, an empty state and live Ajax refresh in both
-orientations. Donut examples include client hours, grouped/all regional shares, native empty/zero states and a live
-regional breakdown. Sparkline examples compose cards and a team-capacity table, and labeled examples cover latest,
+orientations. Percent examples compare a device mix with vertical/horizontal bars and areas, retain zero-total
+gaps and missing reports, and update all three views through Ajax. Donut examples include client hours, grouped/all regional shares, native empty/zero states and a live
+regional breakdown. Pie examples show grouped/all revenue shares, a single-region disk, a zero-total state and live
+Ajax updates. Sparkline examples compose cards and a team-capacity table, and labeled examples cover latest,
 highest/latest, horizontal and dense layouts. Refresh report updates the delivered-hours card and its trend together.
 Forecast examples show joined lines/areas, a missing future report and a handoff that moves when a new actual period
 arrives. Formatting examples show compact/month axes with exact currency tooltips in both orientations, invoice
 reference headers and formats preserved through Ajax report changes. The landing uses the same Cartesian chart
 CSS/runtime and native table. Independent axis/tooltip formats apply to `SwChart`; donuts retain their shared value formatter.
 Appearance examples include branded natural forecasts, native-pixel bar corners, a quieter daily activity report,
-responsive ticks and an Ajax report that changes colors and restores a palette token. This implementation does not
-include every Recharts option: gradients, reference lines, brushes, arbitrary tooltip/legend content and further
+responsive ticks and an Ajax report that changes colors and restores a palette token.
+Reference examples show targets/ranges on revenue, horizontal delivery and percentage charts; **Refresh targets**
+updates a separate pair of revenue reports and their modeled bounds together.
+Scatter examples compare independent design/engineering datasets, signed changes and overlapping points, with
+quiet, single-point, missing-pair and empty states. **Refresh measurements** updates a separate dataset and its markers.
+Radar examples compare fixed-scale team profiles and automatic workload scales, show missing assessments, long
+dimension names, measured zeros and native boundary states. **Refresh assessment** changes the live profile, its
+series label and modeled maximum together.
+Radial examples show full/three-quarter/quiet half-circle comparisons, automatic support-hour scales, a single
+launch gauge, zero/missing/tiny values and native empty states. **Refresh radial report** changes the categories,
+colors, header, maximum and sweep together.
+Heatmap examples show weekly workloads, hidden values, signed plan changes, long labels, tiny/zero/missing
+measurements and a single report. **Refresh workload matrix** updates team rows, a day label, measurement name,
+range and palette together.
+This implementation does not include every Recharts option: gradients, brushes, arbitrary tooltip/legend content and further
 chart families remain separate work.
