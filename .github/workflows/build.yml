@@ -6,6 +6,10 @@ on:
   pull_request:
     branches: [main]
 
+concurrency:
+  group: build-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   test:
     runs-on: ubuntu-latest
@@ -39,8 +43,25 @@ jobs:
         run: python3 scripts/check-release.py artifacts
 
   browser:
-    name: Browser checks
+    name: Browser checks (${{ matrix.group }})
     runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - {group: showcase-vega, skins: vega}
+          - {group: showcase-lyra, skins: lyra}
+          - {group: showcase-nova, skins: nova}
+          - {group: showcase-maia, skins: maia}
+          - {group: showcase-mira, skins: mira}
+          - {group: showcase-luma, skins: luma}
+          - {group: showcase-rhea, skins: rhea}
+          - {group: showcase-sera, skins: sera}
+          - {group: showcase-sketch, skins: sketch}
+          - {group: components-0, shard: 0}
+          - {group: components-1, shard: 1}
+          - {group: components-2, shard: 2}
+          - {group: components-3, shard: 3}
     steps:
       - uses: actions/checkout@v7
 
@@ -69,5 +90,29 @@ jobs:
       - name: Install Chromium, Firefox and their system libraries
         run: ./mvnw -B -pl shadwick-examples exec:java -Dexec.mainClass=com.microsoft.playwright.CLI -Dexec.args="install --with-deps chromium firefox" -Dexec.classpathScope=test
 
+      - name: Check narrow German/RTL tooltips first
+        if: matrix.group == 'components-0'
+        run: ./mvnw -B test -pl shadwick-examples -Pbrowser -Dtest=ChartFormatBrowserTest#germanKeyboardAndTouchKeepTheirFormatsAfterPartialAjaxAndRepeatedInitialization
+
       - name: Check the showcase in Chromium and Firefox
-        run: ./mvnw -B verify -pl shadwick-examples -Pbrowser
+        env:
+          BROWSER_GROUP: ${{ matrix.group }}
+          BROWSER_SKINS: ${{ matrix.skins }}
+          BROWSER_SHARD: ${{ matrix.shard }}
+        run: |
+          set -euo pipefail
+          if [[ "$BROWSER_GROUP" == showcase-* ]]; then
+            ./mvnw -B verify -pl shadwick-examples -Pbrowser -Dtest=ShowcaseBrowserTest -Dshadwick.browser.skins="$BROWSER_SKINS"
+          else
+            browser_tests=$(python3 scripts/browser-shard.py --index "$BROWSER_SHARD")
+            ./mvnw -B verify -pl shadwick-examples -Pbrowser -Dtest="$browser_tests"
+          fi
+
+      - name: Preserve browser failure reports and screenshots
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: browser-failure-${{ matrix.group }}
+          path: |
+            shadwick-examples/target/surefire-reports/**
+            shadwick-examples/target/*screenshots/**

@@ -15,6 +15,30 @@ Maven dependency and is done: no Node, no Tailwind, no CSS build on their side.
 
 ## Resume point — 2026-11-09
 
+**Current blocker: full browser CI found one reproducible CI-only tooltip failure.** Candidate Build run
+42640666017 completed with 4744 browser cases, 4743 passing and ChartFormatBrowserTest's German/RTL embedded
+Firefox case failing at its first tooltip sizing assertion (line 119). It is the same case as the previous
+7d578c7 run. Local Chromium/Firefox rechecks pass; do not treat that as clearing the CI failure. No v0.1.0 tag,
+staging upload or publication exists. The failed 97f08a3 candidate must be superseded by a reviewed release fix
+with successful full CI; the earlier instruction to tag that exact candidate is superseded by this failure.
+
+ChartFormatBrowserTest now records the failing rectangles, line positions, font properties/loading state and a
+screenshot while retaining the same assertions. Browser CI has 9 ShowcaseBrowserTest skin jobs plus 4 automatically
+discovered component-class shards, preserving every existing browser class and all nine skins. The old Showcase
+class alone ran 3653 cases in 5587 seconds; the total run took 2h33m. The narrow failing case runs first in one
+shard for quick diagnostics; failure reports/screenshots are retained. No coverage was disabled or relaxed.
+Three sharding tests make 23 release-tooling tests; actionlint and those tests pass. Production code/API is still
+unchanged by these diagnostics. Next: collect the fast CI measurements, fix the actual layout or timing cause,
+then require the full parallel Build run to pass before tagging/staging. All four release secrets are available.
+
+Post-publication availability edits are prepared ONLY in a temporary copy, not main:
+/tmp/shadwick-post-publication.py and /tmp/shadwick-published-docs.json. The temporary 68-page site checks pass.
+Apply the script to main only after real Central publication and clean Maven resolution; then update the
+checkpoint and next development snapshot. The user also asked for OatAppLayout's equivalent: answered
+SwAppLayout, dev.jbaby.shadwick.components, with docs/components/app-layout.md; release work remains active.
+
+## Previous release execution checkpoint — 2026-11-09
+
 **Current checkpoint: 0.1.0 release execution in progress.** The frozen candidate was committed/pushed as
 97f08a3b06ed7d94e12efe48a0dda3e31c7461b3. Build run 42640666017 has successful Java 21/25 jobs; its full
 browser job is still running (the preceding browser run took over two hours). Website run 42640666016 passed,

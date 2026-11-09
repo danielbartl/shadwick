@@ -49,15 +49,24 @@ class ChartFormatBrowserTest {
         tooltipFits(c, true);
     }
     void tooltipFits(Locator c, boolean requireSingleLine) {
-        assertThat(c.locator(".sw-chart-tooltip-content").evaluate("""
+        @SuppressWarnings("unchecked")
+        var layout = (Map<String, Object>) c.locator(".sw-chart-tooltip-content").evaluate("""
             (tip,requireSingleLine)=>{
                 const box=tip.getBoundingClientRect(),root=tip.closest('.sw-chart').getBoundingClientRect();
                 const node=tip.querySelector('.sw-chart-tooltip-value'),name=tip.querySelector('.sw-chart-tooltip-name').getBoundingClientRect(),value=node.getBoundingClientRect();
                 const range=document.createRange();range.selectNodeContents(node);
                 const tops=[...range.getClientRects()].map(r=>r.top),singleLine=Math.max(...tops)-Math.min(...tops)<1;
-                return (!requireSingleLine || singleLine) && box.width>0 && box.left>=root.left-1 && box.right<=root.right+1 && (name.right<=value.left || value.right<=name.left);
+                const inside=box.width>0 && box.left>=root.left-1 && box.right<=root.right+1;
+                const disjoint=name.right<=value.left || value.right<=name.left,style=getComputedStyle(node);
+                return {fits:(!requireSingleLine || singleLine) && inside && disjoint,singleLine,inside,disjoint,
+                    box:box.toJSON(),root:root.toJSON(),name:name.toJSON(),value:value.toJSON(),tops,
+                    text:node.textContent,font:style.font,fontFamily:style.fontFamily,fontSize:style.fontSize,
+                    maxInlineSize:style.maxInlineSize,padding:style.padding,fonts:document.fonts.status};
             }
-            """, requireSingleLine)).as("Tooltip sizing in %s", c.locator(".sw-chart-title").textContent()).isEqualTo(true);
+            """, requireSingleLine);
+        if (!Boolean.TRUE.equals(layout.get("fits")))
+            c.screenshot(new Locator.ScreenshotOptions().setPath(SHOTS.resolve("tooltip-fit-failure-" + System.nanoTime() + ".png")));
+        assertThat(layout.get("fits")).as("Tooltip sizing in %s: %s", c.locator(".sw-chart-title").textContent(), layout).isEqualTo(true);
     }
     static Stream<Arguments> appearances() {
         return Stream.of("chromium", "firefox").flatMap(engine -> Stream.of("vega", "nova", "sketch").flatMap(skin ->

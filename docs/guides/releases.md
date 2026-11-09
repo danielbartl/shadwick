@@ -46,6 +46,10 @@ The remaining release steps are to commit/push the candidate, obtain successful 
 configure real signing/Central credentials, create the tag, stage and inspect the real signed deployment, then
 publish. This review did not create a Git tag, upload artifacts or publish the release.
 
+The first full candidate CI run subsequently passed 4,743 of 4,744 browser cases. A narrow German/RTL tooltip
+assertion in Firefox remains a release blocker. The complete suite now runs across nine showcase skin jobs
+and four component-class shards, with the failing case checked first and diagnostic reports retained.
+
 ## Published scope
 
 Central receives `dev.jbaby:shadwick-parent` as a POM and `dev.jbaby:shadwick` as a POM, library JAR, sources JAR
