@@ -166,6 +166,60 @@ class DisplayComponentsTest {
     }
 
     @Test
+    void anIconCanHaveAFixedSizeAndStrokeWidthOnAnSvgTagOrInsideAnotherTag() {
+        tester.startComponentInPage(new SwIcon("icon", "pencil").setSize(20).setStrokeWidth(1.5),
+                Markup.of("<svg wicket:id='icon' width='99'></svg>"));
+        assertThat(tag("icon").getAttribute("width")).isEqualTo("20");
+        assertThat(tag("icon").getAttribute("height")).isEqualTo("20");
+        assertThat(tag("icon").getAttribute("data-icon-size")).isEqualTo("20");
+        assertThat(tag("icon").getAttribute("stroke-width")).isEqualTo("1.5");
+
+        tester.startComponentInPage(new SwIcon("icon", "pencil").setSize(32).setStrokeWidth(new java.math.BigDecimal("2.50")),
+                Markup.of("<span wicket:id='icon'></span>"));
+        TagTester svg = tag("icon").getChild("svg");
+        assertThat(svg.getAttribute("width")).isEqualTo("32");
+        assertThat(svg.getAttribute("data-icon-size")).isEqualTo("32");
+        assertThat(svg.getAttribute("stroke-width")).isEqualTo("2.5");
+        assertThat(html()).doesNotContain("style=");
+    }
+
+    @Test
+    void anIconWithoutASizeFollowsTheTextAndNullRestoresTheDefaults() {
+        SwIcon icon = new SwIcon("icon", "pencil").setSize(20).setStrokeWidth(3);
+        icon.setSize(null).setStrokeWidth(null);
+        tester.startComponentInPage(icon, Markup.of("<svg wicket:id='icon'></svg>"));
+        assertThat(tag("icon").getAttribute("data-icon-size")).isNull();
+        assertThat(tag("icon").getAttribute("width")).isNull();
+        assertThat(tag("icon").getAttribute("stroke-width")).isEqualTo("2");
+    }
+
+    @Test
+    void iconSizesAndStrokeWidthsOutsideTheirRangeFailClearly() {
+        SwIcon icon = new SwIcon("icon", "pencil");
+        assertThatIllegalArgumentException().isThrownBy(() -> icon.setSize(0));
+        assertThatIllegalArgumentException().isThrownBy(() -> icon.setSize(1025));
+        assertThatIllegalArgumentException().isThrownBy(() -> icon.setStrokeWidth(0));
+        assertThatIllegalArgumentException().isThrownBy(() -> icon.setStrokeWidth(Double.NaN));
+        assertThatIllegalArgumentException().isThrownBy(() -> icon.setStrokeWidth(Double.POSITIVE_INFINITY));
+        assertThatIllegalArgumentException().isThrownBy(() -> icon.setStrokeWidth(25));
+    }
+
+    @Test
+    void anEmptyStateHasItsDashedOutlineByDefaultAndCanLeaveItOut() {
+        SwEmptyState empty = new SwEmptyState("empty", "No projects", "Create your first project.").setIcon("folder");
+        tester.startComponentInPage(empty);
+        assertThat(empty.isBorder()).isTrue();
+        assertThat(TagTester.createTagByAttribute(html(), "class", "sw-empty").hasAttribute("data-border")).isTrue();
+
+        tester.startComponentInPage(empty.setBorder(false));
+        assertThat(TagTester.createTagByAttribute(html(), "class", "sw-empty").hasAttribute("data-border")).isFalse();
+        // The outline's container is transparent: the parts keep their paths under the panel
+        tester.assertLabel("empty:title", "No projects");
+        tester.assertLabel("empty:message", "Create your first project.");
+        tester.assertVisible("empty:media");
+    }
+
+    @Test
     void emptyStateDescriptionsFollowTheirModelsInsteadOfFreezingAtConstruction() {
         Model<String> description = Model.of();
         SwEmptyState empty = new SwEmptyState("empty", Model.of("No projects"), description).setIcon("folder");

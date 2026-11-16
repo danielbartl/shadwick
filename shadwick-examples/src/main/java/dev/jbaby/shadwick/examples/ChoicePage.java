@@ -38,6 +38,7 @@ public class ChoicePage extends BasePage {
         add(normalForm());
         add(ajaxForm());
         add(liveForm());
+        add(mixedForm());
         addFieldVariants();
     }
 
@@ -118,6 +119,60 @@ public class ChoicePage extends BasePage {
                                 }));
         liveForm.add(current);
         return liveForm;
+    }
+
+    /**
+     * "All projects" is checked when every project is, mixed (a minus) when only some are, and checks or clears them
+     * all. The mixed state is presentation the server recomputes on each update; the box itself submits a boolean.
+     */
+    private Form<Void> mixedForm() {
+        List<Model<Boolean>> projects = List.of(Model.of(true), Model.of(false), Model.of(true));
+        List<String> names = List.of("Fern & Field", "Forma Architects", "Sunday Coffee");
+        Form<Void> form = new Form<>("mixedForm");
+        SwCheckBox all = new SwCheckBox("allProjects", "All projects", allOf(projects));
+        all.setIndeterminate((IModel<Boolean>) () -> projects.stream().anyMatch(Model::getObject)
+                && !projects.stream().allMatch(Model::getObject));
+        all.setOutputMarkupId(true);
+        Label summary = new Label("mixedSummary", (IModel<String>) () ->
+                projects.stream().filter(Model::getObject).count() + " of " + projects.size() + " projects selected.");
+        summary.setOutputMarkupId(true);
+        List<SwCheckBox> boxes = new java.util.ArrayList<>();
+        for (int i = 0; i < projects.size(); i++) {
+            SwCheckBox box = new SwCheckBox("project" + i, names.get(i), projects.get(i));
+            box.setOutputMarkupId(true);
+            box.add(new AjaxFormComponentUpdatingBehavior("change") {
+                @Override
+                protected void onUpdate(AjaxRequestTarget target) {
+                    target.add(all, summary);
+                }
+            });
+            boxes.add(box);
+            form.add(box);
+        }
+        all.add(new AjaxFormComponentUpdatingBehavior("change") {
+            @Override
+            protected void onUpdate(AjaxRequestTarget target) {
+                boxes.forEach(target::add);
+                target.add(all, summary);
+            }
+        });
+        form.add(all, summary);
+        return form;
+    }
+
+    /** Checked when every project is; setting it checks or clears them all. */
+    private static IModel<Boolean> allOf(List<Model<Boolean>> projects) {
+        return new IModel<>() {
+            @Override
+            public Boolean getObject() {
+                return projects.stream().allMatch(Model::getObject);
+            }
+
+            @Override
+            public void setObject(Boolean value) {
+                projects.forEach(project -> project.setObject(Boolean.TRUE.equals(value)));
+            }
+        };
     }
 
     private void addFieldVariants() {

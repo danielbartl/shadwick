@@ -71,6 +71,7 @@ public class ButtonPage extends BasePage {
 
     private void addButtonSizes() {
         // Sizes
+        add(SwButton.onClick("extraSmall", "Extra small", target -> {}).setSize(ButtonBehavior.Size.EXTRA_SMALL));
         add(SwButton.onClick("small", "Small", target -> {}).setSize(ButtonBehavior.Size.SMALL));
         add(SwButton.onClick("default", "Default", target -> {}));
         add(SwButton.onClick("large", "Large", target -> {}).setSize(ButtonBehavior.Size.LARGE));
@@ -84,6 +85,21 @@ public class ButtonPage extends BasePage {
                         target.add(status);
                     }
                 }.setSize(ButtonBehavior.Size.ICON).setVariant(ButtonBehavior.Variant.OUTLINE));
+        add(iconButton("iconExtraSmall", ButtonBehavior.Size.ICON_EXTRA_SMALL));
+        add(iconButton("iconSmall", ButtonBehavior.Size.ICON_SMALL));
+        add(iconButton("iconLarge", ButtonBehavior.Size.ICON_LARGE));
+    }
+
+    /** Another square icon size; on a touch screen the three smallest get a 44px hit area. */
+    private SwButton iconButton(String id, ButtonBehavior.Size size) {
+        return new SwButton(id) {
+
+            @Override
+            public void onClick(org.apache.wicket.ajax.AjaxRequestTarget target) {
+                status.setDefaultModelObject("Clicked Add (" + size.value() + ").");
+                target.add(status);
+            }
+        }.setSize(size).setVariant(ButtonBehavior.Variant.OUTLINE);
     }
 
     private void addDisabledButtons() {

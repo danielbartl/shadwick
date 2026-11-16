@@ -10,6 +10,32 @@
       aria-disabled:pointer-events-none aria-disabled:opacity-50
       [&_svg]:pointer-events-none [&_svg]:shrink-0;
   }
+
+  /*
+    A bigger hit area than the look, for the three icon sizes below icon-lg: an invisible ::after, centred and at
+    least 44px square (WCAG 2.5.5, the platforms' touch guidelines), on a touch screen only. A fine pointer keeps the
+    visible box. The pseudo-element belongs to the button, so a tap on it is a tap on the button. Where two enlarged
+    neighbours meet, the later one in the source takes the overlap. :where() keeps position: relative at no
+    specificity, so a button a skin or component positions (a dialog's close button, an attachment's stretched
+    trigger) keeps its own position. A button inside an input group, beside the text it belongs to, is not enlarged,
+    nor a toast's close button: the toasts scroll in a region at the viewport's edge, which an enlarged area would
+    widen (Shadleaf's toast close is not a button either).
+  */
+  @media (pointer: coarse) {
+    :where(.sw-button[data-size='icon'], .sw-button[data-size='icon-xs'], .sw-button[data-size='icon-sm']) {
+      position: relative;
+    }
+
+    .sw-button:is([data-size='icon'], [data-size='icon-xs'], [data-size='icon-sm'])::after {
+      content: '';
+      @apply absolute inset-0 m-auto h-[max(100%,2.75rem)] w-[max(100%,2.75rem)];
+    }
+
+    .sw-input-group .sw-button::after,
+    .sw-button.sw-toast-close::after {
+      content: none;
+    }
+  }
 }
 
 /* The Ajax runtime inserts a decorative spinner and localized loading text without changing the control's body. */

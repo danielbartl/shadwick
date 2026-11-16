@@ -19,6 +19,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
 import static org.assertj.core.api.Assertions.assertThatNullPointerException;
 
 class SwConfirmDialogTest {
@@ -70,6 +71,49 @@ class SwConfirmDialogTest {
         tester.assertInvisible("confirm:dialog:form:close");
         assertThat(html()).contains("Delete &lt;invoice&gt;?", "This &lt;cannot&gt; be undone.", "Shadwick.showDialog(")
                 .doesNotContain("style=").doesNotContainPattern("\\son[a-z]+=");
+    }
+
+    @Test void byDefaultTheDialogHasNoSizeAttributeAndNoIcon() {
+        tester.startPage(ConfirmPage.class);
+        tester.clickLink("delete");
+        assertThat(TagTester.createTagByName(html(), "dialog").getAttribute("data-size")).isNull();
+        tester.assertInvisible("confirm:dialog:form:media");
+    }
+
+    @Test void aSmallDialogWithAnIconRendersItDecorativelyBeforeTheTitle() {
+        ConfirmPage page = tester.startPage(ConfirmPage.class);
+        page.confirm.setSize(SwConfirmDialog.Size.SMALL).setIcon("trash-2").setIconVariant(SwConfirmDialog.IconVariant.DESTRUCTIVE);
+        tester.clickLink("delete");
+
+        assertThat(TagTester.createTagByName(html(), "dialog").getAttribute("data-size")).isEqualTo("sm");
+        tester.assertVisible("confirm:dialog:form:media");
+        TagTester media = tester.getTagByWicketId("media");
+        assertThat(media.getAttribute("class")).isEqualTo("sw-alert-dialog-media");
+        assertThat(media.getAttribute("data-variant")).isEqualTo("destructive");
+        assertThat(media.getAttribute("aria-hidden")).isEqualTo("true");
+        assertThat(media.getChild("svg").getAttribute("aria-hidden")).isEqualTo("true");
+        // The icon comes first in the header, so it sits above (or beside) the title
+        assertThat(html().indexOf("sw-alert-dialog-media")).isLessThan(html().indexOf("sw-alert-dialog-title"));
+        assertThat(html()).doesNotContain("style=").doesNotContainPattern("\\son[a-z]+=");
+    }
+
+    @Test void theIconAndSizeCanBeRemovedAgainAndNullRestoresTheDefaults() {
+        ConfirmPage page = tester.startPage(ConfirmPage.class);
+        page.confirm.setSize(SwConfirmDialog.Size.SMALL).setIcon("trash-2").setIconVariant(SwConfirmDialog.IconVariant.DESTRUCTIVE);
+        page.confirm.setSize(null).setIcon(null).setIconVariant(null);
+        tester.clickLink("delete");
+        assertThat(page.confirm.getSize()).isEqualTo(SwConfirmDialog.Size.DEFAULT);
+        assertThat(TagTester.createTagByName(html(), "dialog").getAttribute("data-size")).isNull();
+        tester.assertInvisible("confirm:dialog:form:media");
+
+        page.confirm.setIcon("info");
+        tester.clickLink("refresh");
+        tester.assertVisible("confirm:dialog:form:media");
+        assertThat(tester.getTagByWicketId("media").getAttribute("data-variant")).isNull();
+    }
+
+    @Test void anUnknownIconFailsClearly() {
+        assertThatIllegalArgumentException().isThrownBy(() -> new SwConfirmDialog("confirm").setIcon("no-such-icon"));
     }
 
     @Test void confirmingConsumesTheActionBeforeClosingAndAReplayDoesNothing() {

@@ -42,6 +42,7 @@ public class OverlayPage extends BasePage {
         SwConfirmDialog confirm = new SwConfirmDialog("confirm");
         add(confirm);
         addConfirmationActions(status, count, confirm);
+        addSmallConfirmation(status, count);
         addProjectEditor(status, count, confirm);
         addSheetPlacements();
     }
@@ -115,6 +116,20 @@ public class OverlayPage extends BasePage {
                                                                                             + " action"
                                                                                             + " confirmed.",
                                                                                         next)))));
+    }
+
+    /** A narrow question with a destructive icon: its buttons share the width, and stack when a label is long. */
+    private void addSmallConfirmation(Label status, Label count) {
+        SwConfirmDialog remove = new SwConfirmDialog("removeConfirm")
+                .setSize(SwConfirmDialog.Size.SMALL)
+                .setIcon("trash-2")
+                .setIconVariant(SwConfirmDialog.IconVariant.DESTRUCTIVE)
+                .setConfirmLabel("Remove");
+        add(remove);
+        add(SwButton.onClick("remove", "Remove member", target -> remove.ask(target,
+                        "Remove Jordan?", "They lose access to this workspace.",
+                        t -> record(status, count, "Jordan was removed.", t)))
+                .setVariant(ButtonBehavior.Variant.OUTLINE));
     }
 
     private void addProjectEditor(Label status, Label count, SwConfirmDialog confirm) {

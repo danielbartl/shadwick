@@ -1,4 +1,7 @@
 /* Inline SVG icons follow the surrounding text; no font, image request or CSP change. */
 @layer components {
-  .sw-icon { @apply inline-block size-[1em] shrink-0 align-middle; }
+  .sw-icon { @apply inline-block shrink-0 align-middle; }
+  /* An explicit size (SwIcon.setSize) renders width/height and data-icon-size, which this default leaves alone.
+     :where() keeps the old specificity, so components that size their icons still win. */
+  .sw-icon:where(:not([data-icon-size])) { @apply size-[1em]; }
 }

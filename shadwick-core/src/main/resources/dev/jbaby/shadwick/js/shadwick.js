@@ -574,12 +574,14 @@
     }, true);
     scanPopups(document);
 
-    function scanTableCheckboxes(root) {
-        function sync(box) { box.indeterminate = box.getAttribute('data-sw-indeterminate') === 'true'; }
-        if (root instanceof Element && root.matches('input[data-sw-indeterminate]')) sync(root);
-        if (root.querySelectorAll) root.querySelectorAll('input[data-sw-indeterminate]').forEach(sync);
+    // The mixed state of a checkbox (SwCheckBox, a table's select-all box) is a DOM property only, so the server
+    // renders data-sw-indeterminate and this sets the property from it, again whenever the attribute changes.
+    function syncIndeterminate(box) { box.indeterminate = box.getAttribute('data-sw-indeterminate') === 'true'; }
+    function scanIndeterminateCheckboxes(root) {
+        if (root instanceof Element && root.matches('input[data-sw-indeterminate]')) syncIndeterminate(root);
+        if (root.querySelectorAll) root.querySelectorAll('input[data-sw-indeterminate]').forEach(syncIndeterminate);
     }
-    scanTableCheckboxes(document);
+    scanIndeterminateCheckboxes(document);
 
     // ---- Avatar and attachment images: delegated handlers also cover Ajax replacements ----
     // Adapted from Shadleaf's avatar.js (Apache-2.0, see NOTICE).
@@ -616,8 +618,10 @@
                 markFinished(record.target);
             }
             record.addedNodes.forEach(scanAvatars);
-            record.addedNodes.forEach(scanTableCheckboxes);
-            if (record.type === 'attributes' && record.attributeName === 'data-sw-indeterminate') scanTableCheckboxes(record.target);
+            record.addedNodes.forEach(scanIndeterminateCheckboxes);
+            // Also when the attribute is removed: the box then leaves the mixed state.
+            if (record.type === 'attributes' && record.attributeName === 'data-sw-indeterminate'
+                && record.target instanceof HTMLInputElement) syncIndeterminate(record.target);
             record.addedNodes.forEach(scanUploads);
             record.addedNodes.forEach(scanPopups);
             record.removedNodes.forEach(cleanupPopups);

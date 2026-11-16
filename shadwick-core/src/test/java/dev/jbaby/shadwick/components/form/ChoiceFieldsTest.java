@@ -88,6 +88,46 @@ class ChoiceFieldsTest {
         assertThat(tester.getTagByWicketId("label").getValue()).doesNotContain("role=\"status\"");
     }
 
+    @Test
+    void aCheckboxCanStartMixedFromAModelReadOnEveryRender() {
+        Model<Boolean> mixed = Model.of(true);
+        SwCheckBox field = new SwCheckBox("choice", "All projects", Model.of(false)).setIndeterminate(mixed);
+        tester.startComponentInPage(field);
+        assertThat(field.isIndeterminate()).isTrue();
+        assertThat(tester.getTagByWicketId("input").getAttribute("data-sw-indeterminate")).isEqualTo("true");
+        // The minus the browser shows for :indeterminate is part of the checkbox's own markup
+        assertThat(html()).contains("sw-checkbox-indeterminate-indicator");
+
+        mixed.setObject(false);
+        tester.startComponentInPage(field);
+        assertThat(tester.getTagByWicketId("input").getAttribute("data-sw-indeterminate")).isNull();
+
+        mixed.setObject(null);
+        tester.startComponentInPage(field);
+        assertThat(field.isIndeterminate()).isFalse();
+        assertThat(tester.getTagByWicketId("input").getAttribute("data-sw-indeterminate")).isNull();
+
+        field.setIndeterminate(true);
+        tester.startComponentInPage(field);
+        assertThat(tester.getTagByWicketId("input").getAttribute("data-sw-indeterminate")).isEqualTo("true");
+    }
+
+    @Test
+    void aMixedCheckboxStillSubmitsOnlyCheckedOrUncheckedAndItsModelIsDetached() {
+        Model<Boolean> value = Model.of(false);
+        int[] detached = {0};
+        IModel<Boolean> mixed = new IModel<>() {
+            @Override public Boolean getObject() { return true; }
+            @Override public void detach() { detached[0]++; }
+        };
+        FormTester form = formWith(new SwCheckBox("choice", "All projects", value).setIndeterminate(mixed));
+        assertThat(detached[0]).isPositive();
+        form.setValue("choice:input", true);
+        form.submit();
+        assertThat(value.getObject()).isTrue();
+        assertThat(tester.getTagByWicketId("input").getAttribute("data-sw-indeterminate")).isEqualTo("true");
+    }
+
     @ParameterizedTest
     @EnumSource(Kind.class)
     void checkedAndUncheckedSubmissionsUpdateTheBooleanModel(Kind kind) {

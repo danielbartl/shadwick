@@ -90,6 +90,13 @@ body {
 .ex-record-compact h3 { font-size: .875rem; font-weight: 600; }
 .ex-record-link { text-decoration: underline; text-underline-offset: .2em; }
 
+/* Nested choices under a "select all" box. */
+.ex-indent {
+  display: grid;
+  gap: 0.875rem;
+  padding-inline-start: 1.75rem;
+}
+
 .ex-forms {
   display: grid;
   gap: 3rem;
@@ -364,3 +371,8 @@ body {
 .ex-switches, .ex-switches > *, .ex-form, .ex-form .ex-row > label { min-width: 0; max-width: 100%; }
 .ex-form input { box-sizing: border-box; max-width: 100%; }
 .ex-steps-compact { max-inline-size: 20rem; min-inline-size: 0; }
+
+/* An empty state inside a card, without its own outline. */
+.ex-empty-card {
+  margin-top: 1.5rem;
+}

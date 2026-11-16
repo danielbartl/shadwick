@@ -478,7 +478,7 @@ ENUM dev.jbaby.shadwick.behaviors.AttachmentBehavior$State [DONE, IDLE, UPLOADIN
 ENUM dev.jbaby.shadwick.behaviors.AttachmentControlBehavior$Kind [ACTION, TRIGGER]
 ENUM dev.jbaby.shadwick.behaviors.AttachmentGroupBehavior$Layout [ROW, GRID]
 ENUM dev.jbaby.shadwick.behaviors.BadgeBehavior$Variant [DEFAULT, SECONDARY, OUTLINE, GHOST, DESTRUCTIVE, LINK]
-ENUM dev.jbaby.shadwick.behaviors.ButtonBehavior$Size [DEFAULT, SMALL, LARGE, ICON]
+ENUM dev.jbaby.shadwick.behaviors.ButtonBehavior$Size [DEFAULT, SMALL, LARGE, ICON, EXTRA_SMALL, ICON_EXTRA_SMALL, ICON_SMALL, ICON_LARGE]
 ENUM dev.jbaby.shadwick.behaviors.ButtonBehavior$Variant [DEFAULT, SECONDARY, OUTLINE, GHOST, DESTRUCTIVE, LINK]
 ENUM dev.jbaby.shadwick.behaviors.ButtonGroupBehavior$Orientation [HORIZONTAL, VERTICAL]
 ENUM dev.jbaby.shadwick.behaviors.CalendarBehavior$Caption [LABEL, DROPDOWN, DROPDOWN_MONTHS, DROPDOWN_YEARS]
@@ -513,6 +513,8 @@ ENUM dev.jbaby.shadwick.behaviors.TooltipBehavior$Mode [DESCRIPTION, LABEL]
 ENUM dev.jbaby.shadwick.behaviors.TooltipBehavior$Placement [TOP, BOTTOM, LEFT, RIGHT]
 ENUM dev.jbaby.shadwick.components.SwAvatar$Size [SMALL, DEFAULT, LARGE]
 ENUM dev.jbaby.shadwick.components.SwAvatarGroup$Size [SMALL, DEFAULT, LARGE]
+ENUM dev.jbaby.shadwick.components.SwConfirmDialog$IconVariant [DEFAULT, DESTRUCTIVE]
+ENUM dev.jbaby.shadwick.components.SwConfirmDialog$Size [DEFAULT, SMALL]
 ENUM dev.jbaby.shadwick.components.SwMonthView$NavSize [DEFAULT, ICON_XS, ICON_SM, ICON, ICON_LG]
 ENUM dev.jbaby.shadwick.components.SwPaginationSummary$Format [RANGE, PAGE]
 ENUM dev.jbaby.shadwick.components.SwPopover$Align [START, CENTER, END]
@@ -574,7 +576,11 @@ FIELD public static final dev.jbaby.shadwick.behaviors.BadgeBehavior$Variant dev
 FIELD public static final dev.jbaby.shadwick.behaviors.BadgeBehavior$Variant dev.jbaby.shadwick.behaviors.BadgeBehavior$Variant.OUTLINE
 FIELD public static final dev.jbaby.shadwick.behaviors.BadgeBehavior$Variant dev.jbaby.shadwick.behaviors.BadgeBehavior$Variant.SECONDARY
 FIELD public static final dev.jbaby.shadwick.behaviors.ButtonBehavior$Size dev.jbaby.shadwick.behaviors.ButtonBehavior$Size.DEFAULT
+FIELD public static final dev.jbaby.shadwick.behaviors.ButtonBehavior$Size dev.jbaby.shadwick.behaviors.ButtonBehavior$Size.EXTRA_SMALL
 FIELD public static final dev.jbaby.shadwick.behaviors.ButtonBehavior$Size dev.jbaby.shadwick.behaviors.ButtonBehavior$Size.ICON
+FIELD public static final dev.jbaby.shadwick.behaviors.ButtonBehavior$Size dev.jbaby.shadwick.behaviors.ButtonBehavior$Size.ICON_EXTRA_SMALL
+FIELD public static final dev.jbaby.shadwick.behaviors.ButtonBehavior$Size dev.jbaby.shadwick.behaviors.ButtonBehavior$Size.ICON_LARGE
+FIELD public static final dev.jbaby.shadwick.behaviors.ButtonBehavior$Size dev.jbaby.shadwick.behaviors.ButtonBehavior$Size.ICON_SMALL
 FIELD public static final dev.jbaby.shadwick.behaviors.ButtonBehavior$Size dev.jbaby.shadwick.behaviors.ButtonBehavior$Size.LARGE
 FIELD public static final dev.jbaby.shadwick.behaviors.ButtonBehavior$Size dev.jbaby.shadwick.behaviors.ButtonBehavior$Size.SMALL
 FIELD public static final dev.jbaby.shadwick.behaviors.ButtonBehavior$Variant dev.jbaby.shadwick.behaviors.ButtonBehavior$Variant.DEFAULT
@@ -671,6 +677,10 @@ FIELD public static final dev.jbaby.shadwick.components.SwAvatar$Size dev.jbaby.
 FIELD public static final dev.jbaby.shadwick.components.SwAvatarGroup$Size dev.jbaby.shadwick.components.SwAvatarGroup$Size.DEFAULT
 FIELD public static final dev.jbaby.shadwick.components.SwAvatarGroup$Size dev.jbaby.shadwick.components.SwAvatarGroup$Size.LARGE
 FIELD public static final dev.jbaby.shadwick.components.SwAvatarGroup$Size dev.jbaby.shadwick.components.SwAvatarGroup$Size.SMALL
+FIELD public static final dev.jbaby.shadwick.components.SwConfirmDialog$IconVariant dev.jbaby.shadwick.components.SwConfirmDialog$IconVariant.DEFAULT
+FIELD public static final dev.jbaby.shadwick.components.SwConfirmDialog$IconVariant dev.jbaby.shadwick.components.SwConfirmDialog$IconVariant.DESTRUCTIVE
+FIELD public static final dev.jbaby.shadwick.components.SwConfirmDialog$Size dev.jbaby.shadwick.components.SwConfirmDialog$Size.DEFAULT
+FIELD public static final dev.jbaby.shadwick.components.SwConfirmDialog$Size dev.jbaby.shadwick.components.SwConfirmDialog$Size.SMALL
 FIELD public static final dev.jbaby.shadwick.components.SwMonthView$NavSize dev.jbaby.shadwick.components.SwMonthView$NavSize.DEFAULT
 FIELD public static final dev.jbaby.shadwick.components.SwMonthView$NavSize dev.jbaby.shadwick.components.SwMonthView$NavSize.ICON
 FIELD public static final dev.jbaby.shadwick.components.SwMonthView$NavSize dev.jbaby.shadwick.components.SwMonthView$NavSize.ICON_LG
@@ -1030,6 +1040,7 @@ METHOD public boolean dev.jbaby.shadwick.components.SwAccordion.isExclusive()
 METHOD public boolean dev.jbaby.shadwick.components.SwCollapsible.isOpen()
 METHOD public boolean dev.jbaby.shadwick.components.SwDataTable.isColumnVisible(int)
 METHOD public boolean dev.jbaby.shadwick.components.SwDialog.isOpen()
+METHOD public boolean dev.jbaby.shadwick.components.SwEmptyState.isBorder()
 METHOD public boolean dev.jbaby.shadwick.components.SwMonthView$Day.outside()
 METHOD public boolean dev.jbaby.shadwick.components.SwMonthView$Day.today()
 METHOD public boolean dev.jbaby.shadwick.components.TableQuery.isAscending()
@@ -1039,6 +1050,7 @@ METHOD public boolean dev.jbaby.shadwick.components.form.DisabledDates.contains(
 METHOD public boolean dev.jbaby.shadwick.components.form.DisabledDates.intersects(dev.jbaby.shadwick.components.form.DateRange)
 METHOD public boolean dev.jbaby.shadwick.components.form.NotShownInlineFilter.accept(org.apache.wicket.feedback.FeedbackMessage)
 METHOD public boolean dev.jbaby.shadwick.components.form.RangeDateInput.checkRequired()
+METHOD public boolean dev.jbaby.shadwick.components.form.SwCheckBox.isIndeterminate()
 METHOD public boolean dev.jbaby.shadwick.components.table.SwRowDetailsColumn.isExpanded(T)
 METHOD public boolean dev.jbaby.shadwick.components.table.SwSelectionColumn.isSelected(T)
 METHOD public dev.jbaby.shadwick.AccessibilityChecks dev.jbaby.shadwick.ShadwickSettings.getAccessibilityChecks()
@@ -1250,11 +1262,15 @@ METHOD public dev.jbaby.shadwick.components.SwConfirmDialog dev.jbaby.shadwick.c
 METHOD public dev.jbaby.shadwick.components.SwConfirmDialog dev.jbaby.shadwick.components.SwConfirmDialog.setDescription(java.lang.String)
 METHOD public dev.jbaby.shadwick.components.SwConfirmDialog dev.jbaby.shadwick.components.SwConfirmDialog.setDescription(org.apache.wicket.model.IModel<java.lang.String>)
 METHOD public dev.jbaby.shadwick.components.SwConfirmDialog dev.jbaby.shadwick.components.SwConfirmDialog.setFooterVisible(boolean)
+METHOD public dev.jbaby.shadwick.components.SwConfirmDialog dev.jbaby.shadwick.components.SwConfirmDialog.setIcon(java.lang.String)
+METHOD public dev.jbaby.shadwick.components.SwConfirmDialog dev.jbaby.shadwick.components.SwConfirmDialog.setIconVariant(dev.jbaby.shadwick.components.SwConfirmDialog$IconVariant)
+METHOD public dev.jbaby.shadwick.components.SwConfirmDialog dev.jbaby.shadwick.components.SwConfirmDialog.setSize(dev.jbaby.shadwick.components.SwConfirmDialog$Size)
 METHOD public dev.jbaby.shadwick.components.SwConfirmDialog dev.jbaby.shadwick.components.SwConfirmDialog.setTitle(java.lang.String)
 METHOD public dev.jbaby.shadwick.components.SwConfirmDialog dev.jbaby.shadwick.components.SwConfirmDialog.setTitle(org.apache.wicket.model.IModel<java.lang.String>)
 METHOD public dev.jbaby.shadwick.components.SwConfirmDialog dev.jbaby.shadwick.components.SwConfirmDialog.setTrigger(java.lang.String)
 METHOD public dev.jbaby.shadwick.components.SwConfirmDialog dev.jbaby.shadwick.components.SwConfirmDialog.setTrigger(org.apache.wicket.model.IModel<java.lang.String>)
 METHOD public dev.jbaby.shadwick.components.SwConfirmDialog dev.jbaby.shadwick.components.SwConfirmDialog.setTriggerVariant(dev.jbaby.shadwick.behaviors.ButtonBehavior$Variant)
+METHOD public dev.jbaby.shadwick.components.SwConfirmDialog$Size dev.jbaby.shadwick.components.SwConfirmDialog.getSize()
 METHOD public dev.jbaby.shadwick.components.SwDataTable<T, S> dev.jbaby.shadwick.components.SwDataTable.addBottomToolbar(org.apache.wicket.extensions.markup.html.repeater.data.table.AbstractToolbar)
 METHOD public dev.jbaby.shadwick.components.SwDataTable<T, S> dev.jbaby.shadwick.components.SwDataTable.addBulkAction(java.lang.String,dev.jbaby.shadwick.util.SerializableBiConsumer<org.apache.wicket.ajax.AjaxRequestTarget, java.util.List<T>>)
 METHOD public dev.jbaby.shadwick.components.SwDataTable<T, S> dev.jbaby.shadwick.components.SwDataTable.addBulkAction(org.apache.wicket.model.IModel<java.lang.String>,dev.jbaby.shadwick.behaviors.ButtonBehavior$Variant,dev.jbaby.shadwick.util.SerializableBiConsumer<org.apache.wicket.ajax.AjaxRequestTarget, java.util.List<T>>)
@@ -1308,12 +1324,15 @@ METHOD public dev.jbaby.shadwick.components.SwDropdown<T> dev.jbaby.shadwick.com
 METHOD public dev.jbaby.shadwick.components.SwDropdown<T> dev.jbaby.shadwick.components.SwDropdown.setAlign(dev.jbaby.shadwick.behaviors.DropdownMenuBehavior$Align)
 METHOD public dev.jbaby.shadwick.components.SwDropdown<T> dev.jbaby.shadwick.components.SwDropdown.setSide(dev.jbaby.shadwick.behaviors.DropdownMenuBehavior$Side)
 METHOD public dev.jbaby.shadwick.components.SwDropdown<T> dev.jbaby.shadwick.components.SwDropdown.setTriggerVariant(dev.jbaby.shadwick.behaviors.ButtonBehavior$Variant)
+METHOD public dev.jbaby.shadwick.components.SwEmptyState dev.jbaby.shadwick.components.SwEmptyState.setBorder(boolean)
 METHOD public dev.jbaby.shadwick.components.SwEmptyState dev.jbaby.shadwick.components.SwEmptyState.setContent(org.apache.wicket.Component)
 METHOD public dev.jbaby.shadwick.components.SwEmptyState dev.jbaby.shadwick.components.SwEmptyState.setIcon(java.lang.String)
 METHOD public dev.jbaby.shadwick.components.SwFieldset dev.jbaby.shadwick.components.SwFieldset.setDescription(java.lang.String)
 METHOD public dev.jbaby.shadwick.components.SwFieldset dev.jbaby.shadwick.components.SwFieldset.setDescription(org.apache.wicket.model.IModel<java.lang.String>)
 METHOD public dev.jbaby.shadwick.components.SwIcon dev.jbaby.shadwick.components.SwIcon.setLabel(java.lang.String)
 METHOD public dev.jbaby.shadwick.components.SwIcon dev.jbaby.shadwick.components.SwIcon.setLabel(org.apache.wicket.model.IModel<java.lang.String>)
+METHOD public dev.jbaby.shadwick.components.SwIcon dev.jbaby.shadwick.components.SwIcon.setSize(java.lang.Integer)
+METHOD public dev.jbaby.shadwick.components.SwIcon dev.jbaby.shadwick.components.SwIcon.setStrokeWidth(java.lang.Number)
 METHOD public dev.jbaby.shadwick.components.SwLazyLoadPanel<T> dev.jbaby.shadwick.components.SwLazyLoadPanel.setLoadingLabel(java.lang.String)
 METHOD public dev.jbaby.shadwick.components.SwLazyLoadPanel<T> dev.jbaby.shadwick.components.SwLazyLoadPanel.setLoadingLabel(org.apache.wicket.model.IModel<java.lang.String>)
 METHOD public dev.jbaby.shadwick.components.SwLazyLoadPanel<T> dev.jbaby.shadwick.components.SwLazyLoadPanel.setPlaceholder(dev.jbaby.shadwick.behaviors.SkeletonBehavior$Shape,int)
@@ -1617,6 +1636,8 @@ METHOD public dev.jbaby.shadwick.components.chart.SwSparkline dev.jbaby.shadwick
 METHOD public dev.jbaby.shadwick.components.chart.SwSparkline dev.jbaby.shadwick.components.chart.SwSparkline.setShowLastPoint(boolean)
 METHOD public dev.jbaby.shadwick.components.form.Html5TextField<java.time.LocalDate> dev.jbaby.shadwick.components.form.RangeDateInput.getFrom()
 METHOD public dev.jbaby.shadwick.components.form.Html5TextField<java.time.LocalDate> dev.jbaby.shadwick.components.form.RangeDateInput.getTo()
+METHOD public dev.jbaby.shadwick.components.form.SwCheckBox dev.jbaby.shadwick.components.form.SwCheckBox.setIndeterminate(boolean)
+METHOD public dev.jbaby.shadwick.components.form.SwCheckBox dev.jbaby.shadwick.components.form.SwCheckBox.setIndeterminate(org.apache.wicket.model.IModel<java.lang.Boolean>)
 METHOD public dev.jbaby.shadwick.components.form.SwCheckBoxMultipleChoice<T> dev.jbaby.shadwick.components.form.SwCheckBoxMultipleChoice.setInline(boolean)
 METHOD public dev.jbaby.shadwick.components.form.SwCombobox<T> dev.jbaby.shadwick.components.form.SwCombobox.setAutoHighlight(boolean)
 METHOD public dev.jbaby.shadwick.components.form.SwCombobox<T> dev.jbaby.shadwick.components.form.SwCombobox.setChoiceId(dev.jbaby.shadwick.util.SerializableFunction<? super T, java.lang.String>)
@@ -2034,6 +2055,10 @@ METHOD public static dev.jbaby.shadwick.components.SwButton dev.jbaby.shadwick.S
 METHOD public static dev.jbaby.shadwick.components.SwButton dev.jbaby.shadwick.Sw$Components.button(java.lang.String,org.apache.wicket.model.IModel<java.lang.String>,dev.jbaby.shadwick.util.SerializableConsumer<org.apache.wicket.ajax.AjaxRequestTarget>)
 METHOD public static dev.jbaby.shadwick.components.SwButton dev.jbaby.shadwick.components.SwButton.onClick(java.lang.String,java.lang.String,dev.jbaby.shadwick.util.SerializableConsumer<org.apache.wicket.ajax.AjaxRequestTarget>)
 METHOD public static dev.jbaby.shadwick.components.SwButton dev.jbaby.shadwick.components.SwButton.onClick(java.lang.String,org.apache.wicket.model.IModel<java.lang.String>,dev.jbaby.shadwick.util.SerializableConsumer<org.apache.wicket.ajax.AjaxRequestTarget>)
+METHOD public static dev.jbaby.shadwick.components.SwConfirmDialog$IconVariant dev.jbaby.shadwick.components.SwConfirmDialog$IconVariant.valueOf(java.lang.String)
+METHOD public static dev.jbaby.shadwick.components.SwConfirmDialog$IconVariant[] dev.jbaby.shadwick.components.SwConfirmDialog$IconVariant.values()
+METHOD public static dev.jbaby.shadwick.components.SwConfirmDialog$Size dev.jbaby.shadwick.components.SwConfirmDialog$Size.valueOf(java.lang.String)
+METHOD public static dev.jbaby.shadwick.components.SwConfirmDialog$Size[] dev.jbaby.shadwick.components.SwConfirmDialog$Size.values()
 METHOD public static dev.jbaby.shadwick.components.SwLazyLoadPanel<org.apache.wicket.Component> dev.jbaby.shadwick.Sw$Components.lazyLoad(java.lang.String,dev.jbaby.shadwick.util.SerializableFunction<java.lang.String, ? extends org.apache.wicket.Component>)
 METHOD public static dev.jbaby.shadwick.components.SwLazyLoadPanel<org.apache.wicket.Component> dev.jbaby.shadwick.components.SwLazyLoadPanel.of(java.lang.String,dev.jbaby.shadwick.util.SerializableFunction<java.lang.String, ? extends org.apache.wicket.Component>)
 METHOD public static dev.jbaby.shadwick.components.SwMonthView$NavSize dev.jbaby.shadwick.components.SwMonthView$NavSize.valueOf(java.lang.String)
@@ -2508,6 +2533,8 @@ TYPE public static final enum dev.jbaby.shadwick.behaviors.TooltipBehavior$Mode 
 TYPE public static final enum dev.jbaby.shadwick.behaviors.TooltipBehavior$Placement extends java.lang.Enum<dev.jbaby.shadwick.behaviors.TooltipBehavior$Placement> implements []
 TYPE public static final enum dev.jbaby.shadwick.components.SwAvatar$Size extends java.lang.Enum<dev.jbaby.shadwick.components.SwAvatar$Size> implements []
 TYPE public static final enum dev.jbaby.shadwick.components.SwAvatarGroup$Size extends java.lang.Enum<dev.jbaby.shadwick.components.SwAvatarGroup$Size> implements []
+TYPE public static final enum dev.jbaby.shadwick.components.SwConfirmDialog$IconVariant extends java.lang.Enum<dev.jbaby.shadwick.components.SwConfirmDialog$IconVariant> implements []
+TYPE public static final enum dev.jbaby.shadwick.components.SwConfirmDialog$Size extends java.lang.Enum<dev.jbaby.shadwick.components.SwConfirmDialog$Size> implements []
 TYPE public static final enum dev.jbaby.shadwick.components.SwMonthView$NavSize extends java.lang.Enum<dev.jbaby.shadwick.components.SwMonthView$NavSize> implements []
 TYPE public static final enum dev.jbaby.shadwick.components.SwPaginationSummary$Format extends java.lang.Enum<dev.jbaby.shadwick.components.SwPaginationSummary$Format> implements []
 TYPE public static final enum dev.jbaby.shadwick.components.SwPopover$Align extends java.lang.Enum<dev.jbaby.shadwick.components.SwPopover$Align> implements []

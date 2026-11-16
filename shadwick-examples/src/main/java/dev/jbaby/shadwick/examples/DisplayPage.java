@@ -97,9 +97,17 @@ public class DisplayPage extends BasePage {
         add(new SwIcon("search", "search").setLabel("Search"));
         add(new SwIcon("calendar", "calendar").setLabel("Calendar"));
         add(new SwIcon("download", "download").setLabel("Download"));
+        // A fixed size in pixels instead of 1em, and a lighter or heavier stroke
+        add(new SwIcon("largeIcon", "star").setSize(32).setStrokeWidth(1.25).setLabel("Favourite"));
+        add(new SwIcon("boldIcon", "check").setSize(24).setStrokeWidth(3).setLabel("Done"));
         add(
                 new SwEmptyState("empty", "No projects yet", "Create a project to get started.")
                         .setIcon("folder"));
+        // Inside a card or a table, leave out the dashed outline
+        add(
+                new SwEmptyState("plainEmpty", "Nothing scheduled", "Your week is clear.")
+                        .setIcon("calendar")
+                        .setBorder(false));
     }
 
     @Override

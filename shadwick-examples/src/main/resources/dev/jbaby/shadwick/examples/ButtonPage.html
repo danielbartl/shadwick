@@ -1,7 +1,7 @@
 <wicket:extend xmlns:wicket="http://wicket.apache.org">
 <div>
     <h1 class="ex-title">Buttons</h1>
-    <p class="ex-lead">shadcn's six variants and four sizes, on <code>&lt;button&gt;</code> and <code>&lt;a&gt;</code>.</p>
+    <p class="ex-lead">shadcn's six variants and eight sizes, on <code>&lt;button&gt;</code> and <code>&lt;a&gt;</code>.</p>
 </div>
 
 <section class="ex-section" aria-labelledby="buttons-heading">
@@ -23,14 +23,21 @@
 
 <section class="ex-section" aria-labelledby="sizes-heading">
     <h2 id="sizes-heading">Sizes</h2>
-    <p class="ex-muted"><code>.setSize(Size.SMALL)</code>, <code>LARGE</code>, and <code>ICON</code>, which needs an
-        <code>aria-label</code>.</p>
+    <p class="ex-muted"><code>.setSize(Size.EXTRA_SMALL)</code>, <code>SMALL</code>, <code>LARGE</code>, and the square
+        <code>ICON_EXTRA_SMALL</code>, <code>ICON_SMALL</code>, <code>ICON</code> and <code>ICON_LARGE</code>, which need
+        an <code>aria-label</code>. On a touch screen the three smallest icon buttons are easier to tap than they look.</p>
     <div class="ex-row">
+        <button wicket:id="extraSmall"></button>
         <button wicket:id="small"></button>
         <button wicket:id="default"></button>
         <button wicket:id="large"></button>
         <!-- Lucide's "plus" (ISC License) -->
         <button wicket:id="icon" aria-label="Add"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="M12 5v14"/></svg></button>
+    </div>
+    <div class="ex-row">
+        <button wicket:id="iconExtraSmall" aria-label="Add"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="M12 5v14"/></svg></button>
+        <button wicket:id="iconSmall" aria-label="Add"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="M12 5v14"/></svg></button>
+        <button wicket:id="iconLarge" aria-label="Add"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="M12 5v14"/></svg></button>
     </div>
 </section>
 

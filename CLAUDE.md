@@ -1922,6 +1922,33 @@ locally. Next: a hosted interactive showcase, then tooling and release preparati
 
 ## Conventions
 
+### Quick Shadleaf parity increment (2026-11-16, 0.2.0-SNAPSHOT)
+
+Source: the variant-level audit against Shadleaf f4acff8 (Oat 7656231 has none of these). All additive; 0.1.0 defaults
+and looks are unchanged; the API baseline diff was reviewed as additions only.
+- ButtonBehavior.Size appends EXTRA_SMALL/ICON_EXTRA_SMALL/ICON_SMALL/ICON_LARGE (xs/icon-xs/icon-sm/icon-lg) after the
+  released constants, so ordinals stay. Maia-Sketch already had Shadleaf's size CSS from their full port; Vega/Lyra/Nova
+  gained it. button.css adds Shadleaf's pointer:coarse ::after hit area (>=44px) for icon/icon-xs/icon-sm, with
+  :where() position and no enlargement inside .sw-input-group or on .sw-toast-close (the toast list scrolls at the
+  viewport edge and the enlarged area widened it: ShowcaseBrowserTest's mobile RTL toast overflow check caught this;
+  Shadleaf's toast close is not a .button). Collapsible triggers: xs min-height per skin, and every
+  icon size keeps its square box (h-auto now skips [data-size^='icon']).
+- SwCheckBox.setIndeterminate(boolean|IModel<Boolean>) renders data-sw-indeterminate; shadwick.js (helper renamed
+  scanIndeterminateCheckboxes) sets the DOM property on load/Ajax and now also clears it when the attribute is removed.
+  Clicking clears it; submission stays boolean, so the server recomputes the mixed state.
+- SwEmptyState.setBorder(boolean), default true (0.1.0 markup always had data-border). The .sw-empty div is a
+  TransparentWebMarkupContainer "empty", so title/message/media/content paths are unchanged.
+- SwIcon.setSize(Integer 1..1024)/setStrokeWidth(Number >0..24) render width/height/data-icon-size and stroke-width in
+  both render paths. icon.css's 1em default is `.sw-icon:where(:not([data-icon-size]))`, keeping its old specificity so
+  components that size icons outright (badges) still win. Vega/Lyra/Nova's base button icon rule also lacked
+  Shadleaf's [data-icon-size] exception (the newer skins had it); now all nine leave sized icons alone.
+- SwConfirmDialog.Size {DEFAULT, SMALL}, IconVariant {DEFAULT, DESTRUCTIVE}, setSize/setIcon/setIconVariant; a hidden,
+  aria-hidden media container is the header's first child. alert-dialog.css adapts Shadleaf's header grid and the small
+  footer (equal halves, wrap-reverse stacking), with selectors through Wicket's form wrapper. Small width is
+  min(20rem, 100% - 2rem) (Mira 16rem) in every skin, so a 320px phone keeps a margin (Shadleaf's plain max-w-xs doesn't).
+- Examples: Buttons (all sizes), Choices ("All projects" mixed select-all over Ajax), Display (sized icons, empty state
+  without outline in a card), Overlays (small destructive "Remove member"). QuickParityBrowserTest covers them.
+
 ### Steps indicator (2026-11-08, implemented)
 
 Implement SwSteps with Wicket Oat 76562314's title/current models and completed-step Ajax selection API.

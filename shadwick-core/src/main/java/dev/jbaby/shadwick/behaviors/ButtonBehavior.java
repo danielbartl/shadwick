@@ -35,7 +35,7 @@ import java.util.regex.Pattern;
  * fails to render ({@code FAIL}, the default in development mode, checked on every render) or is logged once
  * ({@code WARN}, the default in deployment, where each button is checked the first time it renders): one with no
  * text, no {@code aria-label} and no labelled icon, which a screen reader announces only as "button". An icon-only
- * button ({@link Size#ICON}) needs an {@code aria-label}.
+ * button ({@link Size#ICON} and the other {@code ICON_*} sizes) needs an {@code aria-label}.
  */
 public class ButtonBehavior extends Behavior {
 
@@ -74,7 +74,18 @@ public class ButtonBehavior extends Behavior {
         SMALL("sm"),
         LARGE("lg"),
         /** Square, for a single icon. Name it for screen readers with an {@code aria-label}. */
-        ICON("icon");
+        ICON("icon"),
+        /** Smaller than {@link #SMALL}, with smaller icons: for dense toolbars and inline actions. */
+        EXTRA_SMALL("xs"),
+        /**
+         * The smallest square icon button. On a touch screen it gets an invisible hit area of at least 44 pixels, as do
+         * {@link #ICON_SMALL} and {@link #ICON}, except inside an input group.
+         */
+        ICON_EXTRA_SMALL("icon-xs"),
+        /** A square icon button the height of {@link #SMALL}. */
+        ICON_SMALL("icon-sm"),
+        /** A square icon button the height of {@link #LARGE}. */
+        ICON_LARGE("icon-lg");
 
         private final String value;
 

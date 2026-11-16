@@ -12,7 +12,7 @@
       aria-invalid:border-destructive aria-invalid:ring-[3px] aria-invalid:ring-destructive/20
       dark:aria-invalid:border-destructive/50 dark:aria-invalid:ring-destructive/40
       motion-safe:active:not-aria-[haspopup]:translate-y-px
-      [&_svg:not([class*='size-'])]:size-4;
+      [&_svg:not([class*='size-'],[data-icon-size])]:size-4;
   }
 
   .sw-button:not([data-size]) {
@@ -29,6 +29,24 @@
 
   .sw-button[data-size='icon'] {
     @apply size-9;
+  }
+
+  .sw-button[data-size='xs'] {
+    @apply h-6 gap-1 rounded-[min(--theme(--radius-md),8px)] px-2 text-xs
+      has-[[data-icon='inline-end']]:pe-1.5 has-[[data-icon='inline-start']]:ps-1.5
+      [&_svg:not([class*='size-'],[data-icon-size])]:size-3;
+  }
+
+  .sw-button[data-size='icon-xs'] {
+    @apply size-6 rounded-[min(--theme(--radius-md),8px)] [&_svg:not([class*='size-'],[data-icon-size])]:size-3;
+  }
+
+  .sw-button[data-size='icon-sm'] {
+    @apply size-8 rounded-[min(--theme(--radius-md),10px)];
+  }
+
+  .sw-button[data-size='icon-lg'] {
+    @apply size-10;
   }
 
   .sw-button:not([data-variant]) {
@@ -702,7 +720,11 @@
       backdrop:bg-black/10 backdrop:duration-100 supports-backdrop-filter:backdrop:backdrop-blur-xs;
   }
   .sw-alert-dialog-form { @apply gap-6; }
-  .sw-alert-dialog-header { @apply gap-1.5; }
+  .sw-alert-dialog[data-size='sm'] { @apply max-w-[min(20rem,calc(100%-2rem))]; }
+  .sw-alert-dialog-header { @apply gap-1.5 has-[>.sw-alert-dialog-media]:gap-x-6; }
+  .sw-alert-dialog-media { @apply mb-2 size-16 rounded-md [&_svg:not([class*='size-'],[data-icon-size])]:size-8; }
+  .sw-alert-dialog-media:not([data-variant]) { @apply bg-muted; }
+  .sw-alert-dialog-media[data-variant='destructive'] { @apply bg-destructive/10 text-destructive dark:bg-destructive/20; }
   .sw-alert-dialog-title { @apply text-lg font-medium; }
   .sw-alert-dialog-description {
     @apply text-sm text-balance text-muted-foreground md:text-pretty
@@ -1211,8 +1233,9 @@
 
 /* A summary's label can wrap; keep the skin's button minimum height instead of clipping it. */
 @layer components {
-  .sw-collapsible-trigger.sw-button:not([data-size='icon']) { @apply h-auto; }
+  .sw-collapsible-trigger.sw-button:not([data-size^='icon']) { @apply h-auto; }
   .sw-collapsible-trigger.sw-button:not([data-size]) { @apply min-h-9; }
+  .sw-collapsible-trigger.sw-button[data-size='xs'] { @apply min-h-6; }
   .sw-collapsible-trigger.sw-button[data-size='sm'] { @apply min-h-8; }
   .sw-collapsible-trigger.sw-button[data-size='lg'] { @apply min-h-10; }
 }

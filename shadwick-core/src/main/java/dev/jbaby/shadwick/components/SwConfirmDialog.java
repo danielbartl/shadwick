@@ -7,6 +7,7 @@ import org.apache.wicket.Component;
 import org.apache.wicket.ajax.AjaxChannel;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.attributes.AjaxRequestAttributes;
+import org.apache.wicket.markup.ComponentTag;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
@@ -25,9 +26,24 @@ import java.util.Objects;
  * add(confirm);
  * confirm.ask(target, "Delete invoice?", "This cannot be undone.", t -> service.delete(invoice));
  * }</pre>
+ * {@link #setSize(Size) setSize(Size.SMALL)} makes a narrower dialog with a centred header and the two buttons side
+ * by side in equal halves; they stack, the action on top, when a translated label does not fit its half.
+ * {@link #setIcon(String)} shows a decorative icon above the title (beside it in a default-size dialog on a wide
+ * screen), on a destructive background with {@link IconVariant#DESTRUCTIVE}.
  */
 public class SwConfirmDialog extends SwDialog {
+
+    /** The dialog's width: shadcn's default, or a narrow one for a short question. */
+    public enum Size { DEFAULT, SMALL }
+
+    /** The background behind {@link #setIcon(String) the icon}. */
+    public enum IconVariant { DEFAULT, DESTRUCTIVE }
+
     private SerializableConsumer<AjaxRequestTarget> action;
+    private Size size = Size.DEFAULT;
+    private String icon;
+    private IconVariant iconVariant = IconVariant.DEFAULT;
+    private final WebMarkupContainer media;
 
     public SwConfirmDialog(String id) {
         super(id, new Model<String>());
@@ -37,6 +53,55 @@ public class SwConfirmDialog extends SwDialog {
         setContent(new WebMarkupContainer(CONTENT_ID).setVisible(false));
         setCloseButton(false);
         setConfirmVariant(ButtonBehavior.Variant.DESTRUCTIVE);
+        getDialogElement().add(AttributeModifier.replace("data-size", (IModel<String>) () -> size == Size.SMALL ? "sm" : null));
+        media = newMedia();
+        getForm().add(media);
+    }
+
+    /** The header's icon container, hidden until {@link #setIcon(String)} names an icon. */
+    private WebMarkupContainer newMedia() {
+        WebMarkupContainer container = new WebMarkupContainer("media") {
+            @Override
+            protected void onConfigure() {
+                super.onConfigure();
+                setVisible(icon != null);
+            }
+
+            @Override
+            protected void onComponentTag(ComponentTag tag) {
+                super.onComponentTag(tag);
+                if (iconVariant == IconVariant.DESTRUCTIVE) tag.put("data-variant", "destructive");
+                else tag.remove("data-variant");
+            }
+        };
+        container.add(SwIcon.ofNullable("icon", null));
+        return container;
+    }
+
+    /** The dialog's width; {@link Size#DEFAULT} unless set. Null restores the default. */
+    public SwConfirmDialog setSize(Size size) {
+        this.size = size != null ? size : Size.DEFAULT;
+        return this;
+    }
+
+    public Size getSize() {
+        return size;
+    }
+
+    /**
+     * A decorative icon above the title, by {@link SwIcon} name (e.g. {@code "trash-2"}); {@code null} removes it.
+     * The title and description still carry the meaning: the icon is hidden from screen readers.
+     */
+    public SwConfirmDialog setIcon(String name) {
+        media.addOrReplace(SwIcon.ofNullable("icon", name));
+        this.icon = name;
+        return this;
+    }
+
+    /** The background behind the icon; {@link IconVariant#DEFAULT} (muted) unless set. Null restores the default. */
+    public SwConfirmDialog setIconVariant(IconVariant variant) {
+        this.iconVariant = variant != null ? variant : IconVariant.DEFAULT;
+        return this;
     }
 
     /** Opens a question, replacing any pending one. The callback runs only when confirmed. */

@@ -36,12 +36,17 @@ import java.util.concurrent.ConcurrentHashMap;
  * icon-only button) needs a {@link #setLabel label}. Register icons of your own, with
  * the same 24×24 stroke style, with {@link #register}. No image requests, no icon font,
  * and nothing the Content Security Policy needs to allow.
+ * <p>
+ * {@link #setSize(Integer)} gives the icon a fixed size in pixels instead of 1em, also inside components that size
+ * their icons (a button's 16 pixels); {@link #setStrokeWidth(Number)} replaces Lucide's stroke width of 2.
  */
 public class SwIcon extends WebComponent {
 
     private static final Map<String, String> ICONS = new ConcurrentHashMap<>(load());
 
     private IModel<String> label;
+    private Integer size;
+    private String strokeWidth;
 
     /** @param name an icon's name, e.g. {@code "pencil"} */
     public SwIcon(String id, String name) {
@@ -84,6 +89,38 @@ public class SwIcon extends WebComponent {
         return setLabel(Model.of(label));
     }
 
+    /**
+     * Width and height in pixels, from 1 to 1024; {@code null} restores the default, 1em or the size the surrounding
+     * component gives its icons. Renders {@code width}, {@code height} and {@code data-icon-size}, which the skins'
+     * icon sizes leave alone.
+     */
+    public SwIcon setSize(Integer pixels) {
+        if (pixels != null && (pixels < 1 || pixels > 1024)) {
+            throw new IllegalArgumentException("An icon's size must be between 1 and 1024 pixels, not " + pixels);
+        }
+        this.size = pixels;
+        return this;
+    }
+
+    /** The stroke width in the icon's 24×24 units, more than 0 and at most 24; {@code null} restores 2. */
+    public SwIcon setStrokeWidth(Number width) {
+        if (width == null) {
+            this.strokeWidth = null;
+            return this;
+        }
+        double value = width.doubleValue();
+        if (!Double.isFinite(value) || value <= 0 || value > 24) {
+            throw new IllegalArgumentException("An icon's stroke width must be more than 0 and at most 24, not " + width);
+        }
+        java.math.BigDecimal exact = width instanceof java.math.BigDecimal decimal ? decimal : java.math.BigDecimal.valueOf(value);
+        this.strokeWidth = exact.stripTrailingZeros().toPlainString();
+        return this;
+    }
+
+    private String stroke() {
+        return strokeWidth != null ? strokeWidth : "2";
+    }
+
     /** The current accessible name, or null for a decorative icon. */
     protected String accessibleLabel() {
         return label != null ? label.getObject() : null;
@@ -124,7 +161,11 @@ public class SwIcon extends WebComponent {
     private String svgAttributes() {
         String text = label != null ? label.getObject() : null;
         StringBuilder attributes = new StringBuilder(" class=\"sw-icon\" xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\""
-                + " fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"");
+                + " fill=\"none\" stroke=\"currentColor\" stroke-width=\"" + stroke() + "\" stroke-linecap=\"round\" stroke-linejoin=\"round\"");
+        if (size != null) {
+            attributes.append(" width=\"").append(size).append("\" height=\"").append(size)
+                    .append("\" data-icon-size=\"").append(size).append('"');
+        }
         if (text != null) {
             attributes.append(" role=\"img\" aria-label=\"")
                     .append(org.apache.wicket.util.string.Strings.escapeMarkup(text)).append('"');
@@ -146,7 +187,14 @@ public class SwIcon extends WebComponent {
             tag.put("viewBox", "0 0 24 24");
             tag.put("fill", "none");
             tag.put("stroke", "currentColor");
-            tag.put("stroke-width", "2");
+            tag.put("stroke-width", stroke());
+            if (size != null) {
+                tag.put("width", size);
+                tag.put("height", size);
+                tag.put("data-icon-size", size);
+            } else {
+                tag.remove("data-icon-size");
+            }
             tag.put("stroke-linecap", "round");
             tag.put("stroke-linejoin", "round");
             tag.remove("role");

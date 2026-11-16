@@ -1274,7 +1274,7 @@
   }
 
   .sw-alert-dialog[data-size='sm'] {
-    @apply max-w-xs;
+    @apply max-w-[min(20rem,calc(100%-2rem))];
   }
 
   .sw-alert-dialog-header {
@@ -2176,9 +2176,10 @@
 
 /* Native summary labels may wrap; preserve the skin's minimum button height. */
 @layer components {
-  .sw-collapsible-trigger.sw-button:not([data-size='icon']) { @apply h-auto; }
+  .sw-collapsible-trigger.sw-button:not([data-size^='icon']) { @apply h-auto; }
   .sw-collapsible-trigger.sw-button:not([data-size]),
   .sw-collapsible-trigger.sw-button[data-size='default'] { @apply min-h-10; }
+  .sw-collapsible-trigger.sw-button[data-size='xs'] { @apply min-h-7; }
   .sw-collapsible-trigger.sw-button[data-size='sm'] { @apply min-h-9; }
   .sw-collapsible-trigger.sw-button[data-size='lg'] { @apply min-h-11; }
 }

@@ -66,6 +66,20 @@ class ButtonBehaviorTest {
     void theSizesAreShadcns() {
         assertThat(render(new ButtonBehavior().setSize(ButtonBehavior.Size.SMALL), "a").getAttribute("data-size")).isEqualTo("sm");
         assertThat(render(new ButtonBehavior().setSize(ButtonBehavior.Size.LARGE), "a").getAttribute("data-size")).isEqualTo("lg");
+        assertThat(render(new ButtonBehavior().setSize(ButtonBehavior.Size.EXTRA_SMALL), "a").getAttribute("data-size")).isEqualTo("xs");
+    }
+
+    @Test
+    void theIconSizesAreShadcnsToo() {
+        assertThat(render(new ButtonBehavior().setSize(ButtonBehavior.Size.ICON_EXTRA_SMALL), "a").getAttribute("data-size")).isEqualTo("icon-xs");
+        assertThat(render(new ButtonBehavior().setSize(ButtonBehavior.Size.ICON_SMALL), "a").getAttribute("data-size")).isEqualTo("icon-sm");
+        assertThat(render(new ButtonBehavior().setSize(ButtonBehavior.Size.ICON_LARGE), "a").getAttribute("data-size")).isEqualTo("icon-lg");
+    }
+
+    @Test
+    void theNewSizesFollowTheReleasedOnesSoExistingOrdinalsStay() {
+        assertThat(ButtonBehavior.Size.values()).extracting(ButtonBehavior.Size::name).containsExactly(
+                "DEFAULT", "SMALL", "LARGE", "ICON", "EXTRA_SMALL", "ICON_EXTRA_SMALL", "ICON_SMALL", "ICON_LARGE");
     }
 
     @Test

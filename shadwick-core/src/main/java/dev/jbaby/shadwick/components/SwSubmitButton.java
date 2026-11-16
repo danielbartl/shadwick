@@ -64,8 +64,8 @@ public class SwSubmitButton extends AjaxButton {
     }
 
     /**
-     * The button's size; {@link ButtonBehavior.Size#ICON} is square, for a single icon. Name an icon button for
-     * screen readers with an {@code aria-label}.
+     * The button's size; {@link ButtonBehavior.Size#ICON} and the other {@code ICON_*} sizes are square, for a single
+     * icon. Name an icon button for screen readers with an {@code aria-label}.
      */
     public SwSubmitButton setSize(ButtonBehavior.Size size) {
         buttonBehavior.setSize(size);

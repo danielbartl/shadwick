@@ -34,3 +34,19 @@ Use `AjaxFormComponentUpdatingBehavior("change")` on a checkbox or switch, and
 `AjaxFormChoiceComponentUpdatingBehavior` on a radio group. Passing them to the field's `.add(...)` routes them to
 the underlying input. Plain and Ajax form submits work too; field errors update in place without resetting focus
 or the current selection. The showcase's **Choices** page demonstrates all of these paths.
+
+## Mixed state
+
+A checkbox can show the mixed state, a minus, when it stands for a group of which only some are selected:
+
+```java
+SwCheckBox all = new SwCheckBox("allProjects", "All projects", allSelectedModel)
+        .setIndeterminate(() -> someSelected() && !allSelected());
+all.setOutputMarkupId(true);
+```
+
+HTML has no attribute for it, only the DOM property `indeterminate`. The input renders `data-sw-indeterminate`, and
+Shadwick's script sets the property when the page loads and after every Ajax update, so screen readers report the box
+as mixed. The model is read on every render. A click clears the mixed state, as on any checkbox, and the box submits
+only checked or unchecked: recompute the mixed state on the server and re-render the box (for example from the
+children's `AjaxFormComponentUpdatingBehavior`) when the group changes. The Choices page has a working "select all".

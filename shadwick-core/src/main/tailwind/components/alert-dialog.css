@@ -14,7 +14,42 @@
     max-block-size: calc(100% - 2rem);
   }
 
+  /*
+    The header is a centred grid, which from sm on aligns to the start in a default-size dialog; there an icon
+    (.sw-alert-dialog-media) spans the title and description rows beside them. A small dialog keeps it centred, the
+    icon above the title. Shadwick's Wicket form sits between the dialog and its parts, so each rule names both.
+  */
   .sw-alert-dialog-header {
-    @apply grid grid-rows-[auto_1fr] place-items-center text-center sm:place-items-start sm:text-start;
+    @apply grid grid-rows-[auto_1fr] place-items-center text-center has-[>.sw-alert-dialog-media]:grid-rows-[auto_auto_1fr];
+  }
+  .sw-alert-dialog:not([data-size]) > .sw-alert-dialog-header,
+  .sw-alert-dialog:not([data-size]) > .sw-alert-dialog-form > .sw-alert-dialog-header {
+    @apply sm:place-items-start sm:text-start sm:has-[>.sw-alert-dialog-media]:grid-rows-[auto_1fr];
+  }
+  .sw-alert-dialog-media {
+    @apply inline-flex items-center justify-center;
+  }
+  .sw-alert-dialog:not([data-size]) > .sw-alert-dialog-header > .sw-alert-dialog-media,
+  .sw-alert-dialog:not([data-size]) > .sw-alert-dialog-form > .sw-alert-dialog-header > .sw-alert-dialog-media {
+    @apply sm:row-span-2;
+  }
+  .sw-alert-dialog:not([data-size]) > .sw-alert-dialog-header:has(> .sw-alert-dialog-media) > .sw-alert-dialog-title,
+  .sw-alert-dialog:not([data-size]) > .sw-alert-dialog-form > .sw-alert-dialog-header:has(> .sw-alert-dialog-media) > .sw-alert-dialog-title {
+    @apply sm:col-start-2;
+  }
+
+  /*
+    A small dialog puts its two buttons side by side in equal halves at every width, and stacks them (the action on
+    top, as the default footer does on a narrow screen) when a label does not fit its half: a button never gets
+    narrower than its label. wrap-reverse moves only the second line up; keyboard and reading order stay the markup's.
+  */
+  .sw-alert-dialog[data-size='sm'] > .sw-alert-dialog-footer,
+  .sw-alert-dialog[data-size='sm'] > .sw-alert-dialog-form > .sw-alert-dialog-footer {
+    @apply flex-row flex-wrap-reverse;
+  }
+  .sw-alert-dialog[data-size='sm'] > .sw-alert-dialog-footer > *,
+  .sw-alert-dialog[data-size='sm'] > .sw-alert-dialog-form > .sw-alert-dialog-footer > * {
+    flex: 1 1 calc(50% - --spacing(1));
+    min-width: max-content;
   }
 }

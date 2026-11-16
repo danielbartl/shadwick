@@ -55,6 +55,29 @@ class CssBundleTest {
         }
     }
 
+    @ParameterizedTest
+    @EnumSource(Skin.class)
+    void everySkinStylesTheShadleafButtonSizesSmallAlertDialogsAndTheirIcons(Skin skin) throws IOException {
+        for (Bundle bundle : Bundle.values()) {
+            String css = read("shadwick-" + skin.id() + bundle.suffix() + ".css");
+
+            assertThat(css).as(skin + " " + bundle)
+                    .contains(".sw-button[data-size='xs']", ".sw-button[data-size='icon-xs']",
+                            ".sw-button[data-size='icon-sm']", ".sw-button[data-size='icon-lg']")
+                    // Small icon buttons get a 44px hit area on touch screens only
+                    .containsPattern("@media \\(pointer: coarse\\) \\{\\s*:where\\(")
+                    .contains("max(100%, 2.75rem)")
+                    // ...but not inside an input group or on a toast's close button, whose list scrolls at the edge
+                    .containsPattern("\\.sw-input-group \\.sw-button::after,\\s*\\.sw-button\\.sw-toast-close::after \\{\\s*content: none")
+                    .contains(".sw-alert-dialog[data-size='sm']", ".sw-alert-dialog-media",
+                            ".sw-alert-dialog-media[data-variant='destructive']", "flex-wrap: wrap-reverse")
+                    // A small dialog keeps a margin on the narrowest phones
+                    .containsPattern("max-width: min\\(\\d+rem, calc\\(100% - 2rem\\)\\)")
+                    // An explicit SwIcon size is left alone by the 1em default
+                    .contains(".sw-icon:where(:not([data-icon-size]))");
+        }
+    }
+
     private static String read(String name) throws IOException {
         try (InputStream in = Shadwick.class.getResourceAsStream("css/" + name)) {
             assertThat(in).as(name + " on the classpath").isNotNull();

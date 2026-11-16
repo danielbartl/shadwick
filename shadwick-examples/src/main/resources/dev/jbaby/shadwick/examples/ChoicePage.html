@@ -33,6 +33,19 @@
         <p wicket:id="current" class="ex-muted" role="status"></p>
     </form>
 </section>
+<section class="ex-section" aria-labelledby="mixed-heading">
+    <h2 id="mixed-heading">Mixed state</h2>
+    <p class="ex-muted"><code>setIndeterminate(model)</code> shows a minus while only some projects are selected.</p>
+    <form wicket:id="mixedForm" class="ex-form" aria-labelledby="mixed-heading">
+        <div wicket:id="allProjects"></div>
+        <div class="ex-indent">
+            <div wicket:id="project0"></div>
+            <div wicket:id="project1"></div>
+            <div wicket:id="project2"></div>
+        </div>
+        <p wicket:id="mixedSummary" class="ex-muted" role="status"></p>
+    </form>
+</section>
 <section class="ex-section">
     <h2>Sizes and disabled controls</h2>
     <div class="ex-form">

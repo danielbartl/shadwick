@@ -4,6 +4,16 @@
 
 Development continues on `0.2.0-SNAPSHOT`.
 
+### Added
+
+- Button sizes `EXTRA_SMALL`, `ICON_EXTRA_SMALL`, `ICON_SMALL` and `ICON_LARGE` in all nine skins. On a touch screen,
+  the three smallest icon sizes get an invisible 44-pixel hit area, except inside input groups.
+- `SwCheckBox.setIndeterminate(...)`: the mixed state ("some of a group selected"), from a model read on each render.
+- `SwEmptyState.setBorder(false)` leaves out the dashed outline, which stays the default.
+- `SwIcon.setSize(...)` and `setStrokeWidth(...)` for a fixed pixel size and a lighter or heavier stroke.
+- `SwConfirmDialog.setSize(Size.SMALL)` for a narrow confirmation whose buttons share the width and stack when a label
+  doesn't fit, and `setIcon(...)`/`setIconVariant(...)` for a decorative icon above the title.
+
 ### Fixed
 
 - A link styled as a button (`sw-button`) inside a dialog, alert-dialog, sheet, empty-state or field description,

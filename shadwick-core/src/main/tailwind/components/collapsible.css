@@ -26,5 +26,5 @@
   .sw-collapsible-content { @apply break-words; overflow-wrap:anywhere; }
   .sw-collapsible-icon { @apply size-4 shrink-0; }
   .sw-collapsible[open] > summary > .sw-collapsible-icon { @apply rotate-180; }
-  .sw-collapsible-trigger[data-size='icon'] > span { @apply sr-only; }
+  .sw-collapsible-trigger:is([data-size='icon'], [data-size='icon-xs'], [data-size='icon-sm'], [data-size='icon-lg']) > span { @apply sr-only; }
 }

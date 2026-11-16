@@ -63,6 +63,16 @@ class ButtonAccessibleNameTest {
                 .withMessageContaining("ShadwickSettings.setAccessibilityChecks(AccessibilityChecks.OFF)");
     }
 
+    @ParameterizedTest
+    @org.junit.jupiter.params.provider.EnumSource(value = ButtonBehavior.Size.class, names = {"ICON_EXTRA_SMALL", "ICON_SMALL", "ICON_LARGE"})
+    void everyIconSizeNeedsAnAccessibleNameToo(ButtonBehavior.Size size) {
+        SwButton button = button(null).setSize(size);
+
+        assertThatIllegalStateException()
+                .isThrownBy(() -> tester.startComponentInPage(button, iconButton()))
+                .withMessageContaining("has no accessible name");
+    }
+
     @Test
     void anAriaLabelAddedAfterTheButtonNamesIt() {
         SwButton button = button(null).setSize(ButtonBehavior.Size.ICON);
