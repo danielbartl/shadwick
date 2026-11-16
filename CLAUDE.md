@@ -60,7 +60,11 @@ documented in docs/components/app-layout.md and additionally compiled by the pub
 Initial release publication is complete. Future work belongs to the next snapshot and user-selected roadmap increments;
 calendar heatmaps, custom/diverging bands and stacked radial series are later scope, not additions to 0.1.0.
 
-## Landing page refresh — 2026-11-16 (implemented locally, uncommitted)
+## Landing page refresh — 2026-11-16 (published)
+
+Published as 78065e1 at the user's request. Website run 43886438075 succeeded; the same Playwright/axe script passed
+118/118 checks against https://danielbartl.github.io/shadwick/ . Build run 43886438263: Java 21/25 passed; its
+browser jobs were still running at handoff (they don't cover site/). The "nothing committed" line below is historical.
 
 The user approved a three-step landing plan (polish; show-don't-list; finishing touches), permitted committed
 screenshots, and chose live per-skin mini pages for the skin gallery. Implemented in site/ only; no library,
