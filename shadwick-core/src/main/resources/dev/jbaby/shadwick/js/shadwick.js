@@ -953,9 +953,64 @@
     new MutationObserver(scanTabs).observe(document.documentElement, {childList: true, subtree: true});
     if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', scanTabs); else scanTabs();
 
-    // ---- Toasts: Shadleaf anatomy/interactions, with a CSS column instead of inline stack geometry ----
+    // ---- Toasts: Shadleaf anatomy/interactions and Sonner-style stacking ----
+    // The newest toast is the toaster's last child. Stack geometry (offsets, heights) goes into one constructable
+    // stylesheet keyed by toast id, never into style attributes; without constructable stylesheets the toasts stay
+    // a plain scrolling column.
     var toaster = null, toastStates = new Map(), toastReturnFocus = null, toastHover = false;
-    var toastCounter = 0;
+    var toastCounter = 0, toastSheet = null, toastResize = null, toastLayoutFrame = 0;
+    var toastConfig = {position: 'bottom-end', visibleToasts: 3};
+    var toastPositions = ['top-start', 'top-center', 'top-end', 'bottom-start', 'bottom-center', 'bottom-end'];
+    function toastStackSupported() {
+        try {
+            return typeof CSSStyleSheet === 'function' && Array.isArray(document.adoptedStyleSheets)
+                && typeof CSSStyleSheet.prototype.replaceSync === 'function';
+        } catch (error) { return false; }
+    }
+    function toastStyles(rules) {
+        if (!toastSheet) {
+            if (!rules) return;
+            toastSheet = new CSSStyleSheet();
+            document.adoptedStyleSheets = document.adoptedStyleSheets.concat([toastSheet]);
+        }
+        toastSheet.replaceSync(rules);
+    }
+    function toastList() {
+        return toaster ? Array.from(toaster.children).filter(function (node) { return node.classList.contains('sw-toast'); }) : [];
+    }
+    // Which toasts show and where: the newest in front, at most visibleToasts, each further back and smaller. A
+    // collapsed toast behind the front one takes the front's height, so only the front one's height is measured
+    // then; expanded, every toast's own height is.
+    function layoutToasts() {
+        if (!toaster || !toaster.hasAttribute('data-stacked')) return;
+        toaster.toggleAttribute('data-expanded', toastHover || toaster.contains(document.activeElement));
+        var expanded = toaster.hasAttribute('data-expanded'), visible = toastConfig.visibleToasts;
+        var offset = 0, count = 0, rules = [], newestFirst = toastList().reverse();
+        newestFirst.forEach(function (toast, index) {
+            var state = toastStates.get(toast) || {}, shown = index < visible;
+            toast.toggleAttribute('data-hidden', !shown);
+            toast.toggleAttribute('data-behind', shown && index > 0);
+            if (index === 0 || expanded) state.height = toast.offsetHeight;
+            rules.push('#' + CSS.escape(toast.id) + '{--sw-toast-index:' + (shown ? index : visible - 1)
+                + ';--sw-toast-offset:' + offset + 'px}');
+            if (shown) { offset += state.height || 0; count++; }
+        });
+        var front = newestFirst[0] && toastStates.get(newestFirst[0]);
+        rules.push('#sw-toaster{--sw-toast-front-height:' + (front && front.height || 0) + 'px;--sw-toast-stack-sum:'
+            + offset + 'px;--sw-toast-count:' + Math.max(count, 1) + '}');
+        toastStyles(rules.join('\n'));
+    }
+    function scheduleToastLayout() {
+        if (toastLayoutFrame) return;
+        toastLayoutFrame = requestAnimationFrame(function () { toastLayoutFrame = 0; layoutToasts(); updateToastTimers(); });
+    }
+    Shadwick.configureToasts = function (options) {
+        options = options || {};
+        if (toastPositions.indexOf(options.position) >= 0) toastConfig.position = options.position;
+        var visible = Number(options.visibleToasts);
+        if (Number.isInteger(visible) && visible >= 1 && visible <= 10) toastConfig.visibleToasts = visible;
+        if (toaster) { toaster.dataset.position = toastConfig.position; updateToastTimers(); }
+    };
     function topToastModal() {
         return document.activeElement.closest && document.activeElement.closest('dialog:modal,.sw-sidebar:popover-open')
             || Array.from(document.querySelectorAll('dialog:modal,.sw-sidebar:popover-open')).pop() || null;
@@ -974,9 +1029,11 @@
         return toastHover || document.hidden || toaster && toaster.contains(document.activeElement);
     }
     function updateToastTimers() {
+        layoutToasts();
         toastStates.forEach(function (state, toast) {
             if (!toast.isConnected) { clearTimeout(state.timer); toastStates.delete(toast); return; }
-            if (toastPaused()) {
+            // A toast waiting behind the visible ones keeps its time until it shows
+            if (toastPaused() || toast.hasAttribute('data-hidden')) {
                 if (state.timer) {
                     clearTimeout(state.timer); state.timer = 0;
                     state.remaining = Math.max(1000, state.remaining - (Date.now() - state.started));
@@ -991,14 +1048,15 @@
         var state = toastStates.get(toast);
         if (!state) return;
         clearTimeout(state.timer); toastStates.delete(toast);
+        if (toastResize) toastResize.unobserve(toast);
         var focused = toast.contains(document.activeElement);
         var next = toast.nextElementSibling || toast.previousElementSibling;
         toast.remove();
         if (!toastStates.size) {
             if (toaster && toaster.matches(':popover-open')) toaster.hidePopover();
             if (toaster) toaster.remove();
-            toaster = null; toastHover = false;
-        }
+            toaster = null; toastHover = false; forgetToastLayout();
+        } else layoutToasts();
         if (focused) {
             var target = next && next.querySelector('.sw-toast-close') || toastReturnFocus;
             if (target && target.isConnected && visibleControl(target)) target.focus({preventScroll: true});
@@ -1033,11 +1091,16 @@
         var source = document.activeElement;
         if (toaster && !toaster.isConnected) {
             toastStates.forEach(function (state) { clearTimeout(state.timer); });
-            toastStates.clear(); toaster = null; toastHover = false;
+            toastStates.clear(); toaster = null; toastHover = false; forgetToastLayout();
         }
         if (!toaster) {
             toaster = document.createElement('div'); toaster.id = 'sw-toaster'; toaster.className = 'sw-toaster';
             toaster.setAttribute('popover', 'manual'); toaster.setAttribute('role', 'region');
+            toaster.dataset.position = toastConfig.position;
+            if (toastStackSupported()) {
+                toaster.setAttribute('data-stacked', '');
+                if (typeof ResizeObserver === 'function') toastResize = new ResizeObserver(scheduleToastLayout);
+            }
             toastReturnFocus = source;
             document.body.appendChild(toaster);
         }
@@ -1058,13 +1121,15 @@
         close.setAttribute('aria-label', options.dismissLabel || 'Dismiss notification'); close.textContent = '\u00d7';
         close.setAttribute('aria-describedby', content.id);
         close.addEventListener('click', function () { dismissToast(toast); }); toast.appendChild(close);
-        toastStates.set(toast, {remaining: duration, timer: 0, started: 0});
+        toastStates.set(toast, {remaining: duration, timer: 0, started: 0, height: 0});
         toaster.appendChild(toast); placeToaster(); updateToastTimers();
+        if (toastResize) toastResize.observe(toast);
         // Register the live region first, then set plain text, without moving keyboard focus.
         requestAnimationFrame(function () {
             if (!toast.isConnected) return;
             if (title) title.textContent = String(options.title);
             description.textContent = String(message == null ? '' : message);
+            layoutToasts();
         });
         return toast.id;
     };
@@ -1104,12 +1169,18 @@
         updateToastTimers();
         if (!toaster.isConnected || !toastStates.size) {
             if (toaster.isConnected) toaster.remove();
-            toaster = null; toastHover = false; toastReturnFocus = null;
+            toaster = null; toastHover = false; toastReturnFocus = null; forgetToastLayout();
         } else placeToaster();
     }).observe(document.documentElement, {childList: true, subtree: true});
+    function forgetToastLayout() {
+        if (toastResize) { toastResize.disconnect(); toastResize = null; }
+        if (toastLayoutFrame) { cancelAnimationFrame(toastLayoutFrame); toastLayoutFrame = 0; }
+        if (toastSheet) toastSheet.replaceSync('');
+    }
+    window.addEventListener('resize', function () { if (toaster) scheduleToastLayout(); });
     window.addEventListener('pagehide', function () {
         toastStates.forEach(function (state) { clearTimeout(state.timer); }); toastStates.clear();
-        if (toaster) toaster.remove(); toaster = null; toastReturnFocus = null; toastHover = false;
+        if (toaster) toaster.remove(); toaster = null; toastReturnFocus = null; toastHover = false; forgetToastLayout();
     });
 
     // ---- Form fields: an error that appeared, changed or went away (BaseSwField) ----

@@ -1729,7 +1729,8 @@ class ShowcaseBrowserTest {
             sheet.getByRole(AriaRole.BUTTON, new Locator.GetByRoleOptions().setName("Notify inside sheet")).click();
             assertThat(sheet.locator(".sw-toast")).hasCount(1);
             tab.keyboard().press("Alt+KeyT");
-            sheet.evaluate("n => Promise.all(n.getAnimations().map(a=>a.finished))");
+            // The sheet's motion and the toast's own entry fade both finish before contrast is measured
+            settleAnimations(tab);
             assertThat(describe(new AxeBuilder(tab).withTags(WCAG).analyze().getViolations())).isEmpty();
             tab.keyboard().press("Escape"); assertThat(sheet).isVisible();
             sheet.getByRole(AriaRole.BUTTON, new Locator.GetByRoleOptions().setName("Close").setExact(true)).click();
@@ -1768,7 +1769,10 @@ class ShowcaseBrowserTest {
             tab.locator("html").evaluate("n=>n.dir='rtl'");
             tab.evaluate("for(let i=0;i<10;i++) Shadwick.toast('LongFilename'.repeat(30),{title:'Message '+i,variant:'warning',duration:0})");
             assertThat(tab.locator(".sw-toast")).hasCount(10);
-            assertThat((Boolean) tab.locator("#sw-toaster").evaluate("n=>n.scrollHeight>n.clientHeight && n.scrollWidth<=n.clientWidth+1")).isTrue();
+            // Stacked: the newest three show, the other seven wait; the stack stays within the narrow screen
+            assertThat(tab.locator(".sw-toast:not([data-hidden])")).hasCount(3);
+            assertThat(tab.locator(".sw-toast[data-hidden]")).hasCount(7);
+            assertThat((Boolean) tab.locator("#sw-toaster").evaluate("n=>n.scrollWidth<=n.clientWidth+1 && document.documentElement.scrollWidth<=innerWidth")).isTrue();
             var box = tab.locator("#sw-toaster").boundingBox();
             assertThat(box.x).isGreaterThanOrEqualTo(0); assertThat(box.x + box.width).isLessThanOrEqualTo(321);
             assertThat(box.y).isGreaterThanOrEqualTo(0); assertThat(box.y + box.height).isLessThanOrEqualTo(501);

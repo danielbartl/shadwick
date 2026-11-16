@@ -31,9 +31,50 @@ public class ToastPage extends BasePage {
         super.onInitialize();
         add(Sw.Behaviors.toasts());
         addToastActions();
+        add(stackForm());
         addNavigationAndOverlays();
         Label status = new Label("status", "No feedback messages were created.");
         add(status);
+    }
+
+    /**
+     * Toasts stack: the newest in front, at most three showing, spreading out on hover or keyboard focus. The
+     * position applies to this page only, through an Ajax response; the application's default is a setting.
+     */
+    private org.apache.wicket.markup.html.form.Form<Void> stackForm() {
+        org.apache.wicket.markup.html.form.Form<Void> form = new org.apache.wicket.markup.html.form.Form<>("stackForm");
+        org.apache.wicket.model.Model<ToastBehavior.Position> position = org.apache.wicket.model.Model.of(ToastBehavior.Position.BOTTOM_END);
+        form.add(new dev.jbaby.shadwick.components.form.SwSelect<>("position", "Toast position", position,
+                org.apache.wicket.model.Model.ofList(java.util.List.of(ToastBehavior.Position.values())), positionNames())
+                .add(new org.apache.wicket.ajax.form.AjaxFormComponentUpdatingBehavior("change") {
+                    @Override
+                    protected void onUpdate(org.apache.wicket.ajax.AjaxRequestTarget target) {
+                        ToastBehavior.configure(target, position.getObject(), ToastBehavior.DEFAULT_VISIBLE_TOASTS);
+                        Sw.toast(target, "Toasts now appear here on this page.", ToastBehavior.Variant.INFO, "Moved");
+                    }
+                }));
+        form.add(SwButton.onClick("stack", "Show five toasts", target -> {
+            for (int i = 1; i <= 5; i++) {
+                Sw.toast(target, i == 5 ? "The newest is in front; two more peek out behind it, and two wait their turn."
+                        : "Message " + i + " of five.", ToastBehavior.Variant.DEFAULT, "Toast " + i, Duration.ZERO);
+            }
+        }));
+        return form;
+    }
+
+    private static org.apache.wicket.markup.html.form.IChoiceRenderer<ToastBehavior.Position> positionNames() {
+        return new org.apache.wicket.markup.html.form.ChoiceRenderer<>() {
+            @Override
+            public Object getDisplayValue(ToastBehavior.Position position) {
+                String words = position.name().replace('_', ' ').toLowerCase(Locale.ROOT);
+                return Character.toUpperCase(words.charAt(0)) + words.substring(1);
+            }
+
+            @Override
+            public String getIdValue(ToastBehavior.Position position, int index) {
+                return position.value();
+            }
+        };
     }
 
     private void addToastActions() {

@@ -4,8 +4,18 @@
 
 Development continues on `0.2.0-SNAPSHOT`.
 
+### Changed
+
+- Toasts stack, as in shadcn/ui's Sonner and Shadleaf: the newest in front, at most three showing, spreading out on
+  hover or keyboard focus, with older ones waiting (their time stopped) until a newer one closes. In 0.1.0 every toast
+  showed in a scrolling column. `ShadwickSettings.setVisibleToasts(...)` raises the count (1–10); browsers without
+  constructable stylesheets keep the column. The toaster's distance from the edge is now 1.5rem (1rem on narrow screens).
+
 ### Added
 
+- Toast positions: `ShadwickSettings.setToastPosition(ToastBehavior.Position...)` for a corner or the middle of the top
+  or bottom edge (logical start/end), and `ToastBehavior.configure(...)`/`configureScript(...)` to change position and
+  count for one page.
 - Button sizes `EXTRA_SMALL`, `ICON_EXTRA_SMALL`, `ICON_SMALL` and `ICON_LARGE` in all nine skins. On a touch screen,
   the three smallest icon sizes get an invisible 44-pixel hit area, except inside input groups.
 - `SwCheckBox.setIndeterminate(...)`: the mixed state ("some of a group selected"), from a model read on each render.

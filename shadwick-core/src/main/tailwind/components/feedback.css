@@ -1,20 +1,93 @@
-/* Feedback uses the alert anatomy; toasts use Shadleaf's viewport and toast anatomy (Apache-2.0, see NOTICE). */
+/*
+  Feedback uses the alert anatomy; toasts use Shadleaf's viewport, toast anatomy and stacking (Apache-2.0, see NOTICE).
+  The toaster is a popover="manual" fixed to a corner or edge (data-position, logical: start and end swap in RTL).
+  With the script's stacking (data-stacked) the toasts stack as Sonner's do: the newest in front, the visible ones
+  behind it, each --sw-toast-peek further back and 5% smaller, with only the front one's content showing; hovering or
+  focusing them spreads them out (data-expanded). The script keeps the numbers these rules need in a constructable
+  stylesheet, never in style attributes: --sw-toast-index (0 is the newest), --sw-toast-offset (the heights of the
+  newer toasts), --sw-toast-front-height, --sw-toast-stack-sum and --sw-toast-count. --sw-toast-lift is -1 at the
+  bottom (the stack grows upwards) and 1 at the top. Without stacking, the toasts form a plain scrolling column.
+*/
 @layer components {
   .sw-feedback-list { @apply m-0 grid list-none gap-2 p-0; }
   .sw-toaster {
     @apply fixed m-0 flex max-h-[calc(100dvh-2rem)] w-89 max-w-[calc(100%-2rem)] flex-col gap-2 overflow-y-auto border-0 bg-transparent p-0 text-foreground;
     inset: auto;
-    inset-block-end: 1rem;
-    inset-inline-end: 1rem;
+    --sw-toaster-offset: 1.5rem;
+    --sw-toast-gap: 0.875rem;
+    --sw-toast-peek: 0.875rem;
+    --sw-toast-lift: -1;
+    inset-block-end: var(--sw-toaster-offset);
+    inset-inline-end: var(--sw-toaster-offset);
   }
+  .sw-toaster[data-position^='top'] {
+    inset-block-end: auto;
+    inset-block-start: var(--sw-toaster-offset);
+    --sw-toast-lift: 1;
+  }
+  .sw-toaster[data-position$='-start'] {
+    inset-inline-end: auto;
+    inset-inline-start: var(--sw-toaster-offset);
+  }
+  .sw-toaster[data-position$='-center'] {
+    @apply mx-auto;
+    inset-inline: 0;
+  }
+  /* In the plain column, the newest toast is the one nearest the edge. */
+  .sw-toaster[data-position^='top']:not([data-stacked]) { @apply flex-col-reverse; }
   .sw-toaster:not(:popover-open):not([data-fallback]) { @apply hidden; }
   .sw-toaster[data-fallback] { z-index: 1000; }
   .sw-toast { @apply relative flex items-start box-border shrink-0 wrap-anywhere forced-colors:border forced-colors:border-solid; }
   .sw-toast > svg { @apply size-4 shrink-0; }
   .sw-toast-content { @apply flex min-w-0 flex-1 flex-col wrap-anywhere; }
   .sw-toast-close { @apply shrink-0 forced-colors:focus:outline-2 forced-colors:focus:outline-solid; }
+  /* On a narrow screen, as with Sonner: the full width, less a gutter. */
   @media (width < 40rem) {
-    .sw-toaster { @apply w-auto max-w-none; inset-inline: 1rem; }
+    /* Also over the position rules above: every position takes the full width here. */
+    .sw-toaster, .sw-toaster[data-position] { @apply mx-0 w-auto max-w-none; --sw-toaster-offset: 1rem; inset-inline: var(--sw-toaster-offset); }
+  }
+
+  /* Stacked: the toaster is as tall as the front toast, or the spread-out stack. */
+  .sw-toaster[data-stacked] {
+    @apply block max-h-none overflow-visible;
+    block-size: var(--sw-toast-front-height, auto);
+  }
+  .sw-toaster[data-stacked][data-expanded] {
+    block-size: calc(var(--sw-toast-stack-sum, 0px) + (var(--sw-toast-count, 1) - 1) * var(--sw-toast-gap));
+  }
+  .sw-toaster[data-stacked] > .sw-toast {
+    @apply absolute inset-x-0 transition-[opacity,translate,scale] duration-400 ease-out;
+    z-index: calc(100 - var(--sw-toast-index, 0));
+    translate: 0 calc(var(--sw-toast-lift) * var(--sw-toast-index, 0) * var(--sw-toast-peek));
+    scale: calc(1 - var(--sw-toast-index, 0) * 0.05);
+  }
+  .sw-toaster[data-stacked]:not([data-position^='top']) > .sw-toast { @apply bottom-0 origin-top; }
+  .sw-toaster[data-stacked][data-position^='top'] > .sw-toast { @apply top-0 origin-bottom; }
+  /* Collapsed, a toast behind the front one takes its height and hides its content. */
+  .sw-toaster[data-stacked]:not([data-expanded]) > .sw-toast[data-behind] {
+    @apply overflow-hidden;
+    block-size: var(--sw-toast-front-height);
+  }
+  /* Its hidden content takes no clicks either: an invisible close button would sit next to the front one's. Hovering
+     the toast itself still spreads the stack out. */
+  .sw-toaster[data-stacked]:not([data-expanded]) > .sw-toast[data-behind] > * { @apply pointer-events-none opacity-0; }
+  .sw-toaster[data-stacked][data-expanded] > .sw-toast {
+    translate: 0 calc(var(--sw-toast-lift) * (var(--sw-toast-offset, 0px) + var(--sw-toast-index, 0) * var(--sw-toast-gap)));
+    scale: 1;
+  }
+  /* Waiting for a place: more toasts than are visible. */
+  .sw-toaster[data-stacked] > .sw-toast[data-hidden] { @apply invisible opacity-0; }
+  @starting-style {
+    .sw-toaster[data-stacked] > .sw-toast { opacity: 0; }
+  }
+  /* Where motion is fine, a toast slides in from the edge. Elsewhere toasts only fade. */
+  @media (prefers-reduced-motion: no-preference) {
+    @starting-style {
+      .sw-toaster[data-stacked] > .sw-toast { translate: 0 calc(var(--sw-toast-lift) * -100%); }
+    }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .sw-toaster[data-stacked] > .sw-toast { @apply transition-opacity; }
   }
   @media print { .sw-toaster { display: none !important; } }
 }

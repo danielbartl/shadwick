@@ -1922,6 +1922,26 @@ locally. Next: a hosted interactive showcase, then tooling and release preparati
 
 ## Conventions
 
+### Toast positions and stacking (2026-11-16, 0.2.0-SNAPSHOT)
+
+Supersedes the 0.1.0 "plain column, no stack geometry" toast decision. The user chose stacked by default (Shadleaf /
+Sonner parity); the changelog records it under Changed.
+- ShadwickSettings.setToastPosition(ToastBehavior.Position) (BOTTOM_END default; logical TOP/BOTTOM x START/CENTER/END,
+  data-position values like top-start) and setVisibleToasts(1..10, default 3). ToastBehavior and FeedbackToastsBehavior
+  both render the identical OnDomReady `Shadwick.configureToasts(...)`, so Wicket renders it once; FeedbackToasts renders
+  it before its messages. Per page: static ToastBehavior.configure(handler, ...)/configureScript(...).
+- shadwick.js keeps the toaster as the list (newest = last child). layoutToasts (ported from Shadleaf's layout) marks
+  data-hidden/data-behind/data-expanded and writes --sw-toast-* numbers into ONE constructable stylesheet keyed by toast
+  id (adoptedStyleSheets + replaceSync), never style attributes; heights via offsetHeight (not transformed rects),
+  measured only for the front toast or while expanded. ResizeObserver + resize schedule relayout; waiting (data-hidden)
+  toasts keep their time. No constructable stylesheets -> no data-stacked -> the 0.1.0 scrolling column. Dismissal stays
+  immediate (no exit animation); entry fades, plus slides under prefers-reduced-motion: no-preference.
+- feedback.css adapts Shadleaf's toaster-viewport/list rules onto .sw-toaster; offset 1.5rem (1rem and full width below
+  40rem, overriding every position). Skins are untouched.
+- Tests: check [style] BEFORE axe runs (axe can leave an empty style attribute). ToastStackBrowserTest covers stacking,
+  timers, six positions in LTR/RTL, narrow screens, the Toasts page's Ajax position choice, reduced motion, dialogs and
+  the column fallback (init script sets window.CSSStyleSheet = undefined).
+
 ### Custom-select fallback race (2026-11-16, fixed)
 
 The intermittent ShowcaseBrowserTest customSelectFallback* aria-hidden-focus failure (about 1 in 3,600 cases) was real:

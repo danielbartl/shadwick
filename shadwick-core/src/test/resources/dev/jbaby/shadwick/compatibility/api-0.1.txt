@@ -505,6 +505,7 @@ ENUM dev.jbaby.shadwick.behaviors.TabsBehavior$Activation [AUTOMATIC, MANUAL]
 ENUM dev.jbaby.shadwick.behaviors.TabsBehavior$Orientation [HORIZONTAL, VERTICAL]
 ENUM dev.jbaby.shadwick.behaviors.TabsBehavior$Variant [DEFAULT, LINE]
 ENUM dev.jbaby.shadwick.behaviors.TimelineEventBehavior$Variant [DEFAULT, SECONDARY, OUTLINE, DESTRUCTIVE]
+ENUM dev.jbaby.shadwick.behaviors.ToastBehavior$Position [TOP_START, TOP_CENTER, TOP_END, BOTTOM_START, BOTTOM_CENTER, BOTTOM_END]
 ENUM dev.jbaby.shadwick.behaviors.ToastBehavior$Variant [DEFAULT, SUCCESS, INFO, WARNING, ERROR]
 ENUM dev.jbaby.shadwick.behaviors.ToggleBehavior$Size [DEFAULT, SMALL, LARGE]
 ENUM dev.jbaby.shadwick.behaviors.ToggleBehavior$Variant [DEFAULT, OUTLINE]
@@ -653,6 +654,12 @@ FIELD public static final dev.jbaby.shadwick.behaviors.TimelineEventBehavior$Var
 FIELD public static final dev.jbaby.shadwick.behaviors.TimelineEventBehavior$Variant dev.jbaby.shadwick.behaviors.TimelineEventBehavior$Variant.DESTRUCTIVE
 FIELD public static final dev.jbaby.shadwick.behaviors.TimelineEventBehavior$Variant dev.jbaby.shadwick.behaviors.TimelineEventBehavior$Variant.OUTLINE
 FIELD public static final dev.jbaby.shadwick.behaviors.TimelineEventBehavior$Variant dev.jbaby.shadwick.behaviors.TimelineEventBehavior$Variant.SECONDARY
+FIELD public static final dev.jbaby.shadwick.behaviors.ToastBehavior$Position dev.jbaby.shadwick.behaviors.ToastBehavior$Position.BOTTOM_CENTER
+FIELD public static final dev.jbaby.shadwick.behaviors.ToastBehavior$Position dev.jbaby.shadwick.behaviors.ToastBehavior$Position.BOTTOM_END
+FIELD public static final dev.jbaby.shadwick.behaviors.ToastBehavior$Position dev.jbaby.shadwick.behaviors.ToastBehavior$Position.BOTTOM_START
+FIELD public static final dev.jbaby.shadwick.behaviors.ToastBehavior$Position dev.jbaby.shadwick.behaviors.ToastBehavior$Position.TOP_CENTER
+FIELD public static final dev.jbaby.shadwick.behaviors.ToastBehavior$Position dev.jbaby.shadwick.behaviors.ToastBehavior$Position.TOP_END
+FIELD public static final dev.jbaby.shadwick.behaviors.ToastBehavior$Position dev.jbaby.shadwick.behaviors.ToastBehavior$Position.TOP_START
 FIELD public static final dev.jbaby.shadwick.behaviors.ToastBehavior$Variant dev.jbaby.shadwick.behaviors.ToastBehavior$Variant.DEFAULT
 FIELD public static final dev.jbaby.shadwick.behaviors.ToastBehavior$Variant dev.jbaby.shadwick.behaviors.ToastBehavior$Variant.ERROR
 FIELD public static final dev.jbaby.shadwick.behaviors.ToastBehavior$Variant dev.jbaby.shadwick.behaviors.ToastBehavior$Variant.INFO
@@ -749,6 +756,8 @@ FIELD public static final dev.jbaby.shadwick.components.chart.SwChart$ValueForma
 FIELD public static final dev.jbaby.shadwick.components.chart.SwChart$ValueFormat dev.jbaby.shadwick.components.chart.SwChart$ValueFormat.PERCENT
 FIELD public static final dev.jbaby.shadwick.components.chart.SwDonutChart$Shape dev.jbaby.shadwick.components.chart.SwDonutChart$Shape.DONUT
 FIELD public static final dev.jbaby.shadwick.components.chart.SwDonutChart$Shape dev.jbaby.shadwick.components.chart.SwDonutChart$Shape.PIE
+FIELD public static final int dev.jbaby.shadwick.behaviors.ToastBehavior.DEFAULT_VISIBLE_TOASTS = 3
+FIELD public static final int dev.jbaby.shadwick.behaviors.ToastBehavior.MAX_VISIBLE_TOASTS = 10
 FIELD public static final int dev.jbaby.shadwick.components.chart.SwDonutChart.DEFAULT_MAX_SEGMENTS = 5
 FIELD public static final java.lang.String dev.jbaby.shadwick.components.SwAttachment.ACTIONS_ID = "actions"
 FIELD public static final java.lang.String dev.jbaby.shadwick.components.SwAttachment.MEDIA_ID = "mediaContent"
@@ -1063,6 +1072,8 @@ METHOD public dev.jbaby.shadwick.ShadwickSettings dev.jbaby.shadwick.ShadwickSet
 METHOD public dev.jbaby.shadwick.ShadwickSettings dev.jbaby.shadwick.ShadwickSettings.setSkin(dev.jbaby.shadwick.Skin)
 METHOD public dev.jbaby.shadwick.ShadwickSettings dev.jbaby.shadwick.ShadwickSettings.setSkinStore(dev.jbaby.shadwick.SkinStore)
 METHOD public dev.jbaby.shadwick.ShadwickSettings dev.jbaby.shadwick.ShadwickSettings.setThemeStorageKey(java.lang.String)
+METHOD public dev.jbaby.shadwick.ShadwickSettings dev.jbaby.shadwick.ShadwickSettings.setToastPosition(dev.jbaby.shadwick.behaviors.ToastBehavior$Position)
+METHOD public dev.jbaby.shadwick.ShadwickSettings dev.jbaby.shadwick.ShadwickSettings.setVisibleToasts(int)
 METHOD public dev.jbaby.shadwick.Skin dev.jbaby.shadwick.ShadwickSettings.getCurrentSkin()
 METHOD public dev.jbaby.shadwick.Skin dev.jbaby.shadwick.ShadwickSettings.getSkin()
 METHOD public dev.jbaby.shadwick.SkinStore dev.jbaby.shadwick.ShadwickSettings.getSkinStore()
@@ -1175,6 +1186,7 @@ METHOD public dev.jbaby.shadwick.behaviors.ThemeBehavior dev.jbaby.shadwick.beha
 METHOD public dev.jbaby.shadwick.behaviors.ThemeBehavior dev.jbaby.shadwick.behaviors.ThemeBehavior.setStorageKey(java.lang.String)
 METHOD public dev.jbaby.shadwick.behaviors.TimelineEventBehavior dev.jbaby.shadwick.behaviors.TimelineEventBehavior.setVariant(dev.jbaby.shadwick.behaviors.TimelineEventBehavior$Variant)
 METHOD public dev.jbaby.shadwick.behaviors.TimelineEventBehavior dev.jbaby.shadwick.behaviors.TimelineEventBehavior.setVariant(org.apache.wicket.model.IModel<dev.jbaby.shadwick.behaviors.TimelineEventBehavior$Variant>)
+METHOD public dev.jbaby.shadwick.behaviors.ToastBehavior$Position dev.jbaby.shadwick.ShadwickSettings.getToastPosition()
 METHOD public dev.jbaby.shadwick.behaviors.ToggleBehavior dev.jbaby.shadwick.behaviors.ToggleBehavior.setSize(dev.jbaby.shadwick.behaviors.ToggleBehavior$Size)
 METHOD public dev.jbaby.shadwick.behaviors.ToggleBehavior dev.jbaby.shadwick.behaviors.ToggleBehavior.setVariant(dev.jbaby.shadwick.behaviors.ToggleBehavior$Variant)
 METHOD public dev.jbaby.shadwick.behaviors.ToggleGroupBehavior dev.jbaby.shadwick.behaviors.ToggleGroupBehavior.setOrientation(dev.jbaby.shadwick.behaviors.ToggleGroupBehavior$Orientation)
@@ -1732,6 +1744,7 @@ METHOD public final int dev.jbaby.shadwick.components.form.DateRange.hashCode()
 METHOD public final java.lang.String dev.jbaby.shadwick.components.MenuItem.toString()
 METHOD public final java.lang.String dev.jbaby.shadwick.components.SwMonthView$Day.toString()
 METHOD public final java.lang.String dev.jbaby.shadwick.components.form.DateRange.toString()
+METHOD public int dev.jbaby.shadwick.ShadwickSettings.getVisibleToasts()
 METHOD public int dev.jbaby.shadwick.components.SwDataTable.getVisibleColumnCount()
 METHOD public int dev.jbaby.shadwick.components.SwMonthView$Day.number()
 METHOD public int dev.jbaby.shadwick.components.SwRating.getMax()
@@ -1747,6 +1760,7 @@ METHOD public java.lang.String dev.jbaby.shadwick.behaviors.ButtonBehavior$Size.
 METHOD public java.lang.String dev.jbaby.shadwick.behaviors.ButtonBehavior$Variant.value()
 METHOD public java.lang.String dev.jbaby.shadwick.behaviors.ComboboxBehavior.getPlaceholderText()
 METHOD public java.lang.String dev.jbaby.shadwick.behaviors.ComboboxBehavior.getPlaceholderText(org.apache.wicket.Component)
+METHOD public java.lang.String dev.jbaby.shadwick.behaviors.ToastBehavior$Position.value()
 METHOD public java.lang.String dev.jbaby.shadwick.components.SwAvatar$Size.getClassName()
 METHOD public java.lang.String dev.jbaby.shadwick.components.SwAvatarGroup$Size.getClassName()
 METHOD public java.lang.String dev.jbaby.shadwick.components.SwMonthView$Day.iso()
@@ -2021,6 +2035,8 @@ METHOD public static dev.jbaby.shadwick.behaviors.TimelineEventBehavior dev.jbab
 METHOD public static dev.jbaby.shadwick.behaviors.TimelineEventBehavior$Variant dev.jbaby.shadwick.behaviors.TimelineEventBehavior$Variant.valueOf(java.lang.String)
 METHOD public static dev.jbaby.shadwick.behaviors.TimelineEventBehavior$Variant[] dev.jbaby.shadwick.behaviors.TimelineEventBehavior$Variant.values()
 METHOD public static dev.jbaby.shadwick.behaviors.ToastBehavior dev.jbaby.shadwick.Sw$Behaviors.toasts()
+METHOD public static dev.jbaby.shadwick.behaviors.ToastBehavior$Position dev.jbaby.shadwick.behaviors.ToastBehavior$Position.valueOf(java.lang.String)
+METHOD public static dev.jbaby.shadwick.behaviors.ToastBehavior$Position[] dev.jbaby.shadwick.behaviors.ToastBehavior$Position.values()
 METHOD public static dev.jbaby.shadwick.behaviors.ToastBehavior$Variant dev.jbaby.shadwick.behaviors.ToastBehavior$Variant.valueOf(java.lang.String)
 METHOD public static dev.jbaby.shadwick.behaviors.ToastBehavior$Variant[] dev.jbaby.shadwick.behaviors.ToastBehavior$Variant.values()
 METHOD public static dev.jbaby.shadwick.behaviors.ToggleBehavior dev.jbaby.shadwick.Sw$Behaviors.toggle()
@@ -2119,6 +2135,7 @@ METHOD public static dev.jbaby.shadwick.components.chart.SwDonutChart$Shape[] de
 METHOD public static double dev.jbaby.shadwick.util.RangeValues.clamp(double,double,double)
 METHOD public static double dev.jbaby.shadwick.util.RangeValues.finite(java.lang.Number,java.lang.String)
 METHOD public static java.lang.String dev.jbaby.shadwick.behaviors.ThemeBehavior.validateStorageKey(java.lang.String)
+METHOD public static java.lang.String dev.jbaby.shadwick.behaviors.ToastBehavior.configureScript(dev.jbaby.shadwick.behaviors.ToastBehavior$Position,int)
 METHOD public static java.lang.String dev.jbaby.shadwick.behaviors.ToastBehavior.script(java.lang.String,dev.jbaby.shadwick.behaviors.ToastBehavior$Variant,java.lang.String)
 METHOD public static java.lang.String dev.jbaby.shadwick.behaviors.ToastBehavior.script(java.lang.String,dev.jbaby.shadwick.behaviors.ToastBehavior$Variant,java.lang.String,java.time.Duration)
 METHOD public static java.lang.String dev.jbaby.shadwick.behaviors.ToastBehavior.script(org.apache.wicket.Component,java.lang.String,dev.jbaby.shadwick.behaviors.ToastBehavior$Variant,java.lang.String,java.time.Duration)
@@ -2142,6 +2159,7 @@ METHOD public static void dev.jbaby.shadwick.Sw.toast(org.apache.wicket.core.req
 METHOD public static void dev.jbaby.shadwick.Sw.toast(org.apache.wicket.core.request.handler.IPartialPageRequestHandler,java.lang.String,dev.jbaby.shadwick.behaviors.ToastBehavior$Variant)
 METHOD public static void dev.jbaby.shadwick.Sw.toast(org.apache.wicket.core.request.handler.IPartialPageRequestHandler,java.lang.String,dev.jbaby.shadwick.behaviors.ToastBehavior$Variant,java.lang.String)
 METHOD public static void dev.jbaby.shadwick.Sw.toast(org.apache.wicket.core.request.handler.IPartialPageRequestHandler,java.lang.String,dev.jbaby.shadwick.behaviors.ToastBehavior$Variant,java.lang.String,java.time.Duration)
+METHOD public static void dev.jbaby.shadwick.behaviors.ToastBehavior.configure(org.apache.wicket.core.request.handler.IPartialPageRequestHandler,dev.jbaby.shadwick.behaviors.ToastBehavior$Position,int)
 METHOD public static void dev.jbaby.shadwick.behaviors.ToastBehavior.toast(org.apache.wicket.core.request.handler.IPartialPageRequestHandler,java.lang.String)
 METHOD public static void dev.jbaby.shadwick.behaviors.ToastBehavior.toast(org.apache.wicket.core.request.handler.IPartialPageRequestHandler,java.lang.String,dev.jbaby.shadwick.behaviors.ToastBehavior$Variant)
 METHOD public static void dev.jbaby.shadwick.behaviors.ToastBehavior.toast(org.apache.wicket.core.request.handler.IPartialPageRequestHandler,java.lang.String,dev.jbaby.shadwick.behaviors.ToastBehavior$Variant,java.lang.String)
@@ -2525,6 +2543,7 @@ TYPE public static final enum dev.jbaby.shadwick.behaviors.TabsBehavior$Activati
 TYPE public static final enum dev.jbaby.shadwick.behaviors.TabsBehavior$Orientation extends java.lang.Enum<dev.jbaby.shadwick.behaviors.TabsBehavior$Orientation> implements []
 TYPE public static final enum dev.jbaby.shadwick.behaviors.TabsBehavior$Variant extends java.lang.Enum<dev.jbaby.shadwick.behaviors.TabsBehavior$Variant> implements []
 TYPE public static final enum dev.jbaby.shadwick.behaviors.TimelineEventBehavior$Variant extends java.lang.Enum<dev.jbaby.shadwick.behaviors.TimelineEventBehavior$Variant> implements []
+TYPE public static final enum dev.jbaby.shadwick.behaviors.ToastBehavior$Position extends java.lang.Enum<dev.jbaby.shadwick.behaviors.ToastBehavior$Position> implements []
 TYPE public static final enum dev.jbaby.shadwick.behaviors.ToastBehavior$Variant extends java.lang.Enum<dev.jbaby.shadwick.behaviors.ToastBehavior$Variant> implements []
 TYPE public static final enum dev.jbaby.shadwick.behaviors.ToggleBehavior$Size extends java.lang.Enum<dev.jbaby.shadwick.behaviors.ToggleBehavior$Size> implements []
 TYPE public static final enum dev.jbaby.shadwick.behaviors.ToggleBehavior$Variant extends java.lang.Enum<dev.jbaby.shadwick.behaviors.ToggleBehavior$Variant> implements []

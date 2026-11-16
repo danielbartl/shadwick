@@ -25,6 +25,9 @@ public class ShadwickSettings implements Serializable {
     private SkinStore skinStore;
     private boolean addResources = true;
     private AccessibilityChecks accessibilityChecks;
+    private dev.jbaby.shadwick.behaviors.ToastBehavior.Position toastPosition =
+            dev.jbaby.shadwick.behaviors.ToastBehavior.Position.BOTTOM_END;
+    private int visibleToasts = dev.jbaby.shadwick.behaviors.ToastBehavior.DEFAULT_VISIBLE_TOASTS;
 
     /** The settings of the current application. */
     public static ShadwickSettings get() {
@@ -53,6 +56,25 @@ public class ShadwickSettings implements Serializable {
     public String getThemeStorageKey() { return themeStorageKey; }
     public ShadwickSettings setThemeStorageKey(String key) {
         themeStorageKey = dev.jbaby.shadwick.behaviors.ThemeBehavior.validateStorageKey(key); return this;
+    }
+
+    /** Where toasts appear; BOTTOM_END by default. Start and end follow the text direction. */
+    public dev.jbaby.shadwick.behaviors.ToastBehavior.Position getToastPosition() { return toastPosition; }
+    public ShadwickSettings setToastPosition(dev.jbaby.shadwick.behaviors.ToastBehavior.Position position) {
+        toastPosition = Objects.requireNonNull(position); return this;
+    }
+
+    /**
+     * How many toasts show at once, from 1 to 10; 3 by default. The newest is in front and the others stack behind
+     * it, spreading out on hover or keyboard focus; older ones wait, with their time stopped, until a newer one closes.
+     */
+    public int getVisibleToasts() { return visibleToasts; }
+    public ShadwickSettings setVisibleToasts(int count) {
+        if (count < 1 || count > dev.jbaby.shadwick.behaviors.ToastBehavior.MAX_VISIBLE_TOASTS) {
+            throw new IllegalArgumentException("The number of visible toasts must be between 1 and "
+                    + dev.jbaby.shadwick.behaviors.ToastBehavior.MAX_VISIBLE_TOASTS + ", not " + count);
+        }
+        visibleToasts = count; return this;
     }
 
     /** The app-wide skin; VEGA by default. */

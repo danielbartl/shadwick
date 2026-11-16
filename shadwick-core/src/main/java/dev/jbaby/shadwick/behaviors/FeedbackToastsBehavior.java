@@ -64,6 +64,8 @@ public class FeedbackToastsBehavior extends Behavior {
         super.renderHead(component, response);
         Shadwick.renderResources(response);
         response.render(JavaScriptHeaderItem.forReference(Shadwick.SHADWICK_JS));
+        // Before the messages, so they appear where the application placed its toasts
+        ToastBehavior.renderToasterSettings(component, response);
         String script = consumeMessages(component);
         if (!script.isEmpty()) {
             response.render(OnDomReadyHeaderItem.forScript(script));

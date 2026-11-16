@@ -2,11 +2,13 @@ package dev.jbaby.shadwick.behaviors;
 
 import com.github.openjson.JSONObject;
 import dev.jbaby.shadwick.Shadwick;
+import dev.jbaby.shadwick.ShadwickSettings;
 import org.apache.wicket.Component;
 import org.apache.wicket.behavior.Behavior;
 import org.apache.wicket.core.request.handler.IPartialPageRequestHandler;
 import org.apache.wicket.markup.head.IHeaderResponse;
 import org.apache.wicket.markup.head.JavaScriptHeaderItem;
+import org.apache.wicket.markup.head.OnDomReadyHeaderItem;
 import org.apache.wicket.resource.loader.ComponentStringResourceLoader;
 
 import java.time.Duration;
@@ -18,16 +20,72 @@ import java.util.Objects;
  * Attach this behavior to the page (usually the base page) to supply its resources before
  * using Ajax helpers or {@link #script(String, Variant, String)} in an OnDomReadyHeaderItem.
  * The message is the body, and an optional title appears above it. No markup is accepted.
+ * <p>
+ * Toasts stack, as in Sonner and Shadleaf: the newest in front and at most {@link #DEFAULT_VISIBLE_TOASTS} showing,
+ * spreading out while the pointer is on them or one has the keyboard focus; older ones wait, with their time stopped,
+ * until a newer one closes. {@link ShadwickSettings#setToastPosition(Position)} and
+ * {@link ShadwickSettings#setVisibleToasts(int)} set where they appear and how many show, and {@link #configure}
+ * changes both for one page. In a browser without constructable stylesheets they appear in a plain scrolling column.
  */
 public class ToastBehavior extends Behavior {
     public enum Variant { DEFAULT, SUCCESS, INFO, WARNING, ERROR }
+
+    /**
+     * Where toasts appear: a corner, or the middle of the top or bottom edge. Start and end follow the text
+     * direction, so they swap on a right-to-left page. On a narrow screen toasts take the full width.
+     */
+    public enum Position {
+        TOP_START, TOP_CENTER, TOP_END, BOTTOM_START, BOTTOM_CENTER, BOTTOM_END;
+
+        /** The {@code data-position} value, e.g. {@code bottom-end}. */
+        public String value() { return name().toLowerCase(Locale.ROOT).replace('_', '-'); }
+    }
+
     public static final Duration DEFAULT_DURATION = Duration.ofSeconds(5);
+    /** How many toasts show at once unless {@link ShadwickSettings#setVisibleToasts(int)} says otherwise. */
+    public static final int DEFAULT_VISIBLE_TOASTS = 3;
+    /** The most toasts that can show at once. */
+    public static final int MAX_VISIBLE_TOASTS = 10;
     private static final String CLOSE = "Dismiss notification";
     private static final String REGION = "Notifications (Alt+T)";
 
     @Override public void renderHead(Component component, IHeaderResponse response) {
         super.renderHead(component, response);
         renderResources(response);
+        renderToasterSettings(component, response);
+    }
+
+    /**
+     * Renders the application's toast position and stack size ({@link ShadwickSettings}) for the page. Both toast
+     * behaviors call this; the script is the same for both, so it is rendered once.
+     */
+    static void renderToasterSettings(Component component, IHeaderResponse response) {
+        ShadwickSettings settings = ShadwickSettings.get(component.getApplication());
+        response.render(OnDomReadyHeaderItem.forScript(configureScript(settings.getToastPosition(), settings.getVisibleToasts())));
+    }
+
+    /**
+     * Changes where toasts appear and how many show, for this page only, in an Ajax response: for example from a
+     * user's preference. The application's defaults come from {@link ShadwickSettings}.
+     */
+    public static void configure(IPartialPageRequestHandler handler, Position position, int visibleToasts) {
+        Objects.requireNonNull(handler).appendJavaScript(configureScript(position, visibleToasts));
+    }
+
+    /** The script {@link #configure} sends, for an {@code OnDomReadyHeaderItem} in a full render. */
+    public static String configureScript(Position position, int visibleToasts) {
+        Objects.requireNonNull(position, "position");
+        JSONObject options = new JSONObject().put("position", position.value())
+                .put("visibleToasts", requireVisibleToasts(visibleToasts));
+        return "Shadwick.configureToasts(" + options + ");";
+    }
+
+    /** Checks a number of visible toasts: 1 to {@link #MAX_VISIBLE_TOASTS}. */
+    private static int requireVisibleToasts(int count) {
+        if (count < 1 || count > MAX_VISIBLE_TOASTS) {
+            throw new IllegalArgumentException("The number of visible toasts must be between 1 and " + MAX_VISIBLE_TOASTS + ", not " + count);
+        }
+        return count;
     }
 
     public static void toast(IPartialPageRequestHandler handler, String message) {
