@@ -76,8 +76,23 @@ public abstract class BaseSwField<T, C extends FormComponent<T>, F extends BaseS
     /** The id of the wrapped form component, a child of this panel. */
     public static final String INPUT_ID = "input";
 
+    /**
+     * Where the label goes, for a field whose label comes first (text, number, date, select, combobox, textarea and the
+     * like): above the control ({@link #VERTICAL}, the default), beside it ({@link #HORIZONTAL}), or beside it only
+     * when the enclosing {@code sw-field-group} is at least 28rem wide ({@link #RESPONSIVE}). Beside the control, the
+     * description stays under the label and the error under the control. A checkbox or switch always comes before its
+     * label, and a group of radios, checkboxes or toggles keeps its legend on top, whatever is set.
+     */
+    public enum Orientation {
+        VERTICAL, HORIZONTAL, RESPONSIVE;
+
+        /** The {@code data-orientation} value, or {@code null} for {@link #VERTICAL}, which sets none. */
+        public String value() { return this == VERTICAL ? null : name().toLowerCase(java.util.Locale.ROOT); }
+    }
+
     private C input;
     private IModel<String> description;
+    private Orientation orientation = Orientation.VERTICAL;
     private final Label label;
     private final Label descriptionLabel;
     private final Label error;
@@ -163,6 +178,15 @@ public abstract class BaseSwField<T, C extends FormComponent<T>, F extends BaseS
                 AttributeModifier.replace(
                         "data-invalid",
                         (IModel<String>) () -> currentError() != null ? "true" : null));
+        container.add(new Behavior() {
+            @Override
+            public void onComponentTag(Component component, ComponentTag tag) {
+                // A layout the markup declares (a checkbox's or switch's) stays
+                if (orientation.value() != null && tag.getAttribute("data-orientation") == null) {
+                    tag.put("data-orientation", orientation.value());
+                }
+            }
+        });
         return container;
     }
 
@@ -445,6 +469,19 @@ public abstract class BaseSwField<T, C extends FormComponent<T>, F extends BaseS
      * CompoundPropertyModel} or {@code PropertyModel}, which know the property's type, nor with a
      * model that holds a value already; for an empty plain {@code Model}, set it.
      */
+    /**
+     * Puts the label beside the control, always or when the enclosing field group is wide enough; see
+     * {@link Orientation}. Null restores {@link Orientation#VERTICAL}.
+     */
+    public F setOrientation(Orientation orientation) {
+        this.orientation = orientation != null ? orientation : Orientation.VERTICAL;
+        return self();
+    }
+
+    public Orientation getOrientation() {
+        return orientation;
+    }
+
     public F setType(Class<?> type) {
         getInput().setType(type);
         return self();

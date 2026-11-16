@@ -55,6 +55,36 @@
 
 @layer components {
   .sw-field-set { @apply m-0 flex w-full min-w-0 flex-col border-0 p-0; }
+
+  /*
+    A field group stacks fields with the skin's spacing, and is the container a responsive field measures (Shadleaf's
+    field-group). Beside the control: the label, with the description under it, in the first column; the control and,
+    under it, the error in the second. Only for a field whose first child is a <label>: a checkbox or switch keeps
+    its own control-then-label grid, and a fieldset its legend on top. The DOM order stays label, control,
+    description, error. The column gap is the skin's field gap; the rows sit close, as a label and its description do.
+  */
+  .sw-field-group { @apply @container/field-group flex w-full min-w-0 flex-col; }
+  .sw-field[data-orientation='horizontal']:has(> label.sw-field-label:first-child) {
+    @apply grid grid-cols-[minmax(0,1fr)_minmax(0,1fr)] items-start gap-y-1.5;
+  }
+  .sw-field[data-orientation='horizontal']:has(> label.sw-field-label:first-child) > * { @apply col-start-2; }
+  .sw-field[data-orientation='horizontal']:has(> label.sw-field-label:first-child) > :is(.sw-field-label, .sw-field-description) { @apply col-start-1; }
+  .sw-field[data-orientation='horizontal']:has(> label.sw-field-label:first-child) > .sw-field-label { @apply row-start-1 self-center; }
+  .sw-field[data-orientation='horizontal']:has(> label.sw-field-label:first-child) > :not(.sw-field-label, .sw-field-description, .sw-field-error) { @apply row-span-2 row-start-1; }
+  .sw-field[data-orientation='horizontal']:has(> label.sw-field-label:first-child) > .sw-field-description { @apply row-start-2; }
+  .sw-field[data-orientation='horizontal']:has(> label.sw-field-label:first-child) > .sw-field-error { @apply row-start-3; }
+  /* .sw-field-group in the selectors: more specific than the vertical width rule above, so these win. */
+  @container field-group (width >= 28rem) {
+    .sw-field-group .sw-field[data-orientation='responsive']:has(> label.sw-field-label:first-child) {
+      @apply grid grid-cols-[minmax(0,1fr)_minmax(0,1fr)] items-start gap-y-1.5;
+    }
+    .sw-field-group .sw-field[data-orientation='responsive']:has(> label.sw-field-label:first-child) > * { @apply col-start-2; }
+    .sw-field-group .sw-field[data-orientation='responsive']:has(> label.sw-field-label:first-child) > :is(.sw-field-label, .sw-field-description) { @apply col-start-1; }
+    .sw-field-group .sw-field[data-orientation='responsive']:has(> label.sw-field-label:first-child) > .sw-field-label { @apply row-start-1 self-center; }
+    .sw-field-group .sw-field[data-orientation='responsive']:has(> label.sw-field-label:first-child) > :not(.sw-field-label, .sw-field-description, .sw-field-error) { @apply row-span-2 row-start-1; }
+    .sw-field-group .sw-field[data-orientation='responsive']:has(> label.sw-field-label:first-child) > .sw-field-description { @apply row-start-2; }
+    .sw-field-group .sw-field[data-orientation='responsive']:has(> label.sw-field-label:first-child) > .sw-field-error { @apply row-start-3; }
+  }
   .sw-field-legend { @apply p-0; }
   .sw-field-set:disabled > .sw-field-legend { @apply opacity-50 forced-colors:text-[GrayText] forced-colors:opacity-100; }
   .sw-custom-field > .sw-field-error { @apply m-0; }

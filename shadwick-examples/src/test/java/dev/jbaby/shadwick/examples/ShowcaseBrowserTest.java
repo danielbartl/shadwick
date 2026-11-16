@@ -522,6 +522,8 @@ class ShowcaseBrowserTest {
             tab.getByRole(AriaRole.BUTTON, new Page.GetByRoleOptions().setName("Show literal text")).click();
             assertThat(tab.locator(".sw-toast[data-level='info']")).containsText("<strong>This is plain text.</strong>");
             assertThat(tab.locator(".sw-toast strong")).hasCount(0);
+            // The stack settles before targets are measured: mid-transition close buttons are still scaling up
+            settleAnimations(tab);
             assertThat(describe(new AxeBuilder(tab).withTags(WCAG).analyze().getViolations())).isEmpty();
 
             Locator dismiss = tab.getByRole(AriaRole.BUTTON, new Page.GetByRoleOptions().setName("Dismiss notification")).first();

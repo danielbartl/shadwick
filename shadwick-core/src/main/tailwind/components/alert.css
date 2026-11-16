@@ -32,3 +32,10 @@
     @apply list-inside list-decimal;
   }
 }
+
+/* SwFormErrors: one alert for the form's errors. One message reads as text, several as a list. */
+@layer components {
+  .sw-form-errors-list { @apply m-0 grid gap-1 p-0; }
+  .sw-alert-description .sw-form-errors-list > li:only-child { @apply list-none; }
+  .sw-form-errors-list a { @apply underline underline-offset-3; }
+}

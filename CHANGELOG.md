@@ -13,6 +13,12 @@ Development continues on `0.2.0-SNAPSHOT`.
 
 ### Added
 
+- Field layout: `BaseSwField.setOrientation(HORIZONTAL)` puts a label beside its control, and `RESPONSIVE` does so while
+  the enclosing field group is at least 28rem wide. `Sw.Behaviors.fieldGroup()` / `SwFieldGroup` stack fields with the
+  skin's spacing and provide that container.
+- `SwFormErrors`: a form's errors in one titled, destructive alert (global errors, or all with `Show.ALL`, each field
+  error linking to its control), with an optional heading level and autofocus after normal and Ajax submits. Title
+  translated into all nine languages.
 - Toast positions: `ShadwickSettings.setToastPosition(ToastBehavior.Position...)` for a corner or the middle of the top
   or bottom edge (logical start/end), and `ToastBehavior.configure(...)`/`configureScript(...)` to change position and
   count for one page.

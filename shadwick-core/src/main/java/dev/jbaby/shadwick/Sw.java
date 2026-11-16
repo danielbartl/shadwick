@@ -168,6 +168,8 @@ public final class Sw {
         public static SkipLinkBehavior skipLink(String targetId) { return new SkipLinkBehavior(targetId); }
         public static SkipLinkBehavior skipLink(Component target) { return new SkipLinkBehavior(target); }
         public static CardBehavior card() { return new CardBehavior(); }
+        /** Stacks fields with the skin's spacing; responsive fields inside put their label beside the control when it is wide. */
+        public static dev.jbaby.shadwick.behaviors.FieldGroupBehavior fieldGroup() { return new dev.jbaby.shadwick.behaviors.FieldGroupBehavior(); }
         public static BadgeBehavior badge() { return new BadgeBehavior(); }
         public static BadgeBehavior badge(BadgeBehavior.Variant variant) { return new BadgeBehavior(variant); }
         public static BadgeBehavior badge(IModel<BadgeBehavior.Variant> variant) { return new BadgeBehavior(variant); }

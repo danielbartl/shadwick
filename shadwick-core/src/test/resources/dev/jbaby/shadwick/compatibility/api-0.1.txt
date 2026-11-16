@@ -38,6 +38,7 @@ CTOR public dev.jbaby.shadwick.behaviors.DropdownMenuItemBehavior()
 CTOR public dev.jbaby.shadwick.behaviors.DropdownMenuItemBehavior(dev.jbaby.shadwick.behaviors.DropdownMenuItemBehavior$Variant)
 CTOR public dev.jbaby.shadwick.behaviors.FeedbackToastsBehavior()
 CTOR public dev.jbaby.shadwick.behaviors.FeedbackToastsBehavior(org.apache.wicket.feedback.IFeedbackMessageFilter)
+CTOR public dev.jbaby.shadwick.behaviors.FieldGroupBehavior()
 CTOR public dev.jbaby.shadwick.behaviors.InputGroupAddonBehavior()
 CTOR public dev.jbaby.shadwick.behaviors.InputGroupBehavior()
 CTOR public dev.jbaby.shadwick.behaviors.InputGroupButtonBehavior()
@@ -129,9 +130,11 @@ CTOR public dev.jbaby.shadwick.components.SwFeedbackPanel(java.lang.String)
 CTOR public dev.jbaby.shadwick.components.SwFeedbackPanel(java.lang.String,org.apache.wicket.Component)
 CTOR public dev.jbaby.shadwick.components.SwFeedbackPanel(java.lang.String,org.apache.wicket.Component,org.apache.wicket.feedback.IFeedbackMessageFilter)
 CTOR public dev.jbaby.shadwick.components.SwFeedbackPanel(java.lang.String,org.apache.wicket.feedback.IFeedbackMessageFilter)
+CTOR public dev.jbaby.shadwick.components.SwFieldGroup(java.lang.String)
 CTOR public dev.jbaby.shadwick.components.SwFieldset(java.lang.String)
 CTOR public dev.jbaby.shadwick.components.SwFieldset(java.lang.String,java.lang.String)
 CTOR public dev.jbaby.shadwick.components.SwFieldset(java.lang.String,org.apache.wicket.model.IModel<java.lang.String>)
+CTOR public dev.jbaby.shadwick.components.SwFormErrors(java.lang.String,org.apache.wicket.markup.html.form.Form<?>)
 CTOR public dev.jbaby.shadwick.components.SwIcon(java.lang.String,java.lang.String)
 CTOR public dev.jbaby.shadwick.components.SwIcon(java.lang.String,org.apache.wicket.model.IModel<java.lang.String>)
 CTOR public dev.jbaby.shadwick.components.SwKbd(java.lang.String,java.lang.String)
@@ -516,6 +519,7 @@ ENUM dev.jbaby.shadwick.components.SwAvatar$Size [SMALL, DEFAULT, LARGE]
 ENUM dev.jbaby.shadwick.components.SwAvatarGroup$Size [SMALL, DEFAULT, LARGE]
 ENUM dev.jbaby.shadwick.components.SwConfirmDialog$IconVariant [DEFAULT, DESTRUCTIVE]
 ENUM dev.jbaby.shadwick.components.SwConfirmDialog$Size [DEFAULT, SMALL]
+ENUM dev.jbaby.shadwick.components.SwFormErrors$Show [GLOBAL, ALL]
 ENUM dev.jbaby.shadwick.components.SwMonthView$NavSize [DEFAULT, ICON_XS, ICON_SM, ICON, ICON_LG]
 ENUM dev.jbaby.shadwick.components.SwPaginationSummary$Format [RANGE, PAGE]
 ENUM dev.jbaby.shadwick.components.SwPopover$Align [START, CENTER, END]
@@ -536,6 +540,7 @@ ENUM dev.jbaby.shadwick.components.chart.SwChart$Orientation [VERTICAL, HORIZONT
 ENUM dev.jbaby.shadwick.components.chart.SwChart$StackMode [ABSOLUTE, PERCENT]
 ENUM dev.jbaby.shadwick.components.chart.SwChart$ValueFormat [NUMBER, INTEGER, COMPACT, PERCENT, CURRENCY]
 ENUM dev.jbaby.shadwick.components.chart.SwDonutChart$Shape [DONUT, PIE]
+ENUM dev.jbaby.shadwick.components.form.BaseSwField$Orientation [VERTICAL, HORIZONTAL, RESPONSIVE]
 FIELD protected final dev.jbaby.shadwick.behaviors.CalendarBehavior dev.jbaby.shadwick.components.form.BaseSwCalendar.calendar
 FIELD public static final dev.jbaby.shadwick.AccessibilityChecks dev.jbaby.shadwick.AccessibilityChecks.FAIL
 FIELD public static final dev.jbaby.shadwick.AccessibilityChecks dev.jbaby.shadwick.AccessibilityChecks.OFF
@@ -688,6 +693,8 @@ FIELD public static final dev.jbaby.shadwick.components.SwConfirmDialog$IconVari
 FIELD public static final dev.jbaby.shadwick.components.SwConfirmDialog$IconVariant dev.jbaby.shadwick.components.SwConfirmDialog$IconVariant.DESTRUCTIVE
 FIELD public static final dev.jbaby.shadwick.components.SwConfirmDialog$Size dev.jbaby.shadwick.components.SwConfirmDialog$Size.DEFAULT
 FIELD public static final dev.jbaby.shadwick.components.SwConfirmDialog$Size dev.jbaby.shadwick.components.SwConfirmDialog$Size.SMALL
+FIELD public static final dev.jbaby.shadwick.components.SwFormErrors$Show dev.jbaby.shadwick.components.SwFormErrors$Show.ALL
+FIELD public static final dev.jbaby.shadwick.components.SwFormErrors$Show dev.jbaby.shadwick.components.SwFormErrors$Show.GLOBAL
 FIELD public static final dev.jbaby.shadwick.components.SwMonthView$NavSize dev.jbaby.shadwick.components.SwMonthView$NavSize.DEFAULT
 FIELD public static final dev.jbaby.shadwick.components.SwMonthView$NavSize dev.jbaby.shadwick.components.SwMonthView$NavSize.ICON
 FIELD public static final dev.jbaby.shadwick.components.SwMonthView$NavSize dev.jbaby.shadwick.components.SwMonthView$NavSize.ICON_LG
@@ -756,6 +763,9 @@ FIELD public static final dev.jbaby.shadwick.components.chart.SwChart$ValueForma
 FIELD public static final dev.jbaby.shadwick.components.chart.SwChart$ValueFormat dev.jbaby.shadwick.components.chart.SwChart$ValueFormat.PERCENT
 FIELD public static final dev.jbaby.shadwick.components.chart.SwDonutChart$Shape dev.jbaby.shadwick.components.chart.SwDonutChart$Shape.DONUT
 FIELD public static final dev.jbaby.shadwick.components.chart.SwDonutChart$Shape dev.jbaby.shadwick.components.chart.SwDonutChart$Shape.PIE
+FIELD public static final dev.jbaby.shadwick.components.form.BaseSwField$Orientation dev.jbaby.shadwick.components.form.BaseSwField$Orientation.HORIZONTAL
+FIELD public static final dev.jbaby.shadwick.components.form.BaseSwField$Orientation dev.jbaby.shadwick.components.form.BaseSwField$Orientation.RESPONSIVE
+FIELD public static final dev.jbaby.shadwick.components.form.BaseSwField$Orientation dev.jbaby.shadwick.components.form.BaseSwField$Orientation.VERTICAL
 FIELD public static final int dev.jbaby.shadwick.behaviors.ToastBehavior.DEFAULT_VISIBLE_TOASTS = 3
 FIELD public static final int dev.jbaby.shadwick.behaviors.ToastBehavior.MAX_VISIBLE_TOASTS = 10
 FIELD public static final int dev.jbaby.shadwick.components.chart.SwDonutChart.DEFAULT_MAX_SEGMENTS = 5
@@ -840,6 +850,7 @@ METHOD protected int dev.jbaby.shadwick.components.form.SwPercentField.getMinFra
 METHOD protected java.lang.CharSequence dev.jbaby.shadwick.components.SwTabs.tabUrl(T,int)
 METHOD protected java.lang.CharSequence dev.jbaby.shadwick.components.table.SwHeadersToolbar.sortUrl(S,org.apache.wicket.extensions.markup.html.repeater.data.sort.SortOrder)
 METHOD protected java.lang.String dev.jbaby.shadwick.behaviors.AccordionBehavior.getGroupName(org.apache.wicket.Component)
+METHOD protected java.lang.String dev.jbaby.shadwick.components.SwFormErrors.getCSSClass(org.apache.wicket.feedback.FeedbackMessage)
 METHOD protected java.lang.String dev.jbaby.shadwick.components.SwIcon.accessibleLabel()
 METHOD protected java.lang.String dev.jbaby.shadwick.components.form.BaseSwDecimalField.stripInput(java.lang.String,java.util.Locale)
 METHOD protected java.lang.String dev.jbaby.shadwick.components.form.BaseSwField.getAdditionalDescribedByMarkupIds()
@@ -856,6 +867,7 @@ METHOD protected org.apache.wicket.Component dev.jbaby.shadwick.components.SwApp
 METHOD protected org.apache.wicket.Component dev.jbaby.shadwick.components.SwAppLayout.newSidebarFooter(java.lang.String)
 METHOD protected org.apache.wicket.Component dev.jbaby.shadwick.components.SwAppLayout.newSidebarHeader(java.lang.String)
 METHOD protected org.apache.wicket.Component dev.jbaby.shadwick.components.SwAppLayout.newTopNavExtra(java.lang.String)
+METHOD protected org.apache.wicket.Component dev.jbaby.shadwick.components.SwFormErrors.newMessageDisplayComponent(java.lang.String,org.apache.wicket.feedback.FeedbackMessage)
 METHOD protected org.apache.wicket.Component dev.jbaby.shadwick.components.SwMonthView.newDayContent(java.lang.String,org.apache.wicket.model.IModel<dev.jbaby.shadwick.components.SwMonthView$Day>)
 METHOD protected org.apache.wicket.Component dev.jbaby.shadwick.components.SwSidebar.newGroupAction(java.lang.String,dev.jbaby.shadwick.components.MenuItem)
 METHOD protected org.apache.wicket.Component dev.jbaby.shadwick.components.SwSidebar.newMenuAction(java.lang.String,dev.jbaby.shadwick.components.MenuItem)
@@ -893,6 +905,7 @@ METHOD protected org.apache.wicket.markup.html.link.AbstractLink dev.jbaby.shadw
 METHOD protected org.apache.wicket.markup.html.link.AbstractLink dev.jbaby.shadwick.components.SwSidebar.newMenuLink(java.lang.String,dev.jbaby.shadwick.components.MenuItem)
 METHOD protected org.apache.wicket.markup.html.list.ListItem<T> dev.jbaby.shadwick.components.SwAccordion.newItem(int,org.apache.wicket.model.IModel<T>)
 METHOD protected org.apache.wicket.markup.html.list.ListItem<org.apache.wicket.feedback.FeedbackMessage> dev.jbaby.shadwick.components.SwFeedbackPanel.newMessageItem(int,org.apache.wicket.model.IModel<org.apache.wicket.feedback.FeedbackMessage>)
+METHOD protected org.apache.wicket.markup.html.list.ListItem<org.apache.wicket.feedback.FeedbackMessage> dev.jbaby.shadwick.components.SwFormErrors.newMessageItem(int,org.apache.wicket.model.IModel<org.apache.wicket.feedback.FeedbackMessage>)
 METHOD protected org.apache.wicket.model.IModel<java.lang.String> dev.jbaby.shadwick.components.SwAppLayout.appNameModel()
 METHOD protected org.apache.wicket.model.IModel<java.lang.String> dev.jbaby.shadwick.components.SwAppLayout.appTitleModel()
 METHOD protected org.apache.wicket.model.IModel<java.util.List<dev.jbaby.shadwick.components.MenuItem>> dev.jbaby.shadwick.components.SwAppLayout.sidebarMenuItemsModel()
@@ -1012,6 +1025,7 @@ METHOD public F dev.jbaby.shadwick.components.form.BaseSwField.setDescription(ja
 METHOD public F dev.jbaby.shadwick.components.form.BaseSwField.setDescription(org.apache.wicket.model.IModel<java.lang.String>)
 METHOD public F dev.jbaby.shadwick.components.form.BaseSwField.setLabel(java.lang.String)
 METHOD public F dev.jbaby.shadwick.components.form.BaseSwField.setLabel(org.apache.wicket.model.IModel<java.lang.String>)
+METHOD public F dev.jbaby.shadwick.components.form.BaseSwField.setOrientation(dev.jbaby.shadwick.components.form.BaseSwField$Orientation)
 METHOD public F dev.jbaby.shadwick.components.form.BaseSwField.setPlaceholder(java.lang.String)
 METHOD public F dev.jbaby.shadwick.components.form.BaseSwField.setPlaceholder(org.apache.wicket.model.IModel<java.lang.String>)
 METHOD public F dev.jbaby.shadwick.components.form.BaseSwField.setRequired(boolean)
@@ -1341,6 +1355,12 @@ METHOD public dev.jbaby.shadwick.components.SwEmptyState dev.jbaby.shadwick.comp
 METHOD public dev.jbaby.shadwick.components.SwEmptyState dev.jbaby.shadwick.components.SwEmptyState.setIcon(java.lang.String)
 METHOD public dev.jbaby.shadwick.components.SwFieldset dev.jbaby.shadwick.components.SwFieldset.setDescription(java.lang.String)
 METHOD public dev.jbaby.shadwick.components.SwFieldset dev.jbaby.shadwick.components.SwFieldset.setDescription(org.apache.wicket.model.IModel<java.lang.String>)
+METHOD public dev.jbaby.shadwick.components.SwFormErrors dev.jbaby.shadwick.components.SwFormErrors.setAutofocus(boolean)
+METHOD public dev.jbaby.shadwick.components.SwFormErrors dev.jbaby.shadwick.components.SwFormErrors.setHeadingLevel(java.lang.Integer)
+METHOD public dev.jbaby.shadwick.components.SwFormErrors dev.jbaby.shadwick.components.SwFormErrors.setShow(dev.jbaby.shadwick.components.SwFormErrors$Show)
+METHOD public dev.jbaby.shadwick.components.SwFormErrors dev.jbaby.shadwick.components.SwFormErrors.setTitle(java.lang.String)
+METHOD public dev.jbaby.shadwick.components.SwFormErrors dev.jbaby.shadwick.components.SwFormErrors.setTitle(org.apache.wicket.model.IModel<java.lang.String>)
+METHOD public dev.jbaby.shadwick.components.SwFormErrors$Show dev.jbaby.shadwick.components.SwFormErrors.getShow()
 METHOD public dev.jbaby.shadwick.components.SwIcon dev.jbaby.shadwick.components.SwIcon.setLabel(java.lang.String)
 METHOD public dev.jbaby.shadwick.components.SwIcon dev.jbaby.shadwick.components.SwIcon.setLabel(org.apache.wicket.model.IModel<java.lang.String>)
 METHOD public dev.jbaby.shadwick.components.SwIcon dev.jbaby.shadwick.components.SwIcon.setSize(java.lang.Integer)
@@ -1646,6 +1666,7 @@ METHOD public dev.jbaby.shadwick.components.chart.SwScatterChart dev.jbaby.shadw
 METHOD public dev.jbaby.shadwick.components.chart.SwSparkline dev.jbaby.shadwick.components.chart.SwSparkline.setColor(int)
 METHOD public dev.jbaby.shadwick.components.chart.SwSparkline dev.jbaby.shadwick.components.chart.SwSparkline.setFilled(boolean)
 METHOD public dev.jbaby.shadwick.components.chart.SwSparkline dev.jbaby.shadwick.components.chart.SwSparkline.setShowLastPoint(boolean)
+METHOD public dev.jbaby.shadwick.components.form.BaseSwField$Orientation dev.jbaby.shadwick.components.form.BaseSwField.getOrientation()
 METHOD public dev.jbaby.shadwick.components.form.Html5TextField<java.time.LocalDate> dev.jbaby.shadwick.components.form.RangeDateInput.getFrom()
 METHOD public dev.jbaby.shadwick.components.form.Html5TextField<java.time.LocalDate> dev.jbaby.shadwick.components.form.RangeDateInput.getTo()
 METHOD public dev.jbaby.shadwick.components.form.SwCheckBox dev.jbaby.shadwick.components.form.SwCheckBox.setIndeterminate(boolean)
@@ -1769,6 +1790,7 @@ METHOD public java.lang.String dev.jbaby.shadwick.components.TableQuery.getPageP
 METHOD public java.lang.String dev.jbaby.shadwick.components.TableQuery.getSizeParameter()
 METHOD public java.lang.String dev.jbaby.shadwick.components.TableQuery.getSortParameter()
 METHOD public java.lang.String dev.jbaby.shadwick.components.TableQuery.getSortProperty()
+METHOD public java.lang.String dev.jbaby.shadwick.components.form.BaseSwField$Orientation.value()
 METHOD public java.lang.String dev.jbaby.shadwick.components.table.SwActionsColumn.getCssClass()
 METHOD public java.lang.String dev.jbaby.shadwick.components.table.SwNumberColumn.getCssClass()
 METHOD public java.lang.String dev.jbaby.shadwick.components.table.SwRowDetailsColumn.getCssClass()
@@ -1944,6 +1966,7 @@ METHOD public static dev.jbaby.shadwick.behaviors.DropdownMenuItemBehavior$Varia
 METHOD public static dev.jbaby.shadwick.behaviors.DropdownMenuItemBehavior$Variant[] dev.jbaby.shadwick.behaviors.DropdownMenuItemBehavior$Variant.values()
 METHOD public static dev.jbaby.shadwick.behaviors.FeedbackToastsBehavior dev.jbaby.shadwick.Sw$Behaviors.feedbackToasts()
 METHOD public static dev.jbaby.shadwick.behaviors.FeedbackToastsBehavior dev.jbaby.shadwick.Sw$Behaviors.feedbackToasts(org.apache.wicket.feedback.IFeedbackMessageFilter)
+METHOD public static dev.jbaby.shadwick.behaviors.FieldGroupBehavior dev.jbaby.shadwick.Sw$Behaviors.fieldGroup()
 METHOD public static dev.jbaby.shadwick.behaviors.InputGroupAddonBehavior dev.jbaby.shadwick.Sw$Behaviors.inputGroupAddon()
 METHOD public static dev.jbaby.shadwick.behaviors.InputGroupAddonBehavior$Align dev.jbaby.shadwick.behaviors.InputGroupAddonBehavior$Align.valueOf(java.lang.String)
 METHOD public static dev.jbaby.shadwick.behaviors.InputGroupAddonBehavior$Align[] dev.jbaby.shadwick.behaviors.InputGroupAddonBehavior$Align.values()
@@ -2075,6 +2098,8 @@ METHOD public static dev.jbaby.shadwick.components.SwConfirmDialog$IconVariant d
 METHOD public static dev.jbaby.shadwick.components.SwConfirmDialog$IconVariant[] dev.jbaby.shadwick.components.SwConfirmDialog$IconVariant.values()
 METHOD public static dev.jbaby.shadwick.components.SwConfirmDialog$Size dev.jbaby.shadwick.components.SwConfirmDialog$Size.valueOf(java.lang.String)
 METHOD public static dev.jbaby.shadwick.components.SwConfirmDialog$Size[] dev.jbaby.shadwick.components.SwConfirmDialog$Size.values()
+METHOD public static dev.jbaby.shadwick.components.SwFormErrors$Show dev.jbaby.shadwick.components.SwFormErrors$Show.valueOf(java.lang.String)
+METHOD public static dev.jbaby.shadwick.components.SwFormErrors$Show[] dev.jbaby.shadwick.components.SwFormErrors$Show.values()
 METHOD public static dev.jbaby.shadwick.components.SwLazyLoadPanel<org.apache.wicket.Component> dev.jbaby.shadwick.Sw$Components.lazyLoad(java.lang.String,dev.jbaby.shadwick.util.SerializableFunction<java.lang.String, ? extends org.apache.wicket.Component>)
 METHOD public static dev.jbaby.shadwick.components.SwLazyLoadPanel<org.apache.wicket.Component> dev.jbaby.shadwick.components.SwLazyLoadPanel.of(java.lang.String,dev.jbaby.shadwick.util.SerializableFunction<java.lang.String, ? extends org.apache.wicket.Component>)
 METHOD public static dev.jbaby.shadwick.components.SwMonthView$NavSize dev.jbaby.shadwick.components.SwMonthView$NavSize.valueOf(java.lang.String)
@@ -2132,6 +2157,8 @@ METHOD public static dev.jbaby.shadwick.components.chart.SwChart$ValueFormat dev
 METHOD public static dev.jbaby.shadwick.components.chart.SwChart$ValueFormat[] dev.jbaby.shadwick.components.chart.SwChart$ValueFormat.values()
 METHOD public static dev.jbaby.shadwick.components.chart.SwDonutChart$Shape dev.jbaby.shadwick.components.chart.SwDonutChart$Shape.valueOf(java.lang.String)
 METHOD public static dev.jbaby.shadwick.components.chart.SwDonutChart$Shape[] dev.jbaby.shadwick.components.chart.SwDonutChart$Shape.values()
+METHOD public static dev.jbaby.shadwick.components.form.BaseSwField$Orientation dev.jbaby.shadwick.components.form.BaseSwField$Orientation.valueOf(java.lang.String)
+METHOD public static dev.jbaby.shadwick.components.form.BaseSwField$Orientation[] dev.jbaby.shadwick.components.form.BaseSwField$Orientation.values()
 METHOD public static double dev.jbaby.shadwick.util.RangeValues.clamp(double,double,double)
 METHOD public static double dev.jbaby.shadwick.util.RangeValues.finite(java.lang.Number,java.lang.String)
 METHOD public static java.lang.String dev.jbaby.shadwick.behaviors.ThemeBehavior.validateStorageKey(java.lang.String)
@@ -2275,6 +2302,8 @@ METHOD public void dev.jbaby.shadwick.components.SwDialog.renderHead(org.apache.
 METHOD public void dev.jbaby.shadwick.components.SwEmptyState.renderHead(org.apache.wicket.markup.head.IHeaderResponse)
 METHOD public void dev.jbaby.shadwick.components.SwFeedbackPanel.onEvent(org.apache.wicket.event.IEvent<?>)
 METHOD public void dev.jbaby.shadwick.components.SwFeedbackPanel.renderHead(org.apache.wicket.markup.head.IHeaderResponse)
+METHOD public void dev.jbaby.shadwick.components.SwFormErrors.onEvent(org.apache.wicket.event.IEvent<?>)
+METHOD public void dev.jbaby.shadwick.components.SwFormErrors.renderHead(org.apache.wicket.markup.head.IHeaderResponse)
 METHOD public void dev.jbaby.shadwick.components.SwIcon.onComponentTagBody(org.apache.wicket.markup.MarkupStream,org.apache.wicket.markup.ComponentTag)
 METHOD public void dev.jbaby.shadwick.components.SwIcon.renderHead(org.apache.wicket.markup.head.IHeaderResponse)
 METHOD public void dev.jbaby.shadwick.components.SwPopover.renderHead(org.apache.wicket.markup.head.IHeaderResponse)
@@ -2354,6 +2383,7 @@ TYPE public class dev.jbaby.shadwick.behaviors.DisclosureTriggerBehavior extends
 TYPE public class dev.jbaby.shadwick.behaviors.DropdownMenuBehavior extends dev.jbaby.shadwick.behaviors.StyledBehavior implements []
 TYPE public class dev.jbaby.shadwick.behaviors.DropdownMenuItemBehavior extends dev.jbaby.shadwick.behaviors.StyledBehavior implements []
 TYPE public class dev.jbaby.shadwick.behaviors.FeedbackToastsBehavior extends org.apache.wicket.behavior.Behavior implements []
+TYPE public class dev.jbaby.shadwick.behaviors.FieldGroupBehavior extends dev.jbaby.shadwick.behaviors.StyledBehavior implements []
 TYPE public class dev.jbaby.shadwick.behaviors.InputGroupAddonBehavior extends dev.jbaby.shadwick.behaviors.StyledBehavior implements []
 TYPE public class dev.jbaby.shadwick.behaviors.InputGroupBehavior extends dev.jbaby.shadwick.behaviors.StyledBehavior implements []
 TYPE public class dev.jbaby.shadwick.behaviors.InputGroupButtonBehavior extends dev.jbaby.shadwick.behaviors.ButtonBehavior implements []
@@ -2397,7 +2427,9 @@ TYPE public class dev.jbaby.shadwick.components.SwDescriptionList extends org.ap
 TYPE public class dev.jbaby.shadwick.components.SwDialog extends org.apache.wicket.markup.html.panel.Panel implements []
 TYPE public class dev.jbaby.shadwick.components.SwEmptyState extends org.apache.wicket.markup.html.panel.Panel implements []
 TYPE public class dev.jbaby.shadwick.components.SwFeedbackPanel extends org.apache.wicket.feedback.FencedFeedbackPanel implements []
+TYPE public class dev.jbaby.shadwick.components.SwFieldGroup extends org.apache.wicket.markup.html.WebMarkupContainer implements []
 TYPE public class dev.jbaby.shadwick.components.SwFieldset extends org.apache.wicket.markup.html.border.Border implements []
+TYPE public class dev.jbaby.shadwick.components.SwFormErrors extends dev.jbaby.shadwick.components.SwFeedbackPanel implements []
 TYPE public class dev.jbaby.shadwick.components.SwIcon extends org.apache.wicket.markup.html.WebComponent implements []
 TYPE public class dev.jbaby.shadwick.components.SwKbd extends org.apache.wicket.markup.html.basic.Label implements []
 TYPE public class dev.jbaby.shadwick.components.SwMeter extends org.apache.wicket.markup.html.WebComponent implements []
@@ -2554,6 +2586,7 @@ TYPE public static final enum dev.jbaby.shadwick.components.SwAvatar$Size extend
 TYPE public static final enum dev.jbaby.shadwick.components.SwAvatarGroup$Size extends java.lang.Enum<dev.jbaby.shadwick.components.SwAvatarGroup$Size> implements []
 TYPE public static final enum dev.jbaby.shadwick.components.SwConfirmDialog$IconVariant extends java.lang.Enum<dev.jbaby.shadwick.components.SwConfirmDialog$IconVariant> implements []
 TYPE public static final enum dev.jbaby.shadwick.components.SwConfirmDialog$Size extends java.lang.Enum<dev.jbaby.shadwick.components.SwConfirmDialog$Size> implements []
+TYPE public static final enum dev.jbaby.shadwick.components.SwFormErrors$Show extends java.lang.Enum<dev.jbaby.shadwick.components.SwFormErrors$Show> implements []
 TYPE public static final enum dev.jbaby.shadwick.components.SwMonthView$NavSize extends java.lang.Enum<dev.jbaby.shadwick.components.SwMonthView$NavSize> implements []
 TYPE public static final enum dev.jbaby.shadwick.components.SwPaginationSummary$Format extends java.lang.Enum<dev.jbaby.shadwick.components.SwPaginationSummary$Format> implements []
 TYPE public static final enum dev.jbaby.shadwick.components.SwPopover$Align extends java.lang.Enum<dev.jbaby.shadwick.components.SwPopover$Align> implements []
@@ -2574,4 +2607,5 @@ TYPE public static final enum dev.jbaby.shadwick.components.chart.SwChart$Orient
 TYPE public static final enum dev.jbaby.shadwick.components.chart.SwChart$StackMode extends java.lang.Enum<dev.jbaby.shadwick.components.chart.SwChart$StackMode> implements []
 TYPE public static final enum dev.jbaby.shadwick.components.chart.SwChart$ValueFormat extends java.lang.Enum<dev.jbaby.shadwick.components.chart.SwChart$ValueFormat> implements []
 TYPE public static final enum dev.jbaby.shadwick.components.chart.SwDonutChart$Shape extends java.lang.Enum<dev.jbaby.shadwick.components.chart.SwDonutChart$Shape> implements []
+TYPE public static final enum dev.jbaby.shadwick.components.form.BaseSwField$Orientation extends java.lang.Enum<dev.jbaby.shadwick.components.form.BaseSwField$Orientation> implements []
 TYPE public static final record dev.jbaby.shadwick.components.SwMonthView$Day extends java.lang.Record implements [java.io.Serializable]

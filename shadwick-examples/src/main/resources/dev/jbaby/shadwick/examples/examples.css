@@ -376,3 +376,8 @@ body {
 .ex-empty-card {
   margin-top: 1.5rem;
 }
+
+/* A form wide enough for its responsive fields to put the label beside the control. */
+.ex-form-wide {
+  max-width: 40rem;
+}

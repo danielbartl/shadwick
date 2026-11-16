@@ -1922,6 +1922,25 @@ locally. Next: a hosted interactive showcase, then tooling and release preparati
 
 ## Conventions
 
+### Forms parity: field layout, field groups, error summary (2026-11-16, 0.2.0-SNAPSHOT)
+
+Shadleaf f4acff8's field orientation/field-group/form-errors; Oat has none. All additive.
+- BaseSwField.Orientation VERTICAL (default) / HORIZONTAL / RESPONSIVE via setOrientation; the field container renders
+  data-orientation only when set and never overrides markup's own (SwCheckBox/SwSwitch stay control-then-label).
+  field.css: a field whose first child is a <label> (not a fieldset legend) becomes a 2-column grid: label + description
+  in column 1, control (rows 1-2) + error (row 3) in column 2; DOM order unchanged. RESPONSIVE applies inside
+  @container field-group (width >= 28rem); outside a group it stays stacked, as in Shadleaf.
+- FieldGroupBehavior / Sw.Behaviors.fieldGroup() / SwFieldGroup: .sw-field-group, an inline-size container named
+  field-group; skin gaps from Shadleaf (Vega gap-7, Lyra/Nova gap-5 added; Maia-Sketch already had theirs).
+- SwFormErrors extends SwFeedbackPanel fenced to the form (outer panels/toasts skip its messages; Ajax self-refresh).
+  Show.GLOBAL = NotShownInlineFilter (form-level errors plus any a field doesn't show); Show.ALL = all, form-level first
+  (stable comparator). One destructive alert (static decorative circle-alert), title resource SwFormErrors.title in 9
+  languages, optional heading level, field messages link to #control when the reporter outputs a markup id. No
+  role=alert. Autofocus: autofocus attribute in full render; target.focusComponent only when the form was submitted in
+  this Ajax request; with nothing to show, the first invalid control gets focus. In tests, install
+  DefaultCleanupFeedbackMessageFilter (WicketTester otherwise keeps old messages), and inject test CSS through a
+  constructable stylesheet: the examples' strict CSP rightly blocks an injected <style>.
+
 ### Toast positions and stacking (2026-11-16, 0.2.0-SNAPSHOT)
 
 Supersedes the 0.1.0 "plain column, no stack geometry" toast decision. The user chose stacked by default (Shadleaf /

@@ -1,7 +1,10 @@
 package dev.jbaby.shadwick.examples;
 
 import dev.jbaby.shadwick.Sw;
+import dev.jbaby.shadwick.components.SwFormErrors;
 import dev.jbaby.shadwick.components.SwSubmitButton;
+import dev.jbaby.shadwick.components.form.BaseSwField;
+import dev.jbaby.shadwick.components.form.SwPasswordField;
 import dev.jbaby.shadwick.components.form.SwTextArea;
 import dev.jbaby.shadwick.components.form.SwTextField;
 
@@ -26,6 +29,87 @@ public class FormPage extends BasePage {
         super.onInitialize();
         add(normalForm());
         add(ajaxForm());
+        add(settingsForm());
+        add(signUpForm());
+    }
+
+    /** Labels beside their fields while the form is at least 28rem wide; stacked when it is narrower. */
+    private Form<Void> settingsForm() {
+        Label saved = new Label("saved", Model.of(""));
+        Form<Void> form = new Form<>("settingsForm") {
+            @Override
+            protected void onSubmit() {
+                saved.setDefaultModelObject("Settings saved.");
+            }
+        };
+        form.add(Sw.Behaviors.fieldGroup());
+        form.add(new SwTextField<>("displayName", "Display name", Model.of("Ada Lovelace"))
+                .setDescription("Shown next to your comments.")
+                .setRequired(true)
+                .setOrientation(BaseSwField.Orientation.RESPONSIVE));
+        form.add(new SwTextField<>("workspace", "Workspace", Model.of("Analytical Engines"))
+                .setDescription("Everyone you invite joins it.")
+                .setOrientation(BaseSwField.Orientation.RESPONSIVE));
+        form.add(new SwTextArea<>("signature", "Email signature", Model.of(""))
+                .setOrientation(BaseSwField.Orientation.RESPONSIVE));
+        form.add(new Button("save").add(Sw.Behaviors.button()));
+        form.add(saved);
+        return form;
+    }
+
+    /**
+     * One summary for the form's errors: the rule the form checks as a whole (the two passwords) first, then each
+     * field's error as a link to the field, which still shows its own. It takes the focus after a submit.
+     */
+    private Form<Void> signUpForm() {
+        Label created = new Label("created", Model.of(""));
+        created.setOutputMarkupId(true);
+        Form<Void> form = new Form<>("signUpForm") {
+            @Override
+            protected void onSubmit() {
+                created.setDefaultModelObject("Account created.");
+            }
+        };
+        form.add(new SwFormErrors("errors", form)
+                .setShow(SwFormErrors.Show.ALL)
+                .setHeadingLevel(3)
+                .setAutofocus(true));
+        SwTextField<String> email = new SwTextField<String>("email", "Email", Model.of(""))
+                .setRequired(true);
+        email.addValidator(EmailAddressValidator.getInstance());
+        SwPasswordField password = new SwPasswordField("password", "Password", Model.of(""));
+        SwPasswordField repeat = new SwPasswordField("repeat", "Repeat password", Model.of(""));
+        form.add(email, password, repeat);
+        form.add(new PasswordsMatch(password, repeat));
+        form.add(new Button("create").add(Sw.Behaviors.button()));
+        // The form's onSubmit sets the message after a valid submit; the Ajax button only shows it
+        form.add(SwSubmitButton.onSubmit("createAjax", "Create account (Ajax)", target -> target.add(created))
+                .setVariant(dev.jbaby.shadwick.behaviors.ButtonBehavior.Variant.OUTLINE));
+        form.add(created);
+        return form;
+    }
+
+    /** An error of the form as a whole, which no single field shows: the two passwords differ. */
+    private static final class PasswordsMatch extends org.apache.wicket.markup.html.form.validation.AbstractFormValidator {
+        private final SwPasswordField password;
+        private final SwPasswordField repeat;
+
+        PasswordsMatch(SwPasswordField password, SwPasswordField repeat) {
+            this.password = password;
+            this.repeat = repeat;
+        }
+
+        @Override
+        public org.apache.wicket.markup.html.form.FormComponent<?>[] getDependentFormComponents() {
+            return new org.apache.wicket.markup.html.form.FormComponent<?>[] {password.getInput(), repeat.getInput()};
+        }
+
+        @Override
+        public void validate(Form<?> form) {
+            if (!java.util.Objects.equals(password.getInput().getConvertedInput(), repeat.getInput().getConvertedInput())) {
+                form.error("The two passwords don't match.");
+            }
+        }
     }
 
     private Form<Profile> normalForm() {

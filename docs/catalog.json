@@ -166,7 +166,10 @@
     "description": "Labels, models, validators, inline errors and normal or Ajax submission.",
     "apis": [
       "shadwick-core/src/main/java/dev/jbaby/shadwick/components/form/BaseSwField.java",
-      "shadwick-core/src/main/java/dev/jbaby/shadwick/components/form/BaseSwInputField.java"
+      "shadwick-core/src/main/java/dev/jbaby/shadwick/components/form/BaseSwInputField.java",
+      "shadwick-core/src/main/java/dev/jbaby/shadwick/components/SwFieldGroup.java",
+      "shadwick-core/src/main/java/dev/jbaby/shadwick/behaviors/FieldGroupBehavior.java",
+      "shadwick-core/src/main/java/dev/jbaby/shadwick/components/SwFormErrors.java"
     ],
     "example": "FormPage"
   },

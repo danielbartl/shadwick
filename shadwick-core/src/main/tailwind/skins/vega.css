@@ -112,6 +112,7 @@
   }
 
   /* Field */
+  .sw-field-group { @apply gap-7 [&>.sw-field-group]:gap-4; }
   .sw-field {
     @apply gap-3;
   }

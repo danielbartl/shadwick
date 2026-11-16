@@ -28,4 +28,31 @@
         </form>
     </section>
 </div>
+
+<section class="ex-section" aria-labelledby="layout-heading">
+    <h2 id="layout-heading">Side by side</h2>
+    <p class="ex-muted">The form is a field group, and each field is <code>RESPONSIVE</code>: the label sits beside the
+        control while the form is at least 28rem wide, and above it when it is narrower.</p>
+    <form wicket:id="settingsForm" class="ex-form-wide">
+        <div wicket:id="displayName"></div>
+        <div wicket:id="workspace"></div>
+        <div wicket:id="signature"></div>
+        <div class="ex-row"><button wicket:id="save" type="submit">Save settings</button></div>
+        <p wicket:id="saved" class="ex-muted" role="status"></p>
+    </form>
+</section>
+
+<section class="ex-section" aria-labelledby="summary-heading">
+    <h2 id="summary-heading">Error summary</h2>
+    <p class="ex-muted">Submit with different passwords or an empty email. The summary lists the form's own error first,
+        then each field's as a link to it, and takes the focus.</p>
+    <form wicket:id="signUpForm" class="ex-form" aria-labelledby="summary-heading">
+        <div wicket:id="errors"></div>
+        <div wicket:id="email"></div>
+        <div wicket:id="password"></div>
+        <div wicket:id="repeat"></div>
+        <div class="ex-row"><button wicket:id="create" type="submit">Create account</button><button wicket:id="createAjax"></button></div>
+        <p wicket:id="created" class="ex-muted" role="status"></p>
+    </form>
+</section>
 </wicket:extend>

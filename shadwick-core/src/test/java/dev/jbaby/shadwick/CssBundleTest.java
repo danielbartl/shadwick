@@ -78,6 +78,21 @@ class CssBundleTest {
         }
     }
 
+    @ParameterizedTest
+    @EnumSource(Skin.class)
+    void everySkinHasFieldGroupsSideBySideFieldsAndTheFormErrorSummary(Skin skin) throws IOException {
+        for (Bundle bundle : Bundle.values()) {
+            String css = read("shadwick-" + skin.id() + bundle.suffix() + ".css");
+            assertThat(css).as(skin + " " + bundle)
+                    .containsPattern("\\.sw-field-group \\{[^}]*container-type: inline-size")
+                    .containsPattern("@container field-group \\(width >= 28rem\\)")
+                    .contains(".sw-field[data-orientation='horizontal']:has(> label.sw-field-label:first-child)")
+                    .contains(".sw-form-errors-list")
+                    // Each skin spaces its field groups
+                    .containsPattern("\\.sw-field-group \\{\\s*row-gap|\\.sw-field-group \\{\\s*gap");
+        }
+    }
+
     private static String read(String name) throws IOException {
         try (InputStream in = Shadwick.class.getResourceAsStream("css/" + name)) {
             assertThat(in).as(name + " on the classpath").isNotNull();

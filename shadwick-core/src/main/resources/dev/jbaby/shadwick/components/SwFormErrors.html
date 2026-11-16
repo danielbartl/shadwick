@@ -1,0 +1,10 @@
+<wicket:panel xmlns:wicket="http://wicket.apache.org">
+    <div wicket:id="feedbackul" class="sw-alert sw-form-errors" data-variant="destructive" tabindex="-1">
+        <!-- Lucide circle-alert (ISC, see NOTICE), decorative: the title says what this is. -->
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+        <div wicket:id="title" class="sw-alert-title"></div>
+        <div class="sw-alert-description">
+            <ul class="sw-form-errors-list"><li wicket:id="messages"><wicket:container wicket:id="message"></wicket:container></li></ul>
+        </div>
+    </div>
+</wicket:panel>
