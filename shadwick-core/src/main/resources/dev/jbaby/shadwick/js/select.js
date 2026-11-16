@@ -66,7 +66,6 @@
         trigger.setAttribute('aria-controls', list.id); trigger.setAttribute('popovertarget', list.id);
         select.dataset.swSelectTabindex = select.getAttribute('tabindex') || '';
         select.tabIndex = -1; select.setAttribute('aria-hidden', 'true');
-        select.querySelectorAll(':scope > button').forEach(function (button) { button.tabIndex = -1; });
         wrapper.dataset.enhanced = ''; wrapper.append(trigger, list);
         var rows = [], active = null, prefix = '', typedAt = 0;
         function close() { if (open(list)) list.hidePopover(); trigger.setAttribute('aria-expanded', 'false'); trigger.removeAttribute('aria-activedescendant'); active = null; prefix = ''; typedAt = 0; }
@@ -126,7 +125,13 @@
             if (trigger.disabled) close();
         }
         state.sync = sync;
+        // The native select's own button (customizable-select markup) leaves the tab order with the select. The
+        // parser can add it after the wrapper was enhanced, and Ajax can replace it, so this runs on every rebuild.
+        function hideNativeButtons() {
+            select.querySelectorAll(':scope > button').forEach(function (button) { button.tabIndex = -1; });
+        }
         function build() {
+            hideNativeButtons();
             close(); list.replaceChildren(); rows = [];
             function item(option, parent) {
                 if (!visible(option)) return;

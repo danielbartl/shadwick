@@ -16,6 +16,9 @@ Development continues on `0.2.0-SNAPSHOT`.
 
 ### Fixed
 
+- A custom select (`SwSelect`) whose native picker is replaced by Shadwick's fallback no longer leaves the native
+  select's own button in the tab order when the browser parses that button after the select was enhanced. Screen
+  readers could otherwise reach a control hidden from them; this also made a browser test fail intermittently.
 - A link styled as a button (`sw-button`) inside a dialog, alert-dialog, sheet, empty-state or field description,
   or inside accordion content, is no longer underlined like a prose link. Fixed in all nine skins, following
   Shadleaf's equivalent fix.

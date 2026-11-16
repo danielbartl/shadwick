@@ -1922,6 +1922,16 @@ locally. Next: a hosted interactive showcase, then tooling and release preparati
 
 ## Conventions
 
+### Custom-select fallback race (2026-11-16, fixed)
+
+The intermittent ShowcaseBrowserTest customSelectFallback* aria-hidden-focus failure (about 1 in 3,600 cases) was real:
+select.js enhances wrappers from a document MutationObserver while the parser streams nodes, so under load a wrapper
+could be enhanced before the parser reached the native select's own <button>. That button kept tabIndex 0 inside the
+aria-hidden select (axe check focusable-disabled). build() now re-applies tabIndex -1 to the select's direct buttons
+on every rebuild; the select's own observer rebuilds on any child change. A deterministic regression test replaces the
+button after enhancement (fails on the old script, passes now). Keep this pattern for any script that hides a native
+control during enhancement: re-apply on child changes, not only once at init.
+
 ### Quick Shadleaf parity increment (2026-11-16, 0.2.0-SNAPSHOT)
 
 Source: the variant-level audit against Shadleaf f4acff8 (Oat 7656231 has none of these). All additive; 0.1.0 defaults

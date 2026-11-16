@@ -3191,6 +3191,21 @@ class ShowcaseBrowserTest {
     }
 
     @ParameterizedTest @MethodSource("everySkinAndMode")
+    void customSelectFallbackKeepsALateNativeButtonOutOfTheTabOrder(String skin, String mode) {
+        // Under load the parser can add a select's own button after its wrapper was enhanced (the cause of an
+        // intermittent aria-hidden-focus failure). Replacing it after enhancement reproduces that deterministically.
+        check("custom-select", skin, mode, tab -> {
+            customSelectFallback(tab, skin, mode);
+            Locator select = tab.locator("form[aria-label='Normal workspace'] .sw-select-wrapper > select");
+            select.evaluate("s => { const late = document.createElement('button'); late.type = 'button';"
+                    + " late.append(document.createElement('selectedcontent')); s.querySelector(':scope > button').replaceWith(late); }");
+            tab.waitForCondition(() -> (Boolean) select.evaluate("s => s.querySelector(':scope > button').tabIndex === -1"));
+            assertThat(select).hasAttribute("aria-hidden", "true");
+            assertThat(select).hasAttribute("tabindex", "-1");
+        });
+    }
+
+    @ParameterizedTest @MethodSource("everySkinAndMode")
     void customSelectAjaxFeedbackAndReplacementInBothPickerModes(String skin, String mode) {
         check("custom-select", skin, mode, tab -> {
             for (boolean fallback : new boolean[]{false,true}) {
