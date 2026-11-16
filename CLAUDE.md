@@ -60,6 +60,31 @@ documented in docs/components/app-layout.md and additionally compiled by the pub
 Initial release publication is complete. Future work belongs to the next snapshot and user-selected roadmap increments;
 calendar heatmaps, custom/diverging bands and stacked radial series are later scope, not additions to 0.1.0.
 
+## Landing page refresh — 2026-11-16 (implemented locally, uncommitted)
+
+The user approved a three-step landing plan (polish; show-don't-list; finishing touches), permitted committed
+screenshots, and chose live per-skin mini pages for the skin gallery. Implemented in site/ only; no library,
+examples-app or dependency change. Details and maintenance notes: site/README.md.
+
+- Hero badge announces 0.1.0 on Maven Central; larger hero copy; soft glow behind the preview; one-time clover
+  entrance. Mobile header collapses into a native details menu below 700px.
+- New shared assets/palette.css (green shadcn tokens plus forest/sage/gold chart tokens) replaces the inline
+  preview tokens; the orange default chart bars are gone. Studio caption links the theming guide.
+- Facts band (9 skins, 9 languages, guide count from docs/catalog.json, 1 dependency, 0 frontend build steps).
+- Skin gallery: build.mjs generates dist/skin-samples/<skin>.html from site/skin-sample.html, each loading only its
+  real embedded bundle; inert, aria-hidden, untabbable lazy frames; light/dark toggle; Try <skin> drives the preview.
+- Third principle is now accessibility/strict CSP (skins have their own section). Code window has
+  Java/HTML/Result tabs via the core tabs runtime. Clover Studio showcase uses committed WebP captures of the live
+  app (assets/studio-desktop.webp, studio-phone.webp). Catalog: six illustrated families plus a 14-item list.
+- Full-width forest Get started band (installation guide link), dark footer with link columns and copyable
+  coordinates, compact mobile preview (#studio-expand), translate-only scroll motion, new social.png.
+
+Verification: site build/check pass with the Maven-managed Node (77 HTML pages); 43 Node docs tests pass. A
+throwaway Playwright/axe script passed 118 checks in Chromium and Firefox at 1440/1024/390/320 (WCAG 2.2 AA axe,
+console, overflow, frame fit, menu, compact preview, sample dark mode, Try Sera, code tabs, no-script). All nine
+preview skins passed axe with the new catalog. Scripts: scratchpad tools LandingCheck.java/SkinSweep.java (not in
+the repo). WebKit not run. Nothing committed, pushed or deployed; pushing main publishes via the Website workflow.
+
 ## Previous publication execution checkpoint — 2026-11-09
 
 **Current checkpoint: real signed 0.1.0 staging verified; publication status being confirmed.** All 15 jobs in Build

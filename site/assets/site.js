@@ -71,6 +71,7 @@
       stylesheet.href = next.href;
       next.remove();
       preview.dataset.skin = requested;
+      markCurrentSkin();
       updateDescription();
     } catch {
       next.remove();
@@ -105,6 +106,7 @@
       } else {
         const sidebar = document.querySelector('.studio-sidebar');
         if (sidebar.matches(':popover-open')) sidebar.hidePopover();
+        expandPreview();
         document.querySelector(button.dataset.accountAction === 'account' ? '#demo-name' : '#demo-quiet').focus();
       }
     });
@@ -203,6 +205,93 @@
     });
   }
 
+  // On narrow screens the preview starts with its most telling examples; the rest is one tap away.
+  const more = document.querySelector('#studio-expand');
+  const compactQuery = window.matchMedia('(max-width: 760px)');
+  function expandPreview() {
+    delete preview.dataset.compact;
+    more.setAttribute('aria-expanded', 'true');
+    more.querySelector('span').textContent = 'Show fewer examples';
+  }
+  function compactPreview() {
+    preview.dataset.compact = '';
+    more.setAttribute('aria-expanded', 'false');
+    more.querySelector('span').textContent = 'Show the full preview';
+  }
+  more.hidden = false;
+  if (compactQuery.matches) compactPreview(); else expandPreview();
+  more.addEventListener('click', () => {
+    if (more.getAttribute('aria-expanded') === 'true') {
+      compactPreview();
+      preview.scrollIntoView({block: 'nearest'});
+    } else {
+      expandPreview();
+    }
+    more.focus();
+  });
+  // A month link or fragment that targets a tucked-away example reveals it first.
+  window.addEventListener('hashchange', () => {
+    const target = location.hash && document.getElementById(decodeURIComponent(location.hash.slice(1)));
+    if (target && target.closest('.studio-extra')) expandPreview();
+  });
+
+  // The native header menu closes after navigation, on Escape and when focus or a click leaves it.
+  const siteMenu = document.querySelector('.site-menu');
+  siteMenu.addEventListener('click', event => { if (event.target.closest('a')) siteMenu.open = false; });
+  siteMenu.addEventListener('keydown', event => {
+    if (event.key === 'Escape' && siteMenu.open) { siteMenu.open = false; siteMenu.querySelector('summary').focus(); }
+  });
+  document.addEventListener('click', event => { if (siteMenu.open && !siteMenu.contains(event.target)) siteMenu.open = false; });
+  siteMenu.addEventListener('focusout', event => { if (event.relatedTarget && !siteMenu.contains(event.relatedTarget)) siteMenu.open = false; });
+
+  // Skin gallery: each sample is a real bundle in its own frame; the preview can borrow any of them.
+  const tiles = Array.from(document.querySelectorAll('.skin-tile'));
+  function markCurrentSkin() {
+    tiles.forEach(tile => tile.toggleAttribute('data-current', tile.dataset.skin === preview.dataset.skin));
+  }
+  markCurrentSkin();
+  document.querySelectorAll('[data-skin-choice]').forEach(button => {
+    button.hidden = false;
+    button.addEventListener('click', () => {
+      if (skinSelect.value !== button.dataset.skinChoice) {
+        skinSelect.value = button.dataset.skinChoice;
+        skinSelect.dispatchEvent(new Event('change'));
+      }
+      const still = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      document.querySelector('#components').scrollIntoView({behavior: still ? 'auto' : 'smooth', block: 'start'});
+      skinSelect.focus({preventScroll: true});
+    });
+  });
+  // Same-origin samples report their card height; every frame takes the tallest so rows line up.
+  const gallery = document.querySelector('.skin-gallery');
+  const sampleHeights = new Map();
+  window.addEventListener('message', event => {
+    if (event.origin !== location.origin || !event.data || event.data.type !== 'shadwick-sample-height') return;
+    const frame = tiles.map(tile => tile.querySelector('iframe')).find(candidate => candidate.contentWindow === event.source);
+    const height = Number(event.data.height);
+    if (!frame || !Number.isFinite(height) || height < 120 || height > 900) return;
+    sampleHeights.set(frame, height);
+    gallery.style.setProperty('--sample-height', `${Math.max(...sampleHeights.values())}px`);
+  });
+  const sampleModes = document.querySelector('.skin-mode');
+  sampleModes.hidden = false;
+  sampleModes.addEventListener('click', event => {
+    const choice = event.target.closest('[data-sample-mode]');
+    if (!choice) return;
+    sampleModes.querySelectorAll('[data-sample-mode]').forEach(button => button.setAttribute('aria-pressed', String(button === choice)));
+    const fragment = choice.dataset.sampleMode === 'dark' ? '#dark' : '#light';
+    tiles.forEach(tile => {
+      const frame = tile.querySelector('iframe');
+      frame.src = frame.src.split('#')[0] + fragment;
+    });
+  });
+
+  const codeCopy = document.querySelector('[data-copy-active]');
+  document.querySelectorAll('#code-tabs [role="tabpanel"]').forEach(panel => {
+    panel.addEventListener('sw-tabs-show', () => { codeCopy.disabled = !panel.querySelector('code'); });
+  });
+  document.querySelector('#code-result-button').addEventListener('click', () => notify('Saved. In your app, Wicket would call save() on the server.'));
+
   async function copy(text) {
     if (navigator.clipboard && window.isSecureContext) { await navigator.clipboard.writeText(text); return; }
     // The fallback also supports a local HTTP preview without the Clipboard API.
@@ -216,9 +305,12 @@
     field.remove();
     if (!succeeded) throw new Error('Clipboard unavailable');
   }
-  document.querySelectorAll('[data-copy], [data-copy-text]').forEach(button => {
+  document.querySelectorAll('[data-copy], [data-copy-text], [data-copy-active]').forEach(button => {
     button.addEventListener('click', async () => {
-      const text = button.dataset.copyText ?? document.getElementById(button.dataset.copy).textContent;
+      // The code window copies whichever file tab is showing; the rendered result copies its markup.
+      const active = button.hasAttribute('data-copy-active')
+        && button.closest('.sw-tabs').querySelector('[role="tabpanel"]:not([hidden]) code');
+      const text = button.dataset.copyText ?? (active ? active.textContent : document.getElementById(button.dataset.copy).textContent);
       try { await copy(text); notify('Copied. Go make something good.'); }
       catch { notify('Copy is unavailable here. You can select and copy the code directly.'); }
       button.focus();

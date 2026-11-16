@@ -2,7 +2,7 @@ import {access, cp, mkdir, readFile, rm, writeFile} from 'node:fs/promises';
 import path from 'node:path';
 import {fileURLToPath} from 'node:url';
 import {createHash} from 'node:crypto';
-import {skins} from './skins.mjs';
+import {skins, skinDetails} from './skins.mjs';
 import {buildDocumentation} from './docs/build.mjs';
 import {buildAgentResources} from './agents.mjs';
 
@@ -22,6 +22,8 @@ url.hash = ''; url.search = '';
 if (!url.pathname.endsWith('/')) url.pathname += '/';
 const escapeHtml = value => value.replaceAll('&', '&amp;').replaceAll('"', '&quot;').replaceAll('<', '&lt;').replaceAll('>', '&gt;');
 let html = (await readFile(path.join(root, 'index.html'), 'utf8')).replaceAll('__SITE_URL__', escapeHtml(url.href));
+const guideCount = JSON.parse(await readFile(path.resolve(root, '../docs/catalog.json'), 'utf8')).length;
+html = html.replaceAll('__GUIDE_COUNT__', String(guideCount));
 await rm(output, {recursive: true, force: true});
 await mkdir(output, {recursive: true});
 await cp(path.join(root, 'assets'), path.join(output, 'assets'), {recursive: true});
@@ -53,14 +55,34 @@ for (const skin of skins) {
   const stylesheet = (await versioned(`./assets/shadwick-${skin}.css`)).replace('./assets/', '');
   html = html.replace(`<option value="${skin}">`, `<option value="${skin}" data-stylesheet="${stylesheet}">`);
 }
-const references = new Map();
-for (const [, reference] of html.matchAll(/\b(?:src|href)="([^"]+)"/g)) {
-  if (/^\.\/assets\/.*\.(?:css|js|svg|png)(?:#.*)?$/.test(reference) && !references.has(reference)) {
-    references.set(reference, await versioned(reference));
+// Version every local asset reference in a page, resolving it from that page's directory.
+async function versionPage(page, directory = '.') {
+  const references = new Map();
+  for (const [, reference] of page.matchAll(/\b(?:src|href)="([^"]+)"/g)) {
+    if (/^\.{1,2}\/(?:\.\.\/)*assets\/.*\.(?:css|js|svg|png|webp)(?:#.*)?$/.test(reference) && !references.has(reference)) {
+      const fromRoot = './' + path.posix.join(directory, reference);
+      const version = (await versioned(fromRoot)).slice(fromRoot.split('#')[0].length);
+      references.set(reference, reference.split('#')[0] + version);
+    }
   }
+  return page.replace(/\b(src|href)="([^"]+)"/g, (_, attribute, reference) =>
+    `${attribute}="${references.get(reference) || reference}"`);
 }
-html = html.replace(/\b(src|href)="([^"]+)"/g, (_, attribute, reference) =>
-  `${attribute}="${references.get(reference) || reference}"`);
+
+// One small page per skin, each loading only that skin's real embedded bundle.
+const sampleTemplate = await readFile(path.join(root, 'skin-sample.html'), 'utf8');
+await mkdir(path.join(output, 'skin-samples'), {recursive: true});
+const gallery = [];
+for (const skin of skins) {
+  const [label, description] = skinDetails[skin];
+  const page = sampleTemplate.replaceAll('__SKIN__', skin).replaceAll('__SKIN_NAME__', escapeHtml(label));
+  await writeFile(path.join(output, 'skin-samples', `${skin}.html`), await versionPage(page, 'skin-samples'));
+  gallery.push(`<li class="skin-tile" data-skin="${skin}"><iframe src="./skin-samples/${skin}.html" title="${escapeHtml(label)} skin sample" loading="lazy" tabindex="-1" aria-hidden="true"></iframe>`
+    + `<div class="skin-tile-caption"><p><strong>${escapeHtml(label)}</strong><span>${escapeHtml(description)}</span></p>`
+    + `<button type="button" class="skin-try" data-skin-choice="${skin}" hidden>Try ${escapeHtml(label)}<svg aria-hidden="true"><use href="./assets/icons.svg#arrow-up"/></svg></button></div></li>`);
+}
+html = html.replace('__SKIN_GALLERY__', gallery.join('\n        '));
+html = await versionPage(html);
 await writeFile(path.join(output, 'index.html'), html);
 await writeFile(path.join(output, '.nojekyll'), '');
 await writeFile(path.join(output, 'robots.txt'), `User-agent: *\nAllow: /\nSitemap: ${url.href}sitemap.xml\n`);

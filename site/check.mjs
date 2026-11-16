@@ -35,7 +35,7 @@ async function checkAsset(reference,current='index.html',requireVersion=true){
     const valid=pageIds.has(file)?pageIds.get(file).has(fragment):content.toString('utf8').includes(`id="${fragment}"`);
     if(!valid)throw new Error(`Missing fragment ${reference} from ${current}`);
   }
-  if(requireVersion&&/\.(?:css|js|svg|png|json)$/.test(filename)){
+  if(requireVersion&&/\.(?:css|js|svg|png|webp|json)$/.test(filename)){
     const expected=createHash('sha256').update(content).digest('hex').slice(0,12);
     if(resolved.searchParams.get('v')!==expected)throw new Error('Missing or stale content version: '+reference+' from '+current);
   }

@@ -1,0 +1,58 @@
+/*
+ * The landing page's green palette, expressed only through shadcn/ui's standard token names.
+ * The component preview, the skin samples and the catalog miniatures share it, so any shadcn
+ * theme could replace these values unchanged. Unlayered rules win over the bundles' token layer.
+ */
+.studio-canvas,
+.palette {
+  --background:#f6f8f2;
+  --foreground:#263e2e;
+  --card:#fff;
+  --card-foreground:#2b3a2c;
+  --popover:#fff;
+  --popover-foreground:#293b2e;
+  --primary:#2c5741;
+  --primary-foreground:#fff;
+  --secondary:#eaf0e2;
+  --secondary-foreground:#3d593a;
+  --muted:#f0f3eb;
+  --muted-foreground:#697366;
+  --accent:#e6eddf;
+  --accent-foreground:#304a35;
+  --border:#dfe5d9;
+  --input:#dce2d5;
+  --ring:#82a06e;
+  --radius:.625rem;
+  --chart-1:#3f7a55;
+  --chart-2:#8fb36a;
+  --chart-3:#c9a646;
+  --chart-4:#4f8f86;
+  --chart-5:#b97a55
+}
+
+.studio-canvas.dark,
+.palette.dark {
+  --background:#18291f;
+  --foreground:#ecf2e5;
+  --card:#23352a;
+  --card-foreground:#ecf2e5;
+  --popover:#23352a;
+  --popover-foreground:#ecf2e5;
+  --primary:#cee7ac;
+  --primary-foreground:#213320;
+  --secondary:#344b35;
+  --secondary-foreground:#e3efda;
+  --muted:#2d4132;
+  --muted-foreground:#b5c2af;
+  --accent:#39513b;
+  --accent-foreground:#f1f6eb;
+  --border:#465642;
+  --input:#465642;
+  --ring:#a7c382;
+  --destructive:#ff9198;
+  --chart-1:#a9d27f;
+  --chart-2:#6fae8a;
+  --chart-3:#e0c070;
+  --chart-4:#7cc0b5;
+  --chart-5:#d99a78
+}

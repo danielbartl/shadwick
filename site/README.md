@@ -9,9 +9,43 @@ the component catalog is at `/components`, with grouped navigation and copyable 
 The `/studio` alias remains available. Its [guide](../docs/guides/clover-studio.md) is included in the static
 documentation. The static component studio below remains a browser preview.
 
-The hero and main navigation link directly to Clover Studio and the live component catalog. The 20-group
-component listing pairs guide links with live examples, including form composition, exact money/percentage/range
-fields, button groups/split buttons, record details/timelines, lazy panels, tags, avatar groups and steps.
+The hero and main navigation link directly to Clover Studio and the live component catalog. Below 700px the
+link row and GitHub link collapse into one native `<details>` menu (works without script; site.js closes it after
+navigation, on Escape and on outside clicks). The hero badge announces the current Maven Central release.
+
+Page order: hero, component preview, facts band, skin gallery, principles, code window, Clover Studio showcase,
+component collection, a full-width forest "Get started" band and a dark footer with link columns and copyable
+Maven coordinates. The facts band's guide count comes from `docs/catalog.json` at build time (`__GUIDE_COUNT__`).
+
+**Shared palette.** `assets/palette.css` holds the green token set (including five chart tokens) under shadcn's
+standard names, for `.studio-canvas` and any `.palette` element. The preview, skin samples, catalog miniatures and
+the code window's rendered result all use it. Unlayered rules win over the bundles' token layer.
+
+**Skin gallery.** `build.mjs` turns `skin-sample.html` into `dist/skin-samples/<skin>.html`, one page per skin
+loading only that skin's embedded bundle, and fills `__SKIN_GALLERY__` from `skinDetails` in `skins.mjs`. Frames
+are lazy, `aria-hidden`, untabbable and their card is `inert`, so they add no tab stops or duplicate semantics.
+`skin-sample.js` applies `#dark`/`#light` from the frame URL and posts its card height (same origin only); the
+gallery sizes every frame to the tallest sample. Light/Dark and "Try <skin>" buttons appear only with script; Try
+switches the preview skin, scrolls to it and focuses the skin select. Phones get a horizontal snap carousel.
+
+**Compact mobile preview.** At 760px and below, examples marked `studio-extra` are tucked away behind
+`#studio-expand` until requested; without script the full preview remains. Account Settings and fragment links
+that target a tucked-away example expand it first.
+
+**Code window** uses the core tabs runtime (`.sw-tabs` root, role-based tabs) for HomePage.java, HomePage.html and a
+rendered Result. The copy button copies the visible file and is disabled on Result.
+
+**Showcase screenshots** (`assets/studio-desktop.webp`, `assets/studio-phone.webp`) are committed captures of the
+live Clover Studio overview (`?mode=light` at 1440×900 and `?mode=dark` at 390×844, device scale 2, WebP q82).
+Refresh them when Studio's overview changes noticeably. `assets/social.png` is rendered from the same skin samples.
+
+**Catalog.** Six featured families have decorative miniatures (`aria-hidden`) drawn with the palette tokens and
+component classes, so they follow the selected preview skin. The other fourteen families form a compact list.
+
+**Motion.** Sections settle into place with scroll-driven animations of the `translate` property only, inside
+`prefers-reduced-motion: no-preference` and `@supports (animation-timeline: view())`. Content never starts
+hidden, so screenshots and accessibility audits are unaffected; hover lifts use `transform` independently.
+
 The preview places the chart, inline calendar and compact month view together below the main cards; keep the
 calendar out of the preferences column so its height cannot leave a large gap before the chart. Insights use
 three columns on desktop, a full-width chart above two calendars on tablet, and one column on mobile.
