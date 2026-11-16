@@ -237,7 +237,7 @@
 
   .sw-empty-description {
     @apply text-xs/relaxed text-muted-foreground
-      [&>a]:underline [&>a]:underline-offset-4 [&>a:hover]:text-primary;
+      [&>a:not(.sw-button)]:underline [&>a:not(.sw-button)]:underline-offset-4 [&>a:not(.sw-button):hover]:text-primary;
   }
 
   .sw-empty-content {
@@ -1272,7 +1272,7 @@
   }
 
   .sw-dialog-description {
-    @apply text-xs/relaxed text-muted-foreground [&_a]:underline [&_a]:underline-offset-3 [&_a:hover]:text-foreground;
+    @apply text-xs/relaxed text-muted-foreground [&_a:not(.sw-button)]:underline [&_a:not(.sw-button)]:underline-offset-3 [&_a:not(.sw-button):hover]:text-foreground;
   }
 
   .sw-dialog-footer {
@@ -1328,7 +1328,7 @@
 
   .sw-alert-dialog-description {
     @apply text-xs/relaxed text-balance text-muted-foreground md:text-pretty
-      [&_a]:underline [&_a]:underline-offset-3 [&_a:hover]:text-foreground;
+      [&_a:not(.sw-button)]:underline [&_a:not(.sw-button)]:underline-offset-3 [&_a:not(.sw-button):hover]:text-foreground;
   }
 
   .sw-alert-dialog-footer {
@@ -1372,7 +1372,7 @@
   }
 
   .sw-sheet-description {
-    @apply text-xs/relaxed text-muted-foreground [&_a]:underline [&_a]:underline-offset-3 [&_a:hover]:text-foreground;
+    @apply text-xs/relaxed text-muted-foreground [&_a:not(.sw-button)]:underline [&_a:not(.sw-button)]:underline-offset-3 [&_a:not(.sw-button):hover]:text-foreground;
   }
 
   /*
@@ -1537,7 +1537,7 @@
   }
 
   .sw-accordion-content {
-    @apply px-2 pt-0 pb-4 text-xs/relaxed [&_a]:underline [&_a]:underline-offset-3 [&_a:hover]:text-foreground
+    @apply px-2 pt-0 pb-4 text-xs/relaxed [&_a:not(.sw-button)]:underline [&_a:not(.sw-button)]:underline-offset-3 [&_a:not(.sw-button):hover]:text-foreground
       [&_p:not(:last-child)]:mb-4;
   }
 

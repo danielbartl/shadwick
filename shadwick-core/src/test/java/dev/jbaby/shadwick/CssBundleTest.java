@@ -41,6 +41,20 @@ class CssBundleTest {
         assertThat(css).doesNotContainPattern("\\.(?!sw-|dark\\b)[a-z][\\w-]*[\\s{:,\\[>~+)]");
     }
 
+    @ParameterizedTest
+    @EnumSource(Skin.class)
+    void descriptionAndAccordionLinksLeaveButtonStyledLinksAlone(Skin skin) throws IOException {
+        for (Bundle bundle : Bundle.values()) {
+            String css = read("shadwick-" + skin.id() + bundle.suffix() + ".css");
+
+            // Prose links in descriptions and accordion content are underlined; a link styled as a button is not.
+            assertThat(css).as(skin + " " + bundle).doesNotContainPattern("&(>| )a(:hover)? \\{")
+                    .containsPattern("\\.sw-dialog-description \\{[^}]*& a:not\\(\\.sw-button\\) \\{")
+                    .containsPattern("\\.sw-empty-description \\{[^}]*&>a:not\\(\\.sw-button\\) \\{")
+                    .containsPattern("\\.sw-accordion-content \\{[^}]*& a:not\\(\\.sw-button\\) \\{");
+        }
+    }
+
     private static String read(String name) throws IOException {
         try (InputStream in = Shadwick.class.getResourceAsStream("css/" + name)) {
             assertThat(in).as(name + " on the classpath").isNotNull();

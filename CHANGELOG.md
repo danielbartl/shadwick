@@ -4,6 +4,12 @@
 
 Development continues on `0.2.0-SNAPSHOT`.
 
+### Fixed
+
+- A link styled as a button (`sw-button`) inside a dialog, alert-dialog, sheet, empty-state or field description,
+  or inside accordion content, is no longer underlined like a prose link. Fixed in all nine skins, following
+  Shadleaf's equivalent fix.
+
 ## 0.1.0 — 2026-11-09
 
 Published coordinates: `dev.jbaby:shadwick:0.1.0`.

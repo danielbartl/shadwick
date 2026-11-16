@@ -41,7 +41,7 @@
   }
 
   .sw-field-description {
-    @apply m-0 font-normal text-start [&>a]:underline [&>a]:underline-offset-4;
+    @apply m-0 font-normal text-start [&>a:not(.sw-button)]:underline [&>a:not(.sw-button)]:underline-offset-4;
   }
 
   /*

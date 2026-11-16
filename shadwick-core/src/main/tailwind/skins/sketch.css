@@ -313,7 +313,7 @@
 
   .sw-empty-description {
     @apply text-sm/relaxed text-muted-foreground
-      [&>a]:underline [&>a]:underline-offset-4 [&>a:hover]:text-primary;
+      [&>a:not(.sw-button)]:underline [&>a:not(.sw-button)]:underline-offset-4 [&>a:not(.sw-button):hover]:text-primary;
   }
 
   .sw-empty-content {
@@ -1335,8 +1335,8 @@
   }
 
   .sw-dialog-description {
-    @apply text-sm text-muted-foreground [&_a]:underline [&_a]:underline-offset-3 [&_a:hover]:text-foreground
-      [&_a:hover]:decoration-wavy;
+    @apply text-sm text-muted-foreground [&_a:not(.sw-button)]:underline [&_a:not(.sw-button)]:underline-offset-3 [&_a:not(.sw-button):hover]:text-foreground
+      [&_a:not(.sw-button):hover]:decoration-wavy;
   }
 
   .sw-dialog-footer {
@@ -1393,7 +1393,7 @@
 
   .sw-alert-dialog-description {
     @apply text-sm text-balance text-muted-foreground md:text-pretty
-      [&_a]:underline [&_a]:underline-offset-3 [&_a:hover]:text-foreground [&_a:hover]:decoration-wavy;
+      [&_a:not(.sw-button)]:underline [&_a:not(.sw-button)]:underline-offset-3 [&_a:not(.sw-button):hover]:text-foreground [&_a:not(.sw-button):hover]:decoration-wavy;
   }
 
   .sw-alert-dialog-footer {
@@ -1438,8 +1438,8 @@
   }
 
   .sw-sheet-description {
-    @apply text-sm text-muted-foreground [&_a]:underline [&_a]:underline-offset-3 [&_a:hover]:text-foreground
-      [&_a:hover]:decoration-wavy;
+    @apply text-sm text-muted-foreground [&_a:not(.sw-button)]:underline [&_a:not(.sw-button)]:underline-offset-3 [&_a:not(.sw-button):hover]:text-foreground
+      [&_a:not(.sw-button):hover]:decoration-wavy;
   }
 
   /*
@@ -1603,8 +1603,8 @@
   }
 
   .sw-accordion-content {
-    @apply pt-0 pb-4 text-sm [&_a]:underline [&_a]:underline-offset-3 [&_a:hover]:text-foreground
-      [&_a:hover]:decoration-wavy [&_p:not(:last-child)]:mb-4;
+    @apply pt-0 pb-4 text-sm [&_a:not(.sw-button)]:underline [&_a:not(.sw-button)]:underline-offset-3 [&_a:not(.sw-button):hover]:text-foreground
+      [&_a:not(.sw-button):hover]:decoration-wavy [&_p:not(:last-child)]:mb-4;
   }
 
   /* Collapsible. A trigger drawn as a button (.button) gets the rest from the button's rules. */
