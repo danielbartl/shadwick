@@ -10,9 +10,15 @@ Development continues on `0.2.0-SNAPSHOT`.
   hover or keyboard focus, with older ones waiting (their time stopped) until a newer one closes. In 0.1.0 every toast
   showed in a scrolling column. `ShadwickSettings.setVisibleToasts(...)` raises the count (1–10); browsers without
   constructable stylesheets keep the column. The toaster's distance from the edge is now 1.5rem (1rem on narrow screens).
+- `SwFileDropzone` shows each chosen file as a small attachment (name and size, a rejected file as an error card), as
+  Shadleaf does, in place of 0.1.0's own rows. Applications styling `.sw-file-upload-item/-name/-size` should style the
+  attachment's parts instead.
 
 ### Added
 
+- `SwFileDropzone`: upload progress during Ajax submits (each file's share, Processing, Upload failed, and Uploaded after
+  `clearSelection`), a Cancel upload button, `setLayout(Layout.GRID)` cards and `setPreviews(true)` image thumbnails,
+  drawn into a canvas so no Content-Security-Policy change is needed. New messages in all nine languages.
 - Field layout: `BaseSwField.setOrientation(HORIZONTAL)` puts a label beside its control, and `RESPONSIVE` does so while
   the enclosing field group is at least 28rem wide. `Sw.Behaviors.fieldGroup()` / `SwFieldGroup` stack fields with the
   skin's spacing and provide that container.

@@ -28,51 +28,130 @@
     });
 
     // Native file upload enhancement. Adapted from Shadleaf (Apache-2.0, see NOTICE).
-    // The input's FileList is submitted by Wicket; files are never encoded into page state.
+    // The input's FileList is submitted by Wicket; files are never encoded into page state. Each file is shown as an
+    // attachment; while an Ajax submit sends the files, they show its progress (see trackUpload).
     var uploadStates = new WeakMap();
+    function newUploadState(files) { return {files: files, rejected: [], done: [], upload: null}; }
     function uploadMessage(root, key, values) {
         return (root.getAttribute('data-message-' + key) || '').replace(/\{(\d+)\}/g, function (_, index) {
             return values[Number(index)] == null ? '' : String(values[Number(index)]);
         });
     }
+    function uploadLanguage(root) { return root.closest('[lang]') ? root.closest('[lang]').lang : undefined; }
     function uploadState(root) {
         if (!uploadStates.has(root)) {
             var input = root.querySelector('.sw-file-upload-input');
             if (!input) return null;
-            uploadStates.set(root, {files: Array.from(input.files || []), rejected: []});
+            uploadStates.set(root, newUploadState(Array.from(input.files || [])));
             renderUpload(root);
         }
         return uploadStates.get(root);
     }
+    // Sending or processing: the selection cannot change until the request ends.
+    function uploadBusy(state) { return !!(state && state.upload && state.upload.request); }
     function announceUpload(root, text) {
         var status = root.querySelector('.sw-file-upload-status');
         status.textContent = '';
         requestAnimationFrame(function () { if (root.isConnected) status.textContent = text; });
     }
+
+    // Image previews are drawn from the file into a canvas: no URL is made, so no img-src exception is needed, and a
+    // thumbnail is decoded once per File, however often the list is drawn again.
+    var uploadThumbnails = new WeakMap();
+    function uploadThumbnail(file) {
+        if (!uploadThumbnails.has(file)) {
+            var image = /^image\//i.test(file.type || '') && !/svg/i.test(file.type) && file.size <= 20 * 1024 * 1024;
+            uploadThumbnails.set(file, !image || typeof createImageBitmap !== 'function' ? Promise.resolve(null)
+                : createImageBitmap(file).then(function (bitmap) {
+                    var side = Math.min(bitmap.width, bitmap.height), canvas = document.createElement('canvas');
+                    canvas.width = canvas.height = 256;
+                    canvas.getContext('2d').drawImage(bitmap, (bitmap.width - side) / 2, (bitmap.height - side) / 2,
+                        side, side, 0, 0, 256, 256);
+                    if (bitmap.close) bitmap.close();
+                    return canvas;
+                }, function () { return null; }));
+        }
+        return uploadThumbnails.get(file);
+    }
+    function previewUpload(root, attachment, file) {
+        var template = root.querySelector('.sw-file-upload-template[data-kind="image"]');
+        if (!template) return;
+        uploadThumbnail(file).then(function (source) {
+            // A list drawn again since, or a component replaced, has no use for it.
+            if (!source || !attachment.isConnected) return;
+            var media = template.content.firstElementChild.cloneNode(true);
+            var canvas = media.querySelector('canvas');
+            canvas.width = source.width; canvas.height = source.height;
+            canvas.getContext('2d').drawImage(source, 0, 0);
+            var icon = attachment.querySelector(':scope > .sw-attachment-media');
+            if (icon) icon.replaceWith(media);
+        });
+    }
+
+    function uploadRowState(root, state, index) {
+        var upload = state.upload, file = state.files[index];
+        if (!upload) {
+            return {state: 'idle', text: new Intl.NumberFormat(uploadLanguage(root)).format(file.size) + ' B'};
+        }
+        if (upload.state === 'uploading') {
+            return {state: 'uploading', text: upload.shares
+                ? uploadMessage(root, 'uploading', [new Intl.NumberFormat(uploadLanguage(root), {style: 'percent'})
+                    .format(upload.shares[index] || 0)])
+                : uploadMessage(root, 'uploading-indeterminate', [])};
+        }
+        return {state: upload.state, text: uploadMessage(root, upload.state === 'processing' ? 'processing' : 'failed', [])};
+    }
+    function setAttachmentState(attachment, value) {
+        if (value) attachment.setAttribute('data-state', value); else attachment.removeAttribute('data-state');
+        if (value === 'uploading' || value === 'processing') attachment.setAttribute('aria-busy', 'true');
+        else attachment.removeAttribute('aria-busy');
+    }
     function renderUpload(root) {
         var state = uploadStates.get(root);
         var input = root.querySelector('.sw-file-upload-input');
         var list = root.querySelector('.sw-file-upload-list');
-        var template = root.querySelector('.sw-file-upload-template');
-        if (!state || !input || !list || !template) return;
+        if (!state || !input || !list) return;
+        var grid = root.getAttribute('data-layout') === 'grid';
         list.replaceChildren();
-        function item(file, index, rejected, reason) {
+        function item(kind, file, index, rowState, text) {
+            var template = root.querySelector('.sw-file-upload-template[data-kind="' + kind + '"]');
+            if (!template) return;
             var row = template.content.firstElementChild.cloneNode(true);
-            row.querySelector('.sw-file-upload-name').textContent = file.name;
-            row.querySelector('.sw-file-upload-size').textContent = reason || new Intl.NumberFormat(
-                root.closest('[lang]') ? root.closest('[lang]').lang : undefined
-            ).format(file.size) + ' B';
-            if (rejected) row.setAttribute('data-rejected', '');
-            var remove = row.querySelector('[data-sw-remove-file]');
-            remove.dataset.swRemoveFile = String(index);
-            remove.dataset.swRejectedFile = String(rejected);
-            remove.disabled = input.disabled || typeof DataTransfer === 'undefined';
-            remove.setAttribute('aria-label', uploadMessage(root, rejected ? 'dismiss' : 'remove', [file.name]));
+            var attachment = row.querySelector('.sw-attachment');
+            if (grid) attachment.setAttribute('data-orientation', 'vertical'); else attachment.setAttribute('data-size', 'sm');
+            setAttachmentState(attachment, rowState);
+            attachment.querySelector('.sw-attachment-title').textContent = file.name;
+            attachment.querySelector('.sw-attachment-description').textContent = text;
+            var remove = attachment.querySelector('[data-sw-remove-file]');
+            if (index < 0) remove.closest('.sw-attachment-actions').remove();
+            else {
+                remove.dataset.swRemoveFile = String(index);
+                remove.dataset.swRejectedFile = String(kind === 'rejected');
+                remove.disabled = input.disabled || typeof DataTransfer === 'undefined';
+                remove.setAttribute('aria-label', uploadMessage(root, kind === 'rejected' ? 'dismiss' : 'remove', [file.name]));
+            }
+            if (kind === 'file' && root.hasAttribute('data-previews')) previewUpload(root, attachment, file);
             list.appendChild(row);
         }
-        state.files.forEach(function (file, index) { item(file, index, false); });
-        state.rejected.forEach(function (entry, index) { item(entry.file, index, true, entry.reason); });
+        state.files.forEach(function (file, index) {
+            var row = uploadRowState(root, state, index);
+            item('file', file, index, row.state, row.text);
+        });
+        state.done.forEach(function (file) { item('file', file, -1, null, uploadMessage(root, 'done', [])); });
+        state.rejected.forEach(function (entry, index) { item('rejected', entry.file, index, 'error', entry.reason); });
         list.hidden = list.children.length === 0;
+    }
+    // Progress changes only each row's state and text: the rows, their focus and their thumbnails stay.
+    function paintUpload(root) {
+        var state = uploadStates.get(root);
+        var rows = root.querySelectorAll('.sw-file-upload-list > .sw-file-upload-item > .sw-attachment');
+        state.files.forEach(function (file, index) {
+            var attachment = rows[index], row = uploadRowState(root, state, index);
+            if (!attachment) return;
+            setAttachmentState(attachment, row.state);
+            var description = attachment.querySelector('.sw-attachment-description');
+            if (description.textContent !== row.text) description.textContent = row.text;
+        });
     }
     function setUploadFiles(root, files) {
         var input = root.querySelector('.sw-file-upload-input');
@@ -89,10 +168,16 @@
             return (file.type || '').toLowerCase() === token;
         });
     }
+    // A new choice ends what the last upload left on show: its uploaded or failed files.
+    function forgetUpload(state) {
+        state.done = [];
+        if (state.upload && !state.upload.request) state.upload = null;
+    }
     function addUploadFiles(root, incoming) {
         var input = root.querySelector('.sw-file-upload-input');
         var state = uploadState(root);
-        if (!state || input.disabled || typeof DataTransfer === 'undefined') return;
+        if (!state || input.disabled || uploadBusy(state) || typeof DataTransfer === 'undefined') return;
+        forgetUpload(state);
         var files = input.multiple ? state.files.slice() : [];
         var maximum = input.multiple ? Number(root.dataset.maxFiles || 2147483647) : 1;
         var maxSize = Number(root.dataset.maxSize || Infinity);
@@ -117,16 +202,153 @@
         if (!(node instanceof Element || node instanceof Document)) return;
         if (node instanceof Element && node.matches('.sw-file-upload')) uploadState(node);
         node.querySelectorAll('.sw-file-upload').forEach(uploadState);
+        subscribeUploads();
     }
+
+    // Upload progress for Wicket Ajax submits of a multipart form. Wicket publishes beforeSend before the request
+    // goes out: its native engine passes the XMLHttpRequest itself, its jQuery engine a jqXHR and the settings whose
+    // xhr factory jQuery calls next, which is wrapped for this one request. The browser reports the whole body's
+    // progress; the files go into it one after the other, so each one's share is worked out from where it is.
+    var uploadRequests = new Map();
+    var uploadsSubscribed = false;
+    function trackUpload(event, attrs, xhr, settings) {
+        if (!attrs || !attrs.mp || !attrs.f) return;
+        var form = document.getElementById(attrs.f);
+        if (!form) return;
+        var roots = Array.from(form.querySelectorAll('.sw-file-upload')).filter(function (root) {
+            var state = uploadStates.get(root), input = root.querySelector('.sw-file-upload-input');
+            return state && input && !input.disabled && !uploadBusy(state) && state.files.length > 0;
+        });
+        if (roots.length === 0) return;
+        var request = {xhr: xhr, roots: roots, sizes: 0, offsets: new Map()};
+        form.querySelectorAll('input[type=file]').forEach(function (input) {
+            if (input.disabled) return;
+            var offsets = [];
+            Array.from(input.files || []).forEach(function (file) { offsets.push(request.sizes); request.sizes += file.size; });
+            request.offsets.set(input, offsets);
+        });
+        roots.forEach(function (root) { startUpload(root, request); });
+        var watch = function (real) {
+            if (!real || !real.upload) return;
+            real.upload.addEventListener('progress', function (progress) {
+                progressUpload(request, progress.lengthComputable ? progress.loaded : 0,
+                    progress.lengthComputable ? progress.total : 0);
+                // Firefox fires the upload's load only with the response: every byte sent is the same news.
+                if (progress.lengthComputable && progress.total > 0 && progress.loaded >= progress.total) sentUpload(request);
+            });
+            real.upload.addEventListener('load', function () { sentUpload(request); });
+        };
+        if (xhr && xhr.upload) watch(xhr);
+        else if (settings && typeof settings.xhr === 'function') {
+            var make = settings.xhr;
+            settings.xhr = function () { var real = make.apply(this, arguments); watch(real); return real; };
+        }
+        uploadRequests.set(attrs, request);
+    }
+    function startUpload(root, request) {
+        var state = uploadStates.get(root), input = root.querySelector('.sw-file-upload-input');
+        state.rejected = []; state.done = [];
+        state.upload = {state: 'uploading', shares: null, request: request, files: state.files.slice(),
+            ariaDisabled: input.getAttribute('aria-disabled')};
+        root.setAttribute('data-uploading', 'sending');
+        // The body is already made: the input stays enabled, so it can take the focus back from Cancel, but it
+        // refuses new files until the request ends.
+        input.setAttribute('aria-disabled', 'true');
+        renderUpload(root);
+        announceUpload(root, uploadMessage(root, 'announce-uploading',
+            [new Intl.NumberFormat(uploadLanguage(root)).format(state.files.length)]));
+    }
+    function progressUpload(request, loaded, total) {
+        request.roots.forEach(function (root) {
+            var state = uploadStates.get(root), input = root.querySelector('.sw-file-upload-input');
+            if (!root.isConnected || !state || !state.upload || state.upload.request !== request
+                    || state.upload.state !== 'uploading') return;
+            var offsets = request.offsets.get(input);
+            if (!total || !request.sizes || !offsets) state.upload.shares = null;
+            else {
+                var sent = loaded * request.sizes / total;
+                state.upload.shares = state.files.map(function (file, index) {
+                    var offset = offsets[index] || 0;
+                    return file.size === 0 ? (sent >= offset ? 1 : 0) : Math.min(1, Math.max(0, (sent - offset) / file.size));
+                });
+            }
+            paintUpload(root);
+        });
+    }
+    // All bytes are sent: the server is working on them, and cancelling could no longer undo that.
+    function sentUpload(request) {
+        request.roots.forEach(function (root) {
+            var state = uploadStates.get(root);
+            if (!root.isConnected || !state || !state.upload || state.upload.request !== request
+                    || state.upload.state === 'processing') return;
+            state.upload.state = 'processing';
+            var cancel = root.querySelector('.sw-file-upload-cancel');
+            var refocus = document.activeElement === cancel;
+            root.setAttribute('data-uploading', 'processing');
+            if (refocus) root.querySelector('.sw-file-upload-input').focus();
+            paintUpload(root);
+        });
+    }
+    function finishUpload(root, state) {
+        var input = root.querySelector('.sw-file-upload-input');
+        var cancel = root.querySelector('.sw-file-upload-cancel');
+        var refocus = document.activeElement === cancel;
+        if (state.upload.ariaDisabled === null) input.removeAttribute('aria-disabled');
+        else input.setAttribute('aria-disabled', state.upload.ariaDisabled);
+        root.removeAttribute('data-uploading');
+        if (refocus) input.focus();
+    }
+    function endUpload(root, how) {
+        var state = uploadStates.get(root);
+        finishUpload(root, state);
+        // A failure leaves the files in the input, ready to send again; a 200 may be a validation error, which leaves
+        // them too. Only clearSelection, called once the server has taken them, shows them as uploaded.
+        state.upload = how === 'error' ? {state: 'error'} : null;
+        renderUpload(root);
+        if (how !== 'idle') announceUpload(root, uploadMessage(root, how === 'error' ? 'announce-failed' : 'announce-cancelled', []));
+    }
+    function completeUpload(event, attrs, xhr, textStatus) {
+        var request = uploadRequests.get(attrs);
+        if (!request) return;
+        uploadRequests.delete(attrs);
+        request.roots.forEach(function (root) {
+            var state = uploadStates.get(root);
+            if (!root.isConnected || !state || !state.upload || state.upload.request !== request) return;
+            endUpload(root, textStatus === 'success' ? 'idle' : textStatus === 'abort' ? 'cancelled' : 'error');
+        });
+    }
+    function subscribeUploads() {
+        if (uploadsSubscribed || !window.Wicket || !Wicket.Event || !Wicket.Event.subscribe) return;
+        uploadsSubscribed = true;
+        Wicket.Event.subscribe('/ajax/call/beforeSend', trackUpload);
+        Wicket.Event.subscribe('/ajax/call/complete', completeUpload);
+    }
+    if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', subscribeUploads);
+    else subscribeUploads();
+    document.addEventListener('click', function (event) {
+        if (!(event.target instanceof Element)) return;
+        var cancel = event.target.closest('.sw-file-upload-cancel');
+        if (cancel) {
+            var state = uploadStates.get(cancel.closest('.sw-file-upload'));
+            if (uploadBusy(state) && state.upload.state === 'uploading' && state.upload.request.xhr
+                    && typeof state.upload.request.xhr.abort === 'function') state.upload.request.xhr.abort();
+            return;
+        }
+        // An input refusing new files while they are sent: its picker does not open (also from the keyboard).
+        if (event.target.matches('.sw-file-upload-input') && uploadBusy(uploadStates.get(event.target.closest('.sw-file-upload')))) {
+            event.preventDefault();
+        }
+    }, true);
+
     document.addEventListener('change', function (event) {
         if (!(event.target instanceof Element) || !event.target.matches('.sw-file-upload-input')) return;
         if (event.detail && event.detail.swUpload) return;
         var root = event.target.closest('.sw-file-upload');
         // The cached selection is read before the new picker result is merged into it.
-        if (!uploadStates.has(root)) uploadStates.set(root, {files: [], rejected: []});
+        if (!uploadStates.has(root)) uploadStates.set(root, newUploadState([]));
         var incoming = Array.from(event.target.files || []);
         if (incoming.length === 0 || typeof DataTransfer === 'undefined') {
-            uploadStates.set(root, {files: incoming, rejected: []});
+            uploadStates.set(root, newUploadState(incoming));
             renderUpload(root);
         } else addUploadFiles(root, incoming);
     }, true);
@@ -136,11 +358,12 @@
         if (!button) return;
         var root = button.closest('.sw-file-upload');
         var input = root.querySelector('.sw-file-upload-input');
-        if (input.disabled || typeof DataTransfer === 'undefined') return;
         var state = uploadState(root);
+        if (input.disabled || uploadBusy(state) || typeof DataTransfer === 'undefined') return;
         var index = Number(button.dataset.swRemoveFile);
         var rejected = button.dataset.swRejectedFile === 'true';
         var file = rejected ? state.rejected[index].file : state.files[index];
+        forgetUpload(state);
         if (rejected) state.rejected.splice(index, 1);
         else { var files = state.files.slice(); files.splice(index, 1); setUploadFiles(root, files); }
         renderUpload(root);
@@ -158,7 +381,7 @@
             if (!root || !event.dataTransfer || !Array.from(event.dataTransfer.types).includes('Files')) return;
             var input = root.querySelector('.sw-file-upload-input');
             event.preventDefault();
-            if (input.disabled || typeof DataTransfer === 'undefined') {
+            if (input.disabled || uploadBusy(uploadStates.get(root)) || typeof DataTransfer === 'undefined') {
                 event.dataTransfer.dropEffect = 'none';
                 root.removeAttribute('data-dragging');
                 return;
@@ -178,7 +401,8 @@
         var form = event.target;
         queueMicrotask(function () {
             if (!event.defaultPrevented) form.querySelectorAll('.sw-file-upload').forEach(function (root) {
-                uploadStates.set(root, {files: [], rejected: []}); renderUpload(root);
+                if (uploadBusy(uploadStates.get(root))) return;
+                uploadStates.set(root, newUploadState([])); renderUpload(root);
             });
         });
     });
@@ -187,15 +411,26 @@
         if (!input) return;
         input.value = '';
         var root = input.closest('.sw-file-upload');
-        if (root) {
-            uploadStates.set(root, {files: [], rejected: []}); renderUpload(root);
+        if (!root) return;
+        var state = uploadStates.get(root);
+        if (uploadBusy(state)) {
+            // Called in the response to the request that sent them: the files are the server's now, so they show as
+            // uploaded until the next choice, and leave the input so they are not sent twice.
+            var sent = state.upload.files;
+            finishUpload(root, state);
+            uploadStates.set(root, {files: [], rejected: [], done: sent, upload: null});
+            renderUpload(root);
+            announceUpload(root, uploadMessage(root, 'announce-uploaded',
+                [new Intl.NumberFormat(uploadLanguage(root)).format(sent.length)]));
+        } else {
+            uploadStates.set(root, newUploadState([])); renderUpload(root);
             announceUpload(root, uploadMessage(root, 'cleared', []));
         }
     };
     window.addEventListener('pageshow', function () {
         document.querySelectorAll('.sw-file-upload').forEach(function (root) {
             var input = root.querySelector('.sw-file-upload-input');
-            uploadStates.set(root, {files: Array.from(input.files || []), rejected: []}); renderUpload(root);
+            uploadStates.set(root, newUploadState(Array.from(input.files || []))); renderUpload(root);
         });
     });
     scanUploads(document);

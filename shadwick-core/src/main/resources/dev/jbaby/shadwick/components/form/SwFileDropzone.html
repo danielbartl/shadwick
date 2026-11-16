@@ -14,15 +14,25 @@
                 </div>
                 <div class="sw-empty-content">
                     <label wicket:id="browse" class="sw-button sw-file-upload-browse" data-variant="outline"></label>
+                    <!-- Shown in Browse's place while an Ajax submit sends the files; it aborts that request. -->
+                    <button wicket:id="cancel" type="button" class="sw-button sw-file-upload-cancel" data-variant="outline"><svg class="sw-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg><span wicket:id="cancelLabel"></span></button>
                 </div>
             </div>
             <ul class="sw-file-upload-list" hidden="hidden"></ul>
             <div class="sw-file-upload-status" role="status" aria-live="polite"></div>
-            <template class="sw-file-upload-template"><li class="sw-file-upload-item">
-                <svg class="sw-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8Z"/><path d="M14 2v6h6"/></svg>
-                <div class="sw-file-upload-details"><span class="sw-file-upload-name"></span><span class="sw-file-upload-size"></span></div>
-                <button type="button" class="sw-button" data-variant="ghost" data-size="icon" data-sw-remove-file="">×</button>
-            </li></template>
+            <!-- Each file is an attachment; Shadwick.js sets its size and orientation for the layout. Lucide file, file-x, x (ISC, see NOTICE). -->
+            <template class="sw-file-upload-template" data-kind="file"><li class="sw-file-upload-item"><div class="sw-attachment" data-state="idle" data-width="full">
+                <div class="sw-attachment-media"><svg class="sw-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8Z"/><path d="M14 2v6h6"/></svg></div>
+                <div class="sw-attachment-content"><span class="sw-attachment-title"></span><span class="sw-attachment-description"></span></div>
+                <div class="sw-attachment-actions"><button type="button" class="sw-attachment-action sw-button" data-variant="ghost" data-size="icon" data-sw-remove-file=""><svg class="sw-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg></button></div>
+            </div></li></template>
+            <template class="sw-file-upload-template" data-kind="rejected"><li class="sw-file-upload-item"><div class="sw-attachment" data-state="error" data-width="full">
+                <div class="sw-attachment-media"><svg class="sw-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"/><path d="M14 2v4a2 2 0 0 0 2 2h4"/><path d="m14.5 12.5-5 5"/><path d="m9.5 12.5 5 5"/></svg></div>
+                <div class="sw-attachment-content"><span class="sw-attachment-title"></span><span class="sw-attachment-description"></span></div>
+                <div class="sw-attachment-actions"><button type="button" class="sw-attachment-action sw-button" data-variant="ghost" data-size="icon" data-sw-remove-file=""><svg class="sw-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg></button></div>
+            </div></li></template>
+            <!-- With previews: an image's thumbnail, drawn from the file into the canvas (no URL, so no CSP change). -->
+            <template wicket:id="imageTemplate" class="sw-file-upload-template" data-kind="image"><div class="sw-attachment-media" data-variant="image"><canvas aria-hidden="true"></canvas></div></template>
         </div>
         <div wicket:id="error" class="sw-field-error" role="status"></div>
     </div>

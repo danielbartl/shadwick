@@ -1922,6 +1922,28 @@ locally. Next: a hosted interactive showcase, then tooling and release preparati
 
 ## Conventions
 
+### Uploads parity: attachment rows, grid, previews, progress (2026-11-16, 0.2.0-SNAPSHOT)
+
+Shadleaf f4acff8's file-upload; Oat has none. SwFileDropzone only (SwFileUpload stays a plain native input).
+- Rows are attachments (user's choice, recorded under Changed): templates data-kind file/rejected/image in
+  SwFileDropzone.html; shadwick.js sets data-size=sm (list) or data-orientation=vertical (GRID) when cloning. The old
+  .sw-file-upload-item/-name/-size skin rules are gone from all nine skins. setLayout(Layout.GRID) -> data-layout=grid
+  (Vega/Lyra/Nova got the grid columns copied from their attachment-group grid; Maia-Sketch had them).
+- setPreviews(true): createImageBitmap(file) -> centre-cropped 256px canvas, cached per File (WeakMap), copied into the
+  image template's canvas. Deliberately not Shadleaf's blob: <img>: no img-src blob: CSP exception, no same-origin URL.
+  Images only (not SVG), <= 20 MB; undecodable files keep the icon.
+- Progress: subscribe to Wicket.Event /ajax/call/beforeSend and /complete (subscriber(event, attrs, xhr, settings)).
+  Native engine passes the real XHR before send(); the jQuery engine (default) passes a jqXHR, so wrap settings.xhr,
+  which jQuery calls after beforeSend. Firefox fires upload 'load' only with the response: progress loaded >= total also
+  counts as sent. States: data-uploading=sending (Cancel shown, Browse/remove hidden) -> processing (Cancel hidden:
+  aborting can't undo server work). The input stays enabled with aria-disabled and a click guard, so focus can return
+  to it from Cancel. A Wicket 200 may be a validation failure, so success leaves files idle in the input;
+  clearSelection(target) during an in-flight upload shows them as done ("Uploaded") and empties the input. Error or
+  timeout -> "Upload failed", files kept; abort -> idle + "Upload cancelled.".
+- Tests: Playwright screenshots (caret hiding) leave style="" on inputs, so audit before screenshotting. A 500 with a
+  non-XML body makes Chromium's DOMParser (via jQuery.parseXML) report a CSP inline-style violation: simulate failures
+  with route.abort("failed"). CDP throttling must be cleared on the same CDPSession that set it.
+
 ### Forms parity: field layout, field groups, error summary (2026-11-16, 0.2.0-SNAPSHOT)
 
 Shadleaf f4acff8's field orientation/field-group/form-errors; Oat has none. All additive.

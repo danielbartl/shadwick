@@ -29,6 +29,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatNullPointerException;
 import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
 
 class FileUploadFieldsTest {
@@ -226,5 +227,57 @@ class FileUploadFieldsTest {
         assertThatIllegalArgumentException().isThrownBy(() -> field.setMaxFileSize(Bytes.bytes(0)));
         field.setMaxFileSize(Bytes.bytes(1)).setMaxFileSize(null);
         form(field, new ArrayList<>());
+    }
+
+    @Test
+    void dropzoneRowsAreAttachmentTemplatesWithACancelButtonAndUploadMessages() {
+        form(new SwFileDropzone("files", "Attachments", Model.ofList(new ArrayList<>())), new ArrayList<>());
+        String html = html();
+        assertThat(html).contains("data-kind=\"file\"", "data-kind=\"rejected\"", "class=\"sw-attachment\" data-state=\"idle\"",
+                "class=\"sw-attachment\" data-state=\"error\"", "sw-attachment-action", "sw-file-upload-cancel", "Cancel upload");
+        assertThat(html).doesNotContain("data-kind=\"image\"", "data-layout=", "data-previews", "sw-file-upload-name");
+        var upload = tester.getTagByWicketId("upload");
+        assertThat(upload.getAttribute("data-message-uploading")).isEqualTo("Uploading \u00b7 {0}");
+        assertThat(upload.getAttribute("data-message-uploading-indeterminate")).isEqualTo("Uploading");
+        assertThat(upload.getAttribute("data-message-processing")).isEqualTo("Processing");
+        assertThat(upload.getAttribute("data-message-failed")).isEqualTo("Upload failed");
+        assertThat(upload.getAttribute("data-message-done")).isEqualTo("Uploaded");
+        assertThat(upload.getAttribute("data-message-announce-uploading")).isEqualTo("Uploading {0} file(s).");
+        assertThat(upload.getAttribute("data-message-announce-cancelled")).isEqualTo("Upload cancelled.");
+        // The Cancel button never submits the form
+        assertThat(tester.getTagByWicketId("cancel").getAttribute("type")).isEqualTo("button");
+    }
+
+    @Test
+    void gridLayoutAndPreviewsAreOptIn() {
+        var dropzone = new SwFileDropzone("files", "Photos", Model.ofList(new ArrayList<>()));
+        assertThat(dropzone.getLayout()).isEqualTo(SwFileDropzone.Layout.LIST);
+        assertThat(dropzone.isPreviews()).isFalse();
+        dropzone.setLayout(SwFileDropzone.Layout.GRID).setPreviews(true);
+        form(dropzone, new ArrayList<>());
+        var upload = tester.getTagByWicketId("upload");
+        assertThat(upload.getAttribute("data-layout")).isEqualTo("grid");
+        assertThat(upload.getAttribute("data-previews")).isNotNull();
+        // The preview is a canvas the browser draws into: no image URL, so no CSP exception
+        assertThat(html()).contains("data-kind=\"image\"", "<canvas aria-hidden=\"true\"></canvas>").doesNotContain("blob:");
+        assertThatNullPointerException().isThrownBy(() -> dropzone.setLayout(null));
+    }
+
+    @Test
+    void uploadStateMessagesAreTranslated() {
+        tester.getSession().setLocale(java.util.Locale.GERMAN);
+        form(new SwFileDropzone("files", "Anh\u00e4nge", Model.ofList(new ArrayList<>())), new ArrayList<>());
+        var upload = tester.getTagByWicketId("upload");
+        assertThat(upload.getAttribute("data-message-processing")).isEqualTo("Wird verarbeitet");
+        assertThat(html()).contains("Hochladen abbrechen");
+    }
+
+    @Test
+    void clearingTheSelectionAfterAnAjaxSubmitRunsTheClientClear() throws Exception {
+        tester.startPage(new AjaxPage());
+        FormTester ft = tester.newFormTester("form");
+        ft.setFile("files:input", file("x.txt", "data"), "text/plain");
+        tester.executeAjaxEvent("form:save", "click");
+        assertThat(html()).contains("Shadwick.clearFileSelection(");
     }
 }

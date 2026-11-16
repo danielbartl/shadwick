@@ -694,6 +694,10 @@
     @apply gap-2;
   }
 
+  .sw-file-upload[data-layout='grid'] > .sw-file-upload-list {
+    @apply grid-cols-[repeat(auto-fill,minmax(min(100%,8rem),1fr))] gap-3;
+  }
+
   .sw-file-upload:has(> .sw-file-upload-input:focus-visible) > .sw-file-upload-dropzone > .sw-empty-content > .sw-file-upload-browse {
     @apply border-ring ring-[3px] ring-ring/50;
   }
@@ -705,12 +709,6 @@
   .sw-file-upload[data-dragging] > .sw-file-upload-dropzone {
     @apply border-ring bg-muted/50;
   }
-
-  .sw-file-upload-item { @apply gap-3 rounded-md border border-border bg-background p-2; }
-  .sw-file-upload-name { @apply text-sm font-medium; }
-  .sw-file-upload-size { @apply text-xs text-muted-legible; }
-  .sw-file-upload-item[data-rejected] { @apply border-destructive; }
-  .sw-file-upload-item[data-rejected] .sw-file-upload-size { @apply text-destructive-legible; }
 }
 
 /* Alert dialogs and sheets. Adapted from Shadleaf (Apache-2.0, see NOTICE). */

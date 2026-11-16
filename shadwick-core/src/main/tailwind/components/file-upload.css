@@ -1,4 +1,13 @@
-/* Adapted from Shadleaf's file-upload.css (Apache-2.0, see NOTICE). */
+/*
+  Adapted from Shadleaf's file-upload.css (Apache-2.0, see NOTICE). Each chosen file is an attachment (its look is the
+  attachment's, in the skins): a list one below the other, or with data-layout="grid" cards in the columns of a grid
+  attachment group, whose gap and columns the skins set.
+
+  While an Ajax submit sends the files (data-uploading="sending"), a Cancel button takes the Browse label's place and
+  the remove buttons are hidden; once all bytes are sent (data-uploading="processing") Cancel goes, as aborting could no
+  longer undo the server's work, and Browse is back but, like a disabled input's, inert. Without JavaScript neither
+  attribute is ever set.
+*/
 @layer components {
   .sw-file-upload {
     @apply relative flex w-full min-w-0 flex-col;
@@ -14,20 +23,27 @@
     @apply m-0 min-w-0 list-none p-0;
   }
 
-  .sw-file-upload-list:not([hidden]) {
+  .sw-file-upload:not([data-layout]) > .sw-file-upload-list:not([hidden]) {
     @apply flex flex-col;
   }
 
+  .sw-file-upload[data-layout='grid'] > .sw-file-upload-list:not([hidden]) {
+    @apply grid;
+  }
+
   .sw-file-upload-item {
-    @apply flex min-w-0 items-center;
+    @apply flex min-w-0;
   }
 
-  .sw-file-upload-details {
-    @apply flex min-w-0 flex-1 flex-col;
+  .sw-file-upload:not([data-uploading='sending']) > .sw-file-upload-dropzone > .sw-empty-content > .sw-file-upload-cancel,
+  .sw-file-upload[data-uploading='sending'] > .sw-file-upload-dropzone > .sw-empty-content > .sw-file-upload-browse,
+  .sw-file-upload[data-uploading] > .sw-file-upload-list > .sw-file-upload-item > .sw-attachment > .sw-attachment-actions {
+    @apply hidden;
   }
 
-  .sw-file-upload-name {
-    @apply break-all;
+  .sw-file-upload[data-uploading='processing'] > .sw-file-upload-dropzone > .sw-empty-content > .sw-file-upload-browse {
+    @apply pointer-events-none opacity-50
+      forced-colors:border-[GrayText] forced-colors:text-[GrayText] forced-colors:opacity-100;
   }
 
   .sw-file-upload:has(> .sw-file-upload-input:disabled) > .sw-file-upload-dropzone > .sw-empty-content > .sw-file-upload-browse {

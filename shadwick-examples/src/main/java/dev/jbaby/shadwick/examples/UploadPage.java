@@ -7,6 +7,7 @@ import dev.jbaby.shadwick.components.SwSubmitButton;
 import dev.jbaby.shadwick.components.form.BaseSwFileUpload;
 import dev.jbaby.shadwick.components.form.SwFileDropzone;
 import dev.jbaby.shadwick.components.form.SwFileUpload;
+import dev.jbaby.shadwick.components.form.SwSwitch;
 import dev.jbaby.shadwick.components.form.SwTextField;
 
 import org.apache.wicket.markup.html.basic.Label;
@@ -41,6 +42,7 @@ public class UploadPage extends BasePage {
         add(normalForm());
         add(ajaxForm());
         add(singleFileForm());
+        add(photoForm());
         addFieldVariants();
     }
 
@@ -117,6 +119,47 @@ public class UploadPage extends BasePage {
                         },
                         target -> target.add(singleFeedback)));
         return single;
+    }
+
+    /**
+     * Photos as cards with thumbnails, sent over Ajax: each shows how far its upload is, then Processing while the
+     * server works on them, then Uploaded once the callback clears the selection. Cancel stops a slow upload.
+     */
+    private Form<Void> photoForm() {
+        Form<Void> form = new Form<>("photoForm");
+        form.setMultiPart(true);
+        form.setMaxSize(Bytes.megabytes(16));
+        form.setFileMaxSize(Bytes.megabytes(4));
+        form.setFileCountMax(10);
+        SwFileDropzone photos = new SwFileDropzone("photos", "Inspection photos", Model.ofList(new ArrayList<>()))
+                .setLayout(SwFileDropzone.Layout.GRID)
+                .setPreviews(true)
+                .setAccept("image/*,.pdf")
+                .setMaxFiles(6)
+                .setMaxFileSize(Bytes.megabytes(4))
+                .setRequired(true)
+                .setDescription("Up to six images or PDFs, 4 MB each. They are read and discarded.");
+        Model<Boolean> slow = Model.of(true);
+        Label received = new Label("received", Model.of(""));
+        received.setOutputMarkupId(true);
+        SwFeedbackPanel feedback = new SwFeedbackPanel("feedback", form);
+        feedback.setOutputMarkupId(true);
+        form.add(photos, new SwSwitch("slow", "Slow server (2 s of processing)", slow), received, feedback);
+        form.add(SwSubmitButton.onSubmit("send", "Send photos", target -> {
+            if (Boolean.TRUE.equals(slow.getObject())) pause();
+            received.setDefaultModelObject("Received " + describe(photos.getModelObject()) + ".");
+            photos.clearSelection(target);
+            target.add(received, feedback);
+        }, target -> target.add(feedback)));
+        return form;
+    }
+
+    private static void pause() {
+        try {
+            Thread.sleep(2000);
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+        }
     }
 
     private void addFieldVariants() {

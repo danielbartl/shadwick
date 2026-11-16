@@ -541,6 +541,7 @@ ENUM dev.jbaby.shadwick.components.chart.SwChart$StackMode [ABSOLUTE, PERCENT]
 ENUM dev.jbaby.shadwick.components.chart.SwChart$ValueFormat [NUMBER, INTEGER, COMPACT, PERCENT, CURRENCY]
 ENUM dev.jbaby.shadwick.components.chart.SwDonutChart$Shape [DONUT, PIE]
 ENUM dev.jbaby.shadwick.components.form.BaseSwField$Orientation [VERTICAL, HORIZONTAL, RESPONSIVE]
+ENUM dev.jbaby.shadwick.components.form.SwFileDropzone$Layout [LIST, GRID]
 FIELD protected final dev.jbaby.shadwick.behaviors.CalendarBehavior dev.jbaby.shadwick.components.form.BaseSwCalendar.calendar
 FIELD public static final dev.jbaby.shadwick.AccessibilityChecks dev.jbaby.shadwick.AccessibilityChecks.FAIL
 FIELD public static final dev.jbaby.shadwick.AccessibilityChecks dev.jbaby.shadwick.AccessibilityChecks.OFF
@@ -766,6 +767,8 @@ FIELD public static final dev.jbaby.shadwick.components.chart.SwDonutChart$Shape
 FIELD public static final dev.jbaby.shadwick.components.form.BaseSwField$Orientation dev.jbaby.shadwick.components.form.BaseSwField$Orientation.HORIZONTAL
 FIELD public static final dev.jbaby.shadwick.components.form.BaseSwField$Orientation dev.jbaby.shadwick.components.form.BaseSwField$Orientation.RESPONSIVE
 FIELD public static final dev.jbaby.shadwick.components.form.BaseSwField$Orientation dev.jbaby.shadwick.components.form.BaseSwField$Orientation.VERTICAL
+FIELD public static final dev.jbaby.shadwick.components.form.SwFileDropzone$Layout dev.jbaby.shadwick.components.form.SwFileDropzone$Layout.GRID
+FIELD public static final dev.jbaby.shadwick.components.form.SwFileDropzone$Layout dev.jbaby.shadwick.components.form.SwFileDropzone$Layout.LIST
 FIELD public static final int dev.jbaby.shadwick.behaviors.ToastBehavior.DEFAULT_VISIBLE_TOASTS = 3
 FIELD public static final int dev.jbaby.shadwick.behaviors.ToastBehavior.MAX_VISIBLE_TOASTS = 10
 FIELD public static final int dev.jbaby.shadwick.components.chart.SwDonutChart.DEFAULT_MAX_SEGMENTS = 5
@@ -1074,6 +1077,7 @@ METHOD public boolean dev.jbaby.shadwick.components.form.DisabledDates.intersect
 METHOD public boolean dev.jbaby.shadwick.components.form.NotShownInlineFilter.accept(org.apache.wicket.feedback.FeedbackMessage)
 METHOD public boolean dev.jbaby.shadwick.components.form.RangeDateInput.checkRequired()
 METHOD public boolean dev.jbaby.shadwick.components.form.SwCheckBox.isIndeterminate()
+METHOD public boolean dev.jbaby.shadwick.components.form.SwFileDropzone.isPreviews()
 METHOD public boolean dev.jbaby.shadwick.components.table.SwRowDetailsColumn.isExpanded(T)
 METHOD public boolean dev.jbaby.shadwick.components.table.SwSelectionColumn.isSelected(T)
 METHOD public dev.jbaby.shadwick.AccessibilityChecks dev.jbaby.shadwick.ShadwickSettings.getAccessibilityChecks()
@@ -1687,6 +1691,9 @@ METHOD public dev.jbaby.shadwick.components.form.SwCombobox<T> dev.jbaby.shadwic
 METHOD public dev.jbaby.shadwick.components.form.SwCombobox<T> dev.jbaby.shadwick.components.form.SwCombobox.setPlaceholder(org.apache.wicket.model.IModel<java.lang.String>)
 METHOD public dev.jbaby.shadwick.components.form.SwCombobox<T> dev.jbaby.shadwick.components.form.SwCombobox.setSeparatorBefore(dev.jbaby.shadwick.util.SerializableFunction<? super T, java.lang.Boolean>)
 METHOD public dev.jbaby.shadwick.components.form.SwCombobox<T> dev.jbaby.shadwick.components.form.SwCombobox.setShowClear(boolean)
+METHOD public dev.jbaby.shadwick.components.form.SwFileDropzone dev.jbaby.shadwick.components.form.SwFileDropzone.setLayout(dev.jbaby.shadwick.components.form.SwFileDropzone$Layout)
+METHOD public dev.jbaby.shadwick.components.form.SwFileDropzone dev.jbaby.shadwick.components.form.SwFileDropzone.setPreviews(boolean)
+METHOD public dev.jbaby.shadwick.components.form.SwFileDropzone$Layout dev.jbaby.shadwick.components.form.SwFileDropzone.getLayout()
 METHOD public dev.jbaby.shadwick.components.form.SwListMultipleChoice<T> dev.jbaby.shadwick.components.form.SwListMultipleChoice.setMaxRows(int)
 METHOD public dev.jbaby.shadwick.components.form.SwMoneyField dev.jbaby.shadwick.components.form.SwMoneyField.setCurrency(java.util.Currency)
 METHOD public dev.jbaby.shadwick.components.form.SwMoneyField dev.jbaby.shadwick.components.form.SwMoneyField.setCurrency(org.apache.wicket.model.IModel<java.util.Currency>)
@@ -2159,6 +2166,8 @@ METHOD public static dev.jbaby.shadwick.components.chart.SwDonutChart$Shape dev.
 METHOD public static dev.jbaby.shadwick.components.chart.SwDonutChart$Shape[] dev.jbaby.shadwick.components.chart.SwDonutChart$Shape.values()
 METHOD public static dev.jbaby.shadwick.components.form.BaseSwField$Orientation dev.jbaby.shadwick.components.form.BaseSwField$Orientation.valueOf(java.lang.String)
 METHOD public static dev.jbaby.shadwick.components.form.BaseSwField$Orientation[] dev.jbaby.shadwick.components.form.BaseSwField$Orientation.values()
+METHOD public static dev.jbaby.shadwick.components.form.SwFileDropzone$Layout dev.jbaby.shadwick.components.form.SwFileDropzone$Layout.valueOf(java.lang.String)
+METHOD public static dev.jbaby.shadwick.components.form.SwFileDropzone$Layout[] dev.jbaby.shadwick.components.form.SwFileDropzone$Layout.values()
 METHOD public static double dev.jbaby.shadwick.util.RangeValues.clamp(double,double,double)
 METHOD public static double dev.jbaby.shadwick.util.RangeValues.finite(java.lang.Number,java.lang.String)
 METHOD public static java.lang.String dev.jbaby.shadwick.behaviors.ThemeBehavior.validateStorageKey(java.lang.String)
@@ -2608,4 +2617,5 @@ TYPE public static final enum dev.jbaby.shadwick.components.chart.SwChart$StackM
 TYPE public static final enum dev.jbaby.shadwick.components.chart.SwChart$ValueFormat extends java.lang.Enum<dev.jbaby.shadwick.components.chart.SwChart$ValueFormat> implements []
 TYPE public static final enum dev.jbaby.shadwick.components.chart.SwDonutChart$Shape extends java.lang.Enum<dev.jbaby.shadwick.components.chart.SwDonutChart$Shape> implements []
 TYPE public static final enum dev.jbaby.shadwick.components.form.BaseSwField$Orientation extends java.lang.Enum<dev.jbaby.shadwick.components.form.BaseSwField$Orientation> implements []
+TYPE public static final enum dev.jbaby.shadwick.components.form.SwFileDropzone$Layout extends java.lang.Enum<dev.jbaby.shadwick.components.form.SwFileDropzone$Layout> implements []
 TYPE public static final record dev.jbaby.shadwick.components.SwMonthView$Day extends java.lang.Record implements [java.io.Serializable]

@@ -35,6 +35,18 @@
     </form>
 </section>
 <section class="ex-section">
+    <h2>Photos with previews and progress</h2>
+    <p class="ex-muted">A grid of cards with thumbnails, drawn in the browser. Sending shows each file's progress, then
+        Processing while the server works; Cancel stops the upload while it is being sent.</p>
+    <form wicket:id="photoForm" class="ex-form ex-form-wide" aria-label="Photos with previews and progress" novalidate>
+        <div wicket:id="photos"></div>
+        <div wicket:id="slow"></div>
+        <div class="ex-row"><button wicket:id="send" type="submit">Send photos</button></div>
+        <div wicket:id="feedback"></div>
+        <p wicket:id="received" role="status" class="ex-muted"></p>
+    </form>
+</section>
+<section class="ex-section">
     <h2>Independent requests</h2>
     <p class="ex-muted">Check the server after a validation error. The selected files and inline error stay in place.</p>
     <div class="ex-row"><button wicket:id="unrelated" type="button"></button><span wicket:id="heartbeat" role="status" class="ex-muted"></span></div>

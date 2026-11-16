@@ -93,6 +93,21 @@ class CssBundleTest {
         }
     }
 
+    @ParameterizedTest
+    @EnumSource(Skin.class)
+    void everySkinLaysOutUploadGridsCancelAndPreviews(Skin skin) throws IOException {
+        for (Bundle bundle : Bundle.values()) {
+            String css = read("shadwick-" + skin.id() + bundle.suffix() + ".css");
+            assertThat(css).as(skin + " " + bundle)
+                    // Each skin gives the grid its columns, as its grid attachment group
+                    .containsPattern("\\.sw-file-upload\\[data-layout='grid'\\] > \\.sw-file-upload-list \\{\\s*grid-template-columns")
+                    .contains(".sw-file-upload[data-uploading='sending'] > .sw-file-upload-dropzone > .sw-empty-content > .sw-file-upload-browse")
+                    .contains(".sw-attachment-media[data-variant='image'] > canvas")
+                    // The rows are attachments now: the old row identity is gone
+                    .doesNotContain(".sw-file-upload-name");
+        }
+    }
+
     private static String read(String name) throws IOException {
         try (InputStream in = Shadwick.class.getResourceAsStream("css/" + name)) {
             assertThat(in).as(name + " on the classpath").isNotNull();

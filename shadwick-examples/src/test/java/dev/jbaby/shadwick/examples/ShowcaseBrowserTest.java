@@ -974,7 +974,7 @@ class ShowcaseBrowserTest {
             form.getByRole(AriaRole.BUTTON, new Locator.GetByRoleOptions().setName("Upload documents").setExact(true)).click();
             assertThat(input).hasAttribute("aria-invalid", "true");
             input.setInputFiles(upload("strange <name>.txt", "data"));
-            assertThat(form.locator(".sw-file-upload-name")).hasText("strange <name>.txt");
+            assertThat(form.locator(".sw-file-upload-item .sw-attachment-title")).hasText("strange <name>.txt");
             assertThat(form.locator("name")).hasCount(0);
             input.focus();
             form.getByRole(AriaRole.BUTTON, new Locator.GetByRoleOptions().setName("Upload documents").setExact(true)).evaluate("button => button.click()");
@@ -985,13 +985,15 @@ class ShowcaseBrowserTest {
             tab.getByRole(AriaRole.BUTTON, new Page.GetByRoleOptions().setName("Check server status")).click();
             assertThat(tab.getByText("Server checks: 1", new Page.GetByTextOptions().setExact(true))).isVisible();
             assertThat(title).hasAttribute("aria-invalid", "true");
-            assertThat(form.locator(".sw-file-upload-name")).hasText("strange <name>.txt");
+            assertThat(form.locator(".sw-file-upload-item .sw-attachment-title")).hasText("strange <name>.txt");
             title.fill("Ajax");
             form.getByRole(AriaRole.BUTTON, new Locator.GetByRoleOptions().setName("Upload documents").setExact(true)).click();
             assertThat(form.getByRole(AriaRole.STATUS).last()).hasText("Received Ajax: strange <name>.txt (4 bytes).");
             assertThat(form.locator("name")).hasCount(0);
             assertThat(input.evaluate("input => input.files.length")).isEqualTo(0);
-            assertThat(form.locator(".sw-file-upload-list")).isHidden();
+            // Cleared after the upload: the file shows as uploaded, without a remove button, until the next choice
+            assertThat(form.locator(".sw-file-upload-item .sw-attachment-description")).hasText("Uploaded");
+            assertThat(form.locator(".sw-file-upload-item [data-sw-remove-file]")).hasCount(0);
         });
     }
 
@@ -1005,7 +1007,7 @@ class ShowcaseBrowserTest {
             input.focus();
             tab.waitForFileChooser(() -> input.press("Space")).setFiles(upload("one.txt", "alpha"));
             input.setInputFiles(upload("two.txt", "beta"));
-            assertThat(form.locator(".sw-file-upload-name")).hasText(new String[]{"one.txt", "two.txt"});
+            assertThat(form.locator(".sw-file-upload-item .sw-attachment-title")).hasText(new String[]{"one.txt", "two.txt"});
             input.evaluate("input => { const transfer = new DataTransfer(); transfer.items.add(input.files[0]);"
                     + "input.closest('.sw-file-upload').dispatchEvent(new DragEvent('drop', {bubbles:true,cancelable:true,dataTransfer:transfer})); }");
             assertThat(input.evaluate("input => input.files.length")).isEqualTo(2);
@@ -1015,11 +1017,11 @@ class ShowcaseBrowserTest {
             drop(root, "three.txt", "text/plain", 5);
             assertThat(input.evaluate("input => input.files.length")).isEqualTo(3);
             drop(root, "large.txt", "text/plain", 65537);
-            assertThat(root.locator("[data-rejected] .sw-file-upload-size")).containsText("65536");
+            assertThat(root.locator(".sw-file-upload-item .sw-attachment[data-state=error] .sw-attachment-description")).containsText("65536");
             drop(root, "four.txt", "text/plain", 4);
-            assertThat(root.locator("[data-rejected] .sw-file-upload-size")).containsText("at most 3");
+            assertThat(root.locator(".sw-file-upload-item .sw-attachment[data-state=error] .sw-attachment-description")).containsText("at most 3");
             drop(root, "image.png", "image/png", 4);
-            assertThat(root.locator("[data-rejected] .sw-file-upload-size")).containsText("not accepted");
+            assertThat(root.locator(".sw-file-upload-item .sw-attachment[data-state=error] .sw-attachment-description")).containsText("not accepted");
             root.getByRole(AriaRole.BUTTON, new Locator.GetByRoleOptions().setName("Dismiss image.png")).click();
             root.getByRole(AriaRole.BUTTON, new Locator.GetByRoleOptions().setName("Remove two.txt")).click();
             assertThat(input.evaluate("input => Array.from(input.files).map(file => file.name)")).isEqualTo(List.of("one.txt", "three.txt"));

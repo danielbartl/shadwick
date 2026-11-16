@@ -2233,11 +2233,6 @@
   .sw-field > :is(.sw-checkbox-group, .sw-toggle-group) { @apply mt-2; }
   .sw-checkbox-indeterminate-indicator { @apply size-3.5 text-foreground; }
   .sw-native-select[multiple] { @apply h-auto; }
-  .sw-file-upload-item { @apply gap-3 sketch-shape-sm border-2 border-foreground/80 bg-background p-2; }
-  .sw-file-upload-name { @apply text-sm font-normal; }
-  .sw-file-upload-size { @apply text-xs text-muted-legible; }
-  .sw-file-upload-item[data-rejected] { @apply border-destructive; }
-  .sw-file-upload-item[data-rejected] .sw-file-upload-size { @apply text-destructive-legible; }
   .sw-skeleton[data-shape='box'] { @apply h-24 w-full; }
   .sw-spinner[data-size='sm'] { @apply size-3; }
   .sw-spinner[data-size='lg'] { @apply size-6; }

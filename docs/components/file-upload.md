@@ -44,9 +44,31 @@ With the dropzone, repeated picks and drops append files, matching name/size/mod
 and files can be removed before submission. Files rejected by its type/count/size hints are listed separately and
 excluded from the native `FileList`. Native selection and keyboard access still work without JavaScript. If the browser
 lacks the `DataTransfer` support needed for enhancement, selection uses the native picker and removal buttons stay disabled.
-The component enhances selection; transport progress, image previews and automatic submission are outside this API.
+Each chosen file shows as a small [attachment](attachments.md) with its name and size, a rejected one as an error card
+with the reason. The dropzone never submits by itself.
 
-## Ajax submission and clearing
+### Grid and image previews
+
+```java
+SwFileDropzone photos = new SwFileDropzone("photos", "Inspection photos", Model.ofList(new ArrayList<>()))
+        .setLayout(SwFileDropzone.Layout.GRID)
+        .setPreviews(true)
+        .setAccept("image/*,.pdf");
+```
+
+`Layout.GRID` shows the files as cards in columns that fill the width, the grid of an attachment group, with the remove
+button in each card's corner; order, focus after a remove and announcements stay those of the list. With
+`setPreviews(true)` an image shows a thumbnail in place of the file icon: big enough in the grid to check, say, the
+photos of an inspection before they are sent.
+
+- **Drawn in the browser.** The thumbnail is decoded from the chosen file (`createImageBitmap`) and drawn into a canvas.
+  Nothing is sent for it and no URL is made, so it works under Wicket's default Content-Security-Policy: no
+  `img-src blob:` is needed, and no page-origin URL for the file is ever opened.
+- **Which files.** Images the browser can decode, up to 20 MB (a larger photo takes much memory to decode). SVG keeps its
+  icon, and so does a file the browser cannot decode (HEIC outside Safari): the thumbnail replaces the icon only once it
+  is drawn, so no broken image shows. Its canvas is hidden from assistive technology; the file's name is beside it.
+
+## Ajax submission, progress and clearing
 
 After an invalid Ajax submit, leave the upload component out of `target.add(...)` to keep the selection and focus.
 The browser sends those files again on the next submit. After success, clear the browser selection explicitly:
@@ -60,7 +82,29 @@ form.add(SwSubmitButton.onSubmit("save", "Upload", target -> {
 }));
 ```
 
+### Upload progress and Cancel
+
+When an Ajax submit of a multipart form sends a dropzone's files (`SwSubmitButton`, `AjaxButton` and the like), the files
+show how far it is, through the [attachment's states](attachments.md), with nothing to configure:
+
+1. **Uploading.** Each file shows the share of its bytes sent, "Uploading · 64%". The browser reports the progress of the
+   whole request; the files go into it one after the other, so each one's share is worked out from where its bytes are.
+   A **Cancel upload** button takes the Browse button's place; it aborts the request, and the files are back as they
+   were, ready to send again. Meanwhile files cannot be added or removed.
+2. **Processing**, once every byte is sent and the server is working on them. Cancel is gone now: aborting could no
+   longer undo what the server does with them.
+3. **The outcome.** Wicket answers 200 also when validation fails, so a finished request alone leaves the files as they
+   were, in the input. `clearSelection(target)` in the success callback, as above, shows them as **Uploaded** until the
+   next choice, and empties the input so they are not sent twice. A failed request (an error status, a dropped
+   connection, a timeout) shows **Upload failed** and keeps them, ready to send again.
+
+A screen reader hears the start, the end, a failure or a cancel, not each percentage. A normal (non-Ajax) submit shows
+the browser's own progress, if any. This works with both of Wicket's Ajax engines (jQuery, the default, and the native
+one). The form's own limits (`setMaxSize`, `setFileMaxSize`, `setFileCountMax`) and your servlet container's request
+limits should allow what the form may send: a request over them fails as a whole.
+
 A full page render clears the selection, as native file inputs cannot be populated from the server. The **Uploads**
 showcase (`/uploads`) covers native and Ajax submissions, a single-file picker, server count/size/type validation,
-request limits, drag/drop/removal and a disabled dropzone. Its receipts keep only escaped filenames and byte counts;
+request limits, drag/drop/removal, a photo grid with previews and progress (with a slow server to show processing and
+Cancel) and a disabled dropzone. Its receipts keep only escaped filenames and byte counts;
 file content is discarded. The landing-page reference-file demo selects a local file without uploading it.

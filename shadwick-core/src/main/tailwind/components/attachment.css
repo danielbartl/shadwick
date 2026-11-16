@@ -46,6 +46,11 @@
     @apply aspect-square w-full object-cover;
   }
 
+  /* A file upload's preview: the image drawn into a square canvas, in the image's place. */
+  .sw-attachment-media[data-variant='image'] > canvas {
+    @apply block aspect-square size-full object-cover;
+  }
+
   .sw-attachment-content {
     @apply max-w-full min-w-0 flex-1;
   }
