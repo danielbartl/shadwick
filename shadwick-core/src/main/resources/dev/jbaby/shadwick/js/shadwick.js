@@ -1589,8 +1589,8 @@
         }
     };
     // SwLoadMoreList: the next batch goes into a slot at the end of the list, so only it is rendered. The focus then
-    // moves to its first item, as the button it was on has gone - but not when scrolling loaded it and the focus is
-    // still somewhere else on the page.
+    // moves to its first item, as the button it was on has gone - but not when scrolling loaded it while the focus
+    // was elsewhere (or nowhere, for someone scrolling with a mouse or a finger): that would make the page jump.
     Shadwick.loadMoreSlot = function (listId, batchId) {
         var list = document.getElementById(listId);
         if (!list || document.getElementById(batchId)) return;
@@ -1604,8 +1604,7 @@
         if (!root) return;
         var scrolled = root.hasAttribute('data-sw-load-scrolled');
         root.removeAttribute('data-sw-load-scrolled');
-        var active = document.activeElement;
-        if (scrolled && active && active !== document.body && active.isConnected) return;
+        if (scrolled) return;
         var first = batch.querySelector('[role="listitem"]');
         if (!first) return;
         if (!first.hasAttribute('tabindex')) first.setAttribute('tabindex', '-1');
@@ -1620,23 +1619,29 @@
                 if (!entry.isIntersecting || !button.isConnected || button.getAttribute('aria-busy') === 'true') return;
                 var root = button.closest('.sw-load-more');
                 root = root && root.parentElement;
-                if (root) root.setAttribute('data-sw-load-scrolled', '');
+                // A keyboard user on the button loses it to the new batch: the focus follows as after a click
+                if (root && document.activeElement !== button) root.setAttribute('data-sw-load-scrolled', '');
                 button.click();
             });
         }, {rootMargin: '200px'});
         var observedLoaders = new Set();
-        var scanLoaders = function () {
-            // Buttons replaced over Ajax are let go
-            observedLoaders.forEach(function (button) {
-                if (!button.isConnected) { loadObserver.unobserve(button); observedLoaders.delete(button); }
-            });
-            document.querySelectorAll('[data-sw-load-on-scroll]').forEach(function (button) {
+        var observeLoaders = function (root) {
+            if (!(root instanceof Element) && root !== document) return;
+            var found = root instanceof Element && root.matches('[data-sw-load-on-scroll]') ? [root] : [];
+            root.querySelectorAll('[data-sw-load-on-scroll]').forEach(function (button) { found.push(button); });
+            found.forEach(function (button) {
                 if (observedLoaders.has(button)) return;
                 observedLoaders.add(button);
                 loadObserver.observe(button);
             });
         };
-        scanLoaders();
-        new MutationObserver(scanLoaders).observe(document.documentElement, {childList: true, subtree: true});
+        observeLoaders(document);
+        // Only what was added is searched; buttons replaced over Ajax are let go
+        new MutationObserver(function (records) {
+            records.forEach(function (record) { record.addedNodes.forEach(observeLoaders); });
+            if (observedLoaders.size) observedLoaders.forEach(function (button) {
+                if (!button.isConnected) { loadObserver.unobserve(button); observedLoaders.delete(button); }
+            });
+        }).observe(document.documentElement, {childList: true, subtree: true});
     }
 })();

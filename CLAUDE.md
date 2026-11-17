@@ -2049,19 +2049,27 @@ page). Differences from Oat, on purpose:
 - SwLoadMoreList builds in onInitialize and adds its first batch in onConfigure (the provider is never read in the
   constructor); size() is cached per request. Batches are div role=none with predictable ids (<panel id>-batch-<n>).
   Ajax: Shadwick.loadMoreSlot(listId,batchId) makes the slot, then Shadwick.loadMoreFocus(batchId) focuses the first new
-  listitem (tabindex -1 set by script) unless scrolling loaded it (data-sw-load-scrolled on the root) and focus is still
-  somewhere real. Load more is an AjaxFallbackLink whose href ends in #<next batch id> (Link.appendAnchor), so the
-  no-script page scrolls there. Load on scroll: one IntersectionObserver in shadwick.js, rescanned on DOM mutations.
+  listitem (tabindex -1 set by script), except after a scroll-triggered load: the observer marks the root
+  data-sw-load-scrolled unless the button itself had focus (a mouse/touch scroller's focus is body; moving it would
+  jump the page). Load more is an AjaxFallbackLink whose href ends in #<next batch id> (Link.appendAnchor), so the
+  no-script page scrolls there. Load on scroll: one IntersectionObserver in shadwick.js; its MutationObserver searches
+  only added nodes.
   A provider yielding fewer items than it counted ends the list. Visible count describes the button; a sr-only status
   says "Showing 40 of 134" once (cleared in the status label's onAfterRender).
 - SwCrud builds its parts lazily (build(), from onInitialize or any getter), so getDataTable() works right after
   construction as in Oat. The editor content is a fragment: a fenced SwFormErrors over the app's fields, both with id
   "content" (paths content:content:<field>). Errors: a field's input shows at the field; the form's/dialog's in the
   summary. setRowKey goes to the table and actions column (stable menu ids, focus returns to the row). After delete
-  focus goes to New, else the table (tabindex -1). refresh(target) re-renders rows/summary/size/navigator/bulk bar but
-  not the toolbar (the summary gets an output id for it); Oat's "add getTable()" advice left the pager stale.
-- Found and fixed in passing: SwDialog.showErrors treated an error reported on a BaseSwField itself (not its input) as
-  shown inline; the field only shows its input's errors, so the message vanished. It now re-renders the form.
+  focus goes to New, else the table (tabindex -1). refresh(target), and save/delete, re-render rows/summary/size/
+  navigator/bulk bar (renderRows) but not the toolbar (the summary gets an output id for it); Oat's "add getTable()"
+  advice left the pager stale. Deleted meanwhile: an AbstractFormValidator on the editor form (runs before models are
+  written; writing into a null record threw) reports SwCrud.gone in the summary; the delete model is detached right
+  after asking and reloaded on confirm. Saved/refused uses FeedbackCollector(editor, false), as SwDialog does.
+- Found and fixed in passing: SwDialog.showErrors treated every error under a BaseSwField as shown inline, but a field
+  shows only its input's first error: one on the field itself, or a second on the input, vanished. notShownByAField
+  now re-renders the form for those (inner errors of compound fields stay the field's). NotShownInlineFilter was not
+  reused: SwCustomField doesn't implement ShowsErrorsInline, so it would re-render the form for every inner error.
+  hasErrorMessages/showErrors ignore session messages (FeedbackCollector(this, false)).
 - Playwright screenshots leave style="" on inputs: take them after the last [style] audit.
 
 ### CI Maven cache (2026-11-17)

@@ -45,12 +45,15 @@ public class CustomerFields extends Panel {
   record and `onSave` called. To refuse a save, report an error there: on a field's input
   (`nameField.getInput().error("Already taken")`) to show it at the field, or on the editor's form
   (`crud.getEditor().getForm().error(...)`) to show it in a summary above the fields. Either keeps the dialog open.
-  Otherwise it closes, the table re-renders and screen readers hear "Saved Acme." (`SwCrud.saved`).
+  Otherwise it closes, the rows re-render and screen readers hear "Saved Acme." (`SwCrud.saved`); the toolbar, with
+  the search and New, stays as it is.
 - **Which record.** A record to edit is loaded through the provider's `model(...)`, so with a
   `LoadableDetachableModel` it is fresh when it's saved. The fields are written to that object before `onSave` runs, so
   load a copy or an entity, not an object the rest of the application shares. Cancel and Escape change nothing.
-- **Deleting** asks "Delete Acme?" first. The record is loaded again on confirming; if it was deleted meanwhile, nothing
-  happens and screen readers hear that it no longer exists.
+- **Deleted meanwhile.** Saving a record that was deleted while its dialog was open writes nothing: the summary says it
+  no longer exists and the row leaves the table. Deleting asks "Delete Acme?" first and loads the record again on
+  confirming; if it has gone, nothing happens and screen readers hear that it no longer exists. Both rely on the
+  provider's model loading `null` for a deleted record, as a `LoadableDetachableModel` that loads by id does.
 - **Focus.** `setRowKey` gives every row's actions menu an id that survives re-rendering, so after editing the focus
   returns to that row's actions button. After a delete the row has gone, so the focus moves to **New**, or to the
   table when there is no New.

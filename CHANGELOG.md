@@ -59,8 +59,9 @@ Development continues on `0.2.0-SNAPSHOT`.
 
 ### Fixed
 
-- A dialog (`SwDialog`) whose confirm left an error reported on a Shadwick field itself, rather than on its input, now
-  re-renders its form so a summary there can show it. The field only shows its input's errors, so the message was lost.
+- A dialog (`SwDialog`) whose confirm left an error a field doesn't show in place - one reported on the field itself
+  rather than its input, or a second error on the same input - now re-renders its form so a summary there can show it;
+  the message was lost. A session error message left over from an earlier request no longer keeps a dialog open.
 - A custom select (`SwSelect`) whose native picker is replaced by Shadwick's fallback no longer leaves the native
   select's own button in the tab order when the browser parses that button after the select was enhanced. Screen
   readers could otherwise reach a control hidden from them; this also made a browser test fail intermittently.

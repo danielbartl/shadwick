@@ -118,6 +118,17 @@ class CollectionsBrowserTest {
             p.waitForCondition(() -> items.count() >= 40);
             idle(p);
             assertThat(toggle).isFocused();
+
+            // Scrolling with a mouse, the focus on nothing: it stays there, so the page doesn't jump to the new items
+            p.evaluate("document.activeElement.blur()");
+            int before = items.count();
+            p.mouse().move(640, 400);
+            p.waitForCondition(() -> {
+                p.mouse().wheel(0, 600);
+                return items.count() > before;
+            });
+            idle(p);
+            assertThat(focused(p, "e === document.body")).isEqualTo(true);
             assertThat(errors).isEmpty();
         }
     }

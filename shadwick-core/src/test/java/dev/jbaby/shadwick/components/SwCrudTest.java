@@ -82,10 +82,14 @@ class SwCrudTest {
                     return customers.stream().skip(first).limit(count).iterator();
                 }
                 @Override public long size() { return customers.size(); }
-                // Loaded by id, as from a database: null once deleted
+                // Loaded by id, as from a database, and kept until detached: null once deleted
                 @Override public IModel<Customer> model(Customer customer) {
                     int id = customer.id;
-                    return () -> customers.stream().filter(c -> c.id == id).findFirst().orElse(null);
+                    return new org.apache.wicket.model.LoadableDetachableModel<>() {
+                        @Override protected Customer load() {
+                            return customers.stream().filter(c -> c.id == id).findFirst().orElse(null);
+                        }
+                    };
                 }
             }, 10).setTitle(Customer::getName).setRowKey(c -> c.id);
             if (editor) crud.setEditor(CustomerFields::new);
@@ -94,6 +98,16 @@ class SwCrudTest {
                 if ("Inline".equals(customer.name)) {
                     ((dev.jbaby.shadwick.components.form.BaseSwField<?, ?, ?>) crud.getEditor().getForm().get("content:content:name"))
                             .getInput().error("Pick another name");
+                    return;
+                }
+                if ("Twice".equals(customer.name)) {
+                    var input = ((dev.jbaby.shadwick.components.form.BaseSwField<?, ?, ?>) crud.getEditor().getForm().get("content:content:name")).getInput();
+                    input.error("First problem");
+                    input.error("Second problem");
+                    return;
+                }
+                if ("Dialog".equals(customer.name)) {
+                    crud.getEditor().error("Someone else changed this customer");
                     return;
                 }
                 if ("Taken".equals(customer.name)) {
@@ -184,6 +198,59 @@ class SwCrudTest {
         assertThat(page.crud.getEditor().isOpen()).isTrue();
         // Updated in place, keeping the focus and what was typed
         assertThat(html()).contains("Shadwick.fieldFeedback").contains("Pick another name");
+    }
+
+    @Test void aSecondErrorOnAnInputAndAnErrorOnTheDialogAreShownAndNothingIsAnnounced() {
+        CrudPage page = tester.startPage(CrudPage.class);
+        tester.clickLink("crud:table:toolbar:new");
+        FormTester form = tester.newFormTester(DIALOG_FORM);
+        form.setValue("content:content:name:input", "Twice");
+        tester.executeAjaxEvent(DIALOG_FORM + ":confirm", "click");
+        // The field shows the first; the form re-renders so its summary shows the second
+        assertThat(html()).contains("First problem").contains("Second problem").doesNotContain("Saved");
+
+        form = tester.newFormTester(DIALOG_FORM);
+        form.setValue("content:content:name:input", "Dialog");
+        tester.executeAjaxEvent(DIALOG_FORM + ":confirm", "click");
+        assertThat(page.crud.getEditor().isOpen()).isTrue();
+        assertThat(html()).doesNotContain("Saved");
+        assertThat(page.customers).hasSize(2);
+    }
+
+    @Test void anOldSessionMessageIsNotTakenForAFailedSave() {
+        CrudPage page = tester.startPage(CrudPage.class);
+        tester.clickLink("crud:table:toolbar:new");
+        tester.getSession().error("Left over from earlier");
+        FormTester form = tester.newFormTester(DIALOG_FORM);
+        form.setValue("content:content:name:input", "Initech");
+        tester.executeAjaxEvent(DIALOG_FORM + ":confirm", "click");
+        assertThat(page.crud.getEditor().isOpen()).isFalse();
+        assertThat(page.log).containsExactly("saved Initech/null");
+        assertThat(html()).contains("Saved Initech.");
+    }
+
+    @Test void savingARecordDeletedMeanwhileReportsItInTheDialog() {
+        CrudPage page = tester.startPage(CrudPage.class);
+        tester.executeAjaxEvent(menuItem(page, 1, 0), "click");
+        assertThat(html()).contains(">Edit Globex<");
+        page.customers.remove(1);
+        FormTester form = tester.newFormTester(DIALOG_FORM);
+        form.setValue("content:content:name:input", "Globex AG");
+        tester.executeAjaxEvent(DIALOG_FORM + ":confirm", "click");
+        assertThat(page.log).isEmpty();
+        assertThat(page.crud.getEditor().isOpen()).isTrue();
+        // In the summary above the fields, and the row has gone from the table
+        assertThat(html()).contains("This entry no longer exists.").doesNotContain(">Globex<");
+    }
+
+    @Test void savingReRendersTheRowsButNotTheToolbar() {
+        CrudPage page = tester.startPage(CrudPage.class);
+        tester.executeAjaxEvent(menuItem(page, 0, 0), "click");
+        FormTester form = tester.newFormTester(DIALOG_FORM);
+        form.setValue("content:content:name:input", "ACME GmbH");
+        tester.executeAjaxEvent(DIALOG_FORM + ":confirm", "click");
+        assertThat(html()).contains("<component id=\"" + page.crud.getDataTable().getTable().getMarkupId() + "\"")
+                .doesNotContain("<component id=\"" + page.crud.getDataTable().getMarkupId() + "\"");
     }
 
     @Test void cancellingTheEditorDropsItsFields() {

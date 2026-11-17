@@ -12,6 +12,12 @@ import org.apache.wicket.Component;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.extensions.markup.html.repeater.data.table.IColumn;
 import org.apache.wicket.extensions.markup.html.repeater.data.table.ISortableDataProvider;
+import org.apache.wicket.feedback.FeedbackCollector;
+import org.apache.wicket.feedback.FeedbackMessage;
+import org.apache.wicket.markup.html.form.Form;
+import org.apache.wicket.markup.html.form.FormComponent;
+import org.apache.wicket.markup.html.form.validation.AbstractFormValidator;
+import org.apache.wicket.request.cycle.RequestCycle;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.panel.Fragment;
@@ -55,7 +61,7 @@ import java.util.Objects;
  * before {@code onSave} runs, so give the editor a copy or a freshly loaded entity, not an object other users of the
  * application share.</li>
  * <li>"New" shows only with {@link #setNewItem}, Edit only with an editor, and Delete only with {@link #setOnDelete}.
- * A record deleted meanwhile is reported, not deleted twice.</li>
+ * A record deleted meanwhile (its model loads {@code null}) is reported, not saved or deleted again.</li>
  * <li>{@link #setRowKey} gives every row's actions menu an id that survives re-rendering, so the focus returns to the
  * row's actions button after editing.</li>
  * </ul>
@@ -187,6 +193,21 @@ public class SwCrud<T, S> extends Panel {
         };
         editor.setConfirmLabel(new StringResourceModel("SwCrud.save", this));
         editor.setBusyIndicator(true);
+        // Before the fields are written to the record: one deleted meanwhile is reported, not written to
+        editor.getForm().add(new AbstractFormValidator() {
+            @Override
+            public FormComponent<?>[] getDependentFormComponents() {
+                return null;
+            }
+
+            @Override
+            public void validate(Form<?> form) {
+                if (editing != null && !editingNew && editing.getObject() == null) {
+                    form.error(new StringResourceModel("SwCrud.gone", SwCrud.this).getObject());
+                    RequestCycle.get().find(AjaxRequestTarget.class).ifPresent(SwCrud.this::renderRows);
+                }
+            }
+        });
         return editor;
     }
 
@@ -272,12 +293,17 @@ public class SwCrud<T, S> extends Panel {
     public SwCrud<T, S> refresh(AjaxRequestTarget target) {
         build();
         table.getTable().setCurrentPage(0);
+        renderRows(target);
+        return this;
+    }
+
+    /** Re-renders the rows and what counts them, but not the toolbar with its search and New. */
+    private void renderRows(AjaxRequestTarget target) {
         target.add(table.getTable());
         for (String part : List.of("summary", "size", "navigator", "bulkActions")) {
             Component component = table.get(part);
             if (component != null && component.getOutputMarkupId()) target.add(component);
         }
-        return this;
     }
 
     /** Opens the dialog for a new record. */
@@ -319,14 +345,14 @@ public class SwCrud<T, S> extends Panel {
             return;
         }
         onSave.accept(target, record);
-        if (!hasErrorInForm()) {
+        if (!hasErrors()) {
             announce(target, new StringResourceModel("SwCrud.saved", this).setParameters(title.apply(record)).getObject());
         }
     }
 
-    private boolean hasErrorInForm() {
-        return !new org.apache.wicket.feedback.FeedbackCollector(editor.getForm())
-                .collect(org.apache.wicket.feedback.FeedbackMessage::isError).isEmpty();
+    /** Whether onSave refused: the same errors the dialog stays open for (its own, not left-over session ones). */
+    private boolean hasErrors() {
+        return !new FeedbackCollector(editor, false).collect(FeedbackMessage::isError).isEmpty();
     }
 
     private void askToDelete(AjaxRequestTarget target, T item) {
@@ -336,23 +362,30 @@ public class SwCrud<T, S> extends Panel {
                 new StringResourceModel("SwCrud.deleteQuestion", this).setParameters(name),
                 new StringResourceModel("SwCrud.deleteDetail", this),
                 confirmed -> {
-                    T current = model.getObject();
-                    if (current == null) {
-                        announce(confirmed, new StringResourceModel("SwCrud.gone", this).getObject());
-                    } else {
-                        onDelete.accept(confirmed, current);
-                        announce(confirmed, new StringResourceModel("SwCrud.deleted", this).setParameters(name).getObject());
+                    try {
+                        // Loaded afresh: the question was asked in an earlier request
+                        T current = model.getObject();
+                        if (current == null) {
+                            announce(confirmed, new StringResourceModel("SwCrud.gone", this).getObject());
+                        } else {
+                            onDelete.accept(confirmed, current);
+                            announce(confirmed, new StringResourceModel("SwCrud.deleted", this).setParameters(name).getObject());
+                        }
+                    } finally {
+                        model.detach();
                     }
-                    model.detach();
                     // The row's actions button has gone: New, else the table
                     Component create = table.get(SwDataTable.TOOLBAR_ID + ":new");
                     confirmed.focusComponent(create != null && create.isVisibleInHierarchy() ? create : table.getTable());
                 });
+        // Held until the answer, not the record it loaded now
+        model.detach();
     }
 
     private void announce(AjaxRequestTarget target, String message) {
         statusText.setObject(message);
-        target.add(table, status);
+        renderRows(target);
+        target.add(status);
     }
 
     private static Component checked(Component component, String id, String part) {

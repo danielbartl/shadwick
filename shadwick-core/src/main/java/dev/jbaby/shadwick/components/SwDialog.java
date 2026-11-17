@@ -357,7 +357,8 @@ public class SwDialog extends Panel {
     }
 
     private boolean hasErrorMessages() {
-        return !new FeedbackCollector(this).collect(FeedbackMessage::isError).isEmpty();
+        // The dialog's own: not a session message left over from an earlier request
+        return !new FeedbackCollector(this, false).collect(FeedbackMessage::isError).isEmpty();
     }
 
     /**
@@ -367,20 +368,26 @@ public class SwDialog extends Panel {
      */
     private void showErrors(AjaxRequestTarget target) {
         boolean elsewhere =
-                new FeedbackCollector(this)
+                new FeedbackCollector(this, false)
                         .collect(FeedbackMessage::isError).stream()
-                                .map(FeedbackMessage::getReporter)
-                                .anyMatch(
-                                        reporter ->
-                                                // A field shows its input's errors, not those
-                                                // reported on the field itself
-                                                reporter == null
-                                                        || reporter instanceof BaseSwField<?, ?, ?>
-                                                        || reporter.findParent(BaseSwField.class)
-                                                                == null);
+                                .anyMatch(SwDialog::notShownByAField);
         if (elsewhere) {
             target.add(form);
         }
+    }
+
+    /**
+     * Whether no Shadwick field shows this error in place: one reported on nothing, outside every field, on a field
+     * itself rather than its input, or any but the first on an input. A compound field surfaces its inner inputs'
+     * errors itself.
+     */
+    private static boolean notShownByAField(FeedbackMessage message) {
+        Component reporter = message.getReporter();
+        if (reporter == null || reporter instanceof BaseSwField<?, ?, ?>) return true;
+        BaseSwField<?, ?, ?> field = reporter.findParent(BaseSwField.class);
+        if (field == null) return true;
+        return field.getInput() == reporter
+                && reporter.getFeedbackMessages().first(FeedbackMessage.ERROR) != message;
     }
 
     /**
