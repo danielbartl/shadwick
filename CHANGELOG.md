@@ -1,8 +1,9 @@
 # Changelog
 
-## Unreleased
+## 0.2.0 — 2026-11-17
 
-Development continues on `0.2.0-SNAPSHOT`.
+Published as `dev.jbaby:shadwick:0.2.0`, from tag `v0.2.0`. Adds to the 0.1.0 API without removing anything; the three
+changes in behavior are listed under Changed.
 
 ### Changed
 
