@@ -2,6 +2,7 @@ package dev.jbaby.shadwick.examples;
 
 import com.deque.html.axecore.playwright.AxeBuilder;
 import com.microsoft.playwright.*;
+import com.microsoft.playwright.assertions.LocatorAssertions;
 import com.microsoft.playwright.options.*;
 import dev.jbaby.shadwick.*;
 import org.apache.wicket.protocol.http.WebApplication;
@@ -97,10 +98,25 @@ class RecordDisplayBrowserTest {
     @ParameterizedTest @MethodSource("locales")
     void nativeSubmissionAndDetailsRemainUsableWithoutScriptInEveryLocale(String engine, String locale) {
         try (var context = browser(engine).newContext(new Browser.NewContextOptions().setJavaScriptEnabled(false)); var p = context.newPage()) {
+            // Every navigation request and its status: on a failure they tell a missing submit, a re-created page and
+            // a submit of the old value apart (CI once showed the old name for the whole wait, which never reproduced)
+            var traffic = new ArrayList<String>();
+            p.onResponse(r -> { if (r.request().isNavigationRequest())
+                traffic.add(r.request().method() + " " + r.status() + " " + r.url().replaceFirst("^https?://[^/]+", "")); });
             p.navigate(url("nova", "light", locale));
-            p.getByLabel("Customer name", new Page.GetByLabelOptions().setExact(true)).fill("Native customer");
-            p.getByRole(AriaRole.BUTTON, new Page.GetByRoleOptions().setName("Save normally").setExact(true)).click();
-            assertThat(p.locator("dl.sw-description-list").first().locator("dd").first()).hasText("Native customer");
+            var name = p.getByLabel("Customer name", new Page.GetByLabelOptions().setExact(true));
+            name.fill("Native customer");
+            assertThat(name).hasValue("Native customer");
+            // The click submits natively: wait for the form's POST itself, with room for a busy CI machine
+            p.waitForResponse(r -> r.request().method().equals("POST"), new Page.WaitForResponseOptions().setTimeout(30_000),
+                    () -> p.getByRole(AriaRole.BUTTON, new Page.GetByRoleOptions().setName("Save normally").setExact(true)).click());
+            var customer = p.locator("dl.sw-description-list").first().locator("dd").first();
+            try {
+                assertThat(customer).hasText("Native customer", new LocatorAssertions.HasTextOptions().setTimeout(15_000));
+            } catch (AssertionError failure) {
+                throw new AssertionError("Shown: " + customer.textContent() + "; input: " + name.inputValue()
+                        + "; newest event: " + p.locator(".sw-timeline-title").last().textContent() + "; requests: " + traffic, failure);
+            }
             assertThat(p.locator(".sw-timeline-title").last()).hasText("Customer updated");
             assertThat(p.locator(".sw-timeline time").first()).hasAttribute("datetime", "2026-11-01T09:30");
             assertThat(p.locator("html")).hasAttribute("lang", locale);

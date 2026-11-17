@@ -2013,6 +2013,16 @@ Sonner parity); the changelog records it under Changed.
   timers, six positions in LTR/RTL, narrow screens, the Toasts page's Ajax position choice, reduced motion, dialogs and
   the column fallback (init script sets window.CSSStyleSheet = undefined).
 
+### Record-display no-script submission flake (2026-11-17, hardened, not reproduced)
+
+Build 43937060783 (56b25a9): RecordDisplayBrowserTest.nativeSubmissionAndDetailsRemainUsableWithoutScriptInEveryLocale
+[13] (Firefox, it-IT) showed the old name "Fern & Field" for the whole 5 s wait (case took 5.5 s). Not reproduced in
+600 local Firefox runs, idle or six loops in parallel. Two candidates remain: the click started no submit, or Wicket
+did not find the stored page and re-created it (bookmarkable page, listener not invoked). The test now waits for the
+form's POST response (30 s) around the click, checks the filled value, allows 15 s for the result, and on failure
+reports the shown name, the input value, the newest timeline event and every navigation request with its status.
+Read that message before changing code if it recurs.
+
 ### Custom-select fallback race (2026-11-16, fixed)
 
 The intermittent ShowcaseBrowserTest customSelectFallback* aria-hidden-focus failure (about 1 in 3,600 cases) was real:
