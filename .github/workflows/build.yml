@@ -24,8 +24,21 @@ jobs:
         with:
           java-version: ${{ matrix.java }}
           distribution: 'temurin'
-          cache: maven
 
+
+      # One Maven cache per workflow and job, so each keeps every plugin and dependency it uses. setup-java's single
+      # shared cache was saved by whichever job finished first (often one needing fewer plugins) and never refreshed while
+      # the POMs stayed the same, so the other jobs fetched the rest from Maven Central on every run, all at once.
+      - name: Cache Maven's repository and wrapper
+        uses: actions/cache@v6
+        with:
+          path: |
+            ~/.m2/repository
+            ~/.m2/wrapper
+            !~/.m2/repository/dev/jbaby
+          key: maven-${{ runner.os }}-${{ github.workflow }}-${{ github.job }}-${{ hashFiles('**/pom.xml', '.mvn/wrapper/maven-wrapper.properties') }}
+          restore-keys: |
+            maven-${{ runner.os }}-${{ github.workflow }}-${{ github.job }}-
       # The build installs its own Node (cached with Maven's repository); this keeps npm's downloads
       - name: Cache npm's downloads
         uses: actions/cache@v6
@@ -70,7 +83,20 @@ jobs:
         with:
           java-version: '25'
           distribution: 'temurin'
-          cache: maven
+
+      # One Maven cache per workflow and job, so each keeps every plugin and dependency it uses. setup-java's single
+      # shared cache was saved by whichever job finished first (often one needing fewer plugins) and never refreshed while
+      # the POMs stayed the same, so the other jobs fetched the rest from Maven Central on every run, all at once.
+      - name: Cache Maven's repository and wrapper
+        uses: actions/cache@v6
+        with:
+          path: |
+            ~/.m2/repository
+            ~/.m2/wrapper
+            !~/.m2/repository/dev/jbaby
+          key: maven-${{ runner.os }}-${{ github.workflow }}-${{ github.job }}-${{ hashFiles('**/pom.xml', '.mvn/wrapper/maven-wrapper.properties') }}
+          restore-keys: |
+            maven-${{ runner.os }}-${{ github.workflow }}-${{ github.job }}-
 
       - name: Cache npm's downloads
         uses: actions/cache@v6

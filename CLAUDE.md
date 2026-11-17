@@ -2013,6 +2013,17 @@ Sonner parity); the changelog records it under Changed.
   timers, six positions in LTR/RTL, narrow screens, the Toasts page's Ajax position choice, reduced motion, dialogs and
   the column fallback (init script sets window.CSSStyleSheet = undefined).
 
+### CI Maven cache (2026-11-17)
+
+Three runs on 2026-11-17 failed before any test: a job could not fetch a Maven plugin from Central (429 or transfer
+error). Cause: setup-java's `cache: maven` uses one key per POM hash for every workflow and job; the first job to save
+it (often Pages, which builds only the core) froze a repository without the other jobs' plugins, and it was never
+re-saved while the POMs stayed the same, so all 15 jobs fetched the rest from Central on every run at once. Each
+workflow job now has its own actions/cache step (key maven-<os>-<workflow>-<job>-<pom+wrapper hash>, restore-keys on
+the prefix) over ~/.m2/repository and ~/.m2/wrapper, excluding the project's own dev/jbaby artifacts; never cache
+~/.m2/settings.xml (release credentials). Don't reintroduce `cache: maven`. Lint workflows with
+`docker run --rm -v "$PWD":/repo -w /repo rhysd/actionlint:1.7.7 -no-color`.
+
 ### Calendar heatmap (2026-11-17, 0.2.0-SNAPSHOT)
 
 The user chose only the calendar heatmap from the chart-breadth list for 0.2.0 (colour bands, radial/radar extras and
