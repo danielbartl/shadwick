@@ -1,5 +1,6 @@
 package dev.jbaby.shadwick.components;
 
+import dev.jbaby.shadwick.util.ComponentIds;
 import dev.jbaby.shadwick.behaviors.DropdownMenuItemBehavior;
 import dev.jbaby.shadwick.components.table.SwActionsColumn;
 import dev.jbaby.shadwick.util.SerializableBiConsumer;
@@ -157,7 +158,7 @@ public class SwCrud<T, S> extends Panel {
 
     private Component newToolbar(String id) {
         Fragment toolbar = new Fragment(id, "toolbar", this);
-        toolbar.add(search != null ? checked(search.apply("search"), "search", "search")
+        toolbar.add(search != null ? ComponentIds.fromFactory(search.apply("search"), "search", "The search")
                 : new WebMarkupContainer("search").setVisible(false));
         SwButton create = new SwButton("new") {
             @Override
@@ -330,7 +331,7 @@ public class SwCrud<T, S> extends Panel {
         editing = (IModel<T>) model;
         editingNew = isNew;
         Component fields = editorFactory.apply(SwDialog.CONTENT_ID, new CompoundPropertyModel<>(editing));
-        checked(fields, SwDialog.CONTENT_ID, "editor");
+        ComponentIds.fromFactory(fields, SwDialog.CONTENT_ID, "The editor");
         // The fields under a summary of errors reported on the form or the dialog, e.g. a conflict found on saving;
         // a field's own errors show at the field. Removed again when the dialog closes.
         Fragment content = new Fragment(SwDialog.CONTENT_ID, "editorContent", this);
@@ -386,14 +387,6 @@ public class SwCrud<T, S> extends Panel {
         statusText.setObject(message);
         renderRows(target);
         target.add(status);
-    }
-
-    private static Component checked(Component component, String id, String part) {
-        if (component == null || !id.equals(component.getId())) {
-            throw new IllegalArgumentException("The " + part + " must use the id passed to the factory (\"" + id
-                    + "\"), but was " + (component == null ? "null" : "\"" + component.getId() + "\""));
-        }
-        return component;
     }
 
     /** The table, e.g. for selection and bulk actions, a column chooser or CSV export. */

@@ -1,5 +1,6 @@
 package dev.jbaby.shadwick.components;
 
+import dev.jbaby.shadwick.util.ComponentIds;
 import dev.jbaby.shadwick.behaviors.DescriptionListBehavior;
 import dev.jbaby.shadwick.util.SerializableFunction;
 import org.apache.wicket.Component;
@@ -50,9 +51,7 @@ public class SwDescriptionList extends Panel {
     /** Add a badge or a composed value; its component must use the supplied VALUE_ID. */
     public SwDescriptionList addItem(IModel<String> label, SerializableFunction<String, ? extends Component> value) {
         Objects.requireNonNull(label); Objects.requireNonNull(value);
-        Component component = value.apply(VALUE_ID);
-        if (component == null || !VALUE_ID.equals(component.getId()))
-            throw new IllegalArgumentException("The value component must use the supplied id (\"" + VALUE_ID + "\")");
+        Component component = ComponentIds.fromFactory(value.apply(VALUE_ID), VALUE_ID, "A description list's value");
         var item = new WebMarkupContainer(items.newChildId());
         item.add(new Label("term", label), component); items.add(item); return this;
     }

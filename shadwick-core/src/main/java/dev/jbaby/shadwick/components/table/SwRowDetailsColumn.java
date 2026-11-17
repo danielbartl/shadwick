@@ -1,5 +1,6 @@
 package dev.jbaby.shadwick.components.table;
 
+import dev.jbaby.shadwick.util.ComponentIds;
 import dev.jbaby.shadwick.components.SwDataTable;
 import dev.jbaby.shadwick.components.SwIcon;
 import dev.jbaby.shadwick.util.SerializableBiFunction;
@@ -114,12 +115,7 @@ public class SwRowDetailsColumn<T, S> extends AbstractColumn<T, S> implements IS
 
     /** Creates a row's details panel. */
     public Component newDetails(String id, IModel<T> rowModel) {
-        Component panel = details.apply(id, rowModel);
-        if (panel == null || !id.equals(panel.getId())) {
-            throw new IllegalArgumentException("The details must use the id passed to the factory (\"" + id + "\"), but was "
-                    + (panel == null ? "null" : "\"" + panel.getId() + "\""));
-        }
-        return panel;
+        return ComponentIds.fromFactory(details.apply(id, rowModel), id, "The details");
     }
 
     @Override

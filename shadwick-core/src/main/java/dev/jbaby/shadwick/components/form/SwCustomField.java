@@ -1,5 +1,6 @@
 package dev.jbaby.shadwick.components.form;
 
+import dev.jbaby.shadwick.util.ComponentIds;
 import dev.jbaby.shadwick.util.SerializableBiFunction;
 import org.apache.wicket.Component;
 import org.apache.wicket.MetaDataKey;
@@ -44,11 +45,7 @@ public class SwCustomField<T> extends BaseSwField<T, FormComponent<T>, SwCustomF
 
     @Override
     protected FormComponent<T> newInput(String id, IModel<T> model) {
-        FormComponent<T> input = factory.apply(id, model);
-        if (input == null || !id.equals(input.getId())) {
-            throw new IllegalArgumentException("The input factory must return a component using id \"" + id + "\"");
-        }
-        return input;
+        return ComponentIds.fromFactory(factory.apply(id, model), id, "The custom field's input");
     }
 
     @Override

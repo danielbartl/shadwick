@@ -302,7 +302,7 @@ class SwCrudTest {
         var page = new CrudPage();
         page.crud.setEditor((id, model) -> new Label("other"));
         tester.startPage(page);
-        assertThatThrownBy(() -> tester.clickLink("crud:table:toolbar:new")).hasStackTraceContaining("must use the id passed to the factory");
+        assertThatThrownBy(() -> tester.clickLink("crud:table:toolbar:new")).hasStackTraceContaining("The editor must use the id its factory is given (\"content\"), but was \"other\"");
 
         var early = new SwCrud<Customer, String>("crud", List.of(new LambdaColumn<>(Model.of("Name"), Customer::getName)),
                 new SortableDataProvider<>() {

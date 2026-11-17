@@ -1,5 +1,6 @@
 package dev.jbaby.shadwick.components;
 
+import dev.jbaby.shadwick.util.ComponentIds;
 import dev.jbaby.shadwick.Shadwick;
 import org.apache.wicket.Component;
 import org.apache.wicket.markup.ComponentTag;
@@ -67,7 +68,7 @@ public class SwEmptyState extends Panel {
 
     /** The component must have id CONTENT_ID; a Fragment or Panel can contain arbitrary actions. */
     public SwEmptyState setContent(Component content) {
-        if (!CONTENT_ID.equals(content.getId())) { throw new IllegalArgumentException("Empty-state content must have id " + CONTENT_ID); }
+        ComponentIds.forSlot(content, CONTENT_ID, "The empty state's content (SwEmptyState.CONTENT_ID)");
         addOrReplace(content);
         return this;
     }

@@ -1,5 +1,6 @@
 package dev.jbaby.shadwick.components;
 
+import dev.jbaby.shadwick.util.ComponentIds;
 import com.github.openjson.JSONObject;
 
 import dev.jbaby.shadwick.Shadwick;
@@ -514,14 +515,7 @@ public class SwDialog extends Panel {
      * time, e.g. right before {@link #open}.
      */
     public SwDialog setContent(Component content) {
-        if (!CONTENT_ID.equals(content.getId())) {
-            throw new IllegalArgumentException(
-                    "The dialog's content must use the id SwDialog.CONTENT_ID (\""
-                            + CONTENT_ID
-                            + "\"), but was \""
-                            + content.getId()
-                            + "\"");
-        }
+        ComponentIds.forSlot(content, CONTENT_ID, "The dialog's content (SwDialog.CONTENT_ID)");
         form.addOrReplace(content);
         removeContentOnClose = false;
         return this;

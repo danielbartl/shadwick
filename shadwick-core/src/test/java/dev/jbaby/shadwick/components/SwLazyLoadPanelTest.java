@@ -163,7 +163,7 @@ class SwLazyLoadPanelTest {
     @Test void factoryRejectsMissingContentAndWrongIds() {
         assertThatNullPointerException().isThrownBy(()->SwLazyLoadPanel.of("x",null));
         var wrong=SwLazyLoadPanel.of("lazy",id->new Label("wrong","Bad"));tester.startComponentInPage(wrong);
-        assertThatThrownBy(()->tester.executeAllTimerBehaviors(tester.getLastRenderedPage())).hasStackTraceContaining("supplied id");
+        assertThatThrownBy(()->tester.executeAllTimerBehaviors(tester.getLastRenderedPage())).hasStackTraceContaining("Lazy content must use the id its factory is given");
     }
     public static class MixedPage extends WebPage implements IMarkupResourceStreamProvider {
         final AjaxLazyLoadPanel<Component> standard=new AjaxLazyLoadPanel<>("standard") {

@@ -1,5 +1,6 @@
 package dev.jbaby.shadwick.components;
 
+import dev.jbaby.shadwick.util.ComponentIds;
 import dev.jbaby.shadwick.behaviors.ButtonBehavior;
 import dev.jbaby.shadwick.behaviors.SidebarBehavior;
 import dev.jbaby.shadwick.behaviors.SidebarActionBehavior;
@@ -247,9 +248,7 @@ public class SwSidebar extends Panel {
     }
 
     private SwSidebar slot(Component component, String id) {
-        if (!id.equals(component.getId())) {
-            throw new IllegalArgumentException("The sidebar slot must use id \"" + id + "\"");
-        }
+        ComponentIds.forSlot(component, id, "The sidebar's " + (HEADER_ID.equals(id) ? "header" : "footer"));
         replace(component);
         return this;
     }

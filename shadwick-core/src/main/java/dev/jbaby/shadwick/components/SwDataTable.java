@@ -1,5 +1,6 @@
 package dev.jbaby.shadwick.components;
 
+import dev.jbaby.shadwick.util.ComponentIds;
 import dev.jbaby.shadwick.behaviors.ButtonBehavior;
 import dev.jbaby.shadwick.behaviors.DropdownMenuBehavior;
 import dev.jbaby.shadwick.behaviors.DropdownMenuItemBehavior;
@@ -546,7 +547,7 @@ public class SwDataTable<T, S> extends Panel implements IPageableItems {
 
     public SwDataTable<T, S> setToolbar(SerializableFunction<String, ? extends Component> factory) {
         var toolbar = factory.apply(TOOLBAR_ID);
-        requireId(toolbar, TOOLBAR_ID);
+        ComponentIds.fromFactory(toolbar, TOOLBAR_ID, "The table's toolbar");
         replace(toolbar);
         return this;
     }
@@ -554,14 +555,9 @@ public class SwDataTable<T, S> extends Panel implements IPageableItems {
     public SwDataTable<T, S> setEmptyState(
             SerializableFunction<String, ? extends Component> factory) {
         var content = factory.apply(EMPTY_STATE_ID);
-        requireId(content, EMPTY_STATE_ID);
+        ComponentIds.fromFactory(content, EMPTY_STATE_ID, "The table's empty state");
         emptyCell.replace(content);
         return this;
-    }
-
-    private static void requireId(Component component, String id) {
-        if (component == null || !id.equals(component.getId()))
-            throw new IllegalArgumentException("The table slot must use id \"" + id + "\"");
     }
 
     public SwDataTable<T, S> addBulkAction(

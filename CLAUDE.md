@@ -2072,6 +2072,14 @@ page). Differences from Oat, on purpose:
   hasErrorMessages/showErrors ignore session messages (FeedbackCollector(this, false)).
 - Playwright screenshots leave style="" on inputs: take them after the last [style] audit.
 
+### Component id checks (2026-11-17)
+
+dev.jbaby.shadwick.util.ComponentIds (public, like LocalizedText, because callers span components/form/table) is the one
+"wrong id" check: fromFactory(component, id, "A wizard step") for factory results, forSlot(component, id, "The dialog's
+content (SwDialog.CONTENT_ID)") for setters with a fixed id. Both reject null and name the id found. It replaced 15
+hand-written copies (dialog, popover, empty state, collapsible, sidebar, attachment, data table, wizard, master-detail,
+CRUD, load-more list, lazy load, description list, custom field, row details). Use it for any new factory or slot.
+
 ### CI Maven cache (2026-11-17)
 
 Three runs on 2026-11-17 failed before any test: a job could not fetch a Maven plugin from Central (429 or transfer

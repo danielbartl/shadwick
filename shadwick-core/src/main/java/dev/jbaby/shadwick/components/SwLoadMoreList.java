@@ -1,5 +1,6 @@
 package dev.jbaby.shadwick.components;
 
+import dev.jbaby.shadwick.util.ComponentIds;
 import com.github.openjson.JSONObject;
 import dev.jbaby.shadwick.Shadwick;
 import dev.jbaby.shadwick.behaviors.AjaxBusyBehavior;
@@ -274,12 +275,7 @@ public class SwLoadMoreList<T> extends Panel {
                 Iterator<? extends T> rows = provider.iterator(first, count);
                 while (rows.hasNext()) {
                     String childId = items.newChildId();
-                    Component component = item.apply(childId, provider.model(rows.next()));
-                    if (component == null || !childId.equals(component.getId())) {
-                        throw new IllegalArgumentException("An item must use the id passed to the factory (\"" + childId
-                                + "\"), but was " + (component == null ? "null" : "\"" + component.getId() + "\""));
-                    }
-                    items.add(component);
+                    items.add(ComponentIds.fromFactory(item.apply(childId, provider.model(rows.next())), childId, "An item"));
                     added++;
                 }
             }

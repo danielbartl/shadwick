@@ -1,5 +1,6 @@
 package dev.jbaby.shadwick.components;
 
+import dev.jbaby.shadwick.util.ComponentIds;
 import com.github.openjson.JSONObject;
 import dev.jbaby.shadwick.Shadwick;
 import dev.jbaby.shadwick.behaviors.ButtonBehavior;
@@ -92,9 +93,7 @@ public class SwPopover extends Panel {
     public WebMarkupContainer getTrigger() { return trigger; }
     public Component getContent() { return popover.get(CONTENT_ID); }
     public SwPopover setContent(Component content) {
-        if (content == null || !CONTENT_ID.equals(content.getId())) {
-            throw new IllegalArgumentException("The popover content must use SwPopover.CONTENT_ID (\"content\")");
-        }
+        ComponentIds.forSlot(content, CONTENT_ID, "The popover's content (SwPopover.CONTENT_ID)");
         content.setOutputMarkupId(true);
         popover.addOrReplace(content);
         return this;

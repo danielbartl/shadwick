@@ -1,5 +1,6 @@
 package dev.jbaby.shadwick.components;
 
+import dev.jbaby.shadwick.util.ComponentIds;
 import dev.jbaby.shadwick.behaviors.SkeletonBehavior;
 import dev.jbaby.shadwick.behaviors.StyledBehavior;
 import dev.jbaby.shadwick.util.SerializableFunction;
@@ -71,7 +72,7 @@ public abstract class SwLazyLoadPanel<T extends Component> extends AjaxLazyLoadP
     }
     /** Calls to this hook must include super so the surrounding busy state clears. */
     @Override protected void onContentLoaded(T content, Optional<AjaxRequestTarget> target) {
-        requireContentId(content, CONTENT_ID); contentLoaded = true; super.onContentLoaded(content, target);
+        ComponentIds.fromFactory(content, CONTENT_ID, "Lazy content"); contentLoaded = true; super.onContentLoaded(content, target);
     }
     @Override protected void initTimer() {
         Duration interval = getUpdateInterval();
@@ -85,10 +86,6 @@ public abstract class SwLazyLoadPanel<T extends Component> extends AjaxLazyLoadP
     @Override protected void onDetach() {
         try { if (loadingLabel != null) loadingLabel.detach(); }
         finally { labelSnapshot = null; labelRead = false; super.onDetach(); }
-    }
-    private static void requireContentId(Component content, String id) {
-        if (content == null || !id.equals(content.getId()))
-            throw new IllegalArgumentException("Lazy content must use the supplied id (\"" + id + "\")");
     }
     static final class FirstLoadTimer extends AjaxLazyLoadTimer {
         FirstLoadTimer() { setUpdateInterval(Duration.ofMillis(100)); }
@@ -105,7 +102,7 @@ public abstract class SwLazyLoadPanel<T extends Component> extends AjaxLazyLoadP
         Objects.requireNonNull(content);
         return new SwLazyLoadPanel<>(id) {
             @Override public Component getLazyLoadComponent(String contentId) {
-                Component result = content.apply(contentId); requireContentId(result, contentId); return result;
+                return ComponentIds.fromFactory(content.apply(contentId), contentId, "Lazy content");
             }
         };
     }

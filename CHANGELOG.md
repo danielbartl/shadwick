@@ -6,6 +6,10 @@ Development continues on `0.2.0-SNAPSHOT`.
 
 ### Changed
 
+- A component given to a Shadwick factory or slot with the wrong id fails with the same message everywhere, naming the
+  id it must use and the one it had (`ComponentIds`). Setting `null` as a dialog's, popover's, empty state's or
+  collapsible's content, or as a sidebar or attachment slot, now throws `IllegalArgumentException` instead of
+  `NullPointerException`.
 - Toasts stack, as in shadcn/ui's Sonner and Shadleaf: the newest in front, at most three showing, spreading out on
   hover or keyboard focus, with older ones waiting (their time stopped) until a newer one closes. In 0.1.0 every toast
   showed in a scrolling column. `ShadwickSettings.setVisibleToasts(...)` raises the count (1–10); browsers without

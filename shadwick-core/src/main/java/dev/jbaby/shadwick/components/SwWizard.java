@@ -1,5 +1,6 @@
 package dev.jbaby.shadwick.components;
 
+import dev.jbaby.shadwick.util.ComponentIds;
 import dev.jbaby.shadwick.Shadwick;
 import dev.jbaby.shadwick.behaviors.ButtonBehavior;
 import dev.jbaby.shadwick.behaviors.NestedFormButtonBehavior;
@@ -217,11 +218,7 @@ public abstract class SwWizard extends Panel {
         super.onConfigure();
         // The step's component is created when it is shown, so it starts from the shared model each time
         if (shown != current) {
-            Component body = steps.get(current).factory().apply(STEP_ID);
-            if (body == null || !STEP_ID.equals(body.getId())) {
-                throw new IllegalArgumentException("A wizard step must use the id passed to its factory (\""
-                        + STEP_ID + "\"), but was " + (body == null ? "null" : "\"" + body.getId() + "\""));
-            }
+            Component body = ComponentIds.fromFactory(steps.get(current).factory().apply(STEP_ID), STEP_ID, "A wizard step");
             group.addOrReplace(body);
             shown = current;
         }

@@ -1,5 +1,6 @@
 package dev.jbaby.shadwick.components;
 
+import dev.jbaby.shadwick.util.ComponentIds;
 import dev.jbaby.shadwick.behaviors.ButtonBehavior;
 import dev.jbaby.shadwick.behaviors.CollapsibleBehavior;
 import dev.jbaby.shadwick.behaviors.DisclosureTriggerBehavior;
@@ -44,7 +45,7 @@ public class SwCollapsible extends Panel {
     public SwCollapsible setContent(String content) { return setContent(Model.of(content)); }
     public SwCollapsible setContent(IModel<String> content) { return setContent(new Label(CONTENT_ID, Objects.requireNonNull(content))); }
     public SwCollapsible setContent(Component content) {
-        if (!CONTENT_ID.equals(content.getId())) throw new IllegalArgumentException("The collapsible content must use id \"content\"");
+        ComponentIds.forSlot(content, CONTENT_ID, "The collapsible's content (SwCollapsible.CONTENT_ID)");
         body.replace(content); return this;
     }
     private void styleButton() { if (!styledButton) { trigger.add(button); styledButton = true; } }

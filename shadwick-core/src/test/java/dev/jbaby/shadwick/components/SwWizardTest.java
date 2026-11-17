@@ -146,7 +146,7 @@ class SwWizardTest {
         SwWizard wizard = Sw.Components.wizard("w", target -> { }).addStep("One", id -> new Label(id));
         assertThatThrownBy(() -> wizard.setCurrentStep(1)).isInstanceOf(IndexOutOfBoundsException.class);
         assertThatThrownBy(() -> tester.startComponentInPage(Sw.Components.wizard("w", target -> { })
-                .addStep("One", id -> new Label("other")))).hasStackTraceContaining("must use the id passed to its factory");
+                .addStep("One", id -> new Label("other")))).hasStackTraceContaining("A wizard step must use the id its factory is given (\"step\"), but was \"other\"");
     }
 
     @Test void labelsAreTranslatedAndTheWizardSerializes() {

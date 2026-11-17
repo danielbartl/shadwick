@@ -1,5 +1,6 @@
 package dev.jbaby.shadwick.components;
 
+import dev.jbaby.shadwick.util.ComponentIds;
 import dev.jbaby.shadwick.Shadwick;
 import dev.jbaby.shadwick.behaviors.AttachmentBehavior;
 import dev.jbaby.shadwick.behaviors.AttachmentControlBehavior;
@@ -79,11 +80,11 @@ public class SwAttachment extends Panel {
     public SwAttachment setSize(AttachmentBehavior.Size size) { appearance.setSize(size); return this; }
     public SwAttachment setOrientation(AttachmentBehavior.Orientation orientation) { appearance.setOrientation(orientation); return this; }
     public SwAttachment setFullWidth(boolean fullWidth) { appearance.setFullWidth(fullWidth); return this; }
-    public SwAttachment setMedia(Component media) { requireId(media, MEDIA_ID); this.media.replace(media); customMedia = true; return this; }
-    public SwAttachment setActions(Component actions) { requireId(actions, ACTIONS_ID); this.actions.replace(actions); hasActions = true; return this; }
+    public SwAttachment setMedia(Component media) { ComponentIds.forSlot(media, MEDIA_ID, "The attachment's media"); this.media.replace(media); customMedia = true; return this; }
+    public SwAttachment setActions(Component actions) { ComponentIds.forSlot(actions, ACTIONS_ID, "The attachment's actions"); this.actions.replace(actions); hasActions = true; return this; }
     /** Bind links to the template's anchor; a custom button can change its tag in onComponentTag. Name the control. */
     public SwAttachment setTrigger(Component trigger) {
-        requireId(trigger, TRIGGER_ID);
+        ComponentIds.forSlot(trigger, TRIGGER_ID, "The attachment's trigger");
         if (trigger.getBehaviors(AttachmentControlBehavior.class).isEmpty()) trigger.add(new AttachmentControlBehavior(AttachmentControlBehavior.Kind.TRIGGER));
         replace(trigger); hasTrigger = true; return this;
     }
@@ -106,9 +107,6 @@ public class SwAttachment extends Panel {
         return setTrigger(trigger);
     }
     public Component getTrigger() { return get(TRIGGER_ID); }
-    private static void requireId(Component component, String id) {
-        if (!id.equals(component.getId())) throw new IllegalArgumentException("The attachment slot must use id \"" + id + "\"");
-    }
     @Override protected void onConfigure() {
         super.onConfigure(); content.setVisible(showContent); actions.setVisible(hasActions); get(TRIGGER_ID).setVisible(hasTrigger);
     }

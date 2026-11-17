@@ -1,5 +1,6 @@
 package dev.jbaby.shadwick.components;
 
+import dev.jbaby.shadwick.util.ComponentIds;
 import com.github.openjson.JSONObject;
 import dev.jbaby.shadwick.Shadwick;
 import dev.jbaby.shadwick.behaviors.ButtonBehavior;
@@ -63,7 +64,7 @@ public class SwMasterDetail<T> extends Panel {
     /** The list of items; the factory receives the id to use ({@link #MASTER_ID}). */
     public SwMasterDetail<T> setMaster(SerializableFunction<String, ? extends Component> master) {
         Component component = master.apply(MASTER_ID);
-        check(component, MASTER_ID, "master");
+        ComponentIds.fromFactory(component, MASTER_ID, "The master");
         addOrReplace(component);
         return this;
     }
@@ -74,7 +75,7 @@ public class SwMasterDetail<T> extends Panel {
      */
     public SwMasterDetail<T> setDetail(SerializableBiFunction<String, IModel<T>, ? extends Component> detail) {
         this.detail = Objects.requireNonNull(detail);
-        if (selection.getObject() != null) check(detail.apply(DETAIL_ID, selection), DETAIL_ID, "detail");
+        if (selection.getObject() != null) ComponentIds.fromFactory(detail.apply(DETAIL_ID, selection), DETAIL_ID, "The detail");
         detailBuilt = false;
         return this;
     }
@@ -157,17 +158,10 @@ public class SwMasterDetail<T> extends Panel {
     private void updateDetail() {
         T item = selection.getObject();
         Component component = item == null || detail == null ? newEmptyState(DETAIL_ID) : detail.apply(DETAIL_ID, selection);
-        check(component, DETAIL_ID, "detail");
+        ComponentIds.fromFactory(component, DETAIL_ID, "The detail");
         detailArea.addOrReplace(component);
         shownSelection = item;
         detailBuilt = true;
-    }
-
-    private static void check(Component component, String id, String part) {
-        if (component == null || !id.equals(component.getId())) {
-            throw new IllegalArgumentException("The " + part + " must use the id passed to the factory (\"" + id
-                    + "\"), but was " + (component == null ? "null" : "\"" + component.getId() + "\""));
-        }
     }
 
     /** Switches which pane shows where only one does, without re-rendering the list (keeping its scroll position). */

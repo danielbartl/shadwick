@@ -137,7 +137,7 @@ class SwLoadMoreListTest {
         assertThatIllegalArgumentException().isThrownBy(() -> new SwLoadMoreList<>("x", new ListDataProvider<>(List.of(1)), 0, Label::new));
         var page = new ListPage();
         page.replace(new SwLoadMoreList<>("numbers", new ListDataProvider<>(List.of(1)), 5, (id, n) -> new Label("other")));
-        assertThatThrownBy(() -> tester.startPage(page)).hasStackTraceContaining("must use the id passed to the factory");
+        assertThatThrownBy(() -> tester.startPage(page)).hasStackTraceContaining("An item must use the id its factory is given");
     }
 
     @Test void isTranslatedNamedAndSerializes() throws Exception {
