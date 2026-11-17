@@ -37,6 +37,8 @@ or the current selection. The showcase's **Choices** page demonstrates all of th
 
 ## Mixed state
 
+> **New in 0.2.0, not yet released.** `SwCheckBox.setIndeterminate` isn't in 0.1.0.
+
 A checkbox can show the mixed state, a minus, when it stands for a group of which only some are selected:
 
 ```java

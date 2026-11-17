@@ -2,6 +2,8 @@
 
 Whole page frames to copy into an application: the layout, a page that uses it and the CSS around it.
 
+> **New in 0.2.0, not yet released.** The recipes use `SwAppLayout.sidebarGroupsOpen()` (or `SwSidebar.setGroupsOpen`), which 0.1.0 doesn't have; without it their sidebar groups open only around the current page.
+
 A layout is the frame every page of an application shares: the navigation, the page's header, the skip link, the
 place where the page's content goes. In Wicket it is a page class the application's pages extend, usually a subclass
 of [`SwAppLayout`](../components/app-layout.md), with markup that wraps the pages' own `<wicket:extend>` content. The

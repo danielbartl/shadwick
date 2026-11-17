@@ -95,7 +95,7 @@ Show numbered process stages with localized state captions and optional complete
 ### Wizard, filter and master–detail
 
 A form in several steps with Back, Next and Finish; a row of chips choosing one value; and a list beside the selected
-item's details. All three follow Wicket Oat and work without JavaScript.
+item's details. All three follow Wicket Oat and work without JavaScript. New in 0.2.0, not yet released.
 
 [Wizard](docs/components/wizard.md) · [Filter](docs/components/filter.md) · [Master–detail](docs/components/master-detail.md)
 

@@ -155,7 +155,9 @@ deployment already publishing or published does not submit a second publication 
 After Central reports publication, resolve both coordinates from a fresh local Maven repository to verify
 availability. Finalize the draft GitHub release from the existing tag using the versioned release notes and the retained
 artifacts. Update the candidate/not-on-Central language in README, installation/compatibility/docs index, landing
-page and machine-readable status together, and publish the website. Then move development to the next snapshot
+page and machine-readable status together, and publish the website. Notes in the guides that mark features as
+"New in X.Y.Z, not yet released" or "Changed in X.Y.Z, not yet released" become "New in X.Y.Z" / "Changed in X.Y.Z"
+(find them with `grep -rn 'not yet released' docs README.md`). Then move development to the next snapshot
 version and reset the development SCM tag to `HEAD`.
 
 ## Compatibility gate

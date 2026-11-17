@@ -2013,6 +2013,15 @@ Sonner parity); the changelog records it under Changed.
   timers, six positions in LTR/RTL, narrow screens, the Toasts page's Ajax position choice, reduced motion, dialogs and
   the column fallback (init script sets window.CSSStyleSheet = undefined).
 
+### Unreleased features in the docs (2026-11-17)
+
+The website is built from main, so guides describe snapshot APIs before they reach Maven Central. Every 0.2.0 addition
+or behavior change carries a `docs-callout` (Markdown `> `) note: "**New in 0.2.0, not yet released.**" or
+"**Changed in 0.2.0, not yet released.**", naming what 0.1.0 lacks or did instead; the README wizard section says so too.
+Checked against the v0.1.0 API baseline (`git show v0.1.0:<api-0.1.txt>`). New 0.2.0 work gets the same note. At the
+release, drop ", not yet released" (`grep -rn 'not yet released' docs README.md`; also in docs/guides/releases.md).
+The landing page stays on 0.1.0 until the release: update its badge/snippet/catalog then, together with the version.
+
 ### Workflow components: wizard, filter, master-detail (2026-11-17, 0.2.0-SNAPSHOT)
 
 "Workflow components" was never a named Oat family; investigation picked Oat's process components and the user chose

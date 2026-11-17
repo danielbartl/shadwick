@@ -2,6 +2,8 @@
 
 A row of chips choosing one value, such as the status of the orders shown below it.
 
+> **New in 0.2.0, not yet released.** `SwFilter` isn't in 0.1.0, the version on Maven Central.
+
 `SwFilter<T>` follows Wicket Oat's `OatFilter`. Choosing a chip sets the model and runs `onChange` over Ajax, for example
 to re-render the list it filters:
 

@@ -2,6 +2,8 @@
 
 A list of items beside the details of the one selected, one pane at a time where there is room for one.
 
+> **New in 0.2.0, not yet released.** `SwMasterDetail` isn't in 0.1.0, the version on Maven Central.
+
 `SwMasterDetail<T>` follows Wicket Oat's `OatMasterDetail`. The list is yours; give it a factory, and one for the details
 of the selected item:
 

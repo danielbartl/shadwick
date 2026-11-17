@@ -34,6 +34,8 @@ visible on the page; choose persistent messages for information that needs more 
 
 ## Several at once
 
+> **Changed in 0.2.0, not yet released.** In 0.1.0 toasts show as a column, all of them at once, and there is no `setVisibleToasts`.
+
 Toasts stack, as in shadcn/ui's Sonner and Shadleaf. The newest is in front; the others sit behind it, each a little
 further back and smaller, with only the front one's content showing. While the pointer is on them, or one of them has
 the keyboard focus (Alt+T), they spread out one above the other. At most three show at once; older ones wait, with
@@ -49,6 +51,8 @@ script maintains, never in `style` attributes, so the strict CSP needs nothing e
 stylesheets shows the toasts in a plain scrolling column instead, all of them, newest nearest the edge.
 
 ## Position
+
+> **New in 0.2.0, not yet released.** `setToastPosition`; in 0.1.0 toasts always appear in the bottom-end corner.
 
 Toasts appear in the bottom-end corner by default. `ShadwickSettings.setToastPosition(...)` puts them in another
 corner or in the middle of the top or bottom edge: `ToastBehavior.Position.TOP_START`, `TOP_CENTER`, `TOP_END`,

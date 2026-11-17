@@ -49,6 +49,11 @@ are omitted. Groups are one level deep and open when one of their children is cu
 escaped, and a missing icon uses a generic circle. Badges hide when null, blank or numeric zero; visible badges
 describe their links, including in the icon rail. Hover/focus hints appear only in the desktop icon rail.
 
+`setGroupsOpen(true)` opens every group from the start, not only the one around the current page, for a short
+navigation that should show all its links; in an `SwAppLayout`, override `sidebarGroupsOpen()` to return `true`.
+
+> **New in 0.2.0, not yet released.** `SwSidebar.setGroupsOpen` and `SwAppLayout.sidebarGroupsOpen()` aren't in 0.1.0.
+
 Use `setHeader`/`setFooter` with components named `SwSidebar.HEADER_ID`/`FOOTER_ID` for caller-owned content.
 `setLabel(String/IModel<String>)` names the navigation; resource keys are `SwSidebar.label`, `SwSidebar.close` and
 `SidebarTriggerBehavior.label`. `target.add(sidebar.getMenu())` refreshes badges/links without closing the mobile

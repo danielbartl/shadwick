@@ -24,6 +24,8 @@ also accept `IModel<String>`. Subclasses overriding `onClose` must call `super.o
 
 ## Small, and with an icon
 
+> **New in 0.2.0, not yet released.** `setSize`, `setIcon` and `setIconVariant` aren't in 0.1.0.
+
 `setSize(SwConfirmDialog.Size.SMALL)` makes the dialog narrower, centres its header and puts the two buttons side by
 side in equal halves. A button is never narrower than its label: when a label does not fit its half, as happens soon
 in German, Dutch or French, the buttons stack at full width with the action on top. Keyboard and reading order stay
