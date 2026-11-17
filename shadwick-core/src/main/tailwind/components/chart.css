@@ -118,6 +118,22 @@
   .sw-heatmap-missing-key { @apply mt-2 mb-0 text-xs text-muted-foreground; }
   .sw-heatmap-tooltip { max-width:calc(100% - 1rem); }
   .sw-heatmap-tooltip .sw-chart-tooltip-value { min-width:0; max-width:65%; flex-shrink:1; overflow-wrap:anywhere; }
+  /*
+    Calendar heatmap: the same table and tiles at the size of a day. Small square cells, the weekday column sticky at
+    the logical start, month names above the week they begin in (overflowing into the next weeks, never wrapping), and
+    padding days before and after the period left empty.
+  */
+  /* The grid scrolls; positioned, it also contains (and clips) its visually hidden week and value labels. */
+  .sw-calendar-heatmap .sw-heatmap-plot { position:relative; }
+  .sw-calendar-heatmap .sw-heatmap-matrix { width:auto; border-spacing:3px; font-size:10px; line-height:1; }
+  .sw-calendar-heatmap .sw-heatmap-matrix :is(th, thead td) { min-width:0; max-width:none; padding:0; font-weight:400; color:var(--muted-foreground); overflow-wrap:normal; white-space:nowrap; }
+  .sw-calendar-heatmap .sw-heatmap-matrix thead th { height:1rem; text-align:start; vertical-align:bottom; white-space:nowrap; overflow:visible; }
+  .sw-calendar-heatmap .sw-heatmap-matrix :is(tbody th, thead td) { position:sticky; inset-inline-start:0; z-index:2; width:auto; min-width:0; max-width:none; padding-inline-end:.25rem; text-align:start; background:var(--background); }
+  .sw-calendar-heatmap-month { display:block; width:0; }
+  .sw-calendar-heatmap .sw-heatmap-cell { width:.875rem; min-width:.875rem; max-width:.875rem; height:.875rem; padding:0; scroll-margin-inline-start:3rem; }
+  .sw-calendar-heatmap .sw-heatmap-cell[data-active] { outline-offset:1px; border-radius:2px; }
+  .sw-calendar-heatmap .sw-heatmap-cell[data-outside] { cursor:default; }
+  .sw-calendar-heatmap .sw-heatmap-missing { stroke-dasharray:2 2; }
   .sw-radial-plot { width:min(100%,22rem); height:auto; aspect-ratio:1; margin-inline:auto; }
   .sw-radial-svg { display:block; width:100%; height:100%; fill:none; stroke:none; }
   .sw-radial-svg:dir(rtl) { transform:scaleX(-1); }

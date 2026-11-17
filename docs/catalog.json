@@ -384,6 +384,7 @@
       "shadwick-core/src/main/java/dev/jbaby/shadwick/components/chart/ScatterSeries.java",
       "shadwick-core/src/main/java/dev/jbaby/shadwick/components/chart/SwHeatmapChart.java",
       "shadwick-core/src/main/java/dev/jbaby/shadwick/components/chart/HeatmapColumn.java",
+      "shadwick-core/src/main/java/dev/jbaby/shadwick/components/chart/SwCalendarHeatmap.java",
       "shadwick-core/src/main/java/dev/jbaby/shadwick/components/chart/SwRadialChart.java",
       "shadwick-core/src/main/java/dev/jbaby/shadwick/components/chart/SwRadarChart.java",
       "shadwick-core/src/main/java/dev/jbaby/shadwick/components/chart/RadarSeries.java",

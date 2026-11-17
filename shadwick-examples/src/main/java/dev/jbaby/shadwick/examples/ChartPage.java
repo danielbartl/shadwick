@@ -36,6 +36,8 @@ public class ChartPage extends BasePage {
 
     public record Revenue(LocalDate date, BigDecimal amount) implements Serializable {}
 
+    public record Activity(LocalDate date, Integer commits) implements Serializable {}
+
     public record Invoice(String client, String reference, BigDecimal amount)
             implements Serializable {}
 
@@ -70,6 +72,7 @@ public class ChartPage extends BasePage {
         addRadialCharts();
         addLiveRadialChart();
         addHeatmaps();
+        addCalendarHeatmaps();
         addLiveHeatmap();
         addValueLabels();
         addForecasts();
@@ -490,6 +493,60 @@ public class ChartPage extends BasePage {
                 .addColumn(HeatmapColumn.of("Delivery and coordination", HeatmapRow::wed))
                 .addColumn(HeatmapColumn.of("Independent review", HeatmapRow::thu))
                 .addColumn(HeatmapColumn.of("Customer follow-through", HeatmapRow::fri));
+    }
+
+    /**
+     * A year of contributions, where a day without any counts as zero, and a quarter of sales, where a day without a
+     * report stays "not measured"; the quarter moves forward with an Ajax refresh.
+     */
+    private void addCalendarHeatmaps() {
+        add(new SwCalendarHeatmap<>("contributions", Model.ofList(contributions()), Activity::date, Activity::commits)
+                .setTitle("A year of contributions")
+                .setValueHeader("Commits")
+                .setPeriod(LocalDate.of(2025, 11, 17), LocalDate.of(2026, 11, 16))
+                .setMissingValue(0));
+        IModel<List<Revenue>> sales = Model.ofList(dailySales(LocalDate.of(2026, 7, 1), LocalDate.of(2026, 9, 30)));
+        IModel<LocalDate> from = Model.of(LocalDate.of(2026, 7, 1)), to = Model.of(LocalDate.of(2026, 9, 30));
+        IModel<String> title = Model.of("Daily sales, third quarter");
+        var quarter = new SwCalendarHeatmap<>("salesCalendar", sales, Revenue::date, Revenue::amount)
+                .setTitle(title)
+                .setValueHeader("Sales")
+                .setCurrency(java.util.Currency.getInstance("EUR"))
+                .setPeriod(from, to)
+                .setColor(2);
+        add(quarter);
+        add(SwButton.onClick("nextQuarter", "Show the fourth quarter", target -> {
+            from.setObject(LocalDate.of(2026, 10, 1));
+            to.setObject(LocalDate.of(2026, 12, 31));
+            title.setObject("Daily sales, fourth quarter so far");
+            // Reported up to the middle of November: the rest of the quarter is not measured yet
+            sales.setObject(dailySales(LocalDate.of(2026, 10, 1), LocalDate.of(2026, 11, 16)));
+            quarter.setColor(4);
+            target.add(quarter);
+        }));
+    }
+
+    private static List<Activity> contributions() {
+        List<Activity> days = new java.util.ArrayList<>();
+        LocalDate start = LocalDate.of(2025, 11, 17);
+        for (int i = 0; i < 365; i++) {
+            LocalDate day = start.plusDays(i);
+            boolean weekend = day.getDayOfWeek().getValue() >= 6;
+            int commits = (int) Math.round((Math.sin(i * 0.37) + 1) * (weekend ? 1 : 5) + (i % 11 == 0 ? 9 : 0));
+            if (commits > 0) days.add(new Activity(day, commits));
+        }
+        return days;
+    }
+
+    private static List<Revenue> dailySales(LocalDate from, LocalDate to) {
+        List<Revenue> days = new java.util.ArrayList<>();
+        int i = 0;
+        for (LocalDate day = from; !day.isAfter(to); day = day.plusDays(1), i++) {
+            // Two days without a report: the till was offline
+            if (i == 17 || i == 18) continue;
+            days.add(new Revenue(day, BigDecimal.valueOf(800 + (i * 137) % 1900)));
+        }
+        return days;
     }
 
     private void addLiveHeatmap() {

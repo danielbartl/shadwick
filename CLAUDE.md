@@ -2013,6 +2013,23 @@ Sonner parity); the changelog records it under Changed.
   timers, six positions in LTR/RTL, narrow screens, the Toasts page's Ajax position choice, reduced motion, dialogs and
   the column fallback (init script sets window.CSSStyleSheet = undefined).
 
+### Calendar heatmap (2026-11-17, 0.2.0-SNAPSHOT)
+
+The user chose only the calendar heatmap from the chart-breadth list for 0.2.0 (colour bands, radial/radar extras and
+scatter bubbles/lines stay later). Neither Oat nor Shadleaf has one; SwCalendarHeatmap<T>(id, data, date, value)
+follows SwHeatmapChart. Shared code moved to package-private HeatmapScale (amount, bounds, five bands, level);
+SwHeatmapChart delegates, unchanged. The root carries sw-heatmap-chart too, so heatmap-chart.js drives it: padding
+days are td.sw-heatmap-cell[data-outside] (index, no tile/value) that keyboard and pointer pass over;
+data-tooltip-label (full date) names a cell instead of row/column; the first/last cell for focus and Ctrl+Home/End is
+found column by column (identical to index order for plain heatmaps). Rows are the seven weekdays from
+WeekFields.of(locale) (or setFirstDayOfWeek), columns are weeks; month labels go on the week each month starts in,
+dropping a label fewer than four weeks before the next, with the year on the first and January's when the period
+spans two years. Period defaults to the data's first..last date; setPeriod at most 1,096 days; duplicates and
+out-of-period data fail. Missing days are "Not measured" unless setMissingValue (null-valued entries stay missing).
+CSS: .sw-calendar-heatmap overrides in components/chart.css. The grid (.sw-heatmap-plot) must be position:relative:
+its absolutely positioned sr-only labels otherwise escape the scroll clip and widen the page on phones. Header cells
+need white-space:nowrap or the sticky weekday column collapses to one letter per line.
+
 ### Record-display no-script submission flake (2026-11-17, hardened, not reproduced)
 
 Build 43937060783 (56b25a9): RecordDisplayBrowserTest.nativeSubmissionAndDetailsRemainUsableWithoutScriptInEveryLocale

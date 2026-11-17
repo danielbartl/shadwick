@@ -30,9 +30,8 @@ public class SwHeatmapChart<T> extends Panel {
     private transient Snapshot snapshot;
     private record Cell(BigDecimal value, String text) implements Serializable {}
     private record Row(String label, List<Cell> cells) implements Serializable {}
-    private record Band(BigDecimal lower, BigDecimal upper, String text) implements Serializable {}
     private record Snapshot(String title, String rowHeader, String valueHeader, List<String> columns, List<Row> rows,
-                            List<Band> bands, String missing, boolean measured) implements Serializable {}
+                            List<HeatmapScale.Band> bands, String missing, boolean measured) implements Serializable {}
 
     public SwHeatmapChart(String id, IModel<? extends List<T>> data, SerializableFunction<T, String> row) {
         super(id);
@@ -108,18 +107,7 @@ public class SwHeatmapChart<T> extends Panel {
         return model == null ? getString("SwHeatmapChart." + key)
                 : required(model.getObject(), "A heatmap needs a " + key + " header");
     }
-    private static BigDecimal amount(Number value) {
-        if (value == null) return null;
-        double number = value.doubleValue();
-        if (!Double.isFinite(number) || Math.abs(number) > 1e100)
-            throw new IllegalArgumentException("Heatmap values must be finite with magnitude at most 1e100");
-        BigDecimal result;
-        try { result = value instanceof BigDecimal decimal ? decimal : new BigDecimal(value.toString()); }
-        catch (NumberFormatException ignored) { result = BigDecimal.valueOf(number); }
-        if (result.abs().compareTo(BigDecimal.ONE.scaleByPowerOfTen(100)) > 0)
-            throw new IllegalArgumentException("Heatmap values must be finite with magnitude at most 1e100");
-        return result;
-    }
+    private static BigDecimal amount(Number value) { return HeatmapScale.amount(value); }
     private Snapshot snapshot() {
         if (snapshot != null) return snapshot;
         String name = required(title.getObject(), "A heatmap needs a title");
@@ -129,25 +117,11 @@ public class SwHeatmapChart<T> extends Panel {
         for (HeatmapColumn<T> column : columns)
             labels.add(required(column.label.getObject(), "Every heatmap column needs a label"));
         List<Row> rows = readRows();
-        BigDecimal lower = BigDecimal.ZERO, upper = BigDecimal.ZERO;
-        boolean measured = false;
-        for (Row row : rows) for (Cell cell : row.cells) if (cell.value != null) {
-            measured = true;
-            lower = lower.min(cell.value);
-            upper = upper.max(cell.value);
-        }
-        if (minimum == null) {
-            if (lower.compareTo(upper) == 0) upper = BigDecimal.ONE;
-        } else {
-            lower = amount(minimum.getObject());
-            upper = amount(maximum.getObject());
-            if (lower == null || upper == null || lower.compareTo(upper) >= 0)
-                throw new IllegalArgumentException("Heatmap range bounds must be defined and increasing");
-            // Only observations, rather than the automatic zero anchor, constrain an explicit range.
-            for (Row row : rows) for (Cell cell : row.cells) if (cell.value != null
-                    && (cell.value.compareTo(lower) < 0 || cell.value.compareTo(upper) > 0))
-                throw new IllegalArgumentException("Heatmap values must stay within the configured range");
-        }
+        List<BigDecimal> observed = new ArrayList<>();
+        for (Row row : rows) for (Cell cell : row.cells) if (cell.value != null) observed.add(cell.value);
+        BigDecimal[] bounds = HeatmapScale.bounds(observed, minimum, maximum);
+        boolean measured = !observed.isEmpty();
+        BigDecimal lower = bounds[0], upper = bounds[1];
         return snapshot = new Snapshot(name, rowName, valueName, List.copyOf(labels), List.copyOf(rows), bands(lower, upper),
                 getString("SwHeatmapChart.missing"), measured);
     }
@@ -166,19 +140,10 @@ public class SwHeatmapChart<T> extends Panel {
         }
         return rows;
     }
-    private List<Band> bands(BigDecimal lower, BigDecimal upper) {
-        BigDecimal step = upper.subtract(lower).divide(BigDecimal.valueOf(5));
-        List<Band> bands = new ArrayList<>();
-        for (int i = 0; i < 5; i++) {
-            BigDecimal start = lower.add(step.multiply(BigDecimal.valueOf(i))), end = start.add(step);
-            bands.add(new Band(start, end, format(start) + " – " + format(end)));
-        }
-        return List.copyOf(bands);
+    private List<HeatmapScale.Band> bands(BigDecimal lower, BigDecimal upper) {
+        return HeatmapScale.bands(lower, upper, this::format);
     }
-    private static int level(Snapshot s, BigDecimal value) {
-        for (int i = 0; i < 4; i++) if (value.compareTo(s.bands.get(i).upper) < 0) return i;
-        return 4;
-    }
+    private static int level(Snapshot s, BigDecimal value) { return HeatmapScale.level(s.bands, value); }
     private static String escape(String value) { return Strings.escapeMarkup(Objects.toString(value, "")).toString(); }
     private String renderChart(String id) {
         Snapshot s = snapshot();
@@ -239,7 +204,7 @@ public class SwHeatmapChart<T> extends Panel {
                 .append(escape(getString("SwHeatmapChart.scale") + ": " + s.valueHeader)).append("</p><ol class=\"sw-heatmap-bands\">");
         for (int i = 0; i < s.bands.size(); i++) b.append("<li><svg class=\"sw-heatmap-swatch\" aria-hidden=\"true\" focusable=\"false\">")
                 .append("<rect class=\"sw-heatmap-base\" width=\"100%\" height=\"100%\" rx=\"2\"/><rect class=\"sw-heatmap-fill sw-heatmap-level-")
-                .append(i).append("\" width=\"100%\" height=\"100%\" rx=\"2\"/></svg><span>").append(escape(s.bands.get(i).text)).append("</span></li>");
+                .append(i).append("\" width=\"100%\" height=\"100%\" rx=\"2\"/></svg><span>").append(escape(s.bands.get(i).text())).append("</span></li>");
         b.append("</ol><p class=\"sw-heatmap-missing-key\">").append(escape("× " + s.missing)).append("</p></div>");
     }
     @Override public void renderHead(IHeaderResponse response) {

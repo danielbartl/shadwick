@@ -16,6 +16,9 @@ Development continues on `0.2.0-SNAPSHOT`.
 
 ### Added
 
+- `SwCalendarHeatmap`: one cell per day in weeks and weekdays on the heatmap's five bands, with a period of up to
+  three years, days without data shown as not measured unless `setMissingValue` gives them a value, locale week starts
+  and month labels; a native table with every day's full date and value, and keyboard exploration by day and week.
 - Docs: six copy-ready layout recipes (collapses to icons, grouped by section, collapsible sub-menus, inset with
   secondary navigation, a table of contents on the end, navigation in the header), each running in the examples app
   at `/recipes/…` and printed from its source; and a "Coming from shadcn/ui" guide.

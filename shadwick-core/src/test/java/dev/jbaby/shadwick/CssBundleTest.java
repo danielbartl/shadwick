@@ -118,6 +118,15 @@ class CssBundleTest {
         }
     }
 
+    @ParameterizedTest
+    @EnumSource(Skin.class)
+    void everySkinSizesCalendarHeatmapDays(Skin skin) throws IOException {
+        for (Bundle bundle : Bundle.values()) {
+            assertThat(read("shadwick-" + skin.id() + bundle.suffix() + ".css")).as(skin + " " + bundle)
+                    .contains(".sw-calendar-heatmap .sw-heatmap-cell", ".sw-calendar-heatmap-month", ".sw-calendar-heatmap .sw-heatmap-plot");
+        }
+    }
+
     private static String read(String name) throws IOException {
         try (InputStream in = Shadwick.class.getResourceAsStream("css/" + name)) {
             assertThat(in).as(name + " on the classpath").isNotNull();

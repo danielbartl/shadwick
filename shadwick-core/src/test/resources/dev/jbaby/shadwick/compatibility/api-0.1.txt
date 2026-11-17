@@ -194,6 +194,7 @@ CTOR public dev.jbaby.shadwick.components.SwTimeline(java.lang.String,org.apache
 CTOR public dev.jbaby.shadwick.components.SwUserMenu(java.lang.String,org.apache.wicket.model.IModel<java.lang.String>)
 CTOR public dev.jbaby.shadwick.components.TableQuery(org.apache.wicket.request.mapper.parameter.PageParameters)
 CTOR public dev.jbaby.shadwick.components.TableQuery(org.apache.wicket.request.mapper.parameter.PageParameters,java.lang.String,java.lang.String,java.lang.String)
+CTOR public dev.jbaby.shadwick.components.chart.SwCalendarHeatmap(java.lang.String,org.apache.wicket.model.IModel<? extends java.util.List<T>>,dev.jbaby.shadwick.util.SerializableFunction<T, java.time.LocalDate>,dev.jbaby.shadwick.util.SerializableFunction<T, ? extends java.lang.Number>)
 CTOR public dev.jbaby.shadwick.components.chart.SwChart(java.lang.String,org.apache.wicket.model.IModel<? extends java.util.List<T>>,dev.jbaby.shadwick.util.SerializableFunction<T, ?>)
 CTOR public dev.jbaby.shadwick.components.chart.SwDonutChart(java.lang.String,org.apache.wicket.model.IModel<? extends java.util.List<T>>,dev.jbaby.shadwick.util.SerializableFunction<T, java.lang.String>,dev.jbaby.shadwick.util.SerializableFunction<T, ? extends java.lang.Number>)
 CTOR public dev.jbaby.shadwick.components.chart.SwHeatmapChart(java.lang.String,org.apache.wicket.model.IModel<? extends java.util.List<T>>,dev.jbaby.shadwick.util.SerializableFunction<T, java.lang.String>)
@@ -964,6 +965,8 @@ METHOD protected void dev.jbaby.shadwick.components.SwUserMenu.onConfigure()
 METHOD protected void dev.jbaby.shadwick.components.SwUserMenu.onDetach()
 METHOD protected void dev.jbaby.shadwick.components.SwUserMenu.onSignedOut()
 METHOD protected void dev.jbaby.shadwick.components.SwUserMenu.signOut()
+METHOD protected void dev.jbaby.shadwick.components.chart.SwCalendarHeatmap.onDetach()
+METHOD protected void dev.jbaby.shadwick.components.chart.SwCalendarHeatmap.onInitialize()
 METHOD protected void dev.jbaby.shadwick.components.chart.SwChart.onDetach()
 METHOD protected void dev.jbaby.shadwick.components.chart.SwChart.onInitialize()
 METHOD protected void dev.jbaby.shadwick.components.chart.SwDonutChart.onDetach()
@@ -1539,6 +1542,24 @@ METHOD public dev.jbaby.shadwick.components.chart.RadarSeries<T> dev.jbaby.shadw
 METHOD public dev.jbaby.shadwick.components.chart.ScatterSeries<T> dev.jbaby.shadwick.components.chart.ScatterSeries.setColor(int)
 METHOD public dev.jbaby.shadwick.components.chart.ScatterSeries<T> dev.jbaby.shadwick.components.chart.ScatterSeries.setPointRadius(double)
 METHOD public dev.jbaby.shadwick.components.chart.ScatterSeries<T> dev.jbaby.shadwick.components.chart.ScatterSeries.setShape(dev.jbaby.shadwick.components.chart.ScatterSeries$Shape)
+METHOD public dev.jbaby.shadwick.components.chart.SwCalendarHeatmap<T> dev.jbaby.shadwick.components.chart.SwCalendarHeatmap.setAutoScale()
+METHOD public dev.jbaby.shadwick.components.chart.SwCalendarHeatmap<T> dev.jbaby.shadwick.components.chart.SwCalendarHeatmap.setColor(int)
+METHOD public dev.jbaby.shadwick.components.chart.SwCalendarHeatmap<T> dev.jbaby.shadwick.components.chart.SwCalendarHeatmap.setCurrency(java.util.Currency)
+METHOD public dev.jbaby.shadwick.components.chart.SwCalendarHeatmap<T> dev.jbaby.shadwick.components.chart.SwCalendarHeatmap.setFirstDayOfWeek(java.time.DayOfWeek)
+METHOD public dev.jbaby.shadwick.components.chart.SwCalendarHeatmap<T> dev.jbaby.shadwick.components.chart.SwCalendarHeatmap.setMissingValue(java.lang.Number)
+METHOD public dev.jbaby.shadwick.components.chart.SwCalendarHeatmap<T> dev.jbaby.shadwick.components.chart.SwCalendarHeatmap.setPeriod(java.time.LocalDate,java.time.LocalDate)
+METHOD public dev.jbaby.shadwick.components.chart.SwCalendarHeatmap<T> dev.jbaby.shadwick.components.chart.SwCalendarHeatmap.setPeriod(org.apache.wicket.model.IModel<java.time.LocalDate>,org.apache.wicket.model.IModel<java.time.LocalDate>)
+METHOD public dev.jbaby.shadwick.components.chart.SwCalendarHeatmap<T> dev.jbaby.shadwick.components.chart.SwCalendarHeatmap.setPeriodFromData()
+METHOD public dev.jbaby.shadwick.components.chart.SwCalendarHeatmap<T> dev.jbaby.shadwick.components.chart.SwCalendarHeatmap.setRange(java.lang.Number,java.lang.Number)
+METHOD public dev.jbaby.shadwick.components.chart.SwCalendarHeatmap<T> dev.jbaby.shadwick.components.chart.SwCalendarHeatmap.setRange(org.apache.wicket.model.IModel<? extends java.lang.Number>,org.apache.wicket.model.IModel<? extends java.lang.Number>)
+METHOD public dev.jbaby.shadwick.components.chart.SwCalendarHeatmap<T> dev.jbaby.shadwick.components.chart.SwCalendarHeatmap.setShowLegend(boolean)
+METHOD public dev.jbaby.shadwick.components.chart.SwCalendarHeatmap<T> dev.jbaby.shadwick.components.chart.SwCalendarHeatmap.setShowTooltip(boolean)
+METHOD public dev.jbaby.shadwick.components.chart.SwCalendarHeatmap<T> dev.jbaby.shadwick.components.chart.SwCalendarHeatmap.setTitle(java.lang.String)
+METHOD public dev.jbaby.shadwick.components.chart.SwCalendarHeatmap<T> dev.jbaby.shadwick.components.chart.SwCalendarHeatmap.setTitle(org.apache.wicket.model.IModel<java.lang.String>)
+METHOD public dev.jbaby.shadwick.components.chart.SwCalendarHeatmap<T> dev.jbaby.shadwick.components.chart.SwCalendarHeatmap.setValueFormat(dev.jbaby.shadwick.components.chart.SwChart$ValueFormat)
+METHOD public dev.jbaby.shadwick.components.chart.SwCalendarHeatmap<T> dev.jbaby.shadwick.components.chart.SwCalendarHeatmap.setValueFormat(dev.jbaby.shadwick.util.SerializableBiFunction<java.lang.Number, java.util.Locale, java.lang.String>)
+METHOD public dev.jbaby.shadwick.components.chart.SwCalendarHeatmap<T> dev.jbaby.shadwick.components.chart.SwCalendarHeatmap.setValueHeader(java.lang.String)
+METHOD public dev.jbaby.shadwick.components.chart.SwCalendarHeatmap<T> dev.jbaby.shadwick.components.chart.SwCalendarHeatmap.setValueHeader(org.apache.wicket.model.IModel<java.lang.String>)
 METHOD public dev.jbaby.shadwick.components.chart.SwChart<T> dev.jbaby.shadwick.components.chart.SwChart.addReference(dev.jbaby.shadwick.components.chart.ChartReference)
 METHOD public dev.jbaby.shadwick.components.chart.SwChart<T> dev.jbaby.shadwick.components.chart.SwChart.addSeries(dev.jbaby.shadwick.components.chart.ChartSeries<T>)
 METHOD public dev.jbaby.shadwick.components.chart.SwChart<T> dev.jbaby.shadwick.components.chart.SwChart.setAxisCategoryFormat(dev.jbaby.shadwick.components.chart.SwChart$CategoryFormat)
@@ -2327,6 +2348,7 @@ METHOD public void dev.jbaby.shadwick.components.SwRadialProgress.onComponentTag
 METHOD public void dev.jbaby.shadwick.components.SwRating.onComponentTagBody(org.apache.wicket.markup.MarkupStream,org.apache.wicket.markup.ComponentTag)
 METHOD public void dev.jbaby.shadwick.components.SwSteps.renderHead(org.apache.wicket.markup.head.IHeaderResponse)
 METHOD public void dev.jbaby.shadwick.components.SwThemeToggle.renderHead(org.apache.wicket.markup.head.IHeaderResponse)
+METHOD public void dev.jbaby.shadwick.components.chart.SwCalendarHeatmap.renderHead(org.apache.wicket.markup.head.IHeaderResponse)
 METHOD public void dev.jbaby.shadwick.components.chart.SwChart.renderHead(org.apache.wicket.markup.head.IHeaderResponse)
 METHOD public void dev.jbaby.shadwick.components.chart.SwDonutChart.renderHead(org.apache.wicket.markup.head.IHeaderResponse)
 METHOD public void dev.jbaby.shadwick.components.chart.SwHeatmapChart.renderHead(org.apache.wicket.markup.head.IHeaderResponse)
@@ -2474,6 +2496,7 @@ TYPE public class dev.jbaby.shadwick.components.SwThemeToggle extends org.apache
 TYPE public class dev.jbaby.shadwick.components.SwTimeline<T> extends org.apache.wicket.markup.html.panel.Panel implements []
 TYPE public class dev.jbaby.shadwick.components.SwUserMenu extends org.apache.wicket.markup.html.panel.Panel implements []
 TYPE public class dev.jbaby.shadwick.components.chart.ChartSeries<T> extends java.lang.Object implements [java.io.Serializable]
+TYPE public class dev.jbaby.shadwick.components.chart.SwCalendarHeatmap<T> extends org.apache.wicket.markup.html.panel.Panel implements []
 TYPE public class dev.jbaby.shadwick.components.chart.SwChart<T> extends org.apache.wicket.markup.html.panel.Panel implements []
 TYPE public class dev.jbaby.shadwick.components.chart.SwDonutChart<T> extends org.apache.wicket.markup.html.panel.Panel implements []
 TYPE public class dev.jbaby.shadwick.components.chart.SwHeatmapChart<T> extends org.apache.wicket.markup.html.panel.Panel implements []

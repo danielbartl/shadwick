@@ -389,8 +389,45 @@ message. One row or one column is valid. Update the data, column-label, header o
 `target.add(chart)` to refresh the matrix and legend. Snapshots read data/extractors once per configured slot per
 request; owned models detach, and replaced browser listeners are cleaned up. Heatmaps use a small separate runtime
 for matrix navigation; the existing Cartesian/radial/radar interaction runtime remains independent.
-Calendar/contribution layouts, custom thresholds, diverging palettes, per-row scales, aggregation and editable or
-selectable cells remain later scope.
+Custom thresholds, diverging palettes, per-row scales, aggregation and editable or selectable cells remain later
+scope; for days, see the calendar heatmap below.
+
+### Calendar heatmaps
+
+`SwCalendarHeatmap<T>` shows one cell per day, the weeks side by side as columns and the weekdays as rows, on the same
+five bands. Give it the data and how to read each entry's date and value:
+
+```java
+add(new SwCalendarHeatmap<>("activity", Model.ofList(days), Day::date, Day::commits)
+        .setTitle("A year of contributions")
+        .setValueHeader("Commits")
+        .setPeriod(LocalDate.of(2025, 11, 17), LocalDate.of(2026, 11, 16))
+        .setMissingValue(0));
+```
+
+```html
+<div wicket:id="activity"></div>
+```
+
+- **The period.** By default it runs from the first to the last date in the data; `setPeriod(from, to)` (dates or
+  models) fixes it, both days included, at most three years. Data outside the period fails rather than being
+  dropped, and so does a date that appears twice: aggregate per day first.
+- **Days without an entry.** They are not measured by default: a dashed tile with a cross, named "Not measured", and
+  never mistaken for zero. When a missing day does mean zero, as for commits or visits, `setMissingValue(0)` says so;
+  an entry whose value is `null` stays not measured even then.
+- **Weeks.** They start on the locale's first day of the week (Sunday in the United States, Monday in Germany);
+  `setFirstDayOfWeek(...)` overrides it. Month names sit above the week each month begins in, with the year on the
+  first and on January's when the period spans two years.
+- **Scale and format.** `setRange`, `setAutoScale`, `setColor`, `setValueFormat` and `setCurrency` work as on
+  `SwHeatmapChart`; `setShowLegend(false)` and `setShowTooltip(false)` drop the legend and the exploration.
+
+The grid is a native table and also the data: the weekdays are row headers, each week a column header ("Week of
+Nov 16, 2025"), and every day a cell with its full date and exact value, as a native title too. It reads without the
+colours, without JavaScript and in a screen reader. With script, the grid takes one focus stop: the arrow keys move
+by week (left and right, mirrored right to left) and by day (up and down), Home and End to the first and last week
+of that weekday, Control+Home and Control+End to the first and last day, and Escape dismisses the tooltip; the days
+outside the period are passed over. On a narrow screen the grid scrolls sideways with the weekdays fixed at its
+start. Refresh it over Ajax with `target.add(calendar)` after changing its data or period models.
 
 ## Radial bar charts
 
