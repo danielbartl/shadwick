@@ -52,6 +52,7 @@ final class CatalogPages {
         new Example("recipes/table-of-contents", "Table of contents on the end", "Layout recipes", "A page's sections in a sidebar at the end of the line.", TableOfContentsPage.class, "layouts/table-of-contents"),
         new Example("recipes/header-navigation", "Navigation in the header", "Layout recipes", "A handful of pages as a row in the site header.", HeaderNavPage.class, "layouts/header-navigation"),
         new Example("disclosure", "Tabs & disclosures", "Layout & navigation", "Tabs, accordions and standalone collapsibles.", DisclosurePage.class, "components/tabs"),
+        new Example("workflow", "Wizard, filter & master–detail", "Inputs & forms", "A sign-up in steps, and an inbox narrowed by status beside the selected ticket.", WorkflowPage.class, "components/wizard"),
         new Example("steps", "Steps indicator", "Layout & navigation", "Numbered process stages and completed-step selection.", StepsPage.class, "components/steps"),
         new Example("display", "Cards, badges & display", "Display & media", "Cards, avatars, badges, icons and loading states.", DisplayPage.class, "components/cards"),
         new Example("avatar-groups", "Avatar groups", "Display & media", "Overlapping team members, native links, sizes and wrapping.", AvatarGroupPage.class, "components/avatars"),

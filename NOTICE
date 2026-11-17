@@ -24,7 +24,7 @@ It includes markup structure, CSS and JavaScript adapted from third-party projec
 - Wicket Oat (https://github.com/danielbartl/wicket-oat).
   Copyright (c) 2026 Daniel Bartl. Licensed under the MIT License.
   The native SVG chart API, rendering patterns, progress/meter/rating controls, Ajax busy lifecycle,
-  steps indicator API and labels, avatar-group API, freeform tag-input API and comma conversion, lazy-load panel API and shared-timer scheduling, record-detail/timeline APIs and localized value presentation, button-group/split-button, fieldset/custom-field, money/percentage/range APIs, CSV export, row-details and inline-edit APIs, and shared translation strings are adapted from Wicket Oat.
+  steps indicator API and labels, avatar-group API, freeform tag-input API and comma conversion, lazy-load panel API and shared-timer scheduling, record-detail/timeline APIs and localized value presentation, button-group/split-button, fieldset/custom-field, money/percentage/range APIs, CSV export, row-details and inline-edit APIs, wizard, filter and master-detail APIs, and shared translation strings are adapted from Wicket Oat.
 
 - shadcn/ui (https://ui.shadcn.com), Copyright (c) 2023 shadcn.
   Licensed under the MIT License.

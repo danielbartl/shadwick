@@ -16,6 +16,10 @@ Development continues on `0.2.0-SNAPSHOT`.
 
 ### Added
 
+- Workflow components from Wicket Oat: `SwWizard` (a form in steps on `SwSteps`, each validated on Next, with
+  `onNext`/`onFinish`, a summary for step-level errors and focus on the new step), `SwFilter` (a row of toggle chips
+  choosing one value, with an optional "All") and `SwMasterDetail` (a list beside the selected item's details, one pane
+  at a time below 40rem). All three also work without JavaScript.
 - `SwCalendarHeatmap`: one cell per day in weeks and weekdays on the heatmap's five bands, with a period of up to
   three years, days without data shown as not measured unless `setMissingValue` gives them a value, locale week starts
   and month labels; a native table with every day's full date and value, and keyboard exploration by day and week.

@@ -1,0 +1,36 @@
+/*
+  Workflow components, structure only: their parts (steps, toggles, buttons, empty states) keep their own skin
+  identity, so these rules only arrange them.
+
+  SwWizard: the step row, then the form - the summary of a step's errors, the step itself and the buttons, Back at
+  the start and Next or Finish at the end.
+
+  SwFilter: a wrapping row of toggle chips; its Apply button only exists without JavaScript (noscript).
+
+  SwMasterDetail: the list beside the details. It measures itself (an inline-size container): narrower than 40rem it
+  shows one pane at a time, the one data-showing names, with a Back button in the details; the switch keeps the list
+  in the page, so its scroll position stays.
+*/
+@layer components {
+  .sw-wizard-form { @apply mt-6 grid gap-6; }
+  .sw-wizard-step { @apply min-w-0 outline-none; }
+  .sw-wizard-footer { @apply flex flex-wrap items-center gap-2; }
+  .sw-wizard-footer > :is(.sw-wizard-next, .sw-wizard-finish) { @apply ms-auto; }
+
+  .sw-filter { @apply m-0 flex flex-wrap items-center gap-2; }
+  .sw-filter > .sw-toggle-group { @apply flex-wrap; }
+
+  .sw-master-detail { @apply grid min-w-0 items-start gap-6; container-type: inline-size; grid-template-columns: minmax(min(14rem, 100%), 1fr) minmax(0, 2fr); }
+  .sw-master-detail-master, .sw-master-detail-detail { @apply min-w-0 outline-none; }
+  .sw-master-detail-back { @apply hidden; }
+}
+
+/* One pane where there is room for one: the container query sees the component's own width, inside a sidebar too. */
+@layer components {
+  @container (width < 40rem) {
+    .sw-master-detail > :is(.sw-master-detail-master, .sw-master-detail-detail) { grid-column: 1 / -1; }
+    .sw-master-detail[data-showing='detail'] > .sw-master-detail-master,
+    .sw-master-detail:not([data-showing='detail']) > .sw-master-detail-detail { @apply hidden; }
+    .sw-master-detail-back { @apply mb-4 inline-flex; }
+  }
+}

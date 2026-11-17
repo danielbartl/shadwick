@@ -236,6 +236,12 @@ public final class Sw {
             return dev.jbaby.shadwick.components.SwLazyLoadPanel.of(id, content);
         }
 
+        /** A wizard whose {@code onFinish} runs after the last step; add the steps with {@code addStep}. */
+        public static dev.jbaby.shadwick.components.SwWizard wizard(String id,
+                dev.jbaby.shadwick.util.SerializableConsumer<org.apache.wicket.ajax.AjaxRequestTarget> onFinish) {
+            return dev.jbaby.shadwick.components.SwWizard.onFinish(id, onFinish);
+        }
+
         public static <T> dev.jbaby.shadwick.components.SwButtonGroup<T> buttonGroup(String id, IModel<List<T>> items,
                 SerializableBiConsumer<ListItem<T>, T> populate) {
             return dev.jbaby.shadwick.components.SwButtonGroup.of(id, items, populate);

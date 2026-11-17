@@ -62,7 +62,7 @@ public class SwFormErrors extends SwFeedbackPanel {
         super(id, Objects.requireNonNull(form, "form"), new NotShownInlineFilter());
         this.form = form;
         // Errors of the form as a whole come first; the others keep their order (the sort is stable)
-        setSortingComparator(Comparator.comparingInt(message -> message.getReporter() instanceof FormComponent ? 1 : 0));
+        setSortingComparator(new FormErrorsFirst());
         alert = (MarkupContainer) get("feedbackul");
         alert.setOutputMarkupId(true);
         alert.add(AttributeModifier.replace("autofocus", (IModel<String>) () -> autofocus ? "autofocus" : null));
@@ -162,6 +162,18 @@ public class SwFormErrors extends SwFeedbackPanel {
                 FormComponent<?> control = firstInvalidControl();
                 if (control != null) target.focusComponent(control);
             }
+        }
+    }
+
+    /** Messages not reported by a form component (the form's own) before those of its fields; serializable, as the page is. */
+    private static final class FormErrorsFirst implements Comparator<FeedbackMessage>, java.io.Serializable {
+        @Override
+        public int compare(FeedbackMessage a, FeedbackMessage b) {
+            return Integer.compare(rank(a), rank(b));
+        }
+
+        private static int rank(FeedbackMessage message) {
+            return message.getReporter() instanceof FormComponent ? 1 : 0;
         }
     }
 

@@ -51,10 +51,12 @@ record details, timelines, lazy panels, tags, avatar groups and process steps. S
 - [Checkboxes switches and radios](components/choices.md) — Boolean and multiple choices with native form semantics.
 - [File upload](components/file-upload.md) — Native upload and dropzones, validation, metadata and storage callbacks.
 - [Ratings](components/ratings.md) — Half-star read-only ratings and native whole-star radio inputs.
+- [Wizard](components/wizard.md) — A form in several steps, each checked before the next, with Back, Next and Finish.
 
 ## Data and planning
 
 - [Steps indicator](components/steps.md) — Ordered process stages, current state and optional completed-step selection.
+- [Filter](components/filter.md) — A row of chips choosing one value, such as the status of the list below.
 - [Calendar and date picker](components/calendar.md) — Single dates, ranges, disabled days and native-backed popup pickers.
 - [Month view](components/month-view.md) — Server-rendered monthly plans with locale-aware weeks and custom day slots.
 - [Charts](components/charts.md) — Native SVG bars, lines and areas with exact accessible data.
@@ -83,6 +85,7 @@ record details, timelines, lazy panels, tags, avatar groups and process steps. S
 - [Tabs](components/tabs.md) — Keyboard tab selection with server-configured panels.
 - [Accordion](components/accordion.md) — Single or multiple native details sections with named triggers.
 - [Collapsible](components/collapsible.md) — One native details disclosure with optional content.
+- [Master–detail](components/master-detail.md) — A list beside the selected item's details, one pane at a time where only one fits.
 
 
 ## Layout recipes

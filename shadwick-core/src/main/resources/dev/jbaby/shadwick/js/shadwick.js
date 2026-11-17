@@ -1559,4 +1559,33 @@
             event.preventDefault();
         }
     });
+    // SwMasterDetail: which pane shows where only one fits. The list isn't re-rendered, so it keeps its scroll
+    // position; when the switch hides the pane holding the focus, the focus moves to the pane now shown - for the
+    // list, back to the item it left from.
+    // The list's last focused element, by id: a list the application re-renders to mark the selection replaces it.
+    var masterReturns = new WeakMap();
+    document.addEventListener('focusin', function (event) {
+        var master = event.target instanceof Element && event.target.closest('.sw-master-detail-master');
+        if (master && event.target !== master) masterReturns.set(master.parentElement, event.target.id || event.target);
+    });
+    Shadwick.masterDetail = function (id, showing) {
+        var root = document.getElementById(id);
+        if (!root) return;
+        var master = root.querySelector(':scope > .sw-master-detail-master');
+        var detail = root.querySelector(':scope > .sw-master-detail-detail');
+        var active = document.activeElement;
+        root.setAttribute('data-showing', showing);
+        var shown = showing === 'detail' ? detail : master, hidden = showing === 'detail' ? master : detail;
+        if (!shown || !hidden || getComputedStyle(hidden).display !== 'none') return;
+        if (hidden.contains(active) || !root.contains(active)) {
+            var remembered = showing === 'master' ? masterReturns.get(root) : null;
+            var back = typeof remembered === 'string' ? document.getElementById(remembered) : remembered;
+            // Gone after a re-render with new ids: the list's marked item, else the list itself
+            if (showing === 'master' && !(back && back.isConnected && master.contains(back))) {
+                back = master.querySelector('[aria-current]:not([aria-current="false"])');
+            }
+            (back && back.isConnected && master.contains(back) ? back : shown).focus({preventScroll: true});
+            root.scrollIntoView({block: 'nearest'});
+        }
+    };
 })();

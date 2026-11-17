@@ -134,6 +134,7 @@ CTOR public dev.jbaby.shadwick.components.SwFieldGroup(java.lang.String)
 CTOR public dev.jbaby.shadwick.components.SwFieldset(java.lang.String)
 CTOR public dev.jbaby.shadwick.components.SwFieldset(java.lang.String,java.lang.String)
 CTOR public dev.jbaby.shadwick.components.SwFieldset(java.lang.String,org.apache.wicket.model.IModel<java.lang.String>)
+CTOR public dev.jbaby.shadwick.components.SwFilter(java.lang.String,org.apache.wicket.model.IModel<T>,org.apache.wicket.model.IModel<? extends java.util.List<? extends T>>)
 CTOR public dev.jbaby.shadwick.components.SwFormErrors(java.lang.String,org.apache.wicket.markup.html.form.Form<?>)
 CTOR public dev.jbaby.shadwick.components.SwIcon(java.lang.String,java.lang.String)
 CTOR public dev.jbaby.shadwick.components.SwIcon(java.lang.String,org.apache.wicket.model.IModel<java.lang.String>)
@@ -141,6 +142,7 @@ CTOR public dev.jbaby.shadwick.components.SwKbd(java.lang.String,java.lang.Strin
 CTOR public dev.jbaby.shadwick.components.SwKbd(java.lang.String,org.apache.wicket.model.IModel<?>)
 CTOR public dev.jbaby.shadwick.components.SwLazyLoadPanel(java.lang.String)
 CTOR public dev.jbaby.shadwick.components.SwLazyLoadPanel(java.lang.String,org.apache.wicket.model.IModel<?>)
+CTOR public dev.jbaby.shadwick.components.SwMasterDetail(java.lang.String,org.apache.wicket.model.IModel<T>)
 CTOR public dev.jbaby.shadwick.components.SwMeter(java.lang.String,java.lang.Number)
 CTOR public dev.jbaby.shadwick.components.SwMeter(java.lang.String,org.apache.wicket.model.IModel<? extends java.lang.Number>)
 CTOR public dev.jbaby.shadwick.components.SwMeter(java.lang.String,org.apache.wicket.model.IModel<? extends java.lang.Number>,org.apache.wicket.model.IModel<? extends java.lang.Number>,org.apache.wicket.model.IModel<? extends java.lang.Number>,org.apache.wicket.model.IModel<? extends java.lang.Number>,org.apache.wicket.model.IModel<? extends java.lang.Number>,org.apache.wicket.model.IModel<? extends java.lang.Number>)
@@ -192,6 +194,7 @@ CTOR public dev.jbaby.shadwick.components.SwTabs(java.lang.String,org.apache.wic
 CTOR public dev.jbaby.shadwick.components.SwThemeToggle(java.lang.String)
 CTOR public dev.jbaby.shadwick.components.SwTimeline(java.lang.String,org.apache.wicket.model.IModel<? extends java.util.List<T>>,dev.jbaby.shadwick.util.SerializableFunction<T, ?>,dev.jbaby.shadwick.util.SerializableFunction<T, ? extends java.time.temporal.TemporalAccessor>)
 CTOR public dev.jbaby.shadwick.components.SwUserMenu(java.lang.String,org.apache.wicket.model.IModel<java.lang.String>)
+CTOR public dev.jbaby.shadwick.components.SwWizard(java.lang.String)
 CTOR public dev.jbaby.shadwick.components.TableQuery(org.apache.wicket.request.mapper.parameter.PageParameters)
 CTOR public dev.jbaby.shadwick.components.TableQuery(org.apache.wicket.request.mapper.parameter.PageParameters,java.lang.String,java.lang.String,java.lang.String)
 CTOR public dev.jbaby.shadwick.components.chart.SwCalendarHeatmap(java.lang.String,org.apache.wicket.model.IModel<? extends java.util.List<T>>,dev.jbaby.shadwick.util.SerializableFunction<T, java.time.LocalDate>,dev.jbaby.shadwick.util.SerializableFunction<T, ? extends java.lang.Number>)
@@ -783,10 +786,13 @@ FIELD public static final java.lang.String dev.jbaby.shadwick.components.SwDescr
 FIELD public static final java.lang.String dev.jbaby.shadwick.components.SwDialog.CONTENT_ID = "content"
 FIELD public static final java.lang.String dev.jbaby.shadwick.components.SwEmptyState.CONTENT_ID = "content"
 FIELD public static final java.lang.String dev.jbaby.shadwick.components.SwLazyLoadPanel.CONTENT_ID = "content"
+FIELD public static final java.lang.String dev.jbaby.shadwick.components.SwMasterDetail.DETAIL_ID = "detail"
+FIELD public static final java.lang.String dev.jbaby.shadwick.components.SwMasterDetail.MASTER_ID = "master"
 FIELD public static final java.lang.String dev.jbaby.shadwick.components.SwMonthView.CONTENT_ID = "content"
 FIELD public static final java.lang.String dev.jbaby.shadwick.components.SwPopover.CONTENT_ID = "content"
 FIELD public static final java.lang.String dev.jbaby.shadwick.components.SwSidebar.FOOTER_ID = "footer"
 FIELD public static final java.lang.String dev.jbaby.shadwick.components.SwSidebar.HEADER_ID = "header"
+FIELD public static final java.lang.String dev.jbaby.shadwick.components.SwWizard.STEP_ID = "step"
 FIELD public static final java.lang.String dev.jbaby.shadwick.components.form.BaseSwField.INPUT_ID = "input"
 FIELD public static final java.lang.String dev.jbaby.shadwick.components.table.SwRowDetailsColumn.DETAILS_ID = "details"
 FIELD public static final java.time.Duration dev.jbaby.shadwick.behaviors.ToastBehavior.DEFAULT_DURATION
@@ -811,6 +817,7 @@ METHOD protected abstract void dev.jbaby.shadwick.components.SwDropdown.populate
 METHOD protected abstract void dev.jbaby.shadwick.components.SwPagination.populateItem(org.apache.wicket.markup.html.list.ListItem<T>)
 METHOD protected abstract void dev.jbaby.shadwick.components.SwTabs.populatePanel(org.apache.wicket.markup.html.list.ListItem<T>)
 METHOD protected abstract void dev.jbaby.shadwick.components.SwTabs.populateTab(org.apache.wicket.markup.html.list.ListItem<T>)
+METHOD protected abstract void dev.jbaby.shadwick.components.SwWizard.onFinish(org.apache.wicket.ajax.AjaxRequestTarget)
 METHOD protected boolean dev.jbaby.shadwick.components.SwAppLayout.isAuthorized(dev.jbaby.shadwick.components.MenuItem)
 METHOD protected boolean dev.jbaby.shadwick.components.SwAppLayout.isCurrentPage(dev.jbaby.shadwick.components.MenuItem)
 METHOD protected boolean dev.jbaby.shadwick.components.SwAppLayout.sidebarGroupsOpen()
@@ -873,6 +880,7 @@ METHOD protected org.apache.wicket.Component dev.jbaby.shadwick.components.SwApp
 METHOD protected org.apache.wicket.Component dev.jbaby.shadwick.components.SwAppLayout.newSidebarHeader(java.lang.String)
 METHOD protected org.apache.wicket.Component dev.jbaby.shadwick.components.SwAppLayout.newTopNavExtra(java.lang.String)
 METHOD protected org.apache.wicket.Component dev.jbaby.shadwick.components.SwFormErrors.newMessageDisplayComponent(java.lang.String,org.apache.wicket.feedback.FeedbackMessage)
+METHOD protected org.apache.wicket.Component dev.jbaby.shadwick.components.SwMasterDetail.newEmptyState(java.lang.String)
 METHOD protected org.apache.wicket.Component dev.jbaby.shadwick.components.SwMonthView.newDayContent(java.lang.String,org.apache.wicket.model.IModel<dev.jbaby.shadwick.components.SwMonthView$Day>)
 METHOD protected org.apache.wicket.Component dev.jbaby.shadwick.components.SwSidebar.newGroupAction(java.lang.String,dev.jbaby.shadwick.components.MenuItem)
 METHOD protected org.apache.wicket.Component dev.jbaby.shadwick.components.SwSidebar.newMenuAction(java.lang.String,dev.jbaby.shadwick.components.MenuItem)
@@ -936,12 +944,19 @@ METHOD protected void dev.jbaby.shadwick.components.SwFeedbackPanel.onBeforeRend
 METHOD protected void dev.jbaby.shadwick.components.SwFeedbackPanel.onReAdd()
 METHOD protected void dev.jbaby.shadwick.components.SwFeedbackPanel.onRemove()
 METHOD protected void dev.jbaby.shadwick.components.SwFieldset.onComponentTag(org.apache.wicket.markup.ComponentTag)
+METHOD protected void dev.jbaby.shadwick.components.SwFilter.onChange(org.apache.wicket.ajax.AjaxRequestTarget)
+METHOD protected void dev.jbaby.shadwick.components.SwFilter.onDetach()
+METHOD protected void dev.jbaby.shadwick.components.SwFilter.onInitialize()
 METHOD protected void dev.jbaby.shadwick.components.SwIcon.onComponentTag(org.apache.wicket.markup.ComponentTag)
 METHOD protected void dev.jbaby.shadwick.components.SwIcon.onDetach()
 METHOD protected void dev.jbaby.shadwick.components.SwLazyLoadPanel.initTimer()
 METHOD protected void dev.jbaby.shadwick.components.SwLazyLoadPanel.onComponentTag(org.apache.wicket.markup.ComponentTag)
 METHOD protected void dev.jbaby.shadwick.components.SwLazyLoadPanel.onContentLoaded(T,java.util.Optional<org.apache.wicket.ajax.AjaxRequestTarget>)
 METHOD protected void dev.jbaby.shadwick.components.SwLazyLoadPanel.onDetach()
+METHOD protected void dev.jbaby.shadwick.components.SwMasterDetail.onComponentTag(org.apache.wicket.markup.ComponentTag)
+METHOD protected void dev.jbaby.shadwick.components.SwMasterDetail.onConfigure()
+METHOD protected void dev.jbaby.shadwick.components.SwMasterDetail.onDetach()
+METHOD protected void dev.jbaby.shadwick.components.SwMasterDetail.onInitialize()
 METHOD protected void dev.jbaby.shadwick.components.SwMonthView.onDetach()
 METHOD protected void dev.jbaby.shadwick.components.SwPaginationSize.onAjaxEvent(org.apache.wicket.ajax.AjaxRequestTarget)
 METHOD protected void dev.jbaby.shadwick.components.SwPagingNavigator.onAjaxEvent(org.apache.wicket.ajax.AjaxRequestTarget)
@@ -965,6 +980,10 @@ METHOD protected void dev.jbaby.shadwick.components.SwUserMenu.onConfigure()
 METHOD protected void dev.jbaby.shadwick.components.SwUserMenu.onDetach()
 METHOD protected void dev.jbaby.shadwick.components.SwUserMenu.onSignedOut()
 METHOD protected void dev.jbaby.shadwick.components.SwUserMenu.signOut()
+METHOD protected void dev.jbaby.shadwick.components.SwWizard.onConfigure()
+METHOD protected void dev.jbaby.shadwick.components.SwWizard.onDetach()
+METHOD protected void dev.jbaby.shadwick.components.SwWizard.onInitialize()
+METHOD protected void dev.jbaby.shadwick.components.SwWizard.onNext(int,org.apache.wicket.ajax.AjaxRequestTarget)
 METHOD protected void dev.jbaby.shadwick.components.chart.SwCalendarHeatmap.onDetach()
 METHOD protected void dev.jbaby.shadwick.components.chart.SwCalendarHeatmap.onInitialize()
 METHOD protected void dev.jbaby.shadwick.components.chart.SwChart.onDetach()
@@ -1071,6 +1090,7 @@ METHOD public boolean dev.jbaby.shadwick.components.SwCollapsible.isOpen()
 METHOD public boolean dev.jbaby.shadwick.components.SwDataTable.isColumnVisible(int)
 METHOD public boolean dev.jbaby.shadwick.components.SwDialog.isOpen()
 METHOD public boolean dev.jbaby.shadwick.components.SwEmptyState.isBorder()
+METHOD public boolean dev.jbaby.shadwick.components.SwMasterDetail.isSelected(T)
 METHOD public boolean dev.jbaby.shadwick.components.SwMonthView$Day.outside()
 METHOD public boolean dev.jbaby.shadwick.components.SwMonthView$Day.today()
 METHOD public boolean dev.jbaby.shadwick.components.SwSidebar.isGroupsOpen()
@@ -1364,6 +1384,10 @@ METHOD public dev.jbaby.shadwick.components.SwEmptyState dev.jbaby.shadwick.comp
 METHOD public dev.jbaby.shadwick.components.SwEmptyState dev.jbaby.shadwick.components.SwEmptyState.setIcon(java.lang.String)
 METHOD public dev.jbaby.shadwick.components.SwFieldset dev.jbaby.shadwick.components.SwFieldset.setDescription(java.lang.String)
 METHOD public dev.jbaby.shadwick.components.SwFieldset dev.jbaby.shadwick.components.SwFieldset.setDescription(org.apache.wicket.model.IModel<java.lang.String>)
+METHOD public dev.jbaby.shadwick.components.SwFilter<T> dev.jbaby.shadwick.components.SwFilter.setChoiceRenderer(org.apache.wicket.markup.html.form.IChoiceRenderer<? super T>)
+METHOD public dev.jbaby.shadwick.components.SwFilter<T> dev.jbaby.shadwick.components.SwFilter.setLabel(java.lang.String)
+METHOD public dev.jbaby.shadwick.components.SwFilter<T> dev.jbaby.shadwick.components.SwFilter.setLabel(org.apache.wicket.model.IModel<java.lang.String>)
+METHOD public dev.jbaby.shadwick.components.SwFilter<T> dev.jbaby.shadwick.components.SwFilter.setNullValid(boolean)
 METHOD public dev.jbaby.shadwick.components.SwFormErrors dev.jbaby.shadwick.components.SwFormErrors.setAutofocus(boolean)
 METHOD public dev.jbaby.shadwick.components.SwFormErrors dev.jbaby.shadwick.components.SwFormErrors.setHeadingLevel(java.lang.Integer)
 METHOD public dev.jbaby.shadwick.components.SwFormErrors dev.jbaby.shadwick.components.SwFormErrors.setShow(dev.jbaby.shadwick.components.SwFormErrors$Show)
@@ -1377,6 +1401,12 @@ METHOD public dev.jbaby.shadwick.components.SwIcon dev.jbaby.shadwick.components
 METHOD public dev.jbaby.shadwick.components.SwLazyLoadPanel<T> dev.jbaby.shadwick.components.SwLazyLoadPanel.setLoadingLabel(java.lang.String)
 METHOD public dev.jbaby.shadwick.components.SwLazyLoadPanel<T> dev.jbaby.shadwick.components.SwLazyLoadPanel.setLoadingLabel(org.apache.wicket.model.IModel<java.lang.String>)
 METHOD public dev.jbaby.shadwick.components.SwLazyLoadPanel<T> dev.jbaby.shadwick.components.SwLazyLoadPanel.setPlaceholder(dev.jbaby.shadwick.behaviors.SkeletonBehavior$Shape,int)
+METHOD public dev.jbaby.shadwick.components.SwMasterDetail<T> dev.jbaby.shadwick.components.SwMasterDetail.select(T)
+METHOD public dev.jbaby.shadwick.components.SwMasterDetail<T> dev.jbaby.shadwick.components.SwMasterDetail.select(org.apache.wicket.ajax.AjaxRequestTarget,T)
+METHOD public dev.jbaby.shadwick.components.SwMasterDetail<T> dev.jbaby.shadwick.components.SwMasterDetail.setDetail(dev.jbaby.shadwick.util.SerializableBiFunction<java.lang.String, org.apache.wicket.model.IModel<T>, ? extends org.apache.wicket.Component>)
+METHOD public dev.jbaby.shadwick.components.SwMasterDetail<T> dev.jbaby.shadwick.components.SwMasterDetail.setMaster(dev.jbaby.shadwick.util.SerializableFunction<java.lang.String, ? extends org.apache.wicket.Component>)
+METHOD public dev.jbaby.shadwick.components.SwMasterDetail<T> dev.jbaby.shadwick.components.SwMasterDetail.showList()
+METHOD public dev.jbaby.shadwick.components.SwMasterDetail<T> dev.jbaby.shadwick.components.SwMasterDetail.showList(org.apache.wicket.ajax.AjaxRequestTarget)
 METHOD public dev.jbaby.shadwick.components.SwMeter dev.jbaby.shadwick.components.SwMeter.setHigh(java.lang.Number)
 METHOD public dev.jbaby.shadwick.components.SwMeter dev.jbaby.shadwick.components.SwMeter.setHigh(org.apache.wicket.model.IModel<? extends java.lang.Number>)
 METHOD public dev.jbaby.shadwick.components.SwMeter dev.jbaby.shadwick.components.SwMeter.setLabel(java.lang.String)
@@ -1514,6 +1544,9 @@ METHOD public dev.jbaby.shadwick.components.SwUserMenu$MenuLink dev.jbaby.shadwi
 METHOD public dev.jbaby.shadwick.components.SwUserMenu$MenuLink dev.jbaby.shadwick.components.SwUserMenu.addLink(java.lang.String,java.lang.Class<? extends org.apache.wicket.Page>,org.apache.wicket.request.mapper.parameter.PageParameters)
 METHOD public dev.jbaby.shadwick.components.SwUserMenu$MenuLink dev.jbaby.shadwick.components.SwUserMenu.addLink(org.apache.wicket.model.IModel<java.lang.String>,java.lang.Class<? extends org.apache.wicket.Page>)
 METHOD public dev.jbaby.shadwick.components.SwUserMenu$MenuLink dev.jbaby.shadwick.components.SwUserMenu.addLink(org.apache.wicket.model.IModel<java.lang.String>,java.lang.Class<? extends org.apache.wicket.Page>,org.apache.wicket.request.mapper.parameter.PageParameters)
+METHOD public dev.jbaby.shadwick.components.SwWizard dev.jbaby.shadwick.components.SwWizard.addStep(java.lang.String,dev.jbaby.shadwick.util.SerializableFunction<java.lang.String, ? extends org.apache.wicket.Component>)
+METHOD public dev.jbaby.shadwick.components.SwWizard dev.jbaby.shadwick.components.SwWizard.addStep(org.apache.wicket.model.IModel<java.lang.String>,dev.jbaby.shadwick.util.SerializableFunction<java.lang.String, ? extends org.apache.wicket.Component>)
+METHOD public dev.jbaby.shadwick.components.SwWizard dev.jbaby.shadwick.components.SwWizard.setCurrentStep(int)
 METHOD public dev.jbaby.shadwick.components.TableQuery dev.jbaby.shadwick.components.SwDataTable.getQuery()
 METHOD public dev.jbaby.shadwick.components.TableQuery dev.jbaby.shadwick.components.TableQuery.qualified(java.lang.String)
 METHOD public dev.jbaby.shadwick.components.chart.ChartReference dev.jbaby.shadwick.components.chart.ChartReference.setColor(int)
@@ -1804,6 +1837,7 @@ METHOD public int dev.jbaby.shadwick.ShadwickSettings.getVisibleToasts()
 METHOD public int dev.jbaby.shadwick.components.SwDataTable.getVisibleColumnCount()
 METHOD public int dev.jbaby.shadwick.components.SwMonthView$Day.number()
 METHOD public int dev.jbaby.shadwick.components.SwRating.getMax()
+METHOD public int dev.jbaby.shadwick.components.SwWizard.getCurrentStep()
 METHOD public int dev.jbaby.shadwick.components.form.SwRatingField.getMax()
 METHOD public java.lang.Class<? extends org.apache.wicket.Page> dev.jbaby.shadwick.components.MenuItem.pageClass()
 METHOD public java.lang.String dev.jbaby.shadwick.Bundle.suffix()
@@ -1873,10 +1907,12 @@ METHOD public org.apache.wicket.markup.html.WebMarkupContainer dev.jbaby.shadwic
 METHOD public org.apache.wicket.markup.html.WebMarkupContainer dev.jbaby.shadwick.components.SwUserMenu.getTrigger()
 METHOD public org.apache.wicket.markup.html.WebMarkupContainer dev.jbaby.shadwick.components.form.BaseSwCalendar.getTrigger()
 METHOD public org.apache.wicket.markup.html.form.Form<java.lang.Void> dev.jbaby.shadwick.components.SwDialog.getForm()
+METHOD public org.apache.wicket.markup.html.form.Form<java.lang.Void> dev.jbaby.shadwick.components.SwWizard.getForm()
 METHOD public org.apache.wicket.markup.html.form.StatelessForm<java.lang.Void> dev.jbaby.shadwick.components.SwUserMenu.getSignOutForm()
 METHOD public org.apache.wicket.model.IModel<? extends java.util.Collection<?>> dev.jbaby.shadwick.components.table.SwRowDetailsColumn.getExpanded()
 METHOD public org.apache.wicket.model.IModel<? extends java.util.Collection<?>> dev.jbaby.shadwick.components.table.SwSelectionColumn.getSelection()
 METHOD public org.apache.wicket.model.IModel<?> dev.jbaby.shadwick.components.MenuItem.badge()
+METHOD public org.apache.wicket.model.IModel<T> dev.jbaby.shadwick.components.SwMasterDetail.getSelection()
 METHOD public org.apache.wicket.model.IModel<java.lang.String> dev.jbaby.shadwick.components.MenuItem.icon()
 METHOD public org.apache.wicket.model.IModel<java.lang.String> dev.jbaby.shadwick.components.MenuItem.label()
 METHOD public org.apache.wicket.model.IModel<java.lang.String> dev.jbaby.shadwick.components.SwFieldset.getLegend()
@@ -1905,6 +1941,7 @@ METHOD public static <T> dev.jbaby.shadwick.components.SwDropdown<T> dev.jbaby.s
 METHOD public static <T> dev.jbaby.shadwick.components.SwDropdown<T> dev.jbaby.shadwick.components.SwDropdown.of(java.lang.String,java.lang.String,org.apache.wicket.model.IModel<java.util.List<T>>,dev.jbaby.shadwick.util.SerializableFunction<T, java.lang.String>,dev.jbaby.shadwick.util.SerializableBiConsumer<org.apache.wicket.ajax.AjaxRequestTarget, T>)
 METHOD public static <T> dev.jbaby.shadwick.components.SwDropdown<T> dev.jbaby.shadwick.components.SwDropdown.of(java.lang.String,org.apache.wicket.model.IModel<java.lang.String>,org.apache.wicket.model.IModel<java.util.List<T>>,dev.jbaby.shadwick.util.SerializableBiConsumer<org.apache.wicket.markup.html.list.ListItem<T>, T>)
 METHOD public static <T> dev.jbaby.shadwick.components.SwDropdown<T> dev.jbaby.shadwick.components.SwDropdown.of(java.lang.String,org.apache.wicket.model.IModel<java.lang.String>,org.apache.wicket.model.IModel<java.util.List<T>>,dev.jbaby.shadwick.util.SerializableFunction<T, java.lang.String>,dev.jbaby.shadwick.util.SerializableBiConsumer<org.apache.wicket.ajax.AjaxRequestTarget, T>)
+METHOD public static <T> dev.jbaby.shadwick.components.SwFilter<T> dev.jbaby.shadwick.components.SwFilter.onChange(java.lang.String,org.apache.wicket.model.IModel<T>,org.apache.wicket.model.IModel<? extends java.util.List<? extends T>>,dev.jbaby.shadwick.util.SerializableConsumer<org.apache.wicket.ajax.AjaxRequestTarget>)
 METHOD public static <T> dev.jbaby.shadwick.components.SwPagination<T> dev.jbaby.shadwick.Sw$Components.pagination(java.lang.String,org.apache.wicket.model.IModel<java.util.List<T>>,dev.jbaby.shadwick.util.SerializableBiConsumer<org.apache.wicket.markup.html.list.ListItem<T>, T>)
 METHOD public static <T> dev.jbaby.shadwick.components.SwPagination<T> dev.jbaby.shadwick.components.SwPagination.of(java.lang.String,org.apache.wicket.model.IModel<java.util.List<T>>,dev.jbaby.shadwick.util.SerializableBiConsumer<org.apache.wicket.markup.html.list.ListItem<T>, T>)
 METHOD public static <T> dev.jbaby.shadwick.components.SwTabs<T> dev.jbaby.shadwick.Sw$Components.tabs(java.lang.String,org.apache.wicket.model.IModel<java.util.List<T>>,dev.jbaby.shadwick.util.SerializableBiConsumer<org.apache.wicket.markup.html.list.ListItem<T>, T>,dev.jbaby.shadwick.util.SerializableBiConsumer<org.apache.wicket.markup.html.list.ListItem<T>, T>)
@@ -2162,6 +2199,8 @@ METHOD public static dev.jbaby.shadwick.components.SwThemeToggle$Presentation de
 METHOD public static dev.jbaby.shadwick.components.SwThemeToggle$Presentation[] dev.jbaby.shadwick.components.SwThemeToggle$Presentation.values()
 METHOD public static dev.jbaby.shadwick.components.SwUserMenu$Placement dev.jbaby.shadwick.components.SwUserMenu$Placement.valueOf(java.lang.String)
 METHOD public static dev.jbaby.shadwick.components.SwUserMenu$Placement[] dev.jbaby.shadwick.components.SwUserMenu$Placement.values()
+METHOD public static dev.jbaby.shadwick.components.SwWizard dev.jbaby.shadwick.Sw$Components.wizard(java.lang.String,dev.jbaby.shadwick.util.SerializableConsumer<org.apache.wicket.ajax.AjaxRequestTarget>)
+METHOD public static dev.jbaby.shadwick.components.SwWizard dev.jbaby.shadwick.components.SwWizard.onFinish(java.lang.String,dev.jbaby.shadwick.util.SerializableConsumer<org.apache.wicket.ajax.AjaxRequestTarget>)
 METHOD public static dev.jbaby.shadwick.components.chart.ChartReference dev.jbaby.shadwick.components.chart.ChartReference.band(java.lang.String,java.lang.Number,java.lang.Number)
 METHOD public static dev.jbaby.shadwick.components.chart.ChartReference dev.jbaby.shadwick.components.chart.ChartReference.band(java.lang.String,org.apache.wicket.model.IModel<? extends java.lang.Number>,org.apache.wicket.model.IModel<? extends java.lang.Number>)
 METHOD public static dev.jbaby.shadwick.components.chart.ChartReference dev.jbaby.shadwick.components.chart.ChartReference.band(org.apache.wicket.model.IModel<java.lang.String>,org.apache.wicket.model.IModel<? extends java.lang.Number>,org.apache.wicket.model.IModel<? extends java.lang.Number>)
@@ -2339,15 +2378,18 @@ METHOD public void dev.jbaby.shadwick.components.SwDialog.renderHead(org.apache.
 METHOD public void dev.jbaby.shadwick.components.SwEmptyState.renderHead(org.apache.wicket.markup.head.IHeaderResponse)
 METHOD public void dev.jbaby.shadwick.components.SwFeedbackPanel.onEvent(org.apache.wicket.event.IEvent<?>)
 METHOD public void dev.jbaby.shadwick.components.SwFeedbackPanel.renderHead(org.apache.wicket.markup.head.IHeaderResponse)
+METHOD public void dev.jbaby.shadwick.components.SwFilter.renderHead(org.apache.wicket.markup.head.IHeaderResponse)
 METHOD public void dev.jbaby.shadwick.components.SwFormErrors.onEvent(org.apache.wicket.event.IEvent<?>)
 METHOD public void dev.jbaby.shadwick.components.SwFormErrors.renderHead(org.apache.wicket.markup.head.IHeaderResponse)
 METHOD public void dev.jbaby.shadwick.components.SwIcon.onComponentTagBody(org.apache.wicket.markup.MarkupStream,org.apache.wicket.markup.ComponentTag)
 METHOD public void dev.jbaby.shadwick.components.SwIcon.renderHead(org.apache.wicket.markup.head.IHeaderResponse)
+METHOD public void dev.jbaby.shadwick.components.SwMasterDetail.renderHead(org.apache.wicket.markup.head.IHeaderResponse)
 METHOD public void dev.jbaby.shadwick.components.SwPopover.renderHead(org.apache.wicket.markup.head.IHeaderResponse)
 METHOD public void dev.jbaby.shadwick.components.SwRadialProgress.onComponentTagBody(org.apache.wicket.markup.MarkupStream,org.apache.wicket.markup.ComponentTag)
 METHOD public void dev.jbaby.shadwick.components.SwRating.onComponentTagBody(org.apache.wicket.markup.MarkupStream,org.apache.wicket.markup.ComponentTag)
 METHOD public void dev.jbaby.shadwick.components.SwSteps.renderHead(org.apache.wicket.markup.head.IHeaderResponse)
 METHOD public void dev.jbaby.shadwick.components.SwThemeToggle.renderHead(org.apache.wicket.markup.head.IHeaderResponse)
+METHOD public void dev.jbaby.shadwick.components.SwWizard.renderHead(org.apache.wicket.markup.head.IHeaderResponse)
 METHOD public void dev.jbaby.shadwick.components.chart.SwCalendarHeatmap.renderHead(org.apache.wicket.markup.head.IHeaderResponse)
 METHOD public void dev.jbaby.shadwick.components.chart.SwChart.renderHead(org.apache.wicket.markup.head.IHeaderResponse)
 METHOD public void dev.jbaby.shadwick.components.chart.SwDonutChart.renderHead(org.apache.wicket.markup.head.IHeaderResponse)
@@ -2386,6 +2428,7 @@ TYPE public abstract class dev.jbaby.shadwick.components.SwDropdown<T> extends o
 TYPE public abstract class dev.jbaby.shadwick.components.SwLazyLoadPanel<T extends org.apache.wicket.Component> extends org.apache.wicket.extensions.ajax.markup.html.AjaxLazyLoadPanel<T> implements []
 TYPE public abstract class dev.jbaby.shadwick.components.SwPagination<T> extends org.apache.wicket.markup.html.WebMarkupContainer implements []
 TYPE public abstract class dev.jbaby.shadwick.components.SwTabs<T> extends org.apache.wicket.markup.html.WebMarkupContainer implements []
+TYPE public abstract class dev.jbaby.shadwick.components.SwWizard extends org.apache.wicket.markup.html.panel.Panel implements []
 TYPE public abstract class dev.jbaby.shadwick.components.form.BaseSwCalendar<T,C extends org.apache.wicket.markup.html.form.FormComponent<T>,F extends dev.jbaby.shadwick.components.form.BaseSwCalendar<T, C, F>> extends dev.jbaby.shadwick.components.form.BaseSwField<T, C, F> implements []
 TYPE public abstract class dev.jbaby.shadwick.components.form.BaseSwDecimalField<F extends dev.jbaby.shadwick.components.form.BaseSwDecimalField<F>> extends dev.jbaby.shadwick.components.form.BaseSwInputField<java.math.BigDecimal, org.apache.wicket.markup.html.form.TextField<java.math.BigDecimal>, F> implements []
 TYPE public abstract class dev.jbaby.shadwick.components.form.BaseSwField<T,C extends org.apache.wicket.markup.html.form.FormComponent<T>,F extends dev.jbaby.shadwick.components.form.BaseSwField<T, C, F>> extends org.apache.wicket.markup.html.panel.GenericPanel<T> implements []
@@ -2467,9 +2510,11 @@ TYPE public class dev.jbaby.shadwick.components.SwEmptyState extends org.apache.
 TYPE public class dev.jbaby.shadwick.components.SwFeedbackPanel extends org.apache.wicket.feedback.FencedFeedbackPanel implements []
 TYPE public class dev.jbaby.shadwick.components.SwFieldGroup extends org.apache.wicket.markup.html.WebMarkupContainer implements []
 TYPE public class dev.jbaby.shadwick.components.SwFieldset extends org.apache.wicket.markup.html.border.Border implements []
+TYPE public class dev.jbaby.shadwick.components.SwFilter<T> extends org.apache.wicket.markup.html.panel.GenericPanel<T> implements []
 TYPE public class dev.jbaby.shadwick.components.SwFormErrors extends dev.jbaby.shadwick.components.SwFeedbackPanel implements []
 TYPE public class dev.jbaby.shadwick.components.SwIcon extends org.apache.wicket.markup.html.WebComponent implements []
 TYPE public class dev.jbaby.shadwick.components.SwKbd extends org.apache.wicket.markup.html.basic.Label implements []
+TYPE public class dev.jbaby.shadwick.components.SwMasterDetail<T> extends org.apache.wicket.markup.html.panel.Panel implements []
 TYPE public class dev.jbaby.shadwick.components.SwMeter extends org.apache.wicket.markup.html.WebComponent implements []
 TYPE public class dev.jbaby.shadwick.components.SwMonthView extends org.apache.wicket.markup.html.panel.Panel implements []
 TYPE public class dev.jbaby.shadwick.components.SwPaginationSize extends org.apache.wicket.markup.html.panel.Panel implements []

@@ -345,6 +345,16 @@
     "example": "StatusControlsPage"
   },
   {
+    "slug": "components/wizard",
+    "title": "Wizard",
+    "group": "Forms and choices",
+    "description": "A form in several steps, each checked before the next, with Back, Next and Finish.",
+    "apis": [
+      "shadwick-core/src/main/java/dev/jbaby/shadwick/components/SwWizard.java"
+    ],
+    "example": "WorkflowPage"
+  },
+  {
     "slug": "components/calendar",
     "title": "Calendar and date picker",
     "group": "Data and planning",
@@ -473,6 +483,16 @@
       "shadwick-core/src/main/java/dev/jbaby/shadwick/behaviors/MeterBehavior.java"
     ],
     "example": "StatusControlsPage"
+  },
+  {
+    "slug": "components/filter",
+    "title": "Filter",
+    "group": "Data and planning",
+    "description": "A row of chips choosing one value, such as the status of the list below.",
+    "apis": [
+      "shadwick-core/src/main/java/dev/jbaby/shadwick/components/SwFilter.java"
+    ],
+    "example": "WorkflowPage"
   },
   {
     "slug": "components/dialog",
@@ -620,6 +640,16 @@
       "shadwick-core/src/main/java/dev/jbaby/shadwick/behaviors/CollapsibleBehavior.java"
     ],
     "example": "DisclosurePage"
+  },
+  {
+    "slug": "components/master-detail",
+    "title": "Master–detail",
+    "group": "Navigation and layout",
+    "description": "A list beside the selected item's details, one pane at a time where only one fits.",
+    "apis": [
+      "shadwick-core/src/main/java/dev/jbaby/shadwick/components/SwMasterDetail.java"
+    ],
+    "example": "WorkflowPage"
   },
   {
     "slug": "layouts/overview",

@@ -1,0 +1,37 @@
+<wicket:extend xmlns:wicket="http://wicket.apache.org">
+<div><h1 class="ex-title">Wizard, filter &amp; master–detail</h1><p class="ex-lead">Work that moves: a sign-up in steps, and an inbox you narrow down and read one ticket at a time.</p></div>
+
+<section class="ex-section" aria-labelledby="signup-heading">
+  <h2 id="signup-heading">Sign up in three steps</h2>
+  <p class="ex-muted">Next checks the step before moving on; Back and the numbers of finished steps go back without checking. It works without JavaScript too.</p>
+  <div class="ex-form-wide"><div wicket:id="signup"></div></div>
+  <p wicket:id="welcome" class="ex-muted" role="status"></p>
+</section>
+
+<section class="ex-section" aria-labelledby="inbox-heading">
+  <h2 id="inbox-heading">Support inbox</h2>
+  <p class="ex-muted">Choose a status to narrow the list, and a ticket to read it. On a phone the ticket takes the whole width, with Back to the list.</p>
+  <div wicket:id="status"></div>
+  <div class="ex-workflow-inbox" wicket:id="inbox"></div>
+</section>
+
+<wicket:fragment wicket:id="profileStep">
+  <div class="ex-form"><div wicket:id="name"></div><div wicket:id="team"></div><div wicket:id="about"></div></div>
+</wicket:fragment>
+<wicket:fragment wicket:id="reviewStep">
+  <dl class="ex-workflow-review">
+    <dt>Work email</dt><dd wicket:id="email"></dd>
+    <dt>Your name</dt><dd wicket:id="name"></dd>
+    <dt>Team name</dt><dd wicket:id="team"></dd>
+  </dl>
+</wicket:fragment>
+<wicket:fragment wicket:id="ticketList">
+  <nav aria-label="Tickets"><ul class="ex-workflow-tickets">
+    <li wicket:id="tickets"><a wicket:id="link" class="ex-workflow-ticket"><strong wicket:id="subject"></strong><span wicket:id="customer"></span></a></li>
+  </ul></nav>
+</wicket:fragment>
+<wicket:fragment wicket:id="ticketDetail">
+  <article class="sw-card"><div class="sw-card-header"><h3 wicket:id="subject" class="sw-card-title"></h3><p wicket:id="number" class="sw-card-description"></p></div>
+    <div class="sw-card-content"><span wicket:id="status"></span><p wicket:id="body"></p></div></article>
+</wicket:fragment>
+</wicket:extend>

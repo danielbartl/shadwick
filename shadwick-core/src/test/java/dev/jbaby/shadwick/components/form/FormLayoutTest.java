@@ -238,4 +238,13 @@ class FormLayoutTest {
         // Still part of the response, so the old messages disappear from the page
         assertThat(ajax).contains("id=\"" + tester.getComponentFromLastRenderedPage("form:errors").getMarkupId() + "\"");
     }
+
+    @Test
+    void theSummarySerializesWithItsPage() throws Exception {
+        tester.startPage(SignUpPage.class);
+        // The page store serializes every page: the summary's message order must survive it
+        try (var out = new java.io.ObjectOutputStream(new java.io.ByteArrayOutputStream())) {
+            out.writeObject(tester.getLastRenderedPage());
+        }
+    }
 }

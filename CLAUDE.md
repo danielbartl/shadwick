@@ -2013,6 +2013,26 @@ Sonner parity); the changelog records it under Changed.
   timers, six positions in LTR/RTL, narrow screens, the Toasts page's Ajax position choice, reduced motion, dialogs and
   the column fallback (init script sets window.CSSStyleSheet = undefined).
 
+### Workflow components: wizard, filter, master-detail (2026-11-17, 0.2.0-SNAPSHOT)
+
+"Workflow components" was never a named Oat family; investigation picked Oat's process components and the user chose
+OatWizard, OatFilter and OatMasterDetail (load-more lists and CRUD later). APIs follow Oat at 7656231; the look reuses
+SwSteps, toggle chips (ToggleBehavior.itemAttributes, outline/small), SwEmptyState and buttons; components/workflow.css
+holds structure only. Differences from Oat, on purpose:
+- Everything works without JavaScript: SwWizard's Back/Next/Finish are AjaxFallbackButtons (onNext/onFinish get a null
+  target), SwFilter has a noscript Apply button, SwMasterDetail has select(item)/showList() and an AjaxFallbackLink Back.
+- SwWizard builds its step lazily in onConfigure (setCurrentStep works before init), puts a fenced SwFormErrors
+  (autofocus) above the step for getForm().error(...) from onNext, and focuses the new step's role=group ("Step 2 of 3:
+  Profile") after Ajax moves. SwFilter's group is a div role=radiogroup like SwToggleChoice (a fieldset would show its
+  border/padding in the embedded bundle), not Oat's fieldset.
+- SwMasterDetail is its own inline-size container (one pane below 40rem: a container query can't restyle the container,
+  so both panes span the grid there). Shadwick.masterDetail(id, showing) switches data-showing without re-rendering the
+  list and moves focus only when the switch hid the focused pane; Back returns to the list element remembered on
+  focusin (by id), else the list's [aria-current] item, else the list. Lists that re-render to mark the selection should
+  use ListView.setReuseItems(true) so ids (and Wicket's own refocus) survive.
+- Found and fixed in passing: SwFormErrors' sorting comparator was a lambda, so pages holding one couldn't serialize;
+  it is now a static Serializable class (FormLayoutTest checks page serialization).
+
 ### CI Maven cache (2026-11-17)
 
 Three runs on 2026-11-17 failed before any test: a job could not fetch a Maven plugin from Central (429 or transfer
