@@ -99,6 +99,13 @@ item's details. All three follow Wicket Oat and work without JavaScript. New in 
 
 [Wizard](docs/components/wizard.md) · [Filter](docs/components/filter.md) · [Master–detail](docs/components/master-detail.md)
 
+### Load-more lists and CRUD
+
+A long list shown a batch at a time, with Load more or loading as you scroll; and a table of records with New, Edit
+and Delete, an edit dialog and a confirmation. Both follow Wicket Oat. New in 0.2.0, not yet released.
+
+[Load-more list](docs/components/load-more-list.md) · [CRUD](docs/components/crud.md)
+
 ### Freeform tags
 
 Create and remove tags with native/Ajax validation and a comma-separated no-script input.

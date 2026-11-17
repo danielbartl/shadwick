@@ -372,13 +372,12 @@ public class SwDialog extends Panel {
                                 .map(FeedbackMessage::getReporter)
                                 .anyMatch(
                                         reporter ->
+                                                // A field shows its input's errors, not those
+                                                // reported on the field itself
                                                 reporter == null
-                                                        || !(reporter
-                                                                        instanceof
-                                                                        BaseSwField<?, ?, ?>)
-                                                                && reporter.findParent(
-                                                                                BaseSwField.class)
-                                                                        == null);
+                                                        || reporter instanceof BaseSwField<?, ?, ?>
+                                                        || reporter.findParent(BaseSwField.class)
+                                                                == null);
         if (elsewhere) {
             target.add(form);
         }

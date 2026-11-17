@@ -2042,6 +2042,28 @@ holds structure only. Differences from Oat, on purpose:
 - Found and fixed in passing: SwFormErrors' sorting comparator was a lambda, so pages holding one couldn't serialize;
   it is now a static Serializable class (FormLayoutTest checks page serialization).
 
+### Load-more lists and CRUD (2026-11-17, 0.2.0-SNAPSHOT)
+
+The rest of Oat's workflow group (Oat 7656231 OatLoadMoreList/OatCrud; Shadleaf f4acff8 has only a load-more sample
+page). Differences from Oat, on purpose:
+- SwLoadMoreList builds in onInitialize and adds its first batch in onConfigure (the provider is never read in the
+  constructor); size() is cached per request. Batches are div role=none with predictable ids (<panel id>-batch-<n>).
+  Ajax: Shadwick.loadMoreSlot(listId,batchId) makes the slot, then Shadwick.loadMoreFocus(batchId) focuses the first new
+  listitem (tabindex -1 set by script) unless scrolling loaded it (data-sw-load-scrolled on the root) and focus is still
+  somewhere real. Load more is an AjaxFallbackLink whose href ends in #<next batch id> (Link.appendAnchor), so the
+  no-script page scrolls there. Load on scroll: one IntersectionObserver in shadwick.js, rescanned on DOM mutations.
+  A provider yielding fewer items than it counted ends the list. Visible count describes the button; a sr-only status
+  says "Showing 40 of 134" once (cleared in the status label's onAfterRender).
+- SwCrud builds its parts lazily (build(), from onInitialize or any getter), so getDataTable() works right after
+  construction as in Oat. The editor content is a fragment: a fenced SwFormErrors over the app's fields, both with id
+  "content" (paths content:content:<field>). Errors: a field's input shows at the field; the form's/dialog's in the
+  summary. setRowKey goes to the table and actions column (stable menu ids, focus returns to the row). After delete
+  focus goes to New, else the table (tabindex -1). refresh(target) re-renders rows/summary/size/navigator/bulk bar but
+  not the toolbar (the summary gets an output id for it); Oat's "add getTable()" advice left the pager stale.
+- Found and fixed in passing: SwDialog.showErrors treated an error reported on a BaseSwField itself (not its input) as
+  shown inline; the field only shows its input's errors, so the message vanished. It now re-renders the form.
+- Playwright screenshots leave style="" on inputs: take them after the last [style] audit.
+
 ### CI Maven cache (2026-11-17)
 
 Three runs on 2026-11-17 failed before any test: a job could not fetch a Maven plugin from Central (429 or transfer

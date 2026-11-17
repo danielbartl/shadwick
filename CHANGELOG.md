@@ -20,6 +20,12 @@ Development continues on `0.2.0-SNAPSHOT`.
   `onNext`/`onFinish`, a summary for step-level errors and focus on the new step), `SwFilter` (a row of toggle chips
   choosing one value, with an optional "All") and `SwMasterDetail` (a list beside the selected item's details, one pane
   at a time below 40rem). All three also work without JavaScript.
+- `SwLoadMoreList` and `SwCrud`, the rest of Wicket Oat's workflow components. `SwLoadMoreList` shows a provider's
+  items a batch at a time: Load more appends only the next batch and moves the focus to its first item, optionally as
+  the button scrolls into view; without JavaScript it is a link to the page with the next batch. `SwCrud` puts New, Edit
+  and Delete around a data table, with an edit dialog that keeps field and form errors in it, a confirmation before
+  deleting, announcements for screen readers, focus returning to the row (`setRowKey`), and `refresh(target)` for a
+  search beside New.
 - `SwCalendarHeatmap`: one cell per day in weeks and weekdays on the heatmap's five bands, with a period of up to
   three years, days without data shown as not measured unless `setMissingValue` gives them a value, locale week starts
   and month labels; a native table with every day's full date and value, and keyboard exploration by day and week.
@@ -53,6 +59,8 @@ Development continues on `0.2.0-SNAPSHOT`.
 
 ### Fixed
 
+- A dialog (`SwDialog`) whose confirm left an error reported on a Shadwick field itself, rather than on its input, now
+  re-renders its form so a summary there can show it. The field only shows its input's errors, so the message was lost.
 - A custom select (`SwSelect`) whose native picker is replaced by Shadwick's fallback no longer leaves the native
   select's own button in the tab order when the browser parses that button after the select was enhanced. Screen
   readers could otherwise reach a control hidden from them; this also made a browser test fail intermittently.

@@ -242,6 +242,21 @@ public final class Sw {
             return dev.jbaby.shadwick.components.SwWizard.onFinish(id, onFinish);
         }
 
+        /** A list showing a batch of items at a time, with Load more for the next. */
+        public static <T> dev.jbaby.shadwick.components.SwLoadMoreList<T> loadMoreList(String id,
+                org.apache.wicket.markup.repeater.data.IDataProvider<T> provider, long batchSize,
+                dev.jbaby.shadwick.util.SerializableBiFunction<String, IModel<T>, ? extends Component> item) {
+            return new dev.jbaby.shadwick.components.SwLoadMoreList<>(id, provider, batchSize, item);
+        }
+
+        /** A table of records with New, Edit and Delete; configure it with {@code setEditor}, {@code setOnSave}, ... */
+        public static <T, S> dev.jbaby.shadwick.components.SwCrud<T, S> crud(String id,
+                List<? extends org.apache.wicket.extensions.markup.html.repeater.data.table.IColumn<T, S>> columns,
+                org.apache.wicket.extensions.markup.html.repeater.data.table.ISortableDataProvider<T, S> provider,
+                long rowsPerPage) {
+            return new dev.jbaby.shadwick.components.SwCrud<>(id, columns, provider, rowsPerPage);
+        }
+
         public static <T> dev.jbaby.shadwick.components.SwButtonGroup<T> buttonGroup(String id, IModel<List<T>> items,
                 SerializableBiConsumer<ListItem<T>, T> populate) {
             return dev.jbaby.shadwick.components.SwButtonGroup.of(id, items, populate);

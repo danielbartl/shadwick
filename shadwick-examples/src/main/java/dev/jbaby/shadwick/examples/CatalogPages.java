@@ -34,6 +34,7 @@ final class CatalogPages {
         new Example("tables", "Tables", "Tables & data", "Native cells, compact rows and pinned columns.", TablePage.class, "components/table"),
         new Example("data", "Data tables", "Tables & data", "Providers, sorting, selection and row actions.", DataTablePage.class, "components/data-table"),
         new Example("advanced-tables", "Advanced tables", "Tables & data", "Inline editing, row details, columns and CSV.", AdvancedTablePage.class, "components/advanced-table"),
+        new Example("collections", "Load more & CRUD", "Tables & data", "A feed that loads a batch at a time, and records to create, edit and delete.", CollectionsPage.class, "components/crud"),
         new Example("pagination", "Pagination", "Tables & data", "Page sizes, summaries and bookmarkable state.", PaginationPage.class, "components/pagination"),
         new Example("invoice", "Invoice detail", "Tables & data", "A detail view connected to the data-table example.", InvoicePage.class, "components/data-table"),
         new Example("calendar", "Calendar & date picker", "Dates & charts", "Single dates, ranges and locale-aware calendars.", CalendarPage.class, "components/calendar"),

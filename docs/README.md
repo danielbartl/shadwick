@@ -57,6 +57,8 @@ record details, timelines, lazy panels, tags, avatar groups and process steps. S
 
 - [Steps indicator](components/steps.md) — Ordered process stages, current state and optional completed-step selection.
 - [Filter](components/filter.md) — A row of chips choosing one value, such as the status of the list below.
+- [Load-more list](components/load-more-list.md) — A long list shown a batch at a time, with Load more or loading as you scroll.
+- [CRUD](components/crud.md) — A table of records with New, Edit and Delete, an edit dialog and a confirmation.
 - [Calendar and date picker](components/calendar.md) — Single dates, ranges, disabled days and native-backed popup pickers.
 - [Month view](components/month-view.md) — Server-rendered monthly plans with locale-aware weeks and custom day slots.
 - [Charts](components/charts.md) — Native SVG bars, lines and areas with exact accessible data.

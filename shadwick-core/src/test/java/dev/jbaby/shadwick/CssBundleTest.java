@@ -132,7 +132,7 @@ class CssBundleTest {
     void everySkinArrangesTheWorkflowComponents(Skin skin) throws IOException {
         for (Bundle bundle : Bundle.values()) {
             assertThat(read("shadwick-" + skin.id() + bundle.suffix() + ".css")).as(skin + " " + bundle)
-                    .contains(".sw-wizard-footer", ".sw-filter", ".sw-master-detail-back")
+                    .contains(".sw-wizard-footer", ".sw-filter", ".sw-master-detail-back", ".sw-load-more-batch", ".sw-load-more-count", ".sw-crud-toolbar")
                     .containsPattern("@container \\(width < 40rem\\)");
         }
     }

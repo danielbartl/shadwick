@@ -394,3 +394,9 @@ body {
 .ex-workflow-ticket[aria-current='true'] { background: var(--accent); color: var(--accent-foreground); }
 .ex-workflow-ticket[aria-current='true'] span { color: inherit; }
 .ex-workflow-ticket:focus-visible { outline: 2px solid var(--ring); outline-offset: 2px; }
+
+/* Load more & CRUD */
+.ex-feed { max-inline-size: 40rem; margin-block-start: 1rem; }
+.ex-feed [role='listitem'] { display: flex; gap: 0.75rem; align-items: baseline; padding: 0.5rem 0.75rem; border-radius: calc(var(--radius) - 2px); border: 1px solid var(--border); }
+.ex-feed [role='listitem']:focus-visible { outline: 2px solid var(--ring); outline-offset: 2px; }
+.ex-feed-time { flex: none; min-inline-size: 3rem; color: var(--muted-foreground); font-size: 0.875rem; font-variant-numeric: tabular-nums; }

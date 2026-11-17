@@ -2263,3 +2263,8 @@
   .sw-step-number { @apply rounded-full font-medium tabular-nums; }
   .sw-step-title { @apply font-semibold tracking-wide uppercase; }
 }
+
+@layer components {
+  /* SwLoadMoreList */
+  .sw-load-more-count { @apply text-sm text-muted-foreground; }
+}

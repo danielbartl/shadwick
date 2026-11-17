@@ -1,0 +1,19 @@
+<wicket:extend xmlns:wicket="http://wicket.apache.org">
+<div><h1 class="ex-title">Load more &amp; CRUD</h1><p class="ex-lead">Long lists a batch at a time, and records to create, edit and delete without leaving the table.</p></div>
+
+<section class="ex-section" aria-labelledby="feed-heading">
+  <h2 id="feed-heading">Recent activity</h2>
+  <p class="ex-muted">134 events, 20 at a time. Load more appends the next batch and moves the focus to its first event; without JavaScript it is a link to the page with the next batch.</p>
+  <form wicket:id="feedOptions" class="ex-form"><div wicket:id="scroll"></div></form>
+  <div wicket:id="feed" class="ex-feed"></div>
+</section>
+
+<section class="ex-section" aria-labelledby="customers-heading">
+  <h2 id="customers-heading">Customers</h2>
+  <p class="ex-muted">New and each row's actions open the editor; a name that already exists is refused by the server. Delete asks first. Searching keeps the focus in the field.</p>
+  <div wicket:id="customers"></div>
+</section>
+
+<wicket:fragment wicket:id="eventRow"><span wicket:id="time" class="ex-feed-time"></span><span wicket:id="text"></span></wicket:fragment>
+<wicket:fragment wicket:id="searchForm"><form wicket:id="form" role="search"><div wicket:id="q"></div></form></wicket:fragment>
+</wicket:extend>

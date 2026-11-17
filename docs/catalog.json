@@ -495,6 +495,26 @@
     "example": "WorkflowPage"
   },
   {
+    "slug": "components/load-more-list",
+    "title": "Load-more list",
+    "group": "Data and planning",
+    "description": "A long list shown a batch at a time, with Load more or loading as you scroll.",
+    "apis": [
+      "shadwick-core/src/main/java/dev/jbaby/shadwick/components/SwLoadMoreList.java"
+    ],
+    "example": "CollectionsPage"
+  },
+  {
+    "slug": "components/crud",
+    "title": "CRUD",
+    "group": "Data and planning",
+    "description": "A table of records with New, Edit and Delete, an edit dialog and a confirmation.",
+    "apis": [
+      "shadwick-core/src/main/java/dev/jbaby/shadwick/components/SwCrud.java"
+    ],
+    "example": "CollectionsPage"
+  },
+  {
     "slug": "components/dialog",
     "title": "Dialog",
     "group": "Overlays",

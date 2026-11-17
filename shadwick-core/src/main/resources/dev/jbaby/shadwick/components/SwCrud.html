@@ -1,0 +1,16 @@
+<wicket:panel xmlns:wicket="http://wicket.apache.org">
+  <div wicket:id="table"></div>
+  <p wicket:id="status" class="sw-crud-status" role="status"></p>
+  <div wicket:id="editor"></div>
+  <div wicket:id="confirm"></div>
+</wicket:panel>
+<wicket:fragment wicket:id="editorContent">
+  <div wicket:id="errors"></div>
+  <div wicket:id="content"></div>
+</wicket:fragment>
+<wicket:fragment wicket:id="toolbar">
+  <div class="sw-crud-toolbar">
+    <div wicket:id="search" class="sw-crud-search"></div>
+    <button wicket:id="new" type="button" class="sw-crud-new"><svg wicket:id="icon"></svg><span wicket:id="label"></span></button>
+  </div>
+</wicket:fragment>

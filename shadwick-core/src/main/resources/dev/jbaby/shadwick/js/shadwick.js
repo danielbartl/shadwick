@@ -1588,4 +1588,55 @@
             root.scrollIntoView({block: 'nearest'});
         }
     };
+    // SwLoadMoreList: the next batch goes into a slot at the end of the list, so only it is rendered. The focus then
+    // moves to its first item, as the button it was on has gone - but not when scrolling loaded it and the focus is
+    // still somewhere else on the page.
+    Shadwick.loadMoreSlot = function (listId, batchId) {
+        var list = document.getElementById(listId);
+        if (!list || document.getElementById(batchId)) return;
+        var slot = document.createElement('div');
+        slot.id = batchId;
+        list.appendChild(slot);
+    };
+    Shadwick.loadMoreFocus = function (batchId) {
+        var batch = document.getElementById(batchId);
+        var root = batch && batch.parentElement && batch.parentElement.parentElement;
+        if (!root) return;
+        var scrolled = root.hasAttribute('data-sw-load-scrolled');
+        root.removeAttribute('data-sw-load-scrolled');
+        var active = document.activeElement;
+        if (scrolled && active && active !== document.body && active.isConnected) return;
+        var first = batch.querySelector('[role="listitem"]');
+        if (!first) return;
+        if (!first.hasAttribute('tabindex')) first.setAttribute('tabindex', '-1');
+        first.focus();
+    };
+    // Load on scroll: a button marked data-sw-load-on-scroll is clicked when it comes near the viewport. A button
+    // re-rendered over Ajax is a new element, observed again, so a short batch that leaves it in view loads the next.
+    if ('IntersectionObserver' in window) {
+        var loadObserver = new IntersectionObserver(function (entries) {
+            entries.forEach(function (entry) {
+                var button = entry.target;
+                if (!entry.isIntersecting || !button.isConnected || button.getAttribute('aria-busy') === 'true') return;
+                var root = button.closest('.sw-load-more');
+                root = root && root.parentElement;
+                if (root) root.setAttribute('data-sw-load-scrolled', '');
+                button.click();
+            });
+        }, {rootMargin: '200px'});
+        var observedLoaders = new Set();
+        var scanLoaders = function () {
+            // Buttons replaced over Ajax are let go
+            observedLoaders.forEach(function (button) {
+                if (!button.isConnected) { loadObserver.unobserve(button); observedLoaders.delete(button); }
+            });
+            document.querySelectorAll('[data-sw-load-on-scroll]').forEach(function (button) {
+                if (observedLoaders.has(button)) return;
+                observedLoaders.add(button);
+                loadObserver.observe(button);
+            });
+        };
+        scanLoaders();
+        new MutationObserver(scanLoaders).observe(document.documentElement, {childList: true, subtree: true});
+    }
 })();
