@@ -3412,6 +3412,23 @@ class ShowcaseBrowserTest {
     }
 
     @ParameterizedTest @MethodSource("everySkinAndMode")
+    void comboboxEnhancedBeforeItsOptionsWereParsedStillResetsToThem(String skin,String mode) {
+        check("combobox",skin,mode,tab->{
+            Locator form=tab.locator("form[aria-label='Server combobox']");
+            // While the page streams in, the select can be enhanced before the parser has added its options. Rebuild
+            // the field that way: an empty select first, its server-rendered options a task later.
+            combo(form,0).evaluate("""
+                    r=>{const fresh=r.cloneNode(false);fresh.removeAttribute('data-enhanced');const old=r.querySelector(':scope > select');
+                    const select=old.cloneNode(false);const options=Array.from(old.children).map(c=>c.cloneNode(true));
+                    fresh.append(select);r.replaceWith(fresh);return new Promise(done=>setTimeout(()=>{select.append(...options);done();},50));}""");
+            Locator one=combo(form,0),input=comboInput(one);
+            assertThat(input).hasValue("Berlin");
+            form.getByRole(AriaRole.BUTTON,new Locator.GetByRoleOptions().setName("Reset")).click();
+            assertThat(one.locator("select")).hasValue("berlin");assertThat(input).hasValue("Berlin");
+        });
+    }
+
+    @ParameterizedTest @MethodSource("everySkinAndMode")
     void comboboxRemoteNewerQueryWinsAndErrorsAreRecoverable(String skin,String mode) {
         check("combobox",skin,mode,new Browser.NewContextOptions(),tab->{
             Locator root=combo(tab.locator("form[aria-label='Server combobox']"),0),input=comboInput(root);

@@ -103,8 +103,15 @@ function setUp(root, select, template, listen, cleanups, stateHandle) {
   let query = null;
   let state = 'idle';
   let searched = false;
-  const initialOptions = searchUrl ? Array.from(select.children).map(child => child.cloneNode(true)) : [];
-  const defaultValues = Array.from(select.options).filter(o=>o.defaultSelected).map(o=>o.value);
+  // The server-rendered options that clearing a search and Reset restore. Taken when first needed, not here: while
+  // the page is still loading, the select can be enhanced before the parser has added all of its options.
+  let initialOptions = null;
+  let defaultValues = null;
+  const takeInitialOptions = () => {
+    if (initialOptions) return;
+    initialOptions = Array.from(select.children).map(child => child.cloneNode(true));
+    defaultValues = Array.from(select.options).filter(o=>o.defaultSelected).map(o=>o.value);
+  };
   let searchTimer = 0;
   let announceTimer = 0;
   let request = null;
@@ -384,6 +391,7 @@ function setUp(root, select, template, listen, cleanups, stateHandle) {
     listbox.removeAttribute('aria-busy');
     if (text.trim() === '') {
       state = 'idle';
+      takeInitialOptions();
       replaceOptions(select, initialOptions.map(child => child.cloneNode(true)), false);
       return;
     }
@@ -431,7 +439,7 @@ function setUp(root, select, template, listen, cleanups, stateHandle) {
               }
               (group || fragment).append(option);
             }
-            state='idle'; replaceOptions(select,Array.from(fragment.children),true);
+            state='idle'; takeInitialOptions(); replaceOptions(select,Array.from(fragment.children),true);
           })
           .catch(error => {
             if (error.name === 'AbortError' || request !== controller) {
@@ -497,7 +505,7 @@ function setUp(root, select, template, listen, cleanups, stateHandle) {
       hide(content); input.setAttribute('aria-expanded','false');
       query = null;
       input.value = '';
-      if (searchUrl) { clearTimeout(searchTimer); request?.abort(); request=null; state='idle'; searched=false; select.replaceChildren(...initialOptions.map(c=>c.cloneNode(true))); for (const o of select.options) o.selected=defaultValues.includes(o.value); if (!multiple && !defaultValues.length) select.selectedIndex=0; }
+      if (searchUrl) { clearTimeout(searchTimer); request?.abort(); request=null; state='idle'; searched=false; takeInitialOptions(); select.replaceChildren(...initialOptions.map(c=>c.cloneNode(true))); for (const o of select.options) o.selected=defaultValues.includes(o.value); if (!multiple && !defaultValues.length) select.selectedIndex=0; }
       sync();
       filter();
     }));

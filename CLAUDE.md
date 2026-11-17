@@ -2080,6 +2080,17 @@ form's POST response (30 s) around the click, checks the filled value, allows 15
 reports the shown name, the input value, the newest timeline event and every navigation request with its status.
 Read that message before changing code if it recurs.
 
+### Combobox reset race (2026-11-17, fixed)
+
+ShowcaseBrowserTest.comboboxServerSearchPreservesChoicesAndResetDefaults failed in CI on db927d1 (Mira) and a13a869
+(Sketch): after Reset the server city was "" instead of Berlin. Same cause as the custom-select race below:
+combobox.js enhances from a document MutationObserver while the parser streams, and it snapshotted the options and
+defaultSelected values that Reset and an emptied search restore at enhancement time, sometimes before the options
+existed. The snapshot (takeInitialOptions) is now taken when first needed: before the first search replaces options,
+or at Reset. comboboxEnhancedBeforeItsOptionsWereParsedStillResetsToThem rebuilds the field with an empty select and
+adds the options a task later; it fails on the old script and passes now. Rule: never snapshot a parsed element's
+children at enhancement time.
+
 ### Custom-select fallback race (2026-11-16, fixed)
 
 The intermittent ShowcaseBrowserTest customSelectFallback* aria-hidden-focus failure (about 1 in 3,600 cases) was real:
