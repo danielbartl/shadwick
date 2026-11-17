@@ -109,7 +109,7 @@ Alignment follows RTL. Series order, names and values stay unchanged. Use `setSh
 
 ### Grid lines and spacing
 
-> **New in 0.2.0, not yet released.** `setShowCategoryGrid`, `setCategoryTickMargin`, `setValueTickMargin` and `setPlotMargin`; 0.1.0 has `setShowGrid` only.
+> **New in 0.2.0.** `setShowCategoryGrid`, `setCategoryTickMargin`, `setValueTickMargin` and `setPlotMargin`; 0.1.0 has `setShowGrid` only.
 
 ```java
 chart.setShowCategoryGrid(true)
@@ -396,7 +396,7 @@ scope; for days, see the calendar heatmap below.
 
 ### Calendar heatmaps
 
-> **New in 0.2.0, not yet released.** `SwCalendarHeatmap` isn't in 0.1.0, the version on Maven Central.
+> **New in 0.2.0.** `SwCalendarHeatmap` isn't in 0.1.0.
 
 `SwCalendarHeatmap<T>` shows one cell per day, the weeks side by side as columns and the weekdays as rows, on the same
 five bands. Give it the data and how to read each entry's date and value:

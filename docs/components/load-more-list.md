@@ -2,7 +2,7 @@
 
 A long list that shows its first items and appends more as the user asks for them, instead of pages.
 
-> **New in 0.2.0, not yet released.** `SwLoadMoreList` isn't in 0.1.0, the version on Maven Central.
+> **New in 0.2.0.** `SwLoadMoreList` isn't in 0.1.0.
 
 `SwLoadMoreList<T>` follows Wicket Oat's `OatLoadMoreList`. Give it a Wicket `IDataProvider`, a batch size and a factory
 for an item's component:

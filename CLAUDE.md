@@ -60,6 +60,22 @@ documented in docs/components/app-layout.md and additionally compiled by the pub
 Initial release publication is complete. Future work belongs to the next snapshot and user-selected roadmap increments;
 calendar heatmaps, custom/diverging bands and stacked radial series are later scope, not additions to 0.1.0.
 
+## 0.2.0 release — 2026-11-17 (published)
+
+dev.jbaby:shadwick:0.2.0 and shadwick-parent:0.2.0 are on Maven Central; immutable annotated tag v0.2.0 (object
+bab6975be0e62f886945c2abad7cc272f5ff8744) on e1e6065fcad96000ef23eb7040c319c0e120b8f5, whose Build 44173158447 passed all
+15 jobs. Stage 44178146079 -> deployment 80104015-4fae-4380-bec0-537f99a137aa (VALIDATED; status-only publish run
+44179619244), published once by run 44179724642. Verified: 5/5 signatures (key 2C2AD8BB3979FE4A4E2269241EF738AE00E644CF
+from keys.openpgp.org), bundle = reference files, POMs = tagged source, public Central bytes = staging bytes, empty-repo
+Java 21 consumer compiled against SwWizard/SwLoadMoreList/SwCrud/SwCalendarHeatmap/ComponentIds. GitHub release
+published (not draft). Do not retag or republish. Development is 0.3.0-SNAPSHOT / SCM HEAD; README, installation,
+compatibility, docs index/start page and landing (badge, snippets, footer, catalog: workflow, load more & CRUD, layout
+recipes; footer links to recipes and Coming from shadcn/ui) name 0.2.0; all "not yet released" notes became
+"New/Changed in 0.2.0". Record: docs/guides/releases.md "0.2.0" section.
+Open: one local release build dropped one declaration (`.sw-checkbox:focus-visible{border-color:var(--ring)}`) from
+shadwick-maia-embedded.min.css; three later builds and CI were correct and identical. Possibly a race in the parallel
+CSS build (scripts/build-css.mjs runs four compilers); investigate before relying on bit-for-bit reproducibility.
+
 ## Landing page refresh — 2026-11-16 (published)
 
 Published as 78065e1 at the user's request. Website run 43886438075 succeeded; the same Playwright/axe script passed
@@ -2018,9 +2034,9 @@ Sonner parity); the changelog records it under Changed.
 The website is built from main, so guides describe snapshot APIs before they reach Maven Central. Every 0.2.0 addition
 or behavior change carries a `docs-callout` (Markdown `> `) note: "**New in 0.2.0, not yet released.**" or
 "**Changed in 0.2.0, not yet released.**", naming what 0.1.0 lacks or did instead; the README wizard section says so too.
-Checked against the v0.1.0 API baseline (`git show v0.1.0:<api-0.1.txt>`). New 0.2.0 work gets the same note. At the
-release, drop ", not yet released" (`grep -rn 'not yet released' docs README.md`; also in docs/guides/releases.md).
-The landing page stays on 0.1.0 until the release: update its badge/snippet/catalog then, together with the version.
+Checked against the v0.1.0 API baseline (`git show v0.1.0:<api-0.1.txt>`). At the 0.2.0 release these became "New in
+0.2.0" / "Changed in 0.2.0". New work now gets "**New in 0.3.0, not yet released.**" (compare with v0.2.0's baseline);
+drop ", not yet released" at that release. The landing page names the released version only.
 
 ### Workflow components: wizard, filter, master-detail (2026-11-17, 0.2.0-SNAPSHOT)
 

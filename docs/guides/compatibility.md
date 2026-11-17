@@ -1,6 +1,7 @@
 # Compatibility
 
-Shadwick `0.1.0` is published on Maven Central, with a Wicket 11 / Java 21 baseline.
+Shadwick `0.2.0` is published on Maven Central, with a Wicket 11 / Java 21 baseline. It adds to the 0.1.0 API
+without removing or changing a declaration; the [release notes](https://github.com/danielbartl/shadwick/blob/main/docs/releases/0.2.0.md) list three changes in behavior.
 The released public/protected API is recorded and checked during the normal Maven test run.
 
 ## Java and Wicket

@@ -122,7 +122,7 @@ public class QuickStartPage extends WebPage {
 
 ## Layout
 
-> **New in 0.2.0, not yet released.** `BaseSwField.setOrientation`, `Sw.Behaviors.fieldGroup()` and `SwFieldGroup` aren't in 0.1.0; there, every field's label is above its control.
+> **New in 0.2.0.** `BaseSwField.setOrientation`, `Sw.Behaviors.fieldGroup()` and `SwFieldGroup` aren't in 0.1.0; there, every field's label is above its control.
 
 `setOrientation(BaseSwField.Orientation.HORIZONTAL)` puts a field's label beside its control, with the description
 under the label and the error under the control. `RESPONSIVE` does so only while the enclosing field group is at least
@@ -144,7 +144,7 @@ checkboxes or toggles keeps its legend on top. The DOM order stays label, contro
 
 ## Error summary
 
-> **New in 0.2.0, not yet released.** `SwFormErrors` isn't in 0.1.0; use `SwFeedbackPanel` there.
+> **New in 0.2.0.** `SwFormErrors` isn't in 0.1.0; use `SwFeedbackPanel` there.
 
 `SwFormErrors` shows a form's errors together in one destructive alert, titled "There is a problem" (the resource
 `SwFormErrors.title`, translated into all nine languages). By default it lists the errors no field shows next to

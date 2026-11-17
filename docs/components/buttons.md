@@ -23,7 +23,7 @@ Variants: `DEFAULT`, `SECONDARY`, `OUTLINE`, `GHOST`, `DESTRUCTIVE`, `LINK`. Siz
 button needs an `aria-label`: in development mode, a button without an accessible name fails to render with a message
 saying how to fix it, and in deployment it is logged.
 
-> **New in 0.2.0, not yet released.** The sizes `EXTRA_SMALL`, `ICON_EXTRA_SMALL`, `ICON_SMALL` and `ICON_LARGE`; 0.1.0 has `SMALL`, `DEFAULT`, `LARGE` and `ICON`.
+> **New in 0.2.0.** The sizes `EXTRA_SMALL`, `ICON_EXTRA_SMALL`, `ICON_SMALL` and `ICON_LARGE`; 0.1.0 has `SMALL`, `DEFAULT`, `LARGE` and `ICON`.
 
 ```java
 SwButton remove = new SwButton("remove") {
@@ -40,7 +40,7 @@ add(remove);
 
 ### Hit area on a touch screen
 
-> **New in 0.2.0, not yet released.** 0.1.0 doesn't enlarge the hit area.
+> **New in 0.2.0.** 0.1.0 doesn't enlarge the hit area.
 
 `ICON_EXTRA_SMALL`, `ICON_SMALL` and `ICON` are smaller than the 44 by 44 pixels touch guidelines ask for. On a touch
 screen (`@media (pointer: coarse)`) such a button gets an invisible area around it, so it is at least 44 by 44 pixels

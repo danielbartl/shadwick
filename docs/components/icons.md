@@ -23,7 +23,7 @@ not contact an external icon service.
 
 ## Size and stroke width
 
-> **New in 0.2.0, not yet released.** `SwIcon.setSize` and `setStrokeWidth` aren't in 0.1.0; there an icon takes the size of the text around it.
+> **New in 0.2.0.** `SwIcon.setSize` and `setStrokeWidth` aren't in 0.1.0; there an icon takes the size of the text around it.
 
 An icon is 1em by default, following the surrounding text, or the size a component gives its icons (16 pixels in a
 button). `setSize(pixels)` fixes its width and height, from 1 to 1024 pixels; `setStrokeWidth(width)` replaces

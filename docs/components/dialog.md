@@ -24,5 +24,5 @@ Any other error - on the form or the dialog, on a field itself rather than its i
 input - re-renders the form, so a feedback panel or an `SwFormErrors` summary in the content can show it. Session
 messages left over from an earlier request don't keep the dialog open.
 
-> **Changed in 0.2.0, not yet released.** In 0.1.0 an error reported on a field itself, or a second error on its input,
+> **Changed in 0.2.0.** In 0.1.0 an error reported on a field itself, or a second error on its input,
 > wasn't shown, and an unrelated session error message kept the dialog open.

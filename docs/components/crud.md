@@ -3,7 +3,7 @@
 A table of records with everything to manage them: **New** above the table, **Edit** and **Delete** in every row's
 actions menu, a dialog to edit a record in, and a confirmation before deleting one.
 
-> **New in 0.2.0, not yet released.** `SwCrud` isn't in 0.1.0, the version on Maven Central.
+> **New in 0.2.0.** `SwCrud` isn't in 0.1.0.
 
 `SwCrud<T, S>` follows Wicket Oat's `OatCrud` and is built from a [data table](data-table.md), a [dialog](dialog.md)
 and a [confirmation](confirmation-dialog.md):

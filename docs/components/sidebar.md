@@ -52,7 +52,7 @@ describe their links, including in the icon rail. Hover/focus hints appear only 
 `setGroupsOpen(true)` opens every group from the start, not only the one around the current page, for a short
 navigation that should show all its links; in an `SwAppLayout`, override `sidebarGroupsOpen()` to return `true`.
 
-> **New in 0.2.0, not yet released.** `SwSidebar.setGroupsOpen` and `SwAppLayout.sidebarGroupsOpen()` aren't in 0.1.0.
+> **New in 0.2.0.** `SwSidebar.setGroupsOpen` and `SwAppLayout.sidebarGroupsOpen()` aren't in 0.1.0.
 
 Use `setHeader`/`setFooter` with components named `SwSidebar.HEADER_ID`/`FOOTER_ID` for caller-owned content.
 `setLabel(String/IModel<String>)` names the navigation; resource keys are `SwSidebar.label`, `SwSidebar.close` and

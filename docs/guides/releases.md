@@ -1,8 +1,34 @@
 # Release preparation
 
-The first release, `dev.jbaby:shadwick:0.1.0`, is published on Maven Central, targeting Wicket 11.0.0, Java 21+
-and Servlet 6.1+. The packaging/signing workflow uses Java 21; the immutable release tag is `v0.1.0`.
-The review below records the pre-publication freeze. Development now continues on the next snapshot.
+The latest release, `dev.jbaby:shadwick:0.2.0`, is published on Maven Central, targeting Wicket 11.0.0, Java 21+
+and Servlet 6.1+. The packaging/signing workflow uses Java 21; release tags are immutable (`v0.1.0`, `v0.2.0`).
+Development continues on the next snapshot. The steps below apply to every release; the 0.1.0 sections record the
+first release's freeze.
+
+## 0.2.0 — 17 November 2026
+
+The [tagged source](https://github.com/danielbartl/shadwick/tree/v0.2.0) passed the complete
+[Build workflow with 15 jobs](https://github.com/danielbartl/shadwick/actions/runs/44173158447). It adds to the 0.1.0 API
+without removing or changing a declaration; the [release notes](https://github.com/danielbartl/shadwick/blob/main/docs/releases/0.2.0.md)
+list three changes in behavior.
+
+[Stage release](https://github.com/danielbartl/shadwick/actions/runs/44178146079) uploaded deployment
+`80104015-4fae-4380-bec0-537f99a137aa`, which Central validated. Before publishing:
+
+- all five detached signatures verified against public key `2C2AD8BB3979FE4A4E2269241EF738AE00E644CF`, fetched from
+  keys.openpgp.org;
+- the bundle's payloads matched the retained reference files, and both POMs matched the tagged source;
+- a status-only run of Publish validated release reported `VALIDATED` with exactly the parent and library coordinates.
+
+One publish request ([run](https://github.com/danielbartl/shadwick/actions/runs/44179724642)) reached `PUBLISHED`. The
+five public Central files are byte-identical to the verified staging files and carry the same signatures. A Java 21
+consumer with an empty local repository resolved the parent and library from Central and compiled against the wizard,
+load-more list, CRUD, calendar heatmap and `ComponentIds` APIs.
+
+A local release build of the same source matched the staged sources and POMs, but its JAR differed in one minified CSS
+bundle: that build had dropped one declaration from the Maia embedded stylesheet. Three fresh local CSS builds matched
+the staged JAR byte for byte, so the staged JAR is the correct one. The Javadoc JARs differ only in two scripts the
+`javadoc` tool writes, which vary between Java 21 patch releases.
 
 The [tagged source](https://github.com/danielbartl/shadwick/tree/v0.1.0) passed the complete
 [Build workflow with 15 jobs](https://github.com/danielbartl/shadwick/actions/runs/42669752005). All five real signatures

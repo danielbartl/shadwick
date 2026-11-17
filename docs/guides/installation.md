@@ -3,13 +3,13 @@
 Built against Wicket 11.0.0 with Java 21 as the minimum and Jakarta Servlet 6.1+ at runtime. Keep Wicket modules aligned with the version declared in
 the [project POM](https://github.com/danielbartl/shadwick/blob/main/pom.xml).
 Read [Compatibility](./compatibility.md) for the released API and stored-page contracts.
-Shadwick `0.1.0` is available from Maven Central. Add the dependency:
+Shadwick `0.2.0` is available from Maven Central. Add the dependency:
 
 ```xml
 <dependency>
     <groupId>dev.jbaby</groupId>
     <artifactId>shadwick</artifactId>
-    <version>0.1.0</version>
+    <version>0.2.0</version>
 </dependency>
 ```
 

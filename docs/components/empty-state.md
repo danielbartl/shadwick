@@ -17,4 +17,4 @@ The component rejects an incorrect slot ID. Give action buttons visible names an
 is empty; visibility and callbacks belong to the application. `SwDataTable.setEmptyState(...)` accepts custom
 empty content for a filtered table.
 
-> **New in 0.2.0, not yet released.** `setBorder`; in 0.1.0 every empty state has the dashed outline.
+> **New in 0.2.0.** `setBorder`; in 0.1.0 every empty state has the dashed outline.

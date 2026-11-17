@@ -9,7 +9,7 @@ The website adds API references generated from the [Java API source](../shadwick
 Those sources provide declared constructors, methods and hooks when reading the Markdown directly.
 
 The initial component collection includes compound and numeric fields, connected actions,
-record details, timelines, lazy panels, tags, avatar groups and process steps. Shadwick `0.1.0` is available from Maven Central with Wicket 11 and Java 21+. See
+record details, timelines, lazy panels, tags, avatar groups and process steps. Shadwick `0.2.0` is available from Maven Central with Wicket 11 and Java 21+; it adds workflow components, a calendar heatmap and layout recipes ([release notes](https://github.com/danielbartl/shadwick/blob/main/docs/releases/0.2.0.md)). See
 [Compatibility](guides/compatibility.md) for the released API and Java/Wicket requirements.
 
 ## Getting started

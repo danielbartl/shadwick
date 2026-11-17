@@ -40,7 +40,7 @@ content validation—add application validators appropriate to the files you pro
 
 ## Dropzone and native behavior
 
-> **Changed in 0.2.0, not yet released.** In 0.1.0 the dropzone lists the chosen files as plain rows (name, size and a remove button), not as attachments.
+> **Changed in 0.2.0.** In 0.1.0 the dropzone lists the chosen files as plain rows (name, size and a remove button), not as attachments.
 
 With the dropzone, repeated picks and drops append files, matching name/size/modification-time duplicates are ignored,
 and files can be removed before submission. Files rejected by its type/count/size hints are listed separately and
@@ -51,7 +51,7 @@ with the reason. The dropzone never submits by itself.
 
 ### Grid and image previews
 
-> **New in 0.2.0, not yet released.** `SwFileDropzone.setLayout` and `setPreviews` aren't in 0.1.0.
+> **New in 0.2.0.** `SwFileDropzone.setLayout` and `setPreviews` aren't in 0.1.0.
 
 ```java
 SwFileDropzone photos = new SwFileDropzone("photos", "Inspection photos", Model.ofList(new ArrayList<>()))
@@ -88,7 +88,7 @@ form.add(SwSubmitButton.onSubmit("save", "Upload", target -> {
 
 ### Upload progress and Cancel
 
-> **New in 0.2.0, not yet released.** In 0.1.0 the dropzone shows no progress and has no Cancel.
+> **New in 0.2.0.** In 0.1.0 the dropzone shows no progress and has no Cancel.
 
 When an Ajax submit of a multipart form sends a dropzone's files (`SwSubmitButton`, `AjaxButton` and the like), the files
 show how far it is, through the [attachment's states](attachments.md), with nothing to configure:

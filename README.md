@@ -13,18 +13,20 @@ renaming `Oat` to `Sw`.
 
 > **Status: Forms, overlays, app shell, disclosures, attachment displays and data tables implemented.** Buttons, button groups/split buttons, native input fields, custom selects, comboboxes, calendars/date pickers, month views, SVG charts, choices, toggles,
 > freeform tag inputs, input groups, dialogs, menus, toasts, layouts, tabs, accordions, collapsibles, attachment cards/galleries, sortable/editable data tables with CSV export, row details and column choices, pagination, description lists, timelines, lazy-loaded panels, avatar groups, steps indicators, display components and feedback,
+> wizards, filters, master–detail views, load-more lists, CRUD tables and calendar heatmaps,
 > in nine skins (vega, lyra, nova, maia, mira, luma, rhea, sera, sketch), light and dark. Standalone and embedded CSS bundles. Busy buttons, progress/meter controls and star ratings. Built-in messages in nine languages.
-> Available on Maven Central as `dev.jbaby:shadwick:0.1.0`.
+> Available on Maven Central as `dev.jbaby:shadwick:0.2.0`.
 
 Read the [component documentation](docs/README.md) for focused guides, matching markup, accessibility notes and
 API references generated from the Java source. The existing README anchors below link to those guides.
 
-The initial component collection is available. Try the new [quote fields](https://shadwick-production.up.railway.app/form-completion),
-[button groups](https://shadwick-production.up.railway.app/button-groups), [record details and activity](https://shadwick-production.up.railway.app/record-display),
-[lazy panels](https://shadwick-production.up.railway.app/lazy-load), [freeform tags](https://shadwick-production.up.railway.app/tag-input),
-[avatar groups](https://shadwick-production.up.railway.app/avatar-groups) and [steps indicator](https://shadwick-production.up.railway.app/steps)
-in the live catalog. Shadwick `0.1.0` is published on Maven Central, including the Wicket 11 / Java 21 migration.
-See [release preparation](docs/guides/releases.md) and the [changelog](CHANGELOG.md).
+Shadwick `0.2.0` is published on Maven Central. It adds Wicket Oat's workflow components, a calendar heatmap and closer
+Shadleaf parity for forms, uploads, toasts, buttons and charts. Try the
+[wizard, filter and master–detail](https://shadwick-production.up.railway.app/workflow),
+[load more and CRUD](https://shadwick-production.up.railway.app/collections) and the
+[layout recipes](https://shadwick-production.up.railway.app/recipes/collapses-to-icons) in the live catalog.
+See the [0.2.0 release notes](docs/releases/0.2.0.md), [release preparation](docs/guides/releases.md) and the
+[changelog](CHANGELOG.md).
 
 The examples build their initial component trees in `onInitialize()`, with named methods for forms, fields and
 actions. Start with the [complete form example](docs/components/forms.md#complete-example), then browse the
@@ -46,7 +48,7 @@ released API and stored-page contracts. Add the published Maven dependency:
 <dependency>
     <groupId>dev.jbaby</groupId>
     <artifactId>shadwick</artifactId>
-    <version>0.1.0</version>
+    <version>0.2.0</version>
 </dependency>
 ```
 
@@ -95,14 +97,14 @@ Show numbered process stages with localized state captions and optional complete
 ### Wizard, filter and master–detail
 
 A form in several steps with Back, Next and Finish; a row of chips choosing one value; and a list beside the selected
-item's details. All three follow Wicket Oat and work without JavaScript. New in 0.2.0, not yet released.
+item's details. All three follow Wicket Oat and work without JavaScript. New in 0.2.0.
 
 [Wizard](docs/components/wizard.md) · [Filter](docs/components/filter.md) · [Master–detail](docs/components/master-detail.md)
 
 ### Load-more lists and CRUD
 
 A long list shown a batch at a time, with Load more or loading as you scroll; and a table of records with New, Edit
-and Delete, an edit dialog and a confirmation. Both follow Wicket Oat. New in 0.2.0, not yet released.
+and Delete, an edit dialog and a confirmation. Both follow Wicket Oat. New in 0.2.0.
 
 [Load-more list](docs/components/load-more-list.md) · [CRUD](docs/components/crud.md)
 

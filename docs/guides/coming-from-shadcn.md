@@ -2,7 +2,7 @@
 
 What carries over from shadcn/ui, what each component is called here, and what changes when Wicket renders it.
 
-> **A few names here are new in 0.2.0, not yet released:** the extra-small and small/large icon button sizes, `SwFieldGroup` and `SwFormErrors`. Everything else is in 0.1.0, the version on Maven Central.
+> **A few names here are new in 0.2.0:** the extra-small and small/large icon button sizes, `SwFieldGroup` and `SwFormErrors`. Everything else is in 0.1.0 as well.
 
 Shadwick gives a Wicket application shadcn/ui's look, tokens and component catalog. If you know shadcn/ui from
 React, most of what you know carries over: the same tokens, the same variants and sizes, the same anatomy. What

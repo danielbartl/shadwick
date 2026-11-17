@@ -2,7 +2,7 @@
 
 A form filled in over several steps, each checked before the next, with Back, Next and Finish.
 
-> **New in 0.2.0, not yet released.** `SwWizard` isn't in 0.1.0, the version on Maven Central.
+> **New in 0.2.0.** `SwWizard` isn't in 0.1.0.
 
 `SwWizard` follows Wicket Oat's `OatWizard`. Give it its steps, each a title and a factory for the step's component,
 and what to do at the end:
