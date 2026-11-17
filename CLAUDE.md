@@ -1922,6 +1922,18 @@ locally. Next: a hosted interactive showcase, then tooling and release preparati
 
 ## Conventions
 
+### Chart extras: category grid, tick margins, plot margin (2026-11-16, 0.2.0-SNAPSHOT)
+
+Shadleaf f4acff8's chart-grid vertical / axis tick-margin / chart margin; Oat has none. SwChart only (scatter already
+draws both grids). Named by meaning like the axis formats: setShowCategoryGrid (lines through category centres,
+data-category-grid, sw-chart-grid styling; a horizontal line through each row's own SVG on horizontal charts),
+setCategoryTickMargin / setValueTickMargin / setPlotMargin (Integer 0..64 px, null = default). Values become custom
+properties (--sw-chart-category-tick-margin, --sw-chart-value-tick-margin, --sw-chart-plot-margin) on a content-addressed
+sw-chart-layout-<sha256/12> class, via ChartAppearance.layoutClass/layoutCss and CssHeaderItem (Wicket adds the nonce).
+chart.css reads them with the old values as fallbacks; plot margin is margin-inline on the vertical plot + x-axis and on
+horizontal rows + value axis, so labels stay under their categories (it adds to the value tick margin on that side).
+The horizontal value axis's top margin is calc(var(--sw-chart-value-tick-margin,.375rem) - .375rem) over the row gap.
+
 ### Uploads parity: attachment rows, grid, previews, progress (2026-11-16, 0.2.0-SNAPSHOT)
 
 Shadleaf f4acff8's file-upload; Oat has none. SwFileDropzone only (SwFileUpload stays a plain native input).

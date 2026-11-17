@@ -25,6 +25,25 @@ final class ChartAppearance {
                     .digest(signature.getBytes(StandardCharsets.UTF_8)), 0, 12);
         } catch (NoSuchAlgorithmException impossible) { throw new IllegalStateException(impossible); }
     }
+    /** A chart's own spacing, as a content-addressed class; empty when it keeps the defaults. */
+    static String layoutClass(Integer categoryTickMargin, Integer valueTickMargin, Integer plotMargin) {
+        if (categoryTickMargin == null && valueTickMargin == null && plotMargin == null) return "";
+        return "sw-chart-layout-" + hash(categoryTickMargin + "\n" + valueTickMargin + "\n" + plotMargin);
+    }
+    /** Custom properties the structural chart CSS reads; whole pixel numbers only, so nothing else can get in. */
+    static String layoutCss(Integer categoryTickMargin, Integer valueTickMargin, Integer plotMargin) {
+        var css = new StringBuilder(".sw-chart ." + layoutClass(categoryTickMargin, valueTickMargin, plotMargin) + "{");
+        if (categoryTickMargin != null) css.append("--sw-chart-category-tick-margin:").append(categoryTickMargin.intValue()).append("px;");
+        if (valueTickMargin != null) css.append("--sw-chart-value-tick-margin:").append(valueTickMargin.intValue()).append("px;");
+        if (plotMargin != null) css.append("--sw-chart-plot-margin:").append(plotMargin.intValue()).append("px;");
+        return css.append('}').toString();
+    }
+    private static String hash(String signature) {
+        try {
+            return HexFormat.of().formatHex(MessageDigest.getInstance("SHA-256")
+                    .digest(signature.getBytes(StandardCharsets.UTF_8)), 0, 12);
+        } catch (NoSuchAlgorithmException impossible) { throw new IllegalStateException(impossible); }
+    }
     static String css(ChartSeries<?> series) {
         String selector = ".sw-chart ." + className(series);
         var css = new StringBuilder();

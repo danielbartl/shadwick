@@ -44,7 +44,8 @@ public class SwChart<T> extends Panel {
     private ValueFormat namedFormat = ValueFormat.NUMBER;
     private Currency currency;
     private ZoneId timeZone = ZoneOffset.UTC;
-    private boolean grid = true, xAxis = true, yAxis = true, legend = true, tooltip = true;
+    private boolean grid = true, xAxis = true, yAxis = true, legend = true, tooltip = true, categoryGrid;
+    private Integer categoryTickMargin, valueTickMargin, plotMargin;
     private boolean tooltipLabelVisible = true, tooltipIndicatorVisible = true, tooltipCursor = true;
     private Indicator tooltipIndicator = Indicator.AUTO;
     private LegendPosition legendPosition = LegendPosition.BOTTOM;
@@ -239,6 +240,50 @@ public class SwChart<T> extends Panel {
         return this;
     }
 
+    /**
+     * Also draws a grid line for each category, through its centre and behind the data: vertical lines on a vertical
+     * chart, horizontal ones on a horizontal chart. Off by default; independent of {@link #setShowGrid(boolean)}, which
+     * draws the lines of the value axis.
+     */
+    public SwChart<T> setShowCategoryGrid(boolean value) {
+        categoryGrid = value;
+        return this;
+    }
+
+    /**
+     * Space in pixels (0 to 64) between the category axis's labels and the plot: below the plot on a vertical chart,
+     * beside it on a horizontal one. {@code null}, the default, keeps the skin-independent default spacing.
+     */
+    public SwChart<T> setCategoryTickMargin(Integer pixels) {
+        categoryTickMargin = margin(pixels, "Category tick margin");
+        return this;
+    }
+
+    /**
+     * Space in pixels (0 to 64) between the value axis's labels and the plot: beside the plot on a vertical chart,
+     * below it on a horizontal one. {@code null}, the default, keeps the default spacing.
+     */
+    public SwChart<T> setValueTickMargin(Integer pixels) {
+        valueTickMargin = margin(pixels, "Value tick margin");
+        return this;
+    }
+
+    /**
+     * Space in pixels (0 to 64) at both ends of the plot along the category direction's crossing axis, so the outermost
+     * bars, points and value labels keep clear of the axis and the edge; the axis labels move with the plot. {@code null},
+     * the default, leaves none.
+     */
+    public SwChart<T> setPlotMargin(Integer pixels) {
+        plotMargin = margin(pixels, "Plot margin");
+        return this;
+    }
+
+    private static Integer margin(Integer pixels, String name) {
+        if (pixels != null && (pixels < 0 || pixels > 64))
+            throw new IllegalArgumentException(name + " must be between 0 and 64 pixels, not " + pixels);
+        return pixels;
+    }
+
     public SwChart<T> setShowXAxis(boolean value) {
         xAxis = value;
         return this;
@@ -285,6 +330,11 @@ public class SwChart<T> extends Panel {
     }
     public SwChart<T> setLegendAlignment(LegendAlignment value) {
         legendAlignment = Objects.requireNonNull(value); return this;
+    }
+
+    private String layoutClass() {
+        String layout = ChartAppearance.layoutClass(categoryTickMargin, valueTickMargin, plotMargin);
+        return layout.isEmpty() ? "" : " " + layout;
     }
 
     private String category(Object value) {
@@ -757,7 +807,7 @@ public class SwChart<T> extends Panel {
         List<LabelSelection> selections = labelSelections(snap);
         List<ValueLabel> labels = new ArrayList<>();
         List<NativeBar> nativeBars = new ArrayList<>();
-        b.append("<div class=\"sw-chart-container\" data-y-axis=\"").append(yAxis).append("\">");
+        b.append("<div class=\"sw-chart-container").append(layoutClass()).append("\" data-y-axis=\"").append(yAxis).append("\">");
         if (yAxis) {
             b.append("<div class=\"sw-chart-y-axis\" aria-hidden=\"true\">");
             for (int i = snap.ticks.length - 1; i >= 0; i--)
@@ -786,6 +836,10 @@ public class SwChart<T> extends Panel {
                         .append("\" y2=\"")
                         .append(num(y(tick, snap.ticks)))
                         .append("\"/>");
+        if (categoryGrid)
+            for (int r = 0; r < count; r++)
+                b.append("<line class=\"sw-chart-grid\" data-category-grid=\"\" x1=\"").append(num((r + .5) * 1000 / count))
+                        .append("\" x2=\"").append(num((r + .5) * 1000 / count)).append("\" y1=\"0\" y2=\"240\"/>");
         List<String> barGroups = barGroups();
         for (int s = 0; s < series.size(); s++) {
             var part = series.get(s);
@@ -927,7 +981,7 @@ public class SwChart<T> extends Panel {
         List<String> groups = barGroups();
         List<LabelSelection> selections = labelSelections(snap);
         int height = 16 + groups.size() * 20;
-        b.append("<div class=\"sw-chart-container\" data-orientation=\"horizontal\" data-y-axis=\"")
+        b.append("<div class=\"sw-chart-container").append(layoutClass()).append("\" data-orientation=\"horizontal\" data-y-axis=\"")
                 .append(yAxis)
                 .append("\"><div class=\"sw-chart-plot\" data-orientation=\"horizontal\" role=\"group\" aria-labelledby=\"")
                 .append(id).append("-title\" aria-describedby=\"").append(escape(plotDescription(id, snap))).append("\" data-tooltip=\"")
@@ -950,6 +1004,9 @@ public class SwChart<T> extends Panel {
                         .append("\" x1=\"").append(num(x(tick, snap.ticks))).append("\" x2=\"")
                         .append(num(x(tick, snap.ticks))).append("\" y1=\"0\" y2=\"").append(height).append("\"/>");
             }
+            if (categoryGrid)
+                b.append("<line class=\"sw-chart-grid\" data-category-grid=\"\" x1=\"0\" x2=\"1000\" y1=\"").append(num(height / 2.0))
+                        .append("\" y2=\"").append(num(height / 2.0)).append("\"/>");
             for (int s = 0; s < series.size(); s++) {
                 if (row.plotValues.get(s) == null) continue;
                 double start = x(Math.min(snap.low[s][r], snap.high[s][r]), snap.ticks),
@@ -1170,6 +1227,9 @@ public class SwChart<T> extends Panel {
             String appearance = ChartAppearance.className(part);
             if (!appearance.isEmpty()) response.render(CssHeaderItem.forCSS(ChartAppearance.css(part), appearance));
         }
+        String layout = ChartAppearance.layoutClass(categoryTickMargin, valueTickMargin, plotMargin);
+        if (!layout.isEmpty())
+            response.render(CssHeaderItem.forCSS(ChartAppearance.layoutCss(categoryTickMargin, valueTickMargin, plotMargin), layout));
     }
 
     @Override

@@ -107,6 +107,30 @@ category/value context. `setShowTooltip(false)` still disables enhanced explorat
 Legends can appear at `TOP` or `BOTTOM` (default), with logical `START`, `CENTER` (default) or `END` alignment.
 Alignment follows RTL. Series order, names and values stay unchanged. Use `setShowLegend(false)` to omit the legend.
 
+### Grid lines and spacing
+
+```java
+chart.setShowCategoryGrid(true)
+        .setCategoryTickMargin(4)
+        .setValueTickMargin(8)
+        .setPlotMargin(16);
+```
+
+`setShowGrid` (on by default) draws the value axis's lines; `setShowCategoryGrid(true)` adds one through the centre
+of each category, behind the data: vertical lines on a vertical chart, horizontal ones through the rows of a horizontal
+chart. Either can be on without the other; the zero baseline always shows.
+
+Tick margins set the space in pixels (0–64) between an axis's labels and the plot. They are named by meaning, like the
+axis formats, so they keep their sense on a horizontal chart: `setCategoryTickMargin` is the gap above the category
+labels (beside the row labels on a horizontal chart), `setValueTickMargin` the gap beside the value labels (above them
+on a horizontal chart). `setPlotMargin(0..64)` leaves space at both ends of the plot, so the outermost bars, points and
+value labels keep clear of the axis and the card's edge; the category labels move with the plot and stay under their
+categories, and the space adds to the value tick margin on that side. `null` restores each default (16px beside the value axis, 8px on narrow screens; 12px above the category axis; no
+plot margin).
+
+Each chart's spacing becomes one small header stylesheet named after its values, which Wicket gives the page's CSP
+nonce: no `style` attribute and no Content-Security-Policy change. Charts with the same settings share it.
+
 ## Horizontal bars
 
 Use horizontal bars for rankings and categories with long names. The data's order is the order from top to bottom;

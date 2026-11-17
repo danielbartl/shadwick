@@ -646,6 +646,28 @@ public class ChartPage extends BasePage {
                                         .setJoin(brandedActual)
                                         .setFillOpacity(.12)
                                         .setStrokeWidth(3)));
+        // A line per month as well as per value, labels close to the plot, and room at both ends for the last label
+        add(
+                chart("spaced")
+                        .setTitle("Grid lines and spacing")
+                        .setShowCategoryGrid(true)
+                        .setCategoryTickMargin(4)
+                        .setValueTickMargin(8)
+                        .setPlotMargin(16)
+                        .addSeries(
+                                ChartSeries.line("Desktop", Month::desktop)
+                                        .setDots(true)
+                                        .setValueLabels(ChartSeries.ValueLabels.LAST)));
+        add(
+                new SwChart<>("spacedHorizontal", Model.ofList(clients()), Client::name)
+                        .setTitle("A line through every row")
+                        .setOrientation(SwChart.Orientation.HORIZONTAL)
+                        .setCategoryHeader("Client")
+                        .setShowCategoryGrid(true)
+                        .setCategoryTickMargin(8)
+                        .setValueTickMargin(12)
+                        .setPlotMargin(8)
+                        .addSeries(ChartSeries.bar("Delivered", Client::delivered)));
         add(
                 chart("rounded")
                         .setTitle("A softer monthly report")

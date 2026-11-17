@@ -3,7 +3,9 @@
   .sw-chart { @apply m-0 min-w-0 w-full text-foreground; }
   .sw-chart, .sw-chart * { box-sizing:border-box; }
   .sw-chart-title { @apply mb-5 font-medium text-sm; }
-  .sw-chart-container { display:grid; grid-template-columns:auto minmax(0,1fr); column-gap:1rem; row-gap:.75rem; container-type:inline-size; }
+  /* Tick margins and the plot margin come from a chart's own layout class (SwChart setters), with these defaults. */
+  .sw-chart-container { display:grid; grid-template-columns:auto minmax(0,1fr); column-gap:var(--sw-chart-value-tick-margin,1rem); row-gap:var(--sw-chart-category-tick-margin,.75rem); container-type:inline-size; }
+  .sw-chart-container:not([data-orientation]) > .sw-chart-plot, .sw-chart-x-axis, .sw-chart-row, .sw-chart-value-axis { margin-inline:var(--sw-chart-plot-margin,0px); }
   .sw-chart-container[data-y-axis='false'] { grid-template-columns:minmax(0,1fr); }
   .sw-chart-y-axis { @apply flex flex-col justify-between text-xs text-muted-foreground tabular-nums; height:240px; max-width:7rem; }
   .sw-chart-y-axis > span { @apply truncate; }
@@ -44,13 +46,13 @@
   .sw-chart-x-axis:dir(rtl) > span > span { transform:translateX(50%); }
   .sw-chart-x-axis:not([data-axis-enhanced]) > [data-native-hidden],.sw-chart-x-axis[data-axis-enhanced] > [data-tick-hidden] { visibility:hidden; }
   .sw-chart-container[data-orientation='horizontal'] { display:block; }
-  .sw-chart-plot[data-orientation='horizontal'] { display:grid; grid-template-columns:minmax(0,min(36%,12rem)) minmax(0,1fr); align-items:center; gap:.375rem 1rem; height:auto; container-type:inline-size; }
+  .sw-chart-plot[data-orientation='horizontal'] { display:grid; grid-template-columns:minmax(0,min(36%,12rem)) minmax(0,1fr); align-items:center; row-gap:.375rem; column-gap:var(--sw-chart-category-tick-margin,1rem); height:auto; container-type:inline-size; }
   .sw-chart-container .sw-chart-tooltip-content { width:max-content; max-width:calc(100cqi - 1rem); }
   .sw-chart-container[data-y-axis='false'] > .sw-chart-plot[data-orientation='horizontal'] { grid-template-columns:minmax(0,1fr); }
   .sw-chart-category { @apply min-w-0 py-1 text-xs text-muted-foreground; overflow-wrap:anywhere; }
   .sw-chart-row { position:relative; min-width:0; }
   .sw-chart-row-svg { display:block; width:100%; fill:none; stroke:none; overflow:visible; }
-  .sw-chart-value-axis { @apply flex min-w-0 text-xs text-muted-foreground tabular-nums; container-type:inline-size; height:1.5rem; overflow:hidden; }
+  .sw-chart-value-axis { @apply flex min-w-0 text-xs text-muted-foreground tabular-nums; container-type:inline-size; height:1.5rem; overflow:hidden; margin-top:calc(var(--sw-chart-value-tick-margin,.375rem) - .375rem); }
   .sw-chart-value-axis > span { position:relative; flex:1; min-width:0; }
   .sw-chart-value-axis > span:last-child { flex:0; }
   .sw-chart-value-axis > span > span { position:absolute; inset-inline-start:0; white-space:nowrap; transform:translateX(-50%); }
@@ -201,7 +203,7 @@
   .sw-donut-legend-item[data-active] .sw-donut-share { color:var(--foreground); }
   .sw-donut-note { @apply mt-3 mb-0 text-xs text-muted-foreground; }
   .sw-donut-plot .sw-chart-tooltip-value { max-inline-size:100%; }
-  @media (width < 30rem) { .sw-chart-container { column-gap:.5rem; } .sw-chart-x-axis:not([data-axis-enhanced]) > span:nth-child(even) { visibility:hidden; } }
+  @media (width < 30rem) { .sw-chart-container { column-gap:var(--sw-chart-value-tick-margin,.5rem); } .sw-chart-x-axis:not([data-axis-enhanced]) > span:nth-child(even) { visibility:hidden; } }
   @media (width < 30rem) { .sw-chart-plot[data-orientation='horizontal'] { column-gap:.5rem; } }
   @media (forced-colors:active) {
     .sw-heatmap-fill { forced-color-adjust:none; }

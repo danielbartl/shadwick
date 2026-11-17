@@ -108,6 +108,16 @@ class CssBundleTest {
         }
     }
 
+    @ParameterizedTest
+    @EnumSource(Skin.class)
+    void everySkinReadsAChartsOwnTickAndPlotMargins(Skin skin) throws IOException {
+        for (Bundle bundle : Bundle.values()) {
+            String css = read("shadwick-" + skin.id() + bundle.suffix() + ".css");
+            assertThat(css).as(skin + " " + bundle)
+                    .contains("var(--sw-chart-value-tick-margin", "var(--sw-chart-category-tick-margin", "var(--sw-chart-plot-margin");
+        }
+    }
+
     private static String read(String name) throws IOException {
         try (InputStream in = Shadwick.class.getResourceAsStream("css/" + name)) {
             assertThat(in).as(name + " on the classpath").isNotNull();

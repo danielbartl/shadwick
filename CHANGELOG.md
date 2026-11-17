@@ -16,6 +16,9 @@ Development continues on `0.2.0-SNAPSHOT`.
 
 ### Added
 
+- `SwChart`: `setShowCategoryGrid(true)` adds a grid line per category; `setCategoryTickMargin`,
+  `setValueTickMargin` and `setPlotMargin` set the space between tick labels and the plot and at both ends of the plot,
+  through a nonce-protected header stylesheet.
 - `SwFileDropzone`: upload progress during Ajax submits (each file's share, Processing, Upload failed, and Uploaded after
   `clearSelection`), a Cancel upload button, `setLayout(Layout.GRID)` cards and `setPreviews(true)` image thumbnails,
   drawn into a canvas so no Content-Security-Policy change is needed. New messages in all nine languages.
