@@ -16,6 +16,11 @@ Development continues on `0.2.0-SNAPSHOT`.
 
 ### Added
 
+- Docs: six copy-ready layout recipes (collapses to icons, grouped by section, collapsible sub-menus, inset with
+  secondary navigation, a table of contents on the end, navigation in the header), each running in the examples app
+  at `/recipes/…` and printed from its source; and a "Coming from shadcn/ui" guide.
+- `SwSidebar.setGroupsOpen(true)` / `SwAppLayout.sidebarGroupsOpen()`: every sidebar group starts open, not only the one
+  holding the current page.
 - `SwChart`: `setShowCategoryGrid(true)` adds a grid line per category; `setCategoryTickMargin`,
   `setValueTickMargin` and `setPlotMargin` set the space between tick labels and the plot and at both ends of the plot,
   through a nonce-protected header stylesheet.

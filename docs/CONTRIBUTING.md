@@ -36,6 +36,11 @@ precedes each complete code fence. The build compares the fence to that file and
 compiles these Java files using the build JDK with `--release 21`, loads their matching HTML and exercises native
 and Ajax validation/submission. Update the source file and the printed fence together.
 
+The layout recipes in `layouts/` print the examples application's own files in the same way: each recipe's layout and
+page (Java and markup) and its CSS, from `shadwick-examples/src/main/{java,resources}/dev/jbaby/shadwick/examples/`.
+They run there as catalog routes (`/recipes/…`), so the build, the catalog tests and `LayoutRecipeBrowserTest` check
+the code the docs show. A recipe's sample page links back to its docs page.
+
 ## Verify
 
 From the repository root, after building the library CSS:

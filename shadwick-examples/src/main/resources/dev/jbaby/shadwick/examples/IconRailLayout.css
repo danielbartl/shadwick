@@ -1,0 +1,57 @@
+/* The application's own CSS around the layout: Shadwick styles the components, not the page between them. */
+.app-page-header {
+  display: grid;
+  gap: 0.5rem;
+  padding: 1.5rem 1.5rem 0;
+}
+
+.app-page-title {
+  margin: 0;
+  font-size: 1.5rem;
+  font-weight: 600;
+  line-height: 1.2;
+}
+
+.app-page {
+  display: grid;
+  gap: 1.5rem;
+  padding: 1rem 1.5rem 1.5rem;
+}
+
+.app-lead,
+.app-muted {
+  margin: 0;
+  color: var(--muted-foreground);
+}
+
+.app-cards {
+  display: grid;
+  gap: 1rem;
+  grid-template-columns: repeat(auto-fit, minmax(12rem, 1fr));
+}
+
+.app-figure {
+  margin: 0.25rem 0 0;
+  font-size: 1.5rem;
+  font-weight: 600;
+}
+
+/* The team's square in the switcher, which stays in the strip of icons when the sidebar collapses. */
+.app-logo {
+  display: grid;
+  flex: none;
+  place-items: center;
+  width: 2rem;
+  height: 2rem;
+  border-radius: calc(var(--radius) - 2px);
+  background: var(--primary);
+  color: var(--primary-foreground);
+  font-weight: 600;
+}
+
+@media (width < 48rem) {
+  .app-page-header,
+  .app-page {
+    padding-inline: 1rem;
+  }
+}

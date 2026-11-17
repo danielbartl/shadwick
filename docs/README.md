@@ -16,6 +16,7 @@ record details, timelines, lazy panels, tags, avatar groups and process steps. S
 
 - [Release preparation](guides/releases.md) — Release artifacts, signing, Central staging and publication.
 - [Installation](guides/installation.md) — Install Shadwick, configure Wicket and run your first form.
+- [Coming from shadcn/ui](guides/coming-from-shadcn.md) — What carries over, each component's name here and what changes with Wicket.
 - [Wicket integration](guides/wicket-integration.md) — Models, markup ownership, Ajax, forms, resources and application responsibilities.
 - [Compatibility](guides/compatibility.md) — Java/Wicket requirements, the released API, stored pages and browser coverage.
 - [Agent guidance](guides/agent-guidance.md) — Use the portable coding skill, working templates and machine-readable guides.
@@ -83,6 +84,16 @@ record details, timelines, lazy panels, tags, avatar groups and process steps. S
 - [Accordion](components/accordion.md) — Single or multiple native details sections with named triggers.
 - [Collapsible](components/collapsible.md) — One native details disclosure with optional content.
 
+
+## Layout recipes
+
+- [Layout recipes](layouts/overview.md) — Whole page frames to copy: the layout, a page and its CSS.
+- [Collapses to icons](layouts/collapses-to-icons.md) — A team switcher and sub-menus, collapsing to a strip of icons.
+- [Grouped by section](layouts/grouped-by-section.md) — Documentation-style groups with a version switcher and search.
+- [Collapsible sub-menus](layouts/collapsible-sub-menus.md) — Sections that open and close in a floating sidebar.
+- [Inset with secondary navigation](layouts/secondary-navigation.md) — Section pages, help links and the user menu.
+- [Table of contents on the end](layouts/table-of-contents.md) — A page's sections at the end of the line.
+- [Navigation in the header](layouts/header-navigation.md) — A handful of pages as a row in the site header.
 ## Display
 
 Related measurements and ratings: [Progress](components/progress.md), [Meters](components/meters.md) and [Ratings](components/ratings.md).

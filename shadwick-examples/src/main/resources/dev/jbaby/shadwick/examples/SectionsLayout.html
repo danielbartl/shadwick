@@ -1,0 +1,20 @@
+<wicket:extend xmlns:wicket="http://wicket.apache.org">
+<article class="app-article">
+  <h1 wicket:id="title" class="app-page-title"></h1>
+  <wicket:child/>
+</article>
+
+<wicket:fragment wicket:id="versionAndSearch">
+  <button wicket:id="trigger" type="button" data-size="lg">
+    <span class="app-logo" aria-hidden="true">C</span>
+    <span class="sw-sidebar-menu-button-label"><strong>Clover Docs</strong><small wicket:id="version"></small></span>
+  </button>
+  <div wicket:id="versions" aria-label="Versions">
+    <wicket:container wicket:id="versionList"><a wicket:id="link"><span wicket:id="name"></span></a></wicket:container>
+  </div>
+  <form wicket:id="search" method="get" role="search" class="app-search">
+    <label class="app-visually-hidden" for="docs-search">Search the docs</label>
+    <input wicket:id="query" id="docs-search" class="sw-input" type="search" name="q" placeholder="Search the docs">
+  </form>
+</wicket:fragment>
+</wicket:extend>

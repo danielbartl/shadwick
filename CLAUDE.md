@@ -1922,6 +1922,24 @@ locally. Next: a hosted interactive showcase, then tooling and release preparati
 
 ## Conventions
 
+### Docs: layout recipes and Coming from shadcn/ui (2026-11-17, 0.2.0-SNAPSHOT)
+
+Shadleaf f4acff8 has 10 layout recipes; the user chose six distinct ones plus only the shadcn guide (no Oat migration or
+library comparison pages). Each recipe is real code in the examples app, root package (not a subpackage, so docs
+example links and catalog plumbing work): an abstract `…Layout` (SwAppLayout subclass, except TableOfContentsLayout, a
+plain WebPage composed from SwSidebar/SidebarProvider/SwSiteHeader/SwSidebarTrigger/SwSkipLink), its markup as
+<wicket:extend> holding wicket:fragments for sidebar header/footer/header-end slots, a `…Page` with a `view` parameter
+(isCurrentPage compares only that), and `…Layout.css` (plain CSS on tokens, app- classes). Routes /recipes/<slug>,
+catalog group "Layout recipes". Recipe pages don't carry the catalog's View code panel (CatalogTest/CatalogBrowserTest
+skip that group); each sample page links to its docs page. Docs: docs/layouts/overview.md + six pages, slugs
+layouts/<slug>; every code block is a `<!-- snippet: shadwick-examples/src/main/... -->` fence the build checks
+byte-for-byte (site/docs/build.mjs now allows examples-app .java/.html/.css; fence language must match the extension).
+Generate the pages' code blocks from the files rather than retyping. One library addition was needed:
+SwSidebar.setGroupsOpen / SwAppLayout.sidebarGroupsOpen() (groups otherwise open only around the current page; a
+MenuItem record component would have broken its canonical constructor). LayoutRecipeBrowserTest sets the theme via
+localStorage (with only the context's colorScheme, Firefox resolved light in this setup) and waits for the icon-rail
+width instead of measuring mid-transition. Shadwick alerts DO carry role=alert (unlike Shadleaf's); SwFormErrors not.
+
 ### Chart extras: category grid, tick margins, plot margin (2026-11-16, 0.2.0-SNAPSHOT)
 
 Shadleaf f4acff8's chart-grid vertical / axis tick-margin / chart margin; Oat has none. SwChart only (scatter already

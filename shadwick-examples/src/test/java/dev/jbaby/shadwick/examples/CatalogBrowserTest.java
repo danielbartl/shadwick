@@ -131,6 +131,7 @@ class CatalogBrowserTest {
         try (var context = chromium.newContext(); var page = context.newPage()) {
             List<String> errors = new ArrayList<>(); page.onPageError(errors::add);
             for (var example : CatalogPages.ALL) {
+                if (example.group().equals("Layout recipes")) continue;
                 assertThat(page.navigate(url(example.route())).status()).isEqualTo(200);
                 assertThat(page.locator(".ex-source-file code").first()).containsText("class " + example.page().getSimpleName());
                 assertThat(page.locator(".ex-source-heading > a")).hasAttribute("href", CatalogPages.guide(example.page()));

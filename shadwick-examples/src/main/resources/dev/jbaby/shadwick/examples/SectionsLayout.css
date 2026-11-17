@@ -1,0 +1,61 @@
+/* The application's own CSS around the layout: Shadwick styles the components, not the page between them. */
+.app-article {
+  display: grid;
+  gap: 1rem;
+  max-width: 48rem;
+  padding: 1.5rem;
+  line-height: 1.6;
+}
+
+.app-article :is(h2, p) {
+  margin: 0;
+}
+
+.app-page-title {
+  margin: 0;
+  font-size: 1.75rem;
+  font-weight: 600;
+  line-height: 1.2;
+}
+
+.app-article h2 {
+  margin-top: 0.5rem;
+  font-size: 1.125rem;
+  font-weight: 600;
+}
+
+.app-lead,
+.app-muted {
+  color: var(--muted-foreground);
+}
+
+.app-search {
+  margin: 0;
+}
+
+.app-logo {
+  display: grid;
+  flex: none;
+  place-items: center;
+  width: 2rem;
+  height: 2rem;
+  border-radius: calc(var(--radius) - 2px);
+  background: var(--primary);
+  color: var(--primary-foreground);
+  font-weight: 600;
+}
+
+.app-visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+@media (width < 48rem) {
+  .app-article {
+    padding-inline: 1rem;
+  }
+}

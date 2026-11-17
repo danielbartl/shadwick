@@ -41,14 +41,17 @@ export async function buildDocumentation({repositoryRoot,output,siteUrl,reposito
   const uncovered=(await componentFiles(path.join(repositoryRoot,'shadwick-core/src/main/java/dev/jbaby/shadwick/components'))).filter(file=>!covered.has(file));
   if(uncovered.length)throw new Error('Missing component documentation: '+uncovered.join(', '));
   for(const entry of catalog) {
-    if(!/^(?:guides|components)\/[a-z\d-]+$/.test(entry.slug))throw new Error('Invalid documentation slug: '+entry.slug);
+    if(!/^(?:guides|components|layouts)\/[a-z\d-]+$/.test(entry.slug))throw new Error('Invalid documentation slug: '+entry.slug);
     const markdown=await readFile(path.resolve(repositoryRoot,'docs',entry.slug+'.md'),'utf8');
     if(!markdown.startsWith('# '+entry.title+'\n'))throw new Error('Guide title does not match catalog: '+entry.slug);
     // Full examples in prose must stay byte-for-byte synchronized with their compiled source.
-    for(const [,file,language,code]of markdown.matchAll(/<!-- snippet: ([\w./-]+) -->\n```(\w+)\n([\s\S]*?)\n```/g)){
-      if(!/^docs\/examples\/[\w/-]+\.(?:java|html)$/.test(file)||file.split('/').includes('..'))throw new Error('Invalid snippet source: '+file);
+    // The sources are the compiled documentation examples and the examples app's own files (layout recipes).
+    for(const [,file,language,code]of markdown.matchAll(/<!-- snippet: ([\w./$-]+) -->\n```(\w+)\n([\s\S]*?)\n```/g)){
+      const documentation=/^docs\/examples\/[\w/-]+\.(?:java|html)$/.test(file);
+      const application=/^shadwick-examples\/src\/main\/(?:java|resources)\/dev\/jbaby\/shadwick\/examples\/[A-Z]\w*\.(?:java|html|css)$/.test(file);
+      if(!(documentation||application)||file.split('/').includes('..'))throw new Error('Invalid snippet source: '+file);
       const source=await readFile(path.join(repositoryRoot,file),'utf8');if(source.trimEnd()!==code)throw new Error('Stale documentation snippet: '+file);
-      if(!['java','html'].includes(language))throw new Error('Unsupported complete-example language');
+      if(language!==({java:'java',html:'html',css:'css'})[file.split('.').pop()])throw new Error('Unsupported complete-example language');
     }
     const route='docs/'+entry.slug+'/';const rendered=renderMarkdown(markdown.replace(`# ${entry.title}\n\n${entry.description}\n\n`, `# ${entry.title}\n\n`),{omitTitle:true,resolveLink:ref=>resolveLink(entry,route,ref)});
     const apis=await Promise.all(entry.apis.map(apiFor));

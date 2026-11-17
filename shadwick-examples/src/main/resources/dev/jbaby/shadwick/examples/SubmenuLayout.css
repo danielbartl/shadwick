@@ -1,0 +1,54 @@
+/* The application's own CSS around the layout: Shadwick styles the components, not the page between them. */
+.app-page {
+  display: grid;
+  gap: 1rem;
+  padding: 1.5rem;
+}
+
+.app-page-title {
+  margin: 0;
+  font-size: 1.5rem;
+  font-weight: 600;
+  line-height: 1.2;
+}
+
+.app-lead,
+.app-muted {
+  margin: 0;
+  color: var(--muted-foreground);
+}
+
+.app-cards {
+  display: grid;
+  gap: 1rem;
+  grid-template-columns: repeat(auto-fit, minmax(12rem, 1fr));
+}
+
+.app-cards p {
+  margin: 0;
+}
+
+.app-brand {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.25rem 0.5rem;
+}
+
+.app-logo {
+  display: grid;
+  flex: none;
+  place-items: center;
+  width: 2rem;
+  height: 2rem;
+  border-radius: calc(var(--radius) - 2px);
+  background: var(--primary);
+  color: var(--primary-foreground);
+  font-weight: 600;
+}
+
+@media (width < 48rem) {
+  .app-page {
+    padding-inline: 1rem;
+  }
+}

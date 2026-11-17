@@ -44,7 +44,25 @@ class CatalogTest {
         assertThat(link.getPageParameters().get("q").isEmpty()).isTrue();
     }
     static Stream<Class<? extends Page>> examples() {
-        return Stream.concat(CatalogPages.ALL.stream().map(CatalogPages.Example::page), Stream.of(UserSignInPage.class));
+        return Stream.concat(CatalogPages.ALL.stream().filter(e -> !e.group().equals("Layout recipes")).map(CatalogPages.Example::page),
+                Stream.of(UserSignInPage.class));
+    }
+    static Stream<CatalogPages.Example> recipes() {
+        return CatalogPages.ALL.stream().filter(e -> e.group().equals("Layout recipes"));
+    }
+    /** A layout recipe is a whole page frame: its code is printed in its docs page, which the sample page links to. */
+    @ParameterizedTest @MethodSource("recipes")
+    void eachLayoutRecipeRendersOnItsRouteAndLinksToItsCode(CatalogPages.Example recipe) {
+        tester.executeUrl(recipe.route());
+        tester.assertRenderedPage(recipe.page());
+        assertThat(recipe.guide()).startsWith("layouts/");
+        String html = tester.getLastResponseAsString();
+        assertThat(html).contains("href=\"https://danielbartl.github.io/shadwick/docs/" + recipe.guide() + "/\"")
+                .doesNotContain("style=").doesNotContainPattern("\\son[a-z]+=");
+        // The menu marks the page shown; a table of contents links to sections of one page instead
+        if (recipe.page() != TableOfContentsPage.class) assertThat(html).contains("aria-current=\"page\"");
+        var serializer = tester.getApplication().getFrameworkSettings().getSerializer();
+        assertThat(serializer.deserialize(serializer.serialize(tester.getLastRenderedPage()))).isNotNull();
     }
     @ParameterizedTest @MethodSource("examples")
     void eachDemoDisplaysItsActualPackagedJavaAndMarkup(Class<? extends Page> page) throws Exception {

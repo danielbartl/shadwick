@@ -1,0 +1,17 @@
+<wicket:extend xmlns:wicket="http://wicket.apache.org">
+<div class="app-page-header">
+  <nav wicket:id="breadcrumb"></nav>
+  <h1 wicket:id="title" class="app-page-title"></h1>
+</div>
+<div class="app-page"><wicket:child/></div>
+
+<wicket:fragment wicket:id="teamSwitcher">
+  <button wicket:id="trigger" type="button" data-size="lg">
+    <span class="app-logo" aria-hidden="true">A</span>
+    <span class="sw-sidebar-menu-button-label"><strong wicket:id="team"></strong><small>Switch team</small></span>
+  </button>
+  <div wicket:id="teams" aria-label="Teams">
+    <wicket:container wicket:id="teamList"><a wicket:id="link"><span wicket:id="name"></span></a></wicket:container>
+  </div>
+</wicket:fragment>
+</wicket:extend>

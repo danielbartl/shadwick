@@ -33,6 +33,7 @@ public class SwSidebar extends Panel {
     public static final String FOOTER_ID = "footer";
 
     private final SidebarBehavior appearance = new SidebarBehavior();
+    private boolean groupsOpen;
     private final WebMarkupContainer menu = new WebMarkupContainer("menu");
     private IModel<String> label;
 
@@ -104,7 +105,7 @@ public class SwSidebar extends Panel {
         container.add(AttributeModifier.replace("aria-labelledby", (IModel<String>) () -> label.getMarkupId()));
         details.add(label, new SwIcon("groupIcon", group.icon() != null ? group.icon() : Model.of("folder")));
         details.add(AttributeModifier.replace("open", (IModel<String>) () ->
-                group.items().stream().anyMatch(this::containsCurrent) ? "open" : null));
+                groupsOpen || group.items().stream().anyMatch(this::containsCurrent) ? "open" : null));
         details.add(new ListView<>("groupItems", Model.ofList(group.items())) {
             @Override
             protected void populateItem(ListItem<MenuItem> item) {
@@ -211,6 +212,17 @@ public class SwSidebar extends Panel {
     }
 
     public SwSidebar setPlacement(SidebarBehavior.Placement placement) { appearance.setPlacement(placement); return this; }
+
+    /**
+     * Opens every labelled group when the page loads, as the sections of documentation are, instead of only the group
+     * holding the current page (the default). The groups stay collapsible.
+     */
+    public SwSidebar setGroupsOpen(boolean open) {
+        groupsOpen = open;
+        return this;
+    }
+
+    public boolean isGroupsOpen() { return groupsOpen; }
 
     public SwSidebar setLabel(String label) {
         return setLabel(Model.of(label));

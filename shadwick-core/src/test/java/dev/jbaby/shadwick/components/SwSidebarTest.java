@@ -67,6 +67,17 @@ class SwSidebarTest {
         assertThat(tester.getTagByWicketId("group").getAttribute("aria-labelledby")).isNotBlank();
         assertThat(html()).contains("Members", "Team");
     }
+    @Test void groupsOpenAroundTheCurrentPageOrAllAtOnce() {
+        // By default a group opens only while it holds the current page: none here
+        render(new SwSidebar("sidebar", Model.ofList(List.of(MenuItem.group("Team", MenuItem.of("Members", WebPage.class))))));
+        assertThat(tester.getTagByWicketId("details").getAttribute("open")).isNull();
+        var sidebar = new SwSidebar("sidebar", Model.ofList(List.of(
+                MenuItem.group("Team", MenuItem.of("Members", WebPage.class)),
+                MenuItem.group("Help", MenuItem.of("Support", WebPage.class))))).setGroupsOpen(true);
+        assertThat(sidebar.isGroupsOpen()).isTrue();
+        render(sidebar);
+        assertThat(tags("wicket:id", "details")).hasSize(2).allSatisfy(details -> assertThat(details.getAttribute("open")).isNotNull());
+    }
     @Test void authorizationFiltersLinksAndEmptyGroups() {
         tester.getApplication().getSecuritySettings().setAuthorizationStrategy(new SimplePageAuthorizationStrategy(PrivatePage.class, WebPage.class) {
             @Override protected boolean isAuthorized() { return false; }

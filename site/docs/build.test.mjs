@@ -38,6 +38,18 @@ test('printed examples cannot drift from compiled files',async t=>{
  const f=await fixture(t);await f.write('docs/examples/Sample.java','public class Sample {}\n');
  await f.write('docs/components/sample.md','# Sample\n\n<!-- snippet: docs/examples/Sample.java -->\n```java\nwrong\n```\n');await assert.rejects(f.build(),/Stale documentation snippet/);
 });
+test('layout recipes print the examples app files byte-for-byte, and only those',async t=>{
+ const f=await fixture(t);const dir='shadwick-examples/src/main/resources/dev/jbaby/shadwick/examples/';
+ await f.write(dir+'RecipeLayout.css','.app-page {\n  padding: 1rem;\n}\n');
+ f.entry.slug='layouts/recipe';f.entry.title='Recipe';await f.save();
+ await f.write('docs/layouts/recipe.md','# Recipe\n\nA useful component.\n\n<!-- snippet: '+dir+'RecipeLayout.css -->\n```css\n.app-page {\n  padding: 1rem;\n}\n```\n');
+ await f.build();
+ await f.write('docs/layouts/recipe.md','# Recipe\n\n<!-- snippet: '+dir+'RecipeLayout.css -->\n```css\n.app-page {}\n```\n');await assert.rejects(f.build(),/Stale documentation snippet/);
+ await f.write('docs/layouts/recipe.md','# Recipe\n\n<!-- snippet: '+dir+'RecipeLayout.css -->\n```java\n.app-page {\n  padding: 1rem;\n}\n```\n');await assert.rejects(f.build(),/Unsupported complete-example language/);
+ for(const bad of ['shadwick-core/src/main/resources/dev/jbaby/shadwick/css/x.css',dir+'../secret.css',dir+'notes.txt','shadwick-examples/pom.xml']){
+  await f.write('docs/layouts/recipe.md','# Recipe\n\n<!-- snippet: '+bad+' -->\n```css\nx\n```\n');await assert.rejects(f.build(),/Invalid snippet source/);
+ }
+});
 test('API source paths reject traversal',async t=>{
  const f=await fixture(t);f.entry.apis.push('shadwick-core/src/main/java/../../secret.java');await f.save();await assert.rejects(f.build(),/Invalid API source/);
 });

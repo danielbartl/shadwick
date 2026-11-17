@@ -92,7 +92,8 @@ public abstract class SwAppLayout extends WebPage {
         sidebar = newSidebar(header ? "headerNavigation" : "sidebar");
         sidebar.setPlacement(sidebarPlacement())
                 .setVariant(sidebarVariant())
-                .setCollapsible(sidebarCollapsible());
+                .setCollapsible(sidebarCollapsible())
+                .setGroupsOpen(sidebarGroupsOpen());
         Component brand = newSidebarHeader(SwSidebar.HEADER_ID),
                 footer = newSidebarFooter(SwSidebar.FOOTER_ID);
         if (header) {
@@ -132,6 +133,11 @@ public abstract class SwAppLayout extends WebPage {
 
     protected SidebarBehavior.Collapsible sidebarCollapsible() {
         return SidebarBehavior.Collapsible.ICON;
+    }
+
+    /** Whether every sidebar group starts open; by default only the group holding the current page does. */
+    protected boolean sidebarGroupsOpen() {
+        return false;
     }
 
     protected SidebarProviderBehavior newSidebarProviderBehavior() {

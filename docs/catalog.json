@@ -12,6 +12,14 @@
     "example": "HomePage"
   },
   {
+    "slug": "guides/coming-from-shadcn",
+    "title": "Coming from shadcn/ui",
+    "group": "Getting started",
+    "description": "What carries over from shadcn/ui, what each component is called here, and what changes when Wicket renders it.",
+    "apis": [],
+    "example": "HomePage"
+  },
+  {
     "slug": "guides/wicket-integration",
     "title": "Wicket integration",
     "group": "Getting started",
@@ -611,6 +619,64 @@
       "shadwick-core/src/main/java/dev/jbaby/shadwick/behaviors/CollapsibleBehavior.java"
     ],
     "example": "DisclosurePage"
+  },
+  {
+    "slug": "layouts/overview",
+    "title": "Layout recipes",
+    "group": "Layout recipes",
+    "description": "Whole page frames to copy into an application: the layout, a page that uses it and the CSS around it.",
+    "apis": [
+      "shadwick-core/src/main/java/dev/jbaby/shadwick/components/SwAppLayout.java"
+    ],
+    "example": "IconRailPage"
+  },
+  {
+    "slug": "layouts/collapses-to-icons",
+    "title": "Collapses to icons",
+    "group": "Layout recipes",
+    "description": "A team switcher, sections with sub-menus and projects beside the page, collapsing to a strip of icons.",
+    "apis": [],
+    "example": "IconRailPage"
+  },
+  {
+    "slug": "layouts/grouped-by-section",
+    "title": "Grouped by section",
+    "group": "Layout recipes",
+    "description": "Pages in labelled groups with a version switcher and a search field, as documentation has.",
+    "apis": [],
+    "example": "SectionsPage"
+  },
+  {
+    "slug": "layouts/collapsible-sub-menus",
+    "title": "Collapsible sub-menus",
+    "group": "Layout recipes",
+    "description": "Sections that open and close in a floating sidebar, each with its pages in a sub-menu.",
+    "apis": [],
+    "example": "SubmenuPage"
+  },
+  {
+    "slug": "layouts/secondary-navigation",
+    "title": "Inset with secondary navigation",
+    "group": "Layout recipes",
+    "description": "Sections that are pages of their own with a sub-menu, projects, help links and the user menu.",
+    "apis": [],
+    "example": "SecondaryNavPage"
+  },
+  {
+    "slug": "layouts/table-of-contents",
+    "title": "Table of contents on the end",
+    "group": "Layout recipes",
+    "description": "A page's sections in a sidebar at the end of the line, built from the parts directly.",
+    "apis": [],
+    "example": "TableOfContentsPage"
+  },
+  {
+    "slug": "layouts/header-navigation",
+    "title": "Navigation in the header",
+    "group": "Layout recipes",
+    "description": "A handful of pages as a row of links in the site header, with the page as a card below.",
+    "apis": [],
+    "example": "HeaderNavPage"
   },
   {
     "slug": "components/cards",
