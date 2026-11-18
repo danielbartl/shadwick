@@ -21,7 +21,9 @@ add(new BookmarkablePageLink<Void>("projects", ProjectsPage.class)
 <a wicket:id="projects">Projects</a>
 ```
 
-Use component classes such as `sw-card-content` for caller-owned parts. Consumers need no Tailwind build.
+`SwCard` needs only its own element; what goes inside is yours. The `sw-card-content` class is optional, but a card
+spaces its parts rather than itself, so text without a part class touches the card's sides. See
+[cards](../components/cards.md) for the parts. Consumers need no Tailwind build.
 `Sw.Behaviors` exposes behavior factories; `Sw.Components` exposes callback-driven factories where available.
 A behavior does not turn an ordinary link into an Ajax callback or create a form model for it.
 
